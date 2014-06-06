@@ -1,6 +1,16 @@
 var TAG_SPRITE_MANAGER = 1,
-	TILE_SIZE = 32, // pixel
-	LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","ss"];
+	BS = 32, // pixel
+	LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","ss"],
+	TILE_TYPES = [
+	              [{x:-1.5*BS,y: 0.0*BS},{x:-0.5*BS,y: 0.0*BS},{x: 0.5*BS,y: 0.0*BS},{x: 1.5*BS,y: 0.0*BS}],
+	              [{x:-0.5*BS,y:-0.5*BS},{x:-0.5*BS,y: 0.5*BS},{x: 0.5*BS,y:-0.5*BS},{x: 0.5*BS,y: 0.5*BS}],
+	              [{x:-1.0*BS,y: 0.5*BS},{x:-1.0*BS,y:-0.5*BS},{x: 0.0*BS,y: 0.5*BS},{x: 1.0*BS,y: 0.5*BS}],
+	              [{x:-1.0*BS,y: 0.5*BS},{x: 1.0*BS,y:-0.5*BS},{x: 0.0*BS,y: 0.5*BS},{x: 1.0*BS,y: 0.5*BS}],
+	              [{x:-1.0*BS,y: 0.5*BS},{x: 0.0*BS,y: 0.5*BS},{x: 0.0*BS,y:-0.5*BS},{x: 1.0*BS,y:-0.5*BS}],
+	              [{x:-1.0*BS,y:-0.5*BS},{x: 0.0*BS,y:-0.5*BS},{x: 0.0*BS,y: 0.5*BS},{x: 1.0*BS,y: 0.5*BS}],
+	              [{x:-1.0*BS,y: 0.5*BS},{x: 0.0*BS,y: 0.5*BS},{x: 1.0*BS,y: 0.5*BS},{x: 0.0*BS,y:-0.5*BS}],
+	              ];
+
 
 var MutrixLayer = cc.Layer.extend({
     sprite:null,
@@ -68,6 +78,9 @@ var MutrixLayer = cc.Layer.extend({
 	},
 
 	buildTile: function(p) {
+		
+		// select a random tile
+		var tileType = TILE_TYPES[Math.floor(Math.random()*TILE_TYPES.length)];
 
 		// create sprite for tile and set is size 0, we only use its position and rotation
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
@@ -77,13 +90,13 @@ var MutrixLayer = cc.Layer.extend({
         tileSprite.setPosition(p);
         batch.addChild(tileSprite);
         
-        for( var i=0 ; i<4 ; i++) {
+        for( var i=0 ; i<tileType.length ; i++) {
         	
-        	var letter = LETTER_NAMES[parseInt(Math.random()*LETTER_NAMES.length)],
+        	var letter = LETTER_NAMES[Math.floor(Math.random()*LETTER_NAMES.length)],
         		spriteFrame = cc.spriteFrameCache.getSpriteFrame(letter+".png"),
-        		sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,TILE_SIZE,TILE_SIZE));
+        		sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,BS,BS));
         	
-        	sprite.setPosition(cc.p(36*i,36*i));
+        	sprite.setPosition(cc.p(tileType[i].x,tileType[i].y));
 	        tileSprite.addChild(sprite);
         }
 	}
