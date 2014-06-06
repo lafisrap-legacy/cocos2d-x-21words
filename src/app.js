@@ -11,9 +11,12 @@ var TAG_SPRITE_MANAGER = 1,
 	              [{x:-1.0*BS,y: 0.5*BS},{x: 0.0*BS,y: 0.5*BS},{x: 1.0*BS,y: 0.5*BS},{x: 0.0*BS,y:-0.5*BS}],
 	              ];
 
+var tiles = [];
 
 var MutrixLayer = cc.Layer.extend({
     sprite:null,
+    fallingSpeed: 2,
+    
     ctor:function () {
         this._super();
 
@@ -21,8 +24,9 @@ var MutrixLayer = cc.Layer.extend({
 
         this.startAnimation();
         this.loadImages();
-        this.buildTile(cc.p(size.width/2, size.height/2));
+        this.buildTile(cc.p(size.width/2, size.height));
 
+	    this.scheduleUpdate();	
         return true;
     },
 
@@ -79,17 +83,16 @@ var MutrixLayer = cc.Layer.extend({
 
 	buildTile: function(p) {
 		
-		// select a random tile
+		// select a random tile type
 		var tileType = TILE_TYPES[Math.floor(Math.random()*TILE_TYPES.length)];
 
 		// create sprite for tile and set is size 0, we only use its position and rotation
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
 			batch = this.getChildByTag(TAG_SPRITE_MANAGER);
-		
-        //tileSprite.opacity = 0;
         tileSprite.setPosition(p);
         batch.addChild(tileSprite);
-        
+
+        // add single boxes with letters to the tile
         for( var i=0 ; i<tileType.length ; i++) {
         	
         	var letter = LETTER_NAMES[Math.floor(Math.random()*LETTER_NAMES.length)],
@@ -99,7 +102,24 @@ var MutrixLayer = cc.Layer.extend({
         	sprite.setPosition(cc.p(tileType[i].x,tileType[i].y));
 	        tileSprite.addChild(sprite);
         }
-	}
+        
+        // build a tile object
+        tiles.push({
+        	type: tileType,
+        	sprite: tileSprite,
+        });
+	},
+	
+    update: function(dt) {
+    	for( tile in tiles ) {
+    		var t = tiles[tile],
+    			lp = t.sprite.getPosition();
+    		// let tile fall down
+    		lp.y -= this.fallingSpeed;
+    		
+    		t.sprite.setPosition(lp);
+    	}
+    }
 });
 
 var MutrixScene = cc.Scene.extend({
