@@ -294,7 +294,7 @@ var MutrixLayer = cc.Layer.extend({
 		// select a random tile type
 		var tileBoxes = TILE_BOXES[Math.floor(Math.random()*TILE_BOXES.length)];
 		
-		//tileBoxes = TILE_BOXES[Math.floor(Math.random()*1)+0];
+		tileBoxes = TILE_BOXES[Math.floor(Math.random()*4)+0];
 
 		// create sprite for tile and set is size 0, we only use its position and rotation
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
@@ -400,20 +400,18 @@ var MutrixLayer = cc.Layer.extend({
     	 * check if a collision happened
     	 */
     	var checkForCollision = function(t, lp) {
-    		var b = t.rotatedBoxes,
-    			text = "";
+    		var b = t.rotatedBoxes;
+    		
     		for( var i=0 ; i<b.length ; i++ ) {
     			var bx = lp.x + b[i].x,
     				by = lp.y + b[i].y,
     				brc = getRowCol(b[i], lp);
     			    	
-    			text += i+": ("+brc.col+"/"+brc.row+") ";
     			// check for bottom or fixed boxes
     			if( by - BS/2 <= BOXES_Y_OFFSET || 
     				(brc.row < BOXES_PER_COL && self.boxes[brc.row][brc.col]) ) {
 
     				// align y to box border
-        			cc.log("Fix tile! i="+i+", lp.x="+lp.x+", lp.y="+lp.y);
     				lp.y = Math.round((lp.y - BOXES_Y_OFFSET)/(BS/2))*(BS/2) + BOXES_Y_OFFSET;
     				
     				// fix tile
@@ -427,8 +425,6 @@ var MutrixLayer = cc.Layer.extend({
     					brc.col + t.direction < 0 || 
     					brc.col + t.direction >= BOXES_PER_ROW ) {
     					
-    					if( t.direction === -1 ) cc.log("Left side! Box! brc.col="+(brc.col-1)+", brc.row="+brc.row+", bx="+bx);
-    					
     					cc.log("Stop-Action: "+t.action);
     					t.sprite.stopAction(t.action);
     					t.action = null;
@@ -437,8 +433,6 @@ var MutrixLayer = cc.Layer.extend({
     			}
     			
     		}
-    		
-			self.helloLabel.setString(text);
 
     		return false;
     	};
@@ -487,8 +481,6 @@ var MutrixLayer = cc.Layer.extend({
     			// Insert into boxes array
 				var brc = getRowCol(b[i], lp);
     			
-    			cc.log("Fixing box "+i+": brc.col="+brc.col+", brc.row="+brc.row+"(from lp.x="+lp.x+", b["+i+"].x="+b[i].x+", lp.y="+lp.y+", b["+i+"].y="+b[i].y);
-
     			newSprite.setPosition(BOXES_X_OFFSET + brc.col*BS + BS/2 , BOXES_Y_OFFSET + brc.row*BS + BS/2);
     	        batch.addChild(newSprite);
 
@@ -497,8 +489,73 @@ var MutrixLayer = cc.Layer.extend({
     		
     		batch.removeChild(t.sprite);
     		delete t;
+    		
+    		checkForAndRemoveCompleteRows();
     	};
     	
+    	var checkForAndRemoveCompleteRows = function() {
+    		
+    		// always check all rows for now
+    		var rowsDeleted = [];
+    		for( var i=0 ; i<BOXES_PER_COL ; i++ ) {
+    			for( j=0 ; j<BOXES_PER_ROW ; j++ ) {
+    				if(!self.boxes[i][j]) break;
+    			}
+    			if(j === BOXES_PER_ROW) {
+    				deleteRow(i);
+    				rowsDeleted.push(i);
+    			}
+    		}
+    		
+    		// move rows above deleted rows down
+    		if( rowsDeleted.length ) {
+    			var r = 0,
+					rows = 1,
+					row = rowsDeleted[r],
+					nextRow = rowsDeleted[++r] || null;
+
+    			for( var i=row ; i<BOXES_PER_COL ; i++ ) {
+    				
+					while( i+rows == nextRow) {
+						nextRow = rowsDeleted[++r] || null;
+						rows++;
+					}
+
+					for( var j=0 ; j<BOXES_PER_ROW ; j++ ) {
+						
+						var sprite = (self.boxes[i+rows] && self.boxes[i+rows][j]) || null;
+						if( sprite ) {
+							sprite.runAction(cc.moveBy(MOVE_SPEED*rows, cc.p(0,-BS*rows)));
+						}
+						
+						self.boxes[i][j] = (self.boxes[i+rows] && self.boxes[i+rows][j]) || null;
+					}					
+				}
+    		}
+    	};
+    	
+       	var deleteRow = function(row) {
+
+        	var batch = self.getChildByTag(TAG_SPRITE_MANAGER);
+
+        	// delete row ... 
+        	for( var i=0 ; i<BOXES_PER_ROW ; i++ ) {
+        		// destroy sprite and body
+            	batch.removeChild(self.boxes[row][i]);
+		    	self.boxes[row][i] = null;		    	
+    		}        	
+    	};
+
+    	
+    	if( self.isSwipeDown ) {
+    		if( !self.isSwiping && self.tiles[self.tiles.length-1].sprite.getPosition().x < size.height - BS*2) {
+    			self.isSwiping = true;
+
+                self.buildTile(cc.p(Math.random()*(BOXES_PER_ROW-4)*BS+BOXES_X_OFFSET+2*BS, size.height));        	    			
+    		} 
+    	} else {
+    		self.isSwiping = false;
+    	}
     	// if there is no tile flying, build a new one
         var tilesFlying = self.tiles.filter(function(value) { return value !== undefined }).length;
         if( !tilesFlying ) {
@@ -512,77 +569,86 @@ var MutrixLayer = cc.Layer.extend({
     		var t = self.tiles[tile],
     			lp = t.sprite.getPosition();
 
-    		if( t.direction === 0 ) {
-    			if( self.isSwipeLeft ) {
-    				var t1 = t;
-    				t.direction = -1;
-        			cc.log("Starting action, shifting tile left: lp.y="+lp.y+", BS="+BS);
-    				t.action = t.sprite.runAction(cc.sequence( 
-    					cc.moveTo(MOVE_SPEED,cc.p(lp.x-BS,lp.y)),
-    					cc.callFunc(function() {
-    						t1.direction = 0;
-    						t.action = null;
-    					}, self)
-    				));
-    			} else if( self.isSwipeRight ) {
-    				var t1 = t;
-    				t.direction = 1;
-        			cc.log("Starting action, shifting tile right: lp.y="+lp.y+", BS="+BS);
-    				t.action = t.sprite.runAction(cc.sequence( 
-    					cc.moveTo(MOVE_SPEED,cc.p(lp.x+BS,lp.y)),
-    					cc.callFunc(function() {
-    						t1.direction = 0;
-    						t.action = null;
-    					}, self)
-    				));
-    			}     			
-    		} else if( !self.isSwipeLeft && !self.isSwipeRight ) {
-    			t.direction = 0;
+    		/*
+    		 * Move tile left and right
+    		 */
+    		if( tile == self.tiles.length-1 ) { // move only the last tile
+    			
+	    		if( t.direction === 0 ) {
+	    			if( self.isSwipeLeft ) {
+	    				var t1 = t;
+	    				t.direction = -1;
+	        			cc.log("Starting action, shifting tile left: lp.y="+lp.y+", BS="+BS);
+	    				t.action = t.sprite.runAction(cc.sequence( 
+	    					cc.moveTo(MOVE_SPEED,cc.p(lp.x-BS,lp.y)),
+	    					cc.callFunc(function() {
+	    						t1.direction = 0;
+	    						t.action = null;
+	    					}, self)
+	    				));
+	    			} else if( self.isSwipeRight ) {
+	    				var t1 = t;
+	    				t.direction = 1;
+	        			cc.log("Starting action, shifting tile right: lp.y="+lp.y+", BS="+BS);
+	    				t.action = t.sprite.runAction(cc.sequence( 
+	    					cc.moveTo(MOVE_SPEED,cc.p(lp.x+BS,lp.y)),
+	    					cc.callFunc(function() {
+	    						t1.direction = 0;
+	    						t.action = null;
+	    					}, self)
+	    				));
+	    			}     			
+	    		} else if( !self.isSwipeLeft && !self.isSwipeRight ) {
+	    			t.direction = 0;
+	    		}
+	    		
+	    		if( !t.rotating ) {
+	    			if( self.isSwipeUp && !(self.isSwipeLeft || self.isSwipeRight) ) {
+	    				var oldRotation = t.rotation;
+	    				t.rotation = (t.rotation + 90)%360;
+	    				self.rotateBoxes(t);
+	    				
+	    				var check = checkRotation(t, lp);
+	    				
+	    				if( check != "collision" ) {
+	    					var t1 = t,
+	    						offset = parseInt(check) || 0;
+	    					
+	    					if(offset != 0) {
+	    	    				t.direction = Math.sign(check);
+	    	    				t.sprite.runAction(cc.sequence( 
+	    	    					cc.moveBy(MOVE_SPEED/2,cc.p(-offset*BS,0)),
+	    	    					cc.callFunc(function() {
+	    	    						t1.direction = 0;
+	    	    					}, self)
+	    	    				));
+	    					}
+	    					
+	        				t.rotating = true;
+	            			cc.log("Starting action, rotating tile!");
+	        				t.sprite.runAction(cc.sequence( 
+	        					cc.rotateTo(MOVE_SPEED*2,t.rotation),
+	        					cc.callFunc(function() {
+	                    			cc.log("Ending rotating tile!");
+	        						t1.rotating = false;
+	        					}, self)
+	        				));
+	    				} else {
+	        				t.rotation = oldRotation;
+	        				self.rotateBoxes(t);    					
+	    				}
+	    			}
+	    		}
+	    		
+	    		var fallingSpeed = FALLING_SPEED;
+    		} else {
+    			var fallingSpeed = FALLING_SPEED * 8;
     		}
-    		
-    		if( !t.rotating ) {
-    			if( self.isSwipeUp && !(self.isSwipeLeft || self.isSwipeRight) ) {
-    				var oldRotation = t.rotation;
-    				t.rotation = (t.rotation + 90)%360;
-    				self.rotateBoxes(t);
-    				
-    				var check = checkRotation(t, lp);
-    				
-    				if( check != "collision" ) {
-    					var t1 = t,
-    						offset = parseInt(check) || 0;
-    					
-    					if(offset != 0) {
-    	    				t.direction = Math.sign(check);
-    	    				t.sprite.runAction(cc.sequence( 
-    	    					cc.moveBy(MOVE_SPEED/2,cc.p(-offset*BS,0)),
-    	    					cc.callFunc(function() {
-    	    						t1.direction = 0;
-    	    					}, self)
-    	    				));
-    					}
-    					
-        				t.rotating = true;
-            			cc.log("Starting action, rotating tile!");
-        				t.sprite.runAction(cc.sequence( 
-        					cc.rotateTo(MOVE_SPEED*2,t.rotation),
-        					cc.callFunc(function() {
-                    			cc.log("Ending rotating tile!");
-        						t1.rotating = false;
-        					}, self)
-        				));
-    				} else {
-        				t.rotation = oldRotation;
-        				self.rotateBoxes(t);    					
-    				}
-    			}
-
-    		}
-    		
+	    		
     		snapToColumn(t, lp);
     		
     		// let tile fall down
-    		lp.y -= FALLING_SPEED;
+    		lp.y -= fallingSpeed;
     		
     		if( checkForCollision(t, lp) ) {
     			// tile landed ...
