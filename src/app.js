@@ -6,7 +6,7 @@ var TAG_SPRITE_MANAGER = 1,
 	SNAP_SPEED = 1,
 	MOVE_SPEED = 0.09,
     TOUCH_THRESHOLD = 3,
-	FALLING_SPEED = 2.25,
+	FALLING_SPEED = 2.50,
 	KEY_LEFT_CODE = 37,
 	KEY_UP_CODE = 38,
 	KEY_RIGHT_CODE = 39,
@@ -328,60 +328,60 @@ var MutrixLayer = cc.Layer.extend({
         this.tiles.push({
         	boxes: tileBoxes,
         	sprite: tileSprite,
-        	rotation: 180,
+        	rotation: 270,
         	direction: 0,  // 0, -1, 1 
+        	rotating : false,
         	action: null
         });
         
-        tileSprite.setRotation(180);
+        tileSprite.setRotation(270);
+		rt = this.rotateBoxes(this.tiles[this.tiles.length-1]);
+	},
+	
+	rotateBoxes: function(t) {
+		var r = t.rotation % 360,
+		rb = []; // rotated boxes
+	
+		for( var i=0 ; i<t.boxes.length ; i++ ) {
+			switch(r) {
+			case 0:
+				// 0 degree: no change
+				rb.push({
+					x: t.boxes[i].x,
+					y: t.boxes[i].y
+				});
+				break;
+			case 90:
+				// 90 degree: exchange x and y coordinates
+				rb.push({
+					x: t.boxes[i].y,
+					y: -t.boxes[i].x
+				});
+				break;
+			case 180:
+				// 180 degree: negate x and y (= rotate)
+				rb.push({
+					x: -t.boxes[i].x,
+					y: -t.boxes[i].y
+				});
+				break;
+			case 270:
+				// 90 degree: exchange x and y coordinates and negate
+				rb.push({
+					x: -t.boxes[i].y,
+					y: t.boxes[i].x
+				});
+				break;
+			}
+		}
+		t.rotatedBoxes = rb;
 	},
 	
     update: function(dt) {
     	
     	var self = this,
 			size = this.size;
-    	/*
-    	 * rotate the metrics of a tile (0,90,180,270)
-    	 */
-    	var rotateBoxes = function(t) {
-    		var r = t.rotation % 360,
-    			rb = []; // rotated boxes
-    		
-    		for( var i=0 ; i<t.boxes.length ; i++ ) {
-    			switch(r) {
-    			case 0:
-    				// 0 degree: no change
-    				rb.push({
-    					x: t.boxes[i].x,
-						y: t.boxes[i].y
-    				});
-    				break;
-    			case 90:
-    				// 90 degree: exchange x and y coordinates
-    				rb.push({
-    					x: t.boxes[i].y,
-						y: -t.boxes[i].x
-    				});
-    				break;
-    			case 180:
-    				// 180 degree: negate x and y (= rotate)
-    				rb.push({
-    					x: -t.boxes[i].x,
-						y: -t.boxes[i].y
-    				});
-    				break;
-    			case 270:
-    				// 90 degree: exchange x and y coordinates and negate
-    				rb.push({
-    					x: -t.boxes[i].y,
-						y: t.boxes[i].x
-    				});
-    				break;
-    			}
-    		}
-    		t.rotatedBoxes = rb;
-    	};
-    	
+
     	/*
     	 * snap tile to column
     	 */
@@ -398,6 +398,16 @@ var MutrixLayer = cc.Layer.extend({
     	};
     	
     	/*
+    	 * get current row / col of a box
+    	 */
+    	var getRowCol = function(box, lp) {
+    		return {
+    			col: Math.round((lp.x + box.x - BOXES_X_OFFSET - BS/2) / BS),
+    			row: Math.round((lp.y + box.y - BOXES_X_OFFSET - BS) / BS),
+    		}
+    	};
+    	
+    	/*
     	 * check if a collision happened
     	 */
     	var checkForCollision = function(t, lp) {
@@ -406,13 +416,12 @@ var MutrixLayer = cc.Layer.extend({
     		for( var i=0 ; i<b.length ; i++ ) {
     			var bx = lp.x + b[i].x,
     				by = lp.y + b[i].y,
-    				bRow = Math.round((bx - BOXES_X_OFFSET - BS/2) / BS),
-        			bCol = Math.round((by - BOXES_Y_OFFSET - BS) / BS);
+    				brc = getRowCol(b[i], lp);
     			    	
-    			text += i+": ("+bRow+"/"+bCol+") ";
+    			text += i+": ("+brc.col+"/"+brc.row+") ";
     			// check for bottom or fixed boxes
     			if( by - BS/2 <= BOXES_Y_OFFSET || 
-    				(bCol < BOXES_PER_COL && self.boxes[bCol][bRow]) ) {
+    				(brc.row < BOXES_PER_COL && self.boxes[brc.row][brc.col]) ) {
 
     				// align y to box border
         			cc.log("Fix tile! i="+i+", lp.x="+lp.x+", lp.y="+lp.y);
@@ -425,11 +434,11 @@ var MutrixLayer = cc.Layer.extend({
 
     			// check for left and right walls or tiles in the way
     			if( t.direction && t.action ) {
-    				if( self.boxes[bCol][bRow + t.direction] || 
-    					bRow + t.direction < 0 || 
-    					bRow + t.direction >= BOXES_PER_ROW ) {
+    				if( self.boxes[brc.row][brc.col + t.direction] || 
+    					brc.col + t.direction < 0 || 
+    					brc.col + t.direction >= BOXES_PER_ROW ) {
     					
-    					if( t.direction === -1 ) cc.log("Left side! Box! bRow="+(bRow-1)+", bCol="+bCol+", bx="+bx);
+    					if( t.direction === -1 ) cc.log("Left side! Box! brc.col="+(brc.col-1)+", brc.row="+brc.row+", bx="+bx);
     					
     					cc.log("Stop-Action: "+t.action);
     					t.sprite.stopAction(t.action);
@@ -442,8 +451,36 @@ var MutrixLayer = cc.Layer.extend({
     		
 			self.helloLabel.setString(text);
 
-    		
     		return false;
+    	};
+    	
+    	var checkRotation = function(t, lp) {
+    		
+    		var b = t.rotatedBoxes,
+    			minCol = 0,
+    			maxCol = 0;
+    		
+    		for( var i=0 ; i<b.length ; i++) {
+        		var brc = getRowCol(b[i], lp);
+        		
+        		minCol = Math.min(minCol, brc.col);
+        		maxCol = Math.max(maxCol, brc.col);
+        		
+        		if( self.boxes[brc.row][brc.col] ) return "collision";
+    		}
+    		
+    		if( minCol < 0 || maxCol >= BOXES_PER_ROW ) {
+    			var offset = (minCol? maxCol - BOXES_PER_ROW: minCol),
+    				newLp = {
+    					x: lp.x + offset * BS,
+    					y: lp.y
+        			};
+    				
+    			if( checkRotation(t , newLp) === "ok" ) return offset;
+    			else return "collision";
+    		} 
+    			
+    		return "ok";
     	};
     	
     	/*
@@ -459,15 +496,14 @@ var MutrixLayer = cc.Layer.extend({
     				newSprite = cc.Sprite.create(sprite.getTexture(), sprite.getTextureRect());
 
     			// Insert into boxes array
-    			var bRow = Math.round((lp.x + b[i].x - BOXES_X_OFFSET - BS/2) / BS),
-    				bCol = Math.round((lp.y + b[i].y - BOXES_Y_OFFSET - BS) / BS);
+				var brc = getRowCol(b[i], lp);
     			
-    			cc.log("Fixing box "+i+": bRow="+bRow+", bCol="+bCol+"(from lp.x="+lp.x+", b["+i+"].x="+b[i].x+", lp.y="+lp.y+", b["+i+"].y="+b[i].y);
+    			cc.log("Fixing box "+i+": brc.col="+brc.col+", brc.row="+brc.row+"(from lp.x="+lp.x+", b["+i+"].x="+b[i].x+", lp.y="+lp.y+", b["+i+"].y="+b[i].y);
 
-    			newSprite.setPosition(BOXES_X_OFFSET + bRow*BS + BS/2 , BOXES_Y_OFFSET + bCol*BS + BS/2);
+    			newSprite.setPosition(BOXES_X_OFFSET + brc.col*BS + BS/2 , BOXES_Y_OFFSET + brc.row*BS + BS/2);
     	        batch.addChild(newSprite);
 
-    			self.boxes[bCol][bRow] = newSprite; 			
+    			self.boxes[brc.row][brc.col] = newSprite; 			
     		}
     		
     		batch.removeChild(t.sprite);
@@ -485,7 +521,6 @@ var MutrixLayer = cc.Layer.extend({
     	 */
     	for( tile in self.tiles ) {
     		var t = self.tiles[tile],
-    			rt = rotateBoxes(t),
     			lp = t.sprite.getPosition();
 
     		if( t.direction === 0 ) {
@@ -511,10 +546,48 @@ var MutrixLayer = cc.Layer.extend({
     						t.action = null;
     					}, self)
     				));
-    			}
-    			
+    			}     			
     		} else if( !self.isSwipeLeft && !self.isSwipeRight ) {
     			t.direction = 0;
+    		}
+    		
+    		if( !t.rotating ) {
+    			if( self.isSwipeUp && !(self.isSwipeLeft || self.isSwipeRight) ) {
+    				var oldRotation = t.rotation;
+    				t.rotation = (t.rotation + 90)%360;
+    				self.rotateBoxes(t);
+    				
+    				var check = checkRotation(t, lp);
+    				
+    				if( check != "collision" ) {
+    					var t1 = t,
+    						offset = parseInt(check) || 0;
+    					
+    					if(offset != 0) {
+    	    				t.direction = Math.sign(check);
+    	    				t.sprite.runAction(cc.sequence( 
+    	    					cc.moveBy(MOVE_SPEED/2,cc.p(BS*offset,0)),
+    	    					cc.callFunc(function() {
+    	    						t1.direction = 0;
+    	    					}, self)
+    	    				));
+    					}
+    					
+        				t.rotating = true;
+            			cc.log("Starting action, rotating tile!");
+        				t.sprite.runAction(cc.sequence( 
+        					cc.rotateTo(MOVE_SPEED,t.rotation),
+        					cc.callFunc(function() {
+                    			cc.log("Ending rotating tile!");
+        						t1.rotating = false;
+        					}, self)
+        				));
+    				} else {
+        				t.rotation = oldRotation;
+        				self.rotateBoxes(t);    					
+    				}
+    			}
+
     		}
     		
     		snapToColumn(t, lp);
