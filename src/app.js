@@ -6,7 +6,7 @@ var TAG_SPRITE_MANAGER = 1,
 	SNAP_SPEED = 1,
 	MOVE_SPEED = 0.09,
     TOUCH_THRESHOLD = 3,
-	FALLING_SPEED = 2.50,
+	FALLING_SPEED = 0.50,
 	KEY_LEFT_CODE = 37,
 	KEY_UP_CODE = 38,
 	KEY_RIGHT_CODE = 39,
@@ -159,13 +159,14 @@ var MutrixLayer = cc.Layer.extend({
             	var touch = touches[0];
                 var loc = touch.getLocation(),
                 	start = self.touchStartPoint;
+
+                self.touchDistance = {
+            			x: Math.abs(loc.x - start.x),
+            			y: Math.abs(loc.y - start.y)
+            	}
                 
                 // check for left
-                if( loc.x < start.x - TOUCH_THRESHOLD ) {
-                	self.touchDistance = {
-                			x: Math.abs(loc.x - start.x),
-                			y: Math.abs(loc.y - start.y)
-                	}
+                if( loc.x < start.x - TOUCH_THRESHOLD && self.touchDistance.x > self.touchDistance.y) {
                 	// if direction changed while swiping left, set new base point
                 	if( loc.x > self.touchLastPoint.x ) {
                 		start = self.touchStartPoint = {
@@ -179,11 +180,7 @@ var MutrixLayer = cc.Layer.extend({
                 }
                 
                 // check for right
-                if( loc.x > start.x + TOUCH_THRESHOLD ) {
-                	self.touchDistance = {
-                			x: Math.abs(loc.x - start.x),
-                			y: Math.abs(loc.y - start.y)
-                	}
+                if( loc.x > start.x + TOUCH_THRESHOLD && self.touchDistance.x > self.touchDistance.y) {
                 	// if direction changed while swiping right, set new base point
                 	if( loc.x < self.touchLastPoint.x ) {
                 		self.touchStartPoint = {
@@ -197,11 +194,7 @@ var MutrixLayer = cc.Layer.extend({
                 }
 
                 // check for down
-                if( loc.y < start.y - TOUCH_THRESHOLD ) {
-                	self.touchDistance = {
-                			x: Math.abs(loc.x - start.x),
-                			y: Math.abs(loc.y - start.y)
-                	}
+                if( loc.y < start.y - TOUCH_THRESHOLD && self.touchDistance.y > self.touchDistance.x) {
                 	// if direction changed while swiping down, set new base point
                 	if( loc.y > self.touchLastPoint.y ) {
                 		self.touchStartPoint = {
@@ -215,11 +208,7 @@ var MutrixLayer = cc.Layer.extend({
                 }
 
                 // check for up
-                if( loc.y > start.y + TOUCH_THRESHOLD ) {
-                	self.touchDistance = {
-                			x: Math.abs(loc.x - start.x),
-                			y: Math.abs(loc.y - start.y)
-                	}
+                if( loc.y > start.y + TOUCH_THRESHOLD && self.touchDistance.y > self.touchDistance.x) {
                 	// if direction changed while swiping right, set new base point
                 	if( loc.y < self.touchLastPoint.y ) {
                 		self.touchStartPoint = {
@@ -305,7 +294,7 @@ var MutrixLayer = cc.Layer.extend({
 		// select a random tile type
 		var tileBoxes = TILE_BOXES[Math.floor(Math.random()*TILE_BOXES.length)];
 		
-		//tileBoxes = TILE_BOXES[Math.floor(Math.random()*2)+5];
+		//tileBoxes = TILE_BOXES[Math.floor(Math.random()*1)+0];
 
 		// create sprite for tile and set is size 0, we only use its position and rotation
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
@@ -470,9 +459,9 @@ var MutrixLayer = cc.Layer.extend({
     		}
     		
     		if( minCol < 0 || maxCol >= BOXES_PER_ROW ) {
-    			var offset = (minCol? maxCol - BOXES_PER_ROW: minCol),
+    			var offset = minCol? minCol : maxCol - BOXES_PER_ROW + 1,
     				newLp = {
-    					x: lp.x + offset * BS,
+    					x: lp.x - offset * BS,
     					y: lp.y
         			};
     				
@@ -566,7 +555,7 @@ var MutrixLayer = cc.Layer.extend({
     					if(offset != 0) {
     	    				t.direction = Math.sign(check);
     	    				t.sprite.runAction(cc.sequence( 
-    	    					cc.moveBy(MOVE_SPEED/2,cc.p(BS*offset,0)),
+    	    					cc.moveBy(MOVE_SPEED/2,cc.p(-offset*BS,0)),
     	    					cc.callFunc(function() {
     	    						t1.direction = 0;
     	    					}, self)
@@ -576,7 +565,7 @@ var MutrixLayer = cc.Layer.extend({
         				t.rotating = true;
             			cc.log("Starting action, rotating tile!");
         				t.sprite.runAction(cc.sequence( 
-        					cc.rotateTo(MOVE_SPEED,t.rotation),
+        					cc.rotateTo(MOVE_SPEED*2,t.rotation),
         					cc.callFunc(function() {
                     			cc.log("Ending rotating tile!");
         						t1.rotating = false;
