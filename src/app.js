@@ -72,7 +72,7 @@ var MutrixLayer = cc.Layer.extend({
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu, 1);
-        this.helloLabel = cc.LabelTTF.create("MUTRIX -- Tetris & Letters", "Arial", 19);
+        this.helloLabel = cc.LabelTTF.create("MUPRIS -- Tetris & Letters", "Arial", 19);
         this.helloLabel.x = size.width / 2;
         this.helloLabel.y = 0;
         this.addChild(this.helloLabel, 5);
@@ -194,7 +194,7 @@ var MutrixLayer = cc.Layer.extend({
                 }
 
                 // check for down
-                if( loc.y < start.y - TOUCH_THRESHOLD && self.touchDistance.y > self.touchDistance.x) {
+                if( loc.y < start.y - TOUCH_THRESHOLD * 3 && self.touchDistance.y > self.touchDistance.x) {
                 	// if direction changed while swiping down, set new base point
                 	if( loc.y > self.touchLastPoint.y ) {
                 		self.touchStartPoint = {
@@ -294,7 +294,7 @@ var MutrixLayer = cc.Layer.extend({
 		// select a random tile type
 		var tileBoxes = TILE_BOXES[Math.floor(Math.random()*TILE_BOXES.length)];
 		
-		tileBoxes = TILE_BOXES[Math.floor(Math.random()*4)+0];
+		//tileBoxes = TILE_BOXES[Math.floor(Math.random()*4)+0];
 
 		// create sprite for tile and set is size 0, we only use its position and rotation
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
@@ -572,7 +572,7 @@ var MutrixLayer = cc.Layer.extend({
     		/*
     		 * Move tile left and right
     		 */
-    		if( tile == self.tiles.length-1 ) { // move only the last tile
+    		if( true || tile == self.tiles.length-1 ) { // move only the last tile
     			
 	    		if( t.direction === 0 ) {
 	    			if( self.isSwipeLeft ) {
@@ -641,7 +641,9 @@ var MutrixLayer = cc.Layer.extend({
 	    		}
 	    		
 	    		var fallingSpeed = FALLING_SPEED;
-    		} else {
+    		} 
+    		
+    		if(tile != self.tiles.length-1) {
     			var fallingSpeed = FALLING_SPEED * 8;
     		}
 	    		
