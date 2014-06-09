@@ -1,5 +1,6 @@
 var TAG_SPRITE_MANAGER = 1,
 	BOXES_PER_COL = 28,
+	GAME_OVER_COL = 21,
 	BOXES_PER_ROW = 10,
 	BOXES_X_OFFSET = 32,
 	BOXES_Y_OFFSET = 32,
@@ -23,7 +24,7 @@ var TAG_SPRITE_MANAGER = 1,
 	              [{x:-1.0*BS,y: 0.5*BS},{x: 0.0*BS,y: 0.5*BS},{x: 1.0*BS,y: 0.5*BS},{x: 0.0*BS,y:-0.5*BS}],
 	              ];
 
-var MutrixLayer = cc.Layer.extend({
+var MuprisGameLayer = cc.Layer.extend({
     sprite:null,
     
     tiles: [],
@@ -46,12 +47,25 @@ var MutrixLayer = cc.Layer.extend({
         this.startAnimation();
         this.loadImages();
         this.initBoxSpace();
-        this.initListeners();
-
-	    this.scheduleUpdate();	
+        
+	    this.tiles = [];
         return true;
     },
 
+    onEnter: function() {
+		this._super();
+
+		this.initListeners();
+	    this.scheduleUpdate();	
+    },
+    
+    onExit: function() {
+		this._super();
+
+	    this.stopListeners();
+	    this.unscheduleUpdate();	    	
+    },
+    
 	startAnimation: function() {
 		
         var size = this.size,
@@ -135,158 +149,181 @@ var MutrixLayer = cc.Layer.extend({
 	/*
 	 * TOUCH EVENTS
 	 */ 
-    if( true || 'touches' in cc.sys.capabilities ) { // touches work on mac but return false
-        cc.eventManager.addListener(cc.EventListener.create({
-            event: cc.EventListener.TOUCH_ALL_AT_ONCE,
-            onTouchesBegan: function(touches, event) {
-            	//console.log("onTouchesBegan!");
-            	
-            	var touch = touches[0];
-                var loc = touch.getLocation();
-                
-                self.touchStartPoint = {
-                	x: loc.x,
-                	y: loc.y
-                };
-                
-                self.touchLastPoint = {
-                    	x: loc.x,
-                    	y: loc.y
-                };
-            },
-            	
-            onTouchesMoved: function(touches, event) {
-            	var touch = touches[0];
-                var loc = touch.getLocation(),
-                	start = self.touchStartPoint;
-
-                self.touchDistance = {
-            			x: Math.abs(loc.x - start.x),
-            			y: Math.abs(loc.y - start.y)
-            	}
-                
-                // check for left
-                if( loc.x < start.x - TOUCH_THRESHOLD && self.touchDistance.x > self.touchDistance.y) {
-                	// if direction changed while swiping left, set new base point
-                	if( loc.x > self.touchLastPoint.x ) {
-                		start = self.touchStartPoint = {
-                        		x: loc.x,
-                        		y: loc.y
-                        };
-                		self.isSwipeLeft = false;
-                	} else {
-                    	self.isSwipeLeft = true;                		
-                	}
-                }
-                
-                // check for right
-                if( loc.x > start.x + TOUCH_THRESHOLD && self.touchDistance.x > self.touchDistance.y) {
-                	// if direction changed while swiping right, set new base point
-                	if( loc.x < self.touchLastPoint.x ) {
-                		self.touchStartPoint = {
-                        		x: loc.x,
-                        		y: loc.y
-                        };
-                		self.isSwipeRight = false;
-                	} else {
-                    	self.isSwipeRight = true;                		
-                	}
-                }
-
-                // check for down
-                if( loc.y < start.y - TOUCH_THRESHOLD * 3 && self.touchDistance.y > self.touchDistance.x) {
-                	// if direction changed while swiping down, set new base point
-                	if( loc.y > self.touchLastPoint.y ) {
-                		self.touchStartPoint = {
-                        		x: loc.x,
-                        		y: loc.y
-                        };
-                		self.isSwipeDown = false;
-                	} else {
-                    	self.isSwipeDown = true;                		
-                	}
-                }
-
-                // check for up
-                if( loc.y > start.y + TOUCH_THRESHOLD && self.touchDistance.y > self.touchDistance.x) {
-                	// if direction changed while swiping right, set new base point
-                	if( loc.y < self.touchLastPoint.y ) {
-                		self.touchStartPoint = {
-                        		x: loc.x,
-                        		y: loc.y
-                        };
-                		self.isSwipeUp = false;
-                	} else {
-                    	self.isSwipeUp = true;                		
-                	}
-                }
-                
-                self.touchLastPoint = {
-                		x: loc.x,
-                		y: loc.y
-                };
-            },
-            	
-            onTouchesEnded: function(touches, event){
-            	//console.log("onTouchesEnded!");
-
-            	var touch = touches[0],
-            		loc = touch.getLocation()
-            		size = self.size;
-                
-                self.touchStartPoint = null;
-                
-                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;
-            }
-        }), this);
-    } else {
-        cc.log("TOUCH_ALL_AT_ONCE is not supported");
-    }
+       	
+       	if( true || 'touches' in cc.sys.capabilities ) { // touches work on mac but return false
+	    	this._touchListener = cc.EventListener.create({
+	            event: cc.EventListener.TOUCH_ALL_AT_ONCE,
+	            onTouchesBegan: function(touches, event) {
+	            	//console.log("onTouchesBegan!");
+	            	
+	            	var touch = touches[0];
+	                var loc = touch.getLocation();
+	                
+	                self.touchStartPoint = {
+	                	x: loc.x,
+	                	y: loc.y
+	                };
+	                
+	                self.touchLastPoint = {
+	                    	x: loc.x,
+	                    	y: loc.y
+	                };
+	            },
+	            	
+	            onTouchesMoved: function(touches, event) {
+	            	var touch = touches[0];
+	                var loc = touch.getLocation(),
+	                	start = self.touchStartPoint;
+	
+	                self.touchDistance = {
+	            			x: Math.abs(loc.x - start.x),
+	            			y: Math.abs(loc.y - start.y)
+	            	}
+	                
+	                // check for left
+	                if( loc.x < start.x - TOUCH_THRESHOLD && self.touchDistance.x > self.touchDistance.y) {
+	                	// if direction changed while swiping left, set new base point
+	                	if( loc.x > self.touchLastPoint.x ) {
+	                		start = self.touchStartPoint = {
+	                        		x: loc.x,
+	                        		y: loc.y
+	                        };
+	                		self.isSwipeLeft = false;
+	                	} else {
+	                    	self.isSwipeLeft = true;                		
+	                	}
+	                }
+	                
+	                // check for right
+	                if( loc.x > start.x + TOUCH_THRESHOLD && self.touchDistance.x > self.touchDistance.y) {
+	                	// if direction changed while swiping right, set new base point
+	                	if( loc.x < self.touchLastPoint.x ) {
+	                		self.touchStartPoint = {
+	                        		x: loc.x,
+	                        		y: loc.y
+	                        };
+	                		self.isSwipeRight = false;
+	                	} else {
+	                    	self.isSwipeRight = true;                		
+	                	}
+	                }
+	
+	                // check for down
+	                if( loc.y < start.y - TOUCH_THRESHOLD * 3 && self.touchDistance.y > self.touchDistance.x) {
+	                	// if direction changed while swiping down, set new base point
+	                	if( loc.y > self.touchLastPoint.y ) {
+	                		self.touchStartPoint = {
+	                        		x: loc.x,
+	                        		y: loc.y
+	                        };
+	                		self.isSwipeDown = false;
+	                	} else {
+	                    	self.isSwipeDown = true;                		
+	                	}
+	                }
+	
+	                // check for up
+	                if( loc.y > start.y + TOUCH_THRESHOLD && self.touchDistance.y > self.touchDistance.x) {
+	                	// if direction changed while swiping right, set new base point
+	                	if( loc.y < self.touchLastPoint.y ) {
+	                		self.touchStartPoint = {
+	                        		x: loc.x,
+	                        		y: loc.y
+	                        };
+	                		self.isSwipeUp = false;
+	                	} else {
+	                    	self.isSwipeUp = true;                		
+	                	}
+	                }
+	                
+	                self.touchLastPoint = {
+	                		x: loc.x,
+	                		y: loc.y
+	                };
+	            },
+	            	
+	            onTouchesEnded: function(touches, event){
+	            	//console.log("onTouchesEnded!");
+	
+	            	var touch = touches[0],
+	            		loc = touch.getLocation()
+	            		size = self.size;
+	                
+	                self.touchStartPoint = null;
+	                
+	                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;
+	            }
+	        });
+		    	
+	    	cc.eventManager.addListener(this._touchListener, this);
+	    } else {
+	        cc.log("TOUCH_ALL_AT_ONCE is not supported");
+	    }
        
-	/*
-	 * KEYBOARD EVENTS
-	 */ 
-    
-    if( 'keyboard' in cc.sys.capabilities ) {
-        cc.eventManager.addListener({
-            event: cc.EventListener.KEYBOARD,
-            onKeyPressed:function(key, event) {
-            	switch(key) {
-            	case KEY_LEFT_CODE:
-            		self.isSwipeLeft = true;
-            		break;
-            	case KEY_RIGHT_CODE:
-            		self.isSwipeRight = true;
-            		break;
-            	case KEY_UP_CODE:
-            		self.isSwipeUp = true;
-            		break;
-            	case KEY_DOWN_CODE:
-            		self.isSwipeDown = true;
-            		break;
-            	}
-            },
-            onKeyReleased:function(key, event) {
-            	switch(key) {
-            	case KEY_LEFT_CODE:
-            		self.isSwipeLeft = false;
-            		break;
-            	case KEY_RIGHT_CODE:
-            		self.isSwipeRight = false;
-            		break;
-            	case KEY_UP_CODE:
-            		self.isSwipeUp = false;
-            		break;
-            	case KEY_DOWN_CODE:
-            		self.isSwipeDown = false;
-            		break;
+		/*
+		 * KEYBOARD EVENTS
+		 */ 
+       	
+/*       TEST SUITE CODE
+  		if( 'keyboard' in cc.sys.capabilities ) {
+            cc.eventManager.addListener({
+                event: cc.EventListener.KEYBOARD,
+                onKeyPressed:function(key, event) {
+                    cc.log("Key down:" + key);
+                },
+                onKeyReleased:function(key, event) {
+                    cc.log("Key up:" + key);
                 }
-            }
-        }, this);
-    } else {
-         cc.log("KEYBOARD is not supported");
-    }
+            }, this);
+        } else {
+            cc.log("KEYBOARD Not supported");
+        }*/
 
+	    if( false || 'keyboard' in cc.sys.capabilities ) {
+	        this._keyboardListener = cc.EventListener.create({
+	            event: cc.EventListener.KEYBOARD,
+	            onKeyPressed:function(key, event) {
+	            	switch(key) {
+	            	case KEY_LEFT_CODE:
+	            		self.isSwipeLeft = true;
+	            		break;
+	            	case KEY_RIGHT_CODE:
+	            		self.isSwipeRight = true;
+	            		break;
+	            	case KEY_UP_CODE:
+	            		self.isSwipeUp = true;
+	            		break;
+	            	case KEY_DOWN_CODE:
+	            		self.isSwipeDown = true;
+	            		break;
+	            	}
+	            },
+	            onKeyReleased:function(key, event) {
+	            	switch(key) {
+	            	case KEY_LEFT_CODE:
+	            		self.isSwipeLeft = false;
+	            		break;
+	            	case KEY_RIGHT_CODE:
+	            		self.isSwipeRight = false;
+	            		break;
+	            	case KEY_UP_CODE:
+	            		self.isSwipeUp = false;
+	            		break;
+	            	case KEY_DOWN_CODE:
+	            		self.isSwipeDown = false;
+	            		break;
+	                }
+	            }
+	        }, this);
+	        cc.eventManager.addListener(this._keyboardListener, this);
+	    } else {
+	         cc.log("KEYBOARD is not supported");
+	    }
+    },
+    
+    stopListeners: function() {
+        cc.eventManager.removeListener(this._touchListener, this);
+        cc.eventManager.removeListener(this._keyboardListener, this);
     },
 
 	buildTile: function(p) {
@@ -415,8 +452,7 @@ var MutrixLayer = cc.Layer.extend({
     				lp.y = Math.round((lp.y - BOXES_Y_OFFSET)/(BS/2))*(BS/2) + BOXES_Y_OFFSET;
     				
     				// fix tile
-    				fixTile(t, lp);
-    				return true;
+    				return fixTile(t, lp);
     			}
 
     			// check for left and right walls or tiles in the way
@@ -473,6 +509,7 @@ var MutrixLayer = cc.Layer.extend({
     		var batch = self.getChildByTag(TAG_SPRITE_MANAGER),
     			b = t.rotatedBoxes;
     		
+    		var maxRow = 0;
     		for( var i=0 ; i<b.length ; i++) {
         		// create a new sprite from the old child sprites
     			var sprite = t.sprite.children[i],
@@ -484,13 +521,23 @@ var MutrixLayer = cc.Layer.extend({
     			newSprite.setPosition(BOXES_X_OFFSET + brc.col*BS + BS/2 , BOXES_Y_OFFSET + brc.row*BS + BS/2);
     	        batch.addChild(newSprite);
 
-    			self.boxes[brc.row][brc.col] = newSprite; 			
+    			self.boxes[brc.row][brc.col] = newSprite; 
+    			
+    			if( brc.row >= GAME_OVER_COL ) {
+    				return "gameover";
+    			}
+    			
+    			maxRow = Math.max(maxRow,brc.row);
     		}
+    		
+    		cc.log("MaxRow: "+maxRow);
     		
     		batch.removeChild(t.sprite);
     		delete t;
     		
     		checkForAndRemoveCompleteRows();
+
+    		return "ok";
     	};
     	
     	var checkForAndRemoveCompleteRows = function() {
@@ -644,7 +691,7 @@ var MutrixLayer = cc.Layer.extend({
     		} 
     		
     		if(tile != self.tiles.length-1) {
-    			var fallingSpeed = FALLING_SPEED * 8;
+    			var fallingSpeed = FALLING_SPEED * 12;
     		}
 	    		
     		snapToColumn(t, lp);
@@ -652,9 +699,16 @@ var MutrixLayer = cc.Layer.extend({
     		// let tile fall down
     		lp.y -= fallingSpeed;
     		
-    		if( checkForCollision(t, lp) ) {
+    		var ret;
+    		if( ret = checkForCollision(t, lp) ) {
     			// tile landed ...
     			delete self.tiles[tile];
+    			var self = this;
+
+    			if( ret == "gameover" ) {
+        	        this.parent.switchTo(1);   
+    			}
+    	        
     		} else {
         		
         		t.sprite.setPosition(lp);    			
@@ -663,11 +717,70 @@ var MutrixLayer = cc.Layer.extend({
     }
 });
 
-var MutrixScene = cc.Scene.extend({
+var MuprisMenuLayer = cc.Layer.extend({
+    
+    ctor:function () {
+        this._super();
+
+        var size = this.size = cc.director.getWinSize(),
+        	self = this;
+
+    	var closeItem = cc.MenuItemImage.create(
+                res.CloseNormal_png,
+                res.CloseSelected_png,
+                function () {
+                    cc.log("Menu is clicked!");
+                }, this);
+            closeItem.attr({
+                x: size.width / 2,
+                y: 20,
+                anchorX: 0.5,
+                anchorY: 0.5
+            });
+
+        var menu = cc.Menu.create(closeItem);
+        menu.x = 0;
+        menu.y = 0;
+        this.addChild(menu, 1);
+            
+            
+        this.initMenu();
+        
+        return true;
+    },
+
+	initMenu: function() {
+		
+        var size = this.size,
+        	self = this;
+
+        var item1 = cc.MenuItemFont.create("RESUME", function(sender) {
+        	self.parent.switchTo(0);
+        }, this);
+
+        var item2 = cc.MenuItemFont.create("RESTART", function(sender) {
+        	cc.director.runScene(new MuprisScene());
+        }, this);
+
+        var menu = cc.Menu.create(item1, item2);
+        menu.x = 200;
+        menu.y = 400;
+        this.addChild(menu, 1);       
+        menu.alignItemsVertically();
+	}
+});
+
+
+var MuprisScene = cc.Scene.extend({
     onEnter:function () {
         this._super();
-        var layer = new MutrixLayer();
-        this.addChild(layer);
+        var gameLayer = new MuprisGameLayer(),
+        	menuLayer = new MuprisMenuLayer();
+
+        var layer = cc.LayerMultiplex.create(gameLayer, menuLayer);
+        this.addChild(layer, 0);
     }
 });
+
+
 

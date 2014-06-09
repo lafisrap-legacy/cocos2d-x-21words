@@ -3,7 +3,7 @@ cc.game.onStart = function(){
 	cc.view.resizeWithBrowserSize(true);
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
-        cc.director.runScene(new MutrixScene());
+        cc.director.runScene(new MuprisScene());
     }, this);
 };
 cc.game.run();
