@@ -1,9 +1,11 @@
 var TAG_SPRITE_MANAGER = 1,
-	BOXES_PER_COL = 28,
-	GAME_OVER_COL = 21,
+	TAG_MENU_LAYER = 2,
+	TAG_GAME_LAYER = 3,
+	BOXES_PER_COL = 22,
+	GAME_OVER_COL = 15,
 	BOXES_PER_ROW = 10,
-	BOXES_X_OFFSET = 32,
-	BOXES_Y_OFFSET = 32,
+	BOXES_X_OFFSET = 0,
+	BOXES_Y_OFFSET = 0,
 	SNAP_SPEED = 1,
 	MOVE_SPEED = 0.09,
     TOUCH_THRESHOLD = 3,
@@ -86,7 +88,7 @@ var MuprisGameLayer = cc.Layer.extend({
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu, 1);
-        this.helloLabel = cc.LabelTTF.create("MUPRIS -- Tetris & Letters", "Arial", 19);
+        this.helloLabel = cc.LabelTTF.create("MUPRIS -- Tetris & Letters", "Arial", 12);
         this.helloLabel.x = size.width / 2;
         this.helloLabel.y = 0;
         this.addChild(this.helloLabel, 5);
@@ -106,7 +108,7 @@ var MuprisGameLayer = cc.Layer.extend({
 
         this.sprite.runAction(tintToA);
         this.sprite.runAction(cc.Sequence.create(rotateToA, scaleToA));
-        this.helloLabel.runAction(cc.Spawn.create(cc.MoveBy.create(2.5, cc.p(0, size.height - 40)),cc.TintTo.create(2.5,255,125,0)));
+        this.helloLabel.runAction(cc.Spawn.create(cc.MoveBy.create(2.5, cc.p(0, size.height - 20)),cc.TintTo.create(2.5,255,125,0)));
 	},
 	
 	loadImages: function() {
@@ -125,7 +127,8 @@ var MuprisGameLayer = cc.Layer.extend({
 		    	this.boxes[i][j] = null;		    	
 		    }		    	
 	    }
-	    
+
+/*	    // draw fence
 	    this.drawNode = cc.DrawNode.create();
         this.addChild(this.drawNode,100);
         this.drawNode.clear();
@@ -140,7 +143,7 @@ var MuprisGameLayer = cc.Layer.extend({
             						  cc.p(BOXES_X_OFFSET+BOXES_PER_ROW*BS,BOXES_Y_OFFSET+i*BS),
             						  1,
             						  cc.color(255,100,100,30));         	
-        }
+        }*/
 	},
 	
     initListeners: function() {
@@ -279,7 +282,7 @@ var MuprisGameLayer = cc.Layer.extend({
             cc.log("KEYBOARD Not supported");
         }*/
 
-	    if( false || 'keyboard' in cc.sys.capabilities ) {
+	    if( 'keyboard' in cc.sys.capabilities ) {
 	        this._keyboardListener = cc.EventListener.create({
 	            event: cc.EventListener.KEYBOARD,
 	            onKeyPressed:function(key, event) {
@@ -507,37 +510,40 @@ var MuprisGameLayer = cc.Layer.extend({
     	 */
     	var fixTile = function(t, lp) {
     		var batch = self.getChildByTag(TAG_SPRITE_MANAGER),
-    			b = t.rotatedBoxes;
+    			b = t.rotatedBoxes,
+    			ret = "ok";
     		
-    		var maxRow = 0;
-    		for( var i=0 ; i<b.length ; i++) {
-        		// create a new sprite from the old child sprites
-    			var sprite = t.sprite.children[i],
-    				newSprite = cc.Sprite.create(sprite.getTexture(), sprite.getTextureRect());
-
-    			// Insert into boxes array
+    		// check if a tile is in the Game over row
+    		for( var i=0 ; i<b.length ; i++ ) {
 				var brc = getRowCol(b[i], lp);
-    			
-    			newSprite.setPosition(BOXES_X_OFFSET + brc.col*BS + BS/2 , BOXES_Y_OFFSET + brc.row*BS + BS/2);
-    	        batch.addChild(newSprite);
-
-    			self.boxes[brc.row][brc.col] = newSprite; 
-    			
-    			if( brc.row >= GAME_OVER_COL ) {
-    				return "gameover";
-    			}
-    			
-    			maxRow = Math.max(maxRow,brc.row);
+				if( brc.row >= GAME_OVER_COL ) {
+					ret = "gameover";
+				}
     		}
     		
-    		cc.log("MaxRow: "+maxRow);
+    		// fix single tiles in batch sprite
+    		if( ret !== "gameover" ) {
+        		for( var i=0 ; i<b.length ; i++) {
+            		// create a new sprite from the old child sprite
+        			var sprite = t.sprite.children[i],
+        				newSprite = cc.Sprite.create(sprite.getTexture(), sprite.getTextureRect());
+
+        			// Insert into boxes array
+    				var brc = getRowCol(b[i], lp);
+        			
+        			newSprite.setPosition(BOXES_X_OFFSET + brc.col*BS + BS/2 , BOXES_Y_OFFSET + brc.row*BS + BS/2);
+        	        batch.addChild(newSprite);
+
+        			self.boxes[brc.row][brc.col] = newSprite; 
+        		}    			
+    		}
     		
     		batch.removeChild(t.sprite);
     		delete t;
     		
     		checkForAndRemoveCompleteRows();
 
-    		return "ok";
+    		return ret;
     	};
     	
     	var checkForAndRemoveCompleteRows = function() {
@@ -625,7 +631,6 @@ var MuprisGameLayer = cc.Layer.extend({
 	    			if( self.isSwipeLeft ) {
 	    				var t1 = t;
 	    				t.direction = -1;
-	        			cc.log("Starting action, shifting tile left: lp.y="+lp.y+", BS="+BS);
 	    				t.action = t.sprite.runAction(cc.sequence( 
 	    					cc.moveTo(MOVE_SPEED,cc.p(lp.x-BS,lp.y)),
 	    					cc.callFunc(function() {
@@ -636,7 +641,6 @@ var MuprisGameLayer = cc.Layer.extend({
 	    			} else if( self.isSwipeRight ) {
 	    				var t1 = t;
 	    				t.direction = 1;
-	        			cc.log("Starting action, shifting tile right: lp.y="+lp.y+", BS="+BS);
 	    				t.action = t.sprite.runAction(cc.sequence( 
 	    					cc.moveTo(MOVE_SPEED,cc.p(lp.x+BS,lp.y)),
 	    					cc.callFunc(function() {
@@ -672,11 +676,9 @@ var MuprisGameLayer = cc.Layer.extend({
 	    					}
 	    					
 	        				t.rotating = true;
-	            			cc.log("Starting action, rotating tile!");
 	        				t.sprite.runAction(cc.sequence( 
 	        					cc.rotateTo(MOVE_SPEED*2,t.rotation),
 	        					cc.callFunc(function() {
-	                    			cc.log("Ending rotating tile!");
 	        						t1.rotating = false;
 	        					}, self)
 	        				));
@@ -706,7 +708,8 @@ var MuprisGameLayer = cc.Layer.extend({
     			var self = this;
 
     			if( ret == "gameover" ) {
-        	        this.parent.switchTo(1);   
+    	            this.getParent().addChild(new MuprisMenuLayer(), 2);
+        	        this.pause();
     			}
     	        
     		} else {
@@ -755,16 +758,20 @@ var MuprisMenuLayer = cc.Layer.extend({
         	self = this;
 
         var item1 = cc.MenuItemFont.create("RESUME", function(sender) {
-        	self.parent.switchTo(0);
+	        this.getParent().getChildByTag(TAG_GAME_LAYER).resume();
+            this.getParent().removeChild(this);
         }, this);
-
+        
         var item2 = cc.MenuItemFont.create("RESTART", function(sender) {
         	cc.director.runScene(new MuprisScene());
         }, this);
 
+        item1.setFontSize(24);
+        item2.setFontSize(24);
+
         var menu = cc.Menu.create(item1, item2);
-        menu.x = 200;
-        menu.y = 400;
+        menu.x = size.width/2;
+        menu.y = 240;
         this.addChild(menu, 1);       
         menu.alignItemsVertically();
 	}
@@ -774,11 +781,8 @@ var MuprisMenuLayer = cc.Layer.extend({
 var MuprisScene = cc.Scene.extend({
     onEnter:function () {
         this._super();
-        var gameLayer = new MuprisGameLayer(),
-        	menuLayer = new MuprisMenuLayer();
 
-        var layer = cc.LayerMultiplex.create(gameLayer, menuLayer);
-        this.addChild(layer, 0);
+        this.addChild(new MuprisGameLayer(), 1, TAG_GAME_LAYER);
     }
 });
 
