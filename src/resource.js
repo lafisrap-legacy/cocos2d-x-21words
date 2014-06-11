@@ -1,6 +1,6 @@
 var res = {
-    letters_png : "res/images/letters.png",
-    letters_plist : 'res/images/letters.plist',
+    letters_png : "res/images/letters/letters.png",
+    letters_plist : 'res/images/letters/letters.plist',
 
 	empty_png : "res/empty.png",
 	HelloWorld_png : "res/HelloWorld.png",

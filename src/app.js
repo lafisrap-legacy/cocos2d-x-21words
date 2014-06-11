@@ -1,21 +1,21 @@
 var TAG_SPRITE_MANAGER = 1,
 	TAG_MENU_LAYER = 2,
 	TAG_GAME_LAYER = 3,
+	BS = 64, // pixel
 	BOXES_PER_COL = 22,
-	GAME_OVER_COL = 15,
+	GAME_OVER_COL = 16,
 	BOXES_PER_ROW = 10,
 	BOXES_X_OFFSET = 0,
 	BOXES_Y_OFFSET = 0,
-	SNAP_SPEED = 1,
-	MOVE_SPEED = 0.09,
-    TOUCH_THRESHOLD = 3,
-	FALLING_SPEED = 0.50,
+	SNAP_SPEED = 10.0, // pixel per 1/60
+	FALLING_SPEED = 1.0, // pixel per 1/60
+	MOVE_SPEED = 0.09, // seconds
+    TOUCH_THRESHOLD = 6, // pixel
 	KEY_LEFT_CODE = 37,
 	KEY_UP_CODE = 38,
 	KEY_RIGHT_CODE = 39,
 	KEY_DOWN_CODE = 40,
-	BS = 32, // pixel
-	LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","ss"],
+	LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue"],
 	TILE_BOXES = [
 	              [{x:-1.5*BS,y: 0.0*BS},{x:-0.5*BS,y: 0.0*BS},{x: 0.5*BS,y: 0.0*BS},{x: 1.5*BS,y: 0.0*BS}],
 	              [{x:-0.5*BS,y:-0.5*BS},{x:-0.5*BS,y: 0.5*BS},{x: 0.5*BS,y:-0.5*BS},{x: 0.5*BS,y: 0.5*BS}],
@@ -115,7 +115,7 @@ var MuprisGameLayer = cc.Layer.extend({
 		// Load sprite frames to frame cache, add texture node
         cc.spriteFrameCache.addSpriteFrames(res.letters_plist);
         var lettersTexture = cc.textureCache.addImage(res.letters_png),
-        	lettersImages  = cc.SpriteBatchNode.create(lettersTexture);
+        	lettersImages  = cc.SpriteBatchNode.create(lettersTexture,200);
 		this.addChild(lettersImages, 0, TAG_SPRITE_MANAGER);
 	},
 	
@@ -488,7 +488,7 @@ var MuprisGameLayer = cc.Layer.extend({
         		minCol = Math.min(minCol, brc.col);
         		maxCol = Math.max(maxCol, brc.col);
         		
-        		if( self.boxes[brc.row][brc.col] ) return "collision";
+        		if( brc.row < 0 || self.boxes[brc.row][brc.col] ) return "collision";
     		}
     		
     		if( minCol < 0 || maxCol >= BOXES_PER_ROW ) {
@@ -628,11 +628,16 @@ var MuprisGameLayer = cc.Layer.extend({
     		if( true || tile == self.tiles.length-1 ) { // move only the last tile
     			
 	    		if( t.direction === 0 ) {
+	    			var offset = BS/2 - Math.abs(t.rotatedBoxes[0].x) % BS;  
+	    			cc.assert(offset == 0 || offset == BS/2, "Mupris failure: Move left, offset incorrect.");
+
 	    			if( self.isSwipeLeft ) {
 	    				var t1 = t;
 	    				t.direction = -1;
+	    				nextX = Math.floor((lp.x - BS - offset)/BS)*BS + offset;
+		    			cc.log("offset = "+offset+", x = "+t.rotatedBoxes[0].x+", nextX = "+nextX);
 	    				t.action = t.sprite.runAction(cc.sequence( 
-	    					cc.moveTo(MOVE_SPEED,cc.p(lp.x-BS,lp.y)),
+	    					cc.moveTo(MOVE_SPEED,cc.p(nextX,lp.y)),
 	    					cc.callFunc(function() {
 	    						t1.direction = 0;
 	    						t.action = null;
@@ -641,8 +646,10 @@ var MuprisGameLayer = cc.Layer.extend({
 	    			} else if( self.isSwipeRight ) {
 	    				var t1 = t;
 	    				t.direction = 1;
+	    				nextX = Math.floor((lp.x + BS - offset)/BS)*BS + offset;
+		    			cc.log("offset = "+offset+", x = "+t.rotatedBoxes[0].x+", nextX = "+nextX);
 	    				t.action = t.sprite.runAction(cc.sequence( 
-	    					cc.moveTo(MOVE_SPEED,cc.p(lp.x+BS,lp.y)),
+	    					cc.moveTo(MOVE_SPEED,cc.p(nextX,lp.y)),
 	    					cc.callFunc(function() {
 	    						t1.direction = 0;
 	    						t.action = null;
@@ -695,8 +702,10 @@ var MuprisGameLayer = cc.Layer.extend({
     		if(tile != self.tiles.length-1) {
     			var fallingSpeed = FALLING_SPEED * 12;
     		}
-	    		
-    		snapToColumn(t, lp);
+	    	
+    		if( t.direction === 0 ) {
+    			snapToColumn(t, lp);
+    		}
     		
     		// let tile fall down
     		lp.y -= fallingSpeed;
@@ -705,11 +714,13 @@ var MuprisGameLayer = cc.Layer.extend({
     		if( ret = checkForCollision(t, lp) ) {
     			// tile landed ...
     			delete self.tiles[tile];
-    			var self = this;
 
     			if( ret == "gameover" ) {
-    	            this.getParent().addChild(new MuprisMenuLayer(), 2);
+    	            this.getParent().addChild(
+    	            	new MuprisMenuLayer(new cc.Color(40,0,0,160),size.width,size.height),
+    	            	2);
         	        this.pause();
+        	        this.unscheduleUpdate();
     			}
     	        
     		} else {
@@ -720,45 +731,29 @@ var MuprisGameLayer = cc.Layer.extend({
     }
 });
 
-var MuprisMenuLayer = cc.Layer.extend({
+var MuprisMenuLayer = cc.LayerColor.extend({
     
-    ctor:function () {
-        this._super();
+    ctor:function (color, width, height) {
+        this._super(color, width, height);
 
         var size = this.size = cc.director.getWinSize(),
-        	self = this;
-
-    	var closeItem = cc.MenuItemImage.create(
-                res.CloseNormal_png,
-                res.CloseSelected_png,
-                function () {
-                    cc.log("Menu is clicked!");
-                }, this);
-            closeItem.attr({
-                x: size.width / 2,
-                y: 20,
-                anchorX: 0.5,
-                anchorY: 0.5
-            });
-
-        var menu = cc.Menu.create(closeItem);
-        menu.x = 0;
-        menu.y = 0;
-        this.addChild(menu, 1);
+        	self = this;            
             
-            
-        this.initMenu();
+        this.initMenu(color, width, height);
         
         return true;
     },
 
-	initMenu: function() {
+	initMenu: function(color, width, height) {
 		
         var size = this.size,
         	self = this;
 
         var item1 = cc.MenuItemFont.create("RESUME", function(sender) {
-	        this.getParent().getChildByTag(TAG_GAME_LAYER).resume();
+        	var gameLayer = this.getParent().getChildByTag(TAG_GAME_LAYER);
+	        gameLayer.resume();
+	        gameLayer.scheduleUpdate();
+
             this.getParent().removeChild(this);
         }, this);
         
@@ -766,22 +761,29 @@ var MuprisMenuLayer = cc.Layer.extend({
         	cc.director.runScene(new MuprisScene());
         }, this);
 
-        item1.setFontSize(24);
-        item2.setFontSize(24);
+        item1.setFontSize(48);
+        item2.setFontSize(48);
 
         var menu = cc.Menu.create(item1, item2);
         menu.x = size.width/2;
-        menu.y = 240;
+        menu.y = 480;
         this.addChild(menu, 1);       
         menu.alignItemsVertically();
 	}
 });
 
-
 var MuprisScene = cc.Scene.extend({
+	menuLayer: null,
+	
+	getMenuLayer: function() {
+		return this.menuLayer;
+	},
+	
     onEnter:function () {
         this._super();
-
+        
+        this.menuLayer = new MuprisMenuLayer();
+        
         this.addChild(new MuprisGameLayer(), 1, TAG_GAME_LAYER);
     }
 });
