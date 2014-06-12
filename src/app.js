@@ -345,7 +345,7 @@ var MuprisGameLayer = cc.Layer.extend({
 		// select a random tile type
 		var tileBoxes = TILE_BOXES[Math.floor(Math.random()*TILE_BOXES.length)];
 		
-		//tileBoxes = TILE_BOXES[Math.floor(Math.random()*4)+0];
+		//tileBoxes = TILE_BOXES[Math.floor(Math.random()*1)+0];
 
 		// create sprite for tile and set is size 0, we only use its position and rotation
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
@@ -463,7 +463,7 @@ var MuprisGameLayer = cc.Layer.extend({
     	};
     	
     	var checkForBarrier = function(t, lp, dir) {
-    		var offset = 32-(Math.abs(t.boxes[0].x) % BS);
+    		var offset = 32-(Math.abs(t.rotatedBoxes[0].x) % BS);
     		cc.assert(offset === 32 || offset === 0, "Mupris, checkForBarrier: offset incorrect ("+offset+").");
 			cc.assert((lp.x+offset)%BS === 0, "Mupris, checkForBarrier: Tile is not aligned to column. lp.x = "+lp.x+", offset = "+offset);
 
@@ -471,8 +471,8 @@ var MuprisGameLayer = cc.Layer.extend({
     		for( var i=0 ; i<t.boxes.length ; i++) {
 
     			// check for left and right border
-    			if( dir === "left" && lp.x + t.boxes[i].x - BS/2 <= BOXES_X_OFFSET ||
-    				dir === "right" && lp.x + t.boxes[i].x + BS/2 >= BOXES_X_OFFSET + BOXES_PER_ROW*BS ) {
+    			if( dir === "left" && lp.x + t.rotatedBoxes[i].x - BS/2 <= BOXES_X_OFFSET ||
+    				dir === "right" && lp.x + t.rotatedBoxes[i].x + BS/2 >= BOXES_X_OFFSET + BOXES_PER_ROW*BS ) {
     				return false;
     			}    			
     		}
@@ -480,17 +480,17 @@ var MuprisGameLayer = cc.Layer.extend({
     		return true;
     	};
     	
-		var alignToColumn = function(t, lp, offset) {
-			var shiftTile = offset - Math.abs(t.rotatedBoxes[0].x%BS),
-				targetX = lp.x + shiftTile,
+		var alignToColumn = function(t, lp, offset, shiftTile) {
+			var offset = offset - Math.abs(t.rotatedBoxes[0].x%BS),
+				targetX = lp.x + offset + (shiftTile? shiftTile:0),
 				t1 = t;
-			t.direction = Math.sign(shiftTile);
-			//cc.log("Mupris, main loop, align to column start: lp.x ="+lp.x+", targetX = "+targetX+", t.direction = "+t.direction);
+			t.direction = Math.sign(offset);
+			cc.log("Mupris, main loop, align to column start: lp.x ="+lp.x+", targetX = "+targetX+", t.direction = "+t.direction);
 			t.sprite.runAction(cc.sequence( 
-				cc.moveBy(MOVE_SPEED,cc.p(shiftTile,0)),
+				cc.moveBy(MOVE_SPEED,cc.p(offset,0)),
 				cc.callFunc(function() {
 	    			var lp = t.sprite.getPosition();
-					//cc.log("Mupris, main loop,  align to column end: lp.x ="+lp.x+", set to targetX = "+targetX);
+					cc.log("Mupris, main loop,  align to column end: lp.x ="+lp.x+", set to targetX = "+targetX);
 	    			t.sprite.setPosition(targetX, lp.y);
 	    			t1.direction = 0;
 				}, self)
@@ -507,7 +507,7 @@ var MuprisGameLayer = cc.Layer.extend({
 			
 			if( check != "collision" ) {
 				// shift tile, if it would not fit into playground after rotation
-				var shiftTile = (parseInt(check) || 0)*BS;
+				var shiftTile = -(parseInt(check) || 0)*BS;
 				
 				if(shiftTile != 0) {
 					var targetX = lp.x + shiftTile;
@@ -515,7 +515,7 @@ var MuprisGameLayer = cc.Layer.extend({
 					cc.log("Mupris, main loop, Correcting Tile! start: lp.x ="+lp.x+", targetX = "+targetX+", t.direction = "+t.direction);
 					if( t.direction ) {
 						t.sprite.runAction(cc.sequence( 
-								cc.moveBy(MOVE_SPEED/2,cc.p(-shiftTile,0)),
+								cc.moveBy(MOVE_SPEED*2,cc.p(shiftTile,0)),
 								cc.callFunc(function() {
 					    			var lp = t.sprite.getPosition();
 									cc.log("Mupris, main loop, Correcting Tile! end: lp.x ="+lp.x+", set to targetX = "+targetX);
@@ -537,12 +537,12 @@ var MuprisGameLayer = cc.Layer.extend({
 							if( !rotate(t , lp, offset) ) {
 								cc.log("Mupris, main loop, stop rotating again: lp.x ="+lp.x+", set to targetX = "+targetX);
 								t.rotating = false;
-								alignToColumn(t, lp, offset);
+								alignToColumn(t, lp, offset, shiftTile);
 							};
 						} else {
 							cc.log("Mupris, main loop, stop rotating: lp.x ="+lp.x+", set to targetX = "+targetX);
 							t.rotating = false;							
-							alignToColumn(t, lp, offset);
+							alignToColumn(t, lp, offset, shiftTile);
 						}
 					}, self)
 				));
