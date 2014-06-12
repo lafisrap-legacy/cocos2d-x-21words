@@ -1,3 +1,8 @@
+// weiter: Bewegen nach rotieren -> assert
+//			Mehrfachdrehung
+// 			Kollision mit boxen
+
+
 var TAG_SPRITE_MANAGER = 1,
 	TAG_MENU_LAYER = 2,
 	TAG_GAME_LAYER = 3,
@@ -134,7 +139,7 @@ var MuprisGameLayer = cc.Layer.extend({
 		    }		    	
 	    }
 
-/*	    // draw fence
+	    // draw grid
 	    this.drawNode = cc.DrawNode.create();
         this.addChild(this.drawNode,100);
         this.drawNode.clear();
@@ -149,7 +154,7 @@ var MuprisGameLayer = cc.Layer.extend({
             						  cc.p(BOXES_X_OFFSET+BOXES_PER_ROW*BS,BOXES_Y_OFFSET+i*BS),
             						  1,
             						  cc.color(255,100,100,30));         	
-        }*/
+        }
 	},
 	
     initListeners: function() {
@@ -345,6 +350,10 @@ var MuprisGameLayer = cc.Layer.extend({
 		// create sprite for tile and set is size 0, we only use its position and rotation
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
 			batch = this.getChildByTag(TAG_SPRITE_MANAGER);
+		
+		// set tile sprite to a column
+		p.x = Math.round(p.x/BS)*BS+(32-(Math.abs(tileBoxes[0].x)%BS));
+		cc.assert(p.x%(BS/2) === 0, "Mupris, buildTile: Tile is not aligned to column.");
         tileSprite.setPosition(p);
         batch.addChild(tileSprite);
 
@@ -418,21 +427,6 @@ var MuprisGameLayer = cc.Layer.extend({
 			size = this.size;
 
     	/*
-    	 * snap tile to column
-    	 */
-    	var snapToColumn = function(t, lp) {
-    		
-    		var boxPos = t.rotatedBoxes[0];
-    			closest = Math.round((lp.x+boxPos.x+BS/2-BOXES_X_OFFSET)/BS)*BS+BOXES_X_OFFSET-boxPos.x-BS/2;    		
-
-    		if( lp.x != closest ) {
-    			if(Math.abs(closest-lp.x) >= SNAP_SPEED) lp.x += SNAP_SPEED * Math.sign(closest - lp.x);
-    			else lp.x = closest;
-    			t.sprite.setPosition(lp);
-    		}
-    	};
-    	
-    	/*
     	 * get current row / col of a box
     	 */
     	var getRowCol = function(box, lp) {
@@ -463,23 +457,105 @@ var MuprisGameLayer = cc.Layer.extend({
     				// fix tile
     				return fixTile(t, lp);
     			}
-
-    			// check for left and right walls or tiles in the way
-    			if( t.direction && t.action ) {
-    				if( self.boxes[brc.row][brc.col + t.direction] || 
-    					brc.col + t.direction < 0 || 
-    					brc.col + t.direction >= BOXES_PER_ROW ) {
-    					
-    					cc.log("Stop-Action: "+t.action);
-    					t.sprite.stopAction(t.action);
-    					t.action = null;
-    					return false;
-    				}
-    			}
-    			
     		}
 
     		return false;
+    	};
+    	
+    	var checkForBarrier = function(t, lp, dir) {
+    		var offset = 32-(Math.abs(t.boxes[0].x) % BS);
+    		cc.assert(offset === 32 || offset === 0, "Mupris, checkForBarrier: offset incorrect ("+offset+").");
+			cc.assert((lp.x+offset)%BS === 0, "Mupris, checkForBarrier: Tile is not aligned to column. lp.x = "+lp.x+", offset = "+offset);
+
+			// check for left and right walls or tiles in the way
+    		for( var i=0 ; i<t.boxes.length ; i++) {
+
+    			// check for left and right border
+    			if( dir === "left" && lp.x + t.boxes[i].x - BS/2 <= BOXES_X_OFFSET ||
+    				dir === "right" && lp.x + t.boxes[i].x + BS/2 >= BOXES_X_OFFSET + BOXES_PER_ROW*BS ) {
+    				return false;
+    			}    			
+    		}
+    		
+    		return true;
+    	};
+    	
+		var alignToColumn = function(t, lp, offset) {
+			var shiftTile = offset - Math.abs(t.rotatedBoxes[0].x%BS),
+				targetX = lp.x + shiftTile,
+				t1 = t;
+			t.direction = Math.sign(shiftTile);
+			//cc.log("Mupris, main loop, align to column start: lp.x ="+lp.x+", targetX = "+targetX+", t.direction = "+t.direction);
+			t.sprite.runAction(cc.sequence( 
+				cc.moveBy(MOVE_SPEED,cc.p(shiftTile,0)),
+				cc.callFunc(function() {
+	    			var lp = t.sprite.getPosition();
+					//cc.log("Mupris, main loop,  align to column end: lp.x ="+lp.x+", set to targetX = "+targetX);
+	    			t.sprite.setPosition(targetX, lp.y);
+	    			t1.direction = 0;
+				}, self)
+			));						
+		};
+    	
+    	var rotateTile = function rotate(t,lp,offset) {
+			var oldRotation = t.rotation;
+			t.rotation = (t.rotation + 90)%360;
+			self.rotateBoxes(t);
+	
+			// shift Tile if it needs to be align to column after rotation
+			var check = checkRotation(t, lp);
+			
+			if( check != "collision" ) {
+				// shift tile, if it would not fit into playground after rotation
+				var shiftTile = (parseInt(check) || 0)*BS;
+				
+				if(shiftTile != 0) {
+					var targetX = lp.x + shiftTile;
+					t.direction = Math.sign(shiftTile);
+					cc.log("Mupris, main loop, Correcting Tile! start: lp.x ="+lp.x+", targetX = "+targetX+", t.direction = "+t.direction);
+					if( t.direction ) {
+						t.sprite.runAction(cc.sequence( 
+								cc.moveBy(MOVE_SPEED/2,cc.p(-shiftTile,0)),
+								cc.callFunc(function() {
+					    			var lp = t.sprite.getPosition();
+									cc.log("Mupris, main loop, Correcting Tile! end: lp.x ="+lp.x+", set to targetX = "+targetX);
+					    			t.sprite.setPosition(targetX, lp.y);
+					    			t.direction = 0;
+								}, self)
+						));						
+					}
+				}
+				
+				t.sprite.runAction(cc.sequence( 
+					cc.rotateTo(MOVE_SPEED*2,t.rotation),
+					cc.callFunc(function() {
+												
+						// if after rotation user is still swiping up ...
+						if( self.isSwipeUp ) {
+							cc.log("Mupris, main loop, start rotating again: lp.x ="+lp.x+", set to targetX = "+targetX);
+
+							if( !rotate(t , lp, offset) ) {
+								cc.log("Mupris, main loop, stop rotating again: lp.x ="+lp.x+", set to targetX = "+targetX);
+								t.rotating = false;
+								alignToColumn(t, lp, offset);
+							};
+						} else {
+							cc.log("Mupris, main loop, stop rotating: lp.x ="+lp.x+", set to targetX = "+targetX);
+							t.rotating = false;							
+							alignToColumn(t, lp, offset);
+						}
+					}, self)
+				));
+				
+				return true;
+			} else {
+				t.rotating = false;
+				t.rotation = oldRotation;
+				self.rotateBoxes(t);  
+				
+				return false;
+			}
+    		
     	};
     	
     	var checkRotation = function(t, lp) {
@@ -605,7 +681,6 @@ var MuprisGameLayer = cc.Layer.extend({
     		}        	
     	};
 
-    	
     	if( self.isSwipeDown ) {
     		if( !self.isSwiping && self.tiles[self.tiles.length-1].sprite.getPosition().x < size.height - BS*2) {
     			self.isSwiping = true;
@@ -627,78 +702,51 @@ var MuprisGameLayer = cc.Layer.extend({
     	for( tile in self.tiles ) {
     		var t = self.tiles[tile],
     			lp = t.sprite.getPosition();
-
+    		
+    		// align x with pixels
+    		lp.x = Math.round(lp.x); // lp.x manipulated by MoveBy seem to be not precise
+    		
     		/*
     		 * Move tile left and right
     		 */
     		if( true || tile == self.tiles.length-1 ) { // move only the last tile
     			
 	    		if( t.direction === 0 ) {
-	    			var offset = BS/2 - Math.abs(t.rotatedBoxes[0].x) % BS;  
-	    			cc.assert(offset == 0 || offset == BS/2, "Mupris failure: Move left, offset incorrect.");
 
-	    			if( self.isSwipeLeft ) {
-	    				var t1 = t;
+	    			cc.assert(lp.x%(BS/2) === 0, "Mupris, main loop: Tile is not aligned to column. (lp.x = "+lp.x+")");
+	    			if( self.isSwipeLeft && checkForBarrier(t,lp,"left") ) {
+	    				var t1 = t, targetX = lp.x - BS;
 	    				t.direction = -1;
-	    				nextX = Math.floor((lp.x - BS - offset)/BS)*BS + offset;
-		    			cc.log("offset = "+offset+", x = "+t.rotatedBoxes[0].x+", nextX = "+nextX);
-	    				t.action = t.sprite.runAction(cc.sequence( 
-	    					cc.moveTo(MOVE_SPEED,cc.p(nextX,lp.y)),
+	    				t.sprite.runAction(cc.sequence( 
+	    					cc.moveTo(MOVE_SPEED,cc.p( targetX , lp.y )),
 	    					cc.callFunc(function() {
+	    		    			var lp = t.sprite.getPosition();
+	    		    			t.sprite.setPosition(targetX, lp.y);
 	    						t1.direction = 0;
-	    						t.action = null;
 	    					}, self)
 	    				));
-	    			} else if( self.isSwipeRight ) {
-	    				var t1 = t;
+	    			} else if( self.isSwipeRight && checkForBarrier(t,lp,"right") ) {
+	    				var t1 = t, targetX = lp.x + BS;
 	    				t.direction = 1;
-	    				nextX = Math.floor((lp.x + BS - offset)/BS)*BS + offset;
-		    			cc.log("offset = "+offset+", x = "+t.rotatedBoxes[0].x+", nextX = "+nextX);
-	    				t.action = t.sprite.runAction(cc.sequence( 
-	    					cc.moveTo(MOVE_SPEED,cc.p(nextX,lp.y)),
+	    				t.sprite.runAction(cc.sequence( 
+	    					cc.moveTo(MOVE_SPEED,cc.p( targetX , lp.y )),
 	    					cc.callFunc(function() {
-	    						t1.direction = 0;
-	    						t.action = null;
+	    		    			var lp = t.sprite.getPosition();
+	    		    			t.sprite.setPosition(targetX, lp.y);
+	    		    			t1.direction = 0;
 	    					}, self)
 	    				));
 	    			}     			
 	    		} else if( !self.isSwipeLeft && !self.isSwipeRight ) {
-	    			t.direction = 0;
 	    		}
 	    		
 	    		if( !t.rotating ) {
 	    			if( self.isSwipeUp && !(self.isSwipeLeft || self.isSwipeRight) ) {
-	    				var oldRotation = t.rotation;
-	    				t.rotation = (t.rotation + 90)%360;
-	    				self.rotateBoxes(t);
+	    				var oldOffset = Math.abs(t.rotatedBoxes[0].x % BS);
 	    				
-	    				var check = checkRotation(t, lp);
+	    				t.rotating = true;
 	    				
-	    				if( check != "collision" ) {
-	    					var t1 = t,
-	    						offset = parseInt(check) || 0;
-	    					
-	    					if(offset != 0) {
-	    	    				t.direction = Math.sign(check);
-	    	    				t.sprite.runAction(cc.sequence( 
-	    	    					cc.moveBy(MOVE_SPEED/2,cc.p(-offset*BS,0)),
-	    	    					cc.callFunc(function() {
-	    	    						t1.direction = 0;
-	    	    					}, self)
-	    	    				));
-	    					}
-	    					
-	        				t.rotating = true;
-	        				t.sprite.runAction(cc.sequence( 
-	        					cc.rotateTo(MOVE_SPEED*2,t.rotation),
-	        					cc.callFunc(function() {
-	        						t1.rotating = false;
-	        					}, self)
-	        				));
-	    				} else {
-	        				t.rotation = oldRotation;
-	        				self.rotateBoxes(t);    					
-	    				}
+	    				rotateTile(t , lp , oldOffset);
 	    			}
 	    		}
 	    		
@@ -709,10 +757,6 @@ var MuprisGameLayer = cc.Layer.extend({
     			var fallingSpeed = FALLING_SPEED * 12;
     		}
 	    	
-    		if( t.direction === 0 ) {
-    			snapToColumn(t, lp);
-    		}
-    		
     		// let tile fall down
     		lp.y -= fallingSpeed;
     		
