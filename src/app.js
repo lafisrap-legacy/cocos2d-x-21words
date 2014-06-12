@@ -55,10 +55,14 @@ var MuprisGameLayer = cc.Layer.extend({
     },
 
     onEnter: function() {
+    	var self = this;
 		this._super();
 
 		this.initListeners();
-	    this.scheduleUpdate();	
+		
+		setTimeout(function() {
+		    self.scheduleUpdate();				
+		},5000);
     },
     
     onExit: function() {
@@ -88,27 +92,29 @@ var MuprisGameLayer = cc.Layer.extend({
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu, 1);
-        this.helloLabel = cc.LabelTTF.create("MUPRIS -- Tetris & Letters", "Arial", 12);
-        this.helloLabel.x = size.width / 2;
-        this.helloLabel.y = 0;
-        this.addChild(this.helloLabel, 5);
 
-        this.sprite = cc.Sprite.create(res.HelloWorld_png);
-        this.sprite.attr({
+        var background = cc.Sprite.create(res.background_png);
+        background.attr({
             x: size.width / 2,
             y: size.height / 2,
-            scale: 0.5,
-            rotation: 180
+            scale: 1,
+            rotation: 0
         });
-        this.addChild(this.sprite, 0);
+        this.addChild(background, 0);
+        var title = cc.Sprite.create(res.title_png);
+        title.attr({
+            x: size.width / 2,
+            y: size.height / 2,
+            scale: 1.5,
+            rotation: 0,
+        });
+        this.addChild(title, 1);
 
-        var rotateToA = cc.RotateTo.create(2, 0);
-        var scaleToA = cc.ScaleTo.create(2, 6, 6);
-        var tintToA = cc.TintTo.create(4, 30, 30, 70);
-
-        this.sprite.runAction(tintToA);
-        this.sprite.runAction(cc.Sequence.create(rotateToA, scaleToA));
-        this.helloLabel.runAction(cc.Spawn.create(cc.MoveBy.create(2.5, cc.p(0, size.height - 20)),cc.TintTo.create(2.5,255,125,0)));
+        var sequenceA = cc.fadeIn(3);
+        var sequenceB = cc.Spawn.create(cc.rotateTo(2,0),cc.scaleTo(2,10,10),cc.fadeOut(2));
+//,cc.fadeOut(2)
+        title.setOpacity(0);
+        title.runAction(cc.sequence(sequenceA,sequenceB));
 	},
 	
 	loadImages: function() {
@@ -357,13 +363,13 @@ var MuprisGameLayer = cc.Layer.extend({
         this.tiles.push({
         	boxes: tileBoxes,
         	sprite: tileSprite,
-        	rotation: 270,
+        	rotation: 0,
         	direction: 0,  // 0, -1, 1 
         	rotating : false,
         	action: null
         });
         
-        tileSprite.setRotation(270);
+        tileSprite.setRotation(0);
 		rt = this.rotateBoxes(this.tiles[this.tiles.length-1]);
 	},
 	
@@ -604,7 +610,7 @@ var MuprisGameLayer = cc.Layer.extend({
     		if( !self.isSwiping && self.tiles[self.tiles.length-1].sprite.getPosition().x < size.height - BS*2) {
     			self.isSwiping = true;
 
-                self.buildTile(cc.p(Math.random()*(BOXES_PER_ROW-4)*BS+BOXES_X_OFFSET+2*BS, size.height));        	    			
+                self.buildTile(cc.p(Math.random()*(BOXES_PER_ROW-4)*BS+BOXES_X_OFFSET+2*BS, size.height+BS));        	    			
     		} 
     	} else {
     		self.isSwiping = false;
@@ -612,7 +618,7 @@ var MuprisGameLayer = cc.Layer.extend({
     	// if there is no tile flying, build a new one
         var tilesFlying = self.tiles.filter(function(value) { return value !== undefined }).length;
         if( !tilesFlying ) {
-            self.buildTile(cc.p(Math.random()*(BOXES_PER_ROW-4)*BS+BOXES_X_OFFSET+2*BS, size.height));        	
+            self.buildTile(cc.p(Math.random()*(BOXES_PER_ROW-4)*BS+BOXES_X_OFFSET+2*BS, size.height+BS));        	
         }
 
     	/*

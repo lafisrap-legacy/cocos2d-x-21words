@@ -1,6 +1,8 @@
 var res = {
     letters_png : "res/images/letters/letters.png",
     letters_plist : 'res/images/letters/letters.plist',
+	title_png : "res/images/title.png",
+	background_png : "res/images/background.png",
 
 	empty_png : "res/empty.png",
 	HelloWorld_png : "res/HelloWorld.png",
@@ -15,6 +17,8 @@ var g_resources = [
     res.CloseSelected_png,
     res.letters_png,
     res.empty_png,
+    res.title_png,
+    res.background_png,
 
     //plist
     res.letters_plist
