@@ -1,5 +1,4 @@
 // weiter: Bewegen nach rotieren -> assert
-//			Mehrfachdrehung
 // 			Kollision mit boxen
 
 
@@ -474,15 +473,19 @@ var MuprisGameLayer = cc.Layer.extend({
     			if( dir === "left" && lp.x + t.rotatedBoxes[i].x - BS/2 <= BOXES_X_OFFSET ||
     				dir === "right" && lp.x + t.rotatedBoxes[i].x + BS/2 >= BOXES_X_OFFSET + BOXES_PER_ROW*BS ) {
     				return false;
-    			}    			
+    			}    
+    			
+    			// check for left and right boxes
+        		//var brc = getRowCol(b[i], lp);
+    			//if( dir === "left" && )
     		}
     		
     		return true;
     	};
     	
-		var alignToColumn = function(t, lp, offset, shiftTile) {
+		var alignToColumn = function(t, lp, offset) {
 			var offset = offset - Math.abs(t.rotatedBoxes[0].x%BS),
-				targetX = lp.x + offset + (shiftTile? shiftTile:0),
+				targetX = lp.x + offset,
 				t1 = t;
 			t.direction = Math.sign(offset);
 			cc.log("Mupris, main loop, align to column start: lp.x ="+lp.x+", targetX = "+targetX+", t.direction = "+t.direction);
@@ -507,7 +510,7 @@ var MuprisGameLayer = cc.Layer.extend({
 			
 			if( check != "collision" ) {
 				// shift tile, if it would not fit into playground after rotation
-				var shiftTile = -(parseInt(check) || 0)*BS;
+				var shiftTile = -(parseInt(check) || 0);
 				
 				if(shiftTile != 0) {
 					var targetX = lp.x + shiftTile;
@@ -531,18 +534,19 @@ var MuprisGameLayer = cc.Layer.extend({
 					cc.callFunc(function() {
 												
 						// if after rotation user is still swiping up ...
+						var lp = t.sprite.getPosition();
 						if( self.isSwipeUp ) {
 							cc.log("Mupris, main loop, start rotating again: lp.x ="+lp.x+", set to targetX = "+targetX);
 
 							if( !rotate(t , lp, offset) ) {
 								cc.log("Mupris, main loop, stop rotating again: lp.x ="+lp.x+", set to targetX = "+targetX);
 								t.rotating = false;
-								alignToColumn(t, lp, offset, shiftTile);
+								if( !shiftTile ) alignToColumn(t, lp, offset);
 							};
 						} else {
 							cc.log("Mupris, main loop, stop rotating: lp.x ="+lp.x+", set to targetX = "+targetX);
 							t.rotating = false;							
-							alignToColumn(t, lp, offset, shiftTile);
+							if( !shiftTile ) alignToColumn(t, lp, offset);
 						}
 					}, self)
 				));
@@ -561,22 +565,22 @@ var MuprisGameLayer = cc.Layer.extend({
     	var checkRotation = function(t, lp) {
     		
     		var b = t.rotatedBoxes,
-    			minCol = 0,
-    			maxCol = 0;
+    			minOffset = 0,
+    			maxOffset = 0;
     		
     		for( var i=0 ; i<b.length ; i++) {
         		var brc = getRowCol(b[i], lp);
         		
-        		minCol = Math.min(minCol, brc.col);
-        		maxCol = Math.max(maxCol, brc.col);
+        		minOffset = Math.min(minOffset, lp.x + b[i].x - BOXES_X_OFFSET - BS/2);
+        		maxOffset = Math.max(maxOffset, lp.x + b[i].x - BOXES_X_OFFSET + BS/2);
         		
         		if( brc.row < 0 || self.boxes[brc.row][brc.col] ) return "collision";
     		}
     		
-    		if( minCol < 0 || maxCol >= BOXES_PER_ROW ) {
-    			var offset = minCol? minCol : maxCol - BOXES_PER_ROW + 1,
+    		if( minOffset < 0 || maxOffset > BOXES_PER_ROW * BS ) {
+    			var offset = minOffset? minOffset : maxOffset - BOXES_PER_ROW * BS,
     				newLp = {
-    					x: lp.x - offset * BS,
+    					x: lp.x - offset,
     					y: lp.y
         			};
     				
@@ -711,7 +715,7 @@ var MuprisGameLayer = cc.Layer.extend({
     		 */
     		if( true || tile == self.tiles.length-1 ) { // move only the last tile
     			
-	    		if( t.direction === 0 ) {
+	    		if( t.direction === 0 && !t.rotating ) {
 
 	    			cc.assert(lp.x%(BS/2) === 0, "Mupris, main loop: Tile is not aligned to column. (lp.x = "+lp.x+")");
 	    			if( self.isSwipeLeft && checkForBarrier(t,lp,"left") ) {
