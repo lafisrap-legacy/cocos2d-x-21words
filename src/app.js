@@ -1,5 +1,12 @@
-// weiter: Bewegen nach rotieren -> assert
-// 			Kollision mit boxen
+/*
+ * BUGS
+ * 
+ * Tile placement
+ * 
+ * 1) if tiles are rotated continously and same time move left right, the column alignment goes bad
+ * 2) a box of a just rotating tile maybe placed on an other -> Move up one 
+ * 
+ */ 
 
 
 var TAG_SPRITE_MANAGER = 1,
@@ -462,9 +469,10 @@ var MuprisGameLayer = cc.Layer.extend({
     	};
     	
     	var checkForBarrier = function(t, lp, dir) {
-    		var offset = 32-(Math.abs(t.rotatedBoxes[0].x) % BS);
+    		var b = t.rotatedBoxes,
+    			offset = 32-(Math.abs(t.rotatedBoxes[0].x) % BS);
     		cc.assert(offset === 32 || offset === 0, "Mupris, checkForBarrier: offset incorrect ("+offset+").");
-			cc.assert((lp.x+offset)%BS === 0, "Mupris, checkForBarrier: Tile is not aligned to column. lp.x = "+lp.x+", offset = "+offset);
+			cc.assert((lp.x+offset-BOXES_X_OFFSET)%BS === 0, "Mupris, checkForBarrier: Tile is not aligned to column. lp.x = "+lp.x+", offset = "+offset);
 
 			// check for left and right walls or tiles in the way
     		for( var i=0 ; i<t.boxes.length ; i++) {
@@ -476,8 +484,9 @@ var MuprisGameLayer = cc.Layer.extend({
     			}    
     			
     			// check for left and right boxes
-        		//var brc = getRowCol(b[i], lp);
-    			//if( dir === "left" && )
+        		var brc = getRowCol(b[i], lp);
+    			if( dir === "left" && self.boxes[brc.row][brc.col-1]) return false;
+    			else if( dir === "right" && self.boxes[brc.row][brc.col+1]) return false;
     		}
     		
     		return true;
@@ -485,19 +494,21 @@ var MuprisGameLayer = cc.Layer.extend({
     	
 		var alignToColumn = function(t, lp, offset) {
 			var offset = offset - Math.abs(t.rotatedBoxes[0].x%BS),
-				targetX = lp.x + offset,
-				t1 = t;
-			t.direction = Math.sign(offset);
-			cc.log("Mupris, main loop, align to column start: lp.x ="+lp.x+", targetX = "+targetX+", t.direction = "+t.direction);
-			t.sprite.runAction(cc.sequence( 
-				cc.moveBy(MOVE_SPEED,cc.p(offset,0)),
-				cc.callFunc(function() {
-	    			var lp = t.sprite.getPosition();
-					cc.log("Mupris, main loop,  align to column end: lp.x ="+lp.x+", set to targetX = "+targetX);
-	    			t.sprite.setPosition(targetX, lp.y);
-	    			t1.direction = 0;
-				}, self)
-			));						
+				targetX = lp.x + offset;
+			
+			if( offset ) {
+				t.direction = Math.sign(offset);
+				cc.log("Mupris, main loop, align to column start: lp.x ="+lp.x+", targetX = "+targetX+", t.direction = "+t.direction);
+				t.sprite.runAction(cc.sequence( 
+					cc.moveBy(MOVE_SPEED,cc.p(offset,0)),
+					cc.callFunc(function() {
+		    			var lp = t.sprite.getPosition();
+						cc.log("Mupris, main loop,  align to column end: lp.x ="+lp.x+", set to targetX = "+targetX);
+		    			t.sprite.setPosition(targetX, lp.y);
+		    			t.direction = 0;
+					}, self)
+				));						
+			}
 		};
     	
     	var rotateTile = function rotate(t,lp,offset) {
@@ -529,24 +540,27 @@ var MuprisGameLayer = cc.Layer.extend({
 					}
 				}
 				
+				cc.log("Mupris, main loop, run rotation action: lp.x ="+lp.x+", set to targetX = "+targetX);
 				t.sprite.runAction(cc.sequence( 
 					cc.rotateTo(MOVE_SPEED*2,t.rotation),
 					cc.callFunc(function() {
+						var lp = t.sprite.getPosition();
 												
 						// if after rotation user is still swiping up ...
-						var lp = t.sprite.getPosition();
 						if( self.isSwipeUp ) {
 							cc.log("Mupris, main loop, start rotating again: lp.x ="+lp.x+", set to targetX = "+targetX);
 
 							if( !rotate(t , lp, offset) ) {
 								cc.log("Mupris, main loop, stop rotating again: lp.x ="+lp.x+", set to targetX = "+targetX);
-								t.rotating = false;
 								if( !shiftTile ) alignToColumn(t, lp, offset);
+								t.rotating = false;
+								return false;
 							};
 						} else {
 							cc.log("Mupris, main loop, stop rotating: lp.x ="+lp.x+", set to targetX = "+targetX);
 							t.rotating = false;							
 							if( !shiftTile ) alignToColumn(t, lp, offset);
+							return false;
 						}
 					}, self)
 				));
@@ -594,7 +608,7 @@ var MuprisGameLayer = cc.Layer.extend({
     	/*
     	 * Tile gets fixed on the ground
     	 */
-    	var fixTile = function(t, lp) {
+    	var fixTile = function fixTile(t, lp) {
     		var batch = self.getChildByTag(TAG_SPRITE_MANAGER),
     			b = t.rotatedBoxes,
     			ret = "ok";
@@ -604,6 +618,10 @@ var MuprisGameLayer = cc.Layer.extend({
 				var brc = getRowCol(b[i], lp);
 				if( brc.row >= GAME_OVER_COL ) {
 					ret = "gameover";
+				}
+				if( self.boxes[brc.row][brc.col] != null ) {
+					// if a box is occupied already, move tile one up 
+					return fixTile(t, {x:lp.x,y:lp.y+BS});
 				}
     		}
     		
@@ -620,7 +638,7 @@ var MuprisGameLayer = cc.Layer.extend({
         			newSprite.setPosition(BOXES_X_OFFSET + brc.col*BS + BS/2 , BOXES_Y_OFFSET + brc.row*BS + BS/2);
         	        batch.addChild(newSprite);
 
-        			self.boxes[brc.row][brc.col] = newSprite; 
+            		self.boxes[brc.row][brc.col] = newSprite;     					
         		}    			
     		}
     		
@@ -740,8 +758,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	    		    			t1.direction = 0;
 	    					}, self)
 	    				));
-	    			}     			
-	    		} else if( !self.isSwipeLeft && !self.isSwipeRight ) {
+	    			} 
 	    		}
 	    		
 	    		if( !t.rotating ) {
@@ -757,6 +774,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	    		var fallingSpeed = FALLING_SPEED;
     		} 
     		
+    		// All tiles except the last fall fast ...
     		if(tile != self.tiles.length-1) {
     			var fallingSpeed = FALLING_SPEED * 12;
     		}
