@@ -3,9 +3,11 @@
  * 
  * Tile placement
  * 
- * 1) if tiles are rotated continously and same time move left right, the column alignment goes bad
- * 2) a box of a just rotating tile maybe placed on an other -> Move up one 
- * 
+ * 3) correct rotation
+ * 		tile doesn't rotate at the borders
+ * 		rotating tiles multiple
+ * 4) moke multiple rotates
+ * 5) don't fix tiles while dragging
  */ 
 
 
@@ -51,6 +53,7 @@ var MuprisGameLayer = cc.Layer.extend({
     isSwipeLeft: false,
     isSwipeRight: false,
     isSwipeDown: false,    
+    isTap: false,
     
     ctor:function () {
         this._super();
@@ -174,7 +177,6 @@ var MuprisGameLayer = cc.Layer.extend({
 	    	this._touchListener = cc.EventListener.create({
 	            event: cc.EventListener.TOUCH_ALL_AT_ONCE,
 	            onTouchesBegan: function(touches, event) {
-	            	//console.log("onTouchesBegan!");
 	            	
 	            	var touch = touches[0];
 	                var loc = touch.getLocation();
@@ -201,7 +203,8 @@ var MuprisGameLayer = cc.Layer.extend({
 	            	}
 	                
 	                // check for left
-	                if( loc.x < start.x - TOUCH_THRESHOLD && self.touchDistance.x > self.touchDistance.y) {
+	                if( loc.x < start.x - TOUCH_THRESHOLD) {
+		            //if( loc.x < start.x - TOUCH_THRESHOLD && self.touchDistance.x > self.touchDistance.y) {
 	                	// if direction changed while swiping left, set new base point
 	                	if( loc.x > self.touchLastPoint.x ) {
 	                		start = self.touchStartPoint = {
@@ -215,7 +218,8 @@ var MuprisGameLayer = cc.Layer.extend({
 	                }
 	                
 	                // check for right
-	                if( loc.x > start.x + TOUCH_THRESHOLD && self.touchDistance.x > self.touchDistance.y) {
+	                if( loc.x > start.x + TOUCH_THRESHOLD ) {
+		            //if( loc.x > start.x + TOUCH_THRESHOLD && self.touchDistance.x > self.touchDistance.y) {
 	                	// if direction changed while swiping right, set new base point
 	                	if( loc.x < self.touchLastPoint.x ) {
 	                		self.touchStartPoint = {
@@ -229,7 +233,8 @@ var MuprisGameLayer = cc.Layer.extend({
 	                }
 	
 	                // check for down
-	                if( loc.y < start.y - TOUCH_THRESHOLD * 3 && self.touchDistance.y > self.touchDistance.x) {
+	                if( loc.y < start.y - TOUCH_THRESHOLD * 3 ) {
+		            //if( loc.y < start.y - TOUCH_THRESHOLD * 3 && self.touchDistance.y > self.touchDistance.x) {
 	                	// if direction changed while swiping down, set new base point
 	                	if( loc.y > self.touchLastPoint.y ) {
 	                		self.touchStartPoint = {
@@ -243,7 +248,8 @@ var MuprisGameLayer = cc.Layer.extend({
 	                }
 	
 	                // check for up
-	                if( loc.y > start.y + TOUCH_THRESHOLD && self.touchDistance.y > self.touchDistance.x) {
+	                if( loc.y > start.y + TOUCH_THRESHOLD ) {
+		            //if( loc.y > start.y + TOUCH_THRESHOLD && self.touchDistance.y > self.touchDistance.x) {
 	                	// if direction changed while swiping right, set new base point
 	                	if( loc.y < self.touchLastPoint.y ) {
 	                		self.touchStartPoint = {
@@ -271,7 +277,11 @@ var MuprisGameLayer = cc.Layer.extend({
 	                
 	                self.touchStartPoint = null;
 	                
-	                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;
+	                if(!self.isSwipeUp && !self.isSwipeLeft && !self.isSwipeRight && !self.isSwipeDown) {
+	                	self.isTap = true;
+	                } else {
+		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
+	                }
 	            }
 	        });
 		    	
@@ -386,6 +396,8 @@ var MuprisGameLayer = cc.Layer.extend({
         
         tileSprite.setRotation(0);
 		rt = this.rotateBoxes(this.tiles[this.tiles.length-1]);
+		
+		//tileSprite.children[0].runAction(cc.tintTo(1,0,0,0));
 	},
 	
 	rotateBoxes: function(t) {
@@ -445,7 +457,7 @@ var MuprisGameLayer = cc.Layer.extend({
     	/*
     	 * check if a collision happened
     	 */
-    	var checkForCollision = function(t, lp) {
+    	var checkForBottom = function(t, lp) {
     		var b = t.rotatedBoxes;
     		
     		for( var i=0 ; i<b.length ; i++ ) {
@@ -468,44 +480,84 @@ var MuprisGameLayer = cc.Layer.extend({
     		return false;
     	};
     	
-    	var checkForBarrier = function(t, lp, dir) {
+    	var moveHorizontalyAndCheckForBarrier = function(t, lp, tp) {
     		var b = t.rotatedBoxes,
-    			offset = 32-(Math.abs(t.rotatedBoxes[0].x) % BS);
-    		cc.assert(offset === 32 || offset === 0, "Mupris, checkForBarrier: offset incorrect ("+offset+").");
-			cc.assert((lp.x+offset-BOXES_X_OFFSET)%BS === 0, "Mupris, checkForBarrier: Tile is not aligned to column. lp.x = "+lp.x+", offset = "+offset);
+    			offset = 32-(Math.abs(t.rotatedBoxes[0].x) % BS),
+    			dir = Math.sign(tp.x-lp.x);
+    		
+    		cc.assert(offset === 32 || offset === 0, "Mupris, moveHorizontalyAndCheckForBarrier: offset incorrect ("+offset+").");
+			cc.log("Entry: lp.x = "+lp.x+", tp.x = "+tp.x);
 
-			// check for left and right walls or tiles in the way
+			// set a maximum horizontal speed
+			lp.x = (Math.abs(tp.x - lp.x) < BS)? tp.x : lp.x + BS * dir - 1;
+
+			cc.log("Math.abs(tp.x - lp.x): "+Math.abs(tp.x - lp.x)+", lp.x = "+lp.x+", tp.x = "+tp.x);
+			if(Math.abs(tp.x - lp.x) >= BS) cc.log("MORE THAN 64 BITS MOVED IN ONE CYCLE!");
+			var newX = null;
     		for( var i=0 ; i<t.boxes.length ; i++) {
-
-    			// check for left and right border
-    			if( dir === "left" && lp.x + t.rotatedBoxes[i].x - BS/2 <= BOXES_X_OFFSET ||
-    				dir === "right" && lp.x + t.rotatedBoxes[i].x + BS/2 >= BOXES_X_OFFSET + BOXES_PER_ROW*BS ) {
-    				return false;
-    			}    
     			
-    			// check for left and right boxes
-        		var brc = getRowCol(b[i], lp);
-    			if( dir === "left" && self.boxes[brc.row][brc.col-1]) return false;
-    			else if( dir === "right" && self.boxes[brc.row][brc.col+1]) return false;
+        		var brc = getRowCol(b[i], { x: lp.x-BS/2, y: lp.y} );
+    			// check for left and right border
+    			if( dir === -1 ) {
+    				if (lp.x + t.rotatedBoxes[i].x - BS/2 - BOXES_X_OFFSET < 0 ) {
+    					var x = -t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET;
+    					newX = (newX === null)? x : Math.max(newX , -t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET);
+    				}
+    				
+    				if( self.boxes[brc.row][brc.col] ) {
+    					var x = (brc.col+1) * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET;
+    					newX = (newX === null)? x : Math.max(newX , brc.col * BS - t.rotatedBoxes[i].x - BS/2 + BOXES_X_OFFSET);
+    				}
+    			} else {
+    				if (lp.x + t.rotatedBoxes[i].x + BS/2 - BOXES_X_OFFSET >= BOXES_PER_ROW * BS ) {
+    					var x = BOXES_PER_ROW * BS - t.rotatedBoxes[i].x - BS/2 + BOXES_X_OFFSET;
+    					newX = (newX === null)? x : Math.min(newX , BOXES_PER_ROW * BS - t.rotatedBoxes[i].x - BS/2 + BOXES_X_OFFSET);
+    				}
+
+    				if( self.boxes[brc.row][brc.col+1] ) {
+    					var x = brc.col * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET;
+    					newX = (newX === null)? x : Math.min(newX , brc.col * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET);
+        				//cc.log("Block at right column: "+(brc.col+1)+". NewX = "+newX);
+        				cc.log("Setting newX to "+newX+" for box "+i);
+    				}
+
+    			}
+    		}
+    		
+    		if( newX ) {
+    			lp.x = newX;
     		}
     		
     		return true;
     	};
     	
-		var alignToColumn = function(t, lp, offset) {
-			var offset = offset - Math.abs(t.rotatedBoxes[0].x%BS),
-				targetX = lp.x + offset;
+		var alignToColumn = function(t, lp, offset, doneFn) {
+			if( offset === undefined ) {
+				var tileOffset = BS/2 - Math.abs(t.rotatedBoxes[0].x%BS),
+					offset = (lp.x-BOXES_X_OFFSET-tileOffset)%BS;
+				
+				offset = offset < BS/2? -offset : BS - offset;
+				//cc.log("tileOffset = "+tileOffset+", offset = "+offset);
+				
+			} else {
+				//cc.assert((lp.x-BOXES_X_OFFSET)%(BS*2) == 0, "Mupris, main loop, align to column: Tile must be aligned.");
+				var offset = offset - Math.abs(t.rotatedBoxes[0].x%BS);
+				
+			}
+			
+			var targetX = lp.x + offset;
 			
 			if( offset ) {
-				t.direction = Math.sign(offset);
-				cc.log("Mupris, main loop, align to column start: lp.x ="+lp.x+", targetX = "+targetX+", t.direction = "+t.direction);
+				//cc.log("Mupris, main loop, align to column start: lp.x ="+lp.x+", targetX = "+targetX+", t.direction = "+t.direction);
+				t.isAligning = true;
 				t.sprite.runAction(cc.sequence( 
 					cc.moveBy(MOVE_SPEED,cc.p(offset,0)),
 					cc.callFunc(function() {
 		    			var lp = t.sprite.getPosition();
-						cc.log("Mupris, main loop,  align to column end: lp.x ="+lp.x+", set to targetX = "+targetX);
+						//.log("Mupris, main loop,  align to column end: lp.x ="+lp.x+", set to targetX = "+targetX);
 		    			t.sprite.setPosition(targetX, lp.y);
-		    			t.direction = 0;
+		    			t.isAligning = false;
+		    			if( doneFn && typeof doneFn === "function" ) doneFn();
 					}, self)
 				));						
 			}
@@ -619,7 +671,7 @@ var MuprisGameLayer = cc.Layer.extend({
 				if( brc.row >= GAME_OVER_COL ) {
 					ret = "gameover";
 				}
-				if( self.boxes[brc.row][brc.col] != null ) {
+				if( brc.row < 0 || self.boxes[brc.row][brc.col] != null ) {
 					// if a box is occupied already, move tile one up 
 					return fixTile(t, {x:lp.x,y:lp.y+BS});
 				}
@@ -703,19 +755,14 @@ var MuprisGameLayer = cc.Layer.extend({
     		}        	
     	};
 
-    	if( self.isSwipeDown ) {
-    		if( !self.isSwiping && self.tiles[self.tiles.length-1].sprite.getPosition().x < size.height - BS*2) {
-    			self.isSwiping = true;
-
-                self.buildTile(cc.p(Math.random()*(BOXES_PER_ROW-4)*BS+BOXES_X_OFFSET+2*BS, size.height+BS));        	    			
-    		} 
-    	} else {
-    		self.isSwiping = false;
-    	}
     	// if there is no tile flying, build a new one
         var tilesFlying = self.tiles.filter(function(value) { return value !== undefined }).length;
         if( !tilesFlying ) {
             self.buildTile(cc.p(Math.random()*(BOXES_PER_ROW-4)*BS+BOXES_X_OFFSET+2*BS, size.height+BS));        	
+        }
+        
+        var isSwipe = function() {
+        	return self.isSwipeLeft || self.isSwipeRight || self.isSwipeUp || self.isSwipeDown;
         }
 
     	/*
@@ -723,20 +770,29 @@ var MuprisGameLayer = cc.Layer.extend({
     	 */
     	for( tile in self.tiles ) {
     		var t = self.tiles[tile],
-    			lp = t.sprite.getPosition();
+    			lp = t.sprite.getPosition(),
+    			sp = self.touchStartPoint,
+    			tp = self.touchLastPoint,
+    			fallingSpeed = FALLING_SPEED;
     		
     		// align x with pixels
     		lp.x = Math.round(lp.x); // lp.x manipulated by MoveBy seem to be not precise
-    		
+
     		/*
     		 * Move tile left and right
     		 */
-    		if( true || tile == self.tiles.length-1 ) { // move only the last tile
-    			
-	    		if( t.direction === 0 && !t.rotating ) {
+    		if( !t.isDragged && !t.isAligning ) {
 
-	    			cc.assert(lp.x%(BS/2) === 0, "Mupris, main loop: Tile is not aligned to column. (lp.x = "+lp.x+")");
-	    			if( self.isSwipeLeft && checkForBarrier(t,lp,"left") ) {
+    			cc.assert(lp.x%(BS/2) === 0, "Mupris, main loop: Tile is not aligned to column. (lp.x = "+lp.x+")");
+    			
+	    		if( isSwipe() &&
+	    			sp.x < lp.x + BS*2 && sp.x > lp.x - BS*2 &&
+	    			sp.y < lp.y + BS*2 && sp.y > lp.y - BS*2	) { // move the tile if the touch is in range
+	  
+	    			
+	    			t.isDragged = true;
+	    			
+/*	    			if( self.isSwipeLeft && checkForBarrier(t,lp,"left") ) {
 	    				var t1 = t, targetX = lp.x - BS;
 	    				t.direction = -1;
 	    				t.sprite.runAction(cc.sequence( 
@@ -747,43 +803,46 @@ var MuprisGameLayer = cc.Layer.extend({
 	    						t1.direction = 0;
 	    					}, self)
 	    				));
-	    			} else if( self.isSwipeRight && checkForBarrier(t,lp,"right") ) {
-	    				var t1 = t, targetX = lp.x + BS;
-	    				t.direction = 1;
-	    				t.sprite.runAction(cc.sequence( 
-	    					cc.moveTo(MOVE_SPEED,cc.p( targetX , lp.y )),
-	    					cc.callFunc(function() {
-	    		    			var lp = t.sprite.getPosition();
-	    		    			t.sprite.setPosition(targetX, lp.y);
-	    		    			t1.direction = 0;
-	    					}, self)
-	    				));
-	    			} 
+	    			}*/
 	    		}
 	    		
 	    		if( !t.rotating ) {
-	    			if( self.isSwipeUp && !(self.isSwipeLeft || self.isSwipeRight) ) {
+	    			if( self.isTap ) {
+	    				self.isTap = false;
 	    				var oldOffset = Math.abs(t.rotatedBoxes[0].x % BS);
 	    				
 	    				t.rotating = true;
 	    				
 	    				rotateTile(t , lp , oldOffset);
 	    			}
-	    		}
-	    		
-	    		var fallingSpeed = FALLING_SPEED;
-    		} 
-    		
-    		// All tiles except the last fall fast ...
-    		if(tile != self.tiles.length-1) {
-    			var fallingSpeed = FALLING_SPEED * 12;
+	    		}	    			    		
+    		} else {
+    			
+    			if(self.touchStartPoint == null) {
+    				// align to column
+    				if( !t.isAligning ) {
+        				alignToColumn(t,lp,undefined,function() {
+        					t.isDragged = false;    					
+        				});    					
+    				}
+    			} else {
+
+    	    		if( moveHorizontalyAndCheckForBarrier(t,lp,tp) )
+        			lp.y = Math.min( lp.y , tp.y );
+        			
+    	    		if(tp.y < lp.y) {
+    	    			var fallingSpeed = FALLING_SPEED * 12;
+    	    		}
+    	    		
+    			}
     		}
+    		
 	    	
     		// let tile fall down
     		lp.y -= fallingSpeed;
     		
     		var ret;
-    		if( ret = checkForCollision(t, lp) ) {
+    		if( ret = checkForBottom(t, lp) ) {
     			// tile landed ...
     			delete self.tiles[tile];
 
