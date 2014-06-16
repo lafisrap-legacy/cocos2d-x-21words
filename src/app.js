@@ -3,11 +3,10 @@
  * 
  * Tile placement
  * 
- * 3) correct rotation
+ * 1) correct rotation
  * 		tile doesn't rotate at the borders
  * 		rotating tiles multiple
- * 4) moke multiple rotates
- * 5) don't fix tiles while dragging
+ * 2) don't fix tiles while dragging
  */ 
 
 
@@ -470,10 +469,16 @@ var MuprisGameLayer = cc.Layer.extend({
     				(brc.row < BOXES_PER_COL && self.boxes[brc.row][brc.col]) ) {
 
     				// align y to box border
+    				cc.log("checkForBottom, lp.y = "+lp.y);
     				lp.y = Math.round((lp.y - BOXES_Y_OFFSET)/(BS/2))*(BS/2) + BOXES_Y_OFFSET;
     				
     				// fix tile
-    				return fixTile(t, lp);
+    				if( !t.isDragged ) {
+    					
+        				cc.log("Bottom reached, tile is fixed at "+lp.y);
+    					return fixTile(t, lp);
+    				}
+    				else cc.log("Bottom reached, is still dragging ... lp.y = "+lp.y);
     			}
     		}
 
@@ -486,13 +491,10 @@ var MuprisGameLayer = cc.Layer.extend({
     			dir = Math.sign(tp.x-lp.x);
     		
     		cc.assert(offset === 32 || offset === 0, "Mupris, moveHorizontalyAndCheckForBarrier: offset incorrect ("+offset+").");
-			cc.log("Entry: lp.x = "+lp.x+", tp.x = "+tp.x);
 
 			// set a maximum horizontal speed
 			lp.x = (Math.abs(tp.x - lp.x) < BS)? tp.x : lp.x + BS * dir - 1;
 
-			cc.log("Math.abs(tp.x - lp.x): "+Math.abs(tp.x - lp.x)+", lp.x = "+lp.x+", tp.x = "+tp.x);
-			if(Math.abs(tp.x - lp.x) >= BS) cc.log("MORE THAN 64 BITS MOVED IN ONE CYCLE!");
 			var newX = null;
     		for( var i=0 ; i<t.boxes.length ; i++) {
     			
@@ -517,7 +519,6 @@ var MuprisGameLayer = cc.Layer.extend({
     				if( self.boxes[brc.row][brc.col+1] ) {
     					var x = brc.col * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET;
     					newX = (newX === null)? x : Math.min(newX , brc.col * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET);
-        				//cc.log("Block at right column: "+(brc.col+1)+". NewX = "+newX);
         				cc.log("Setting newX to "+newX+" for box "+i);
     				}
 
@@ -560,6 +561,8 @@ var MuprisGameLayer = cc.Layer.extend({
 		    			if( doneFn && typeof doneFn === "function" ) doneFn();
 					}, self)
 				));						
+			} else {
+				if( doneFn && typeof doneFn === "function" ) doneFn();
 			}
 		};
     	
@@ -789,21 +792,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	    			sp.x < lp.x + BS*2 && sp.x > lp.x - BS*2 &&
 	    			sp.y < lp.y + BS*2 && sp.y > lp.y - BS*2	) { // move the tile if the touch is in range
 	  
-	    			
 	    			t.isDragged = true;
-	    			
-/*	    			if( self.isSwipeLeft && checkForBarrier(t,lp,"left") ) {
-	    				var t1 = t, targetX = lp.x - BS;
-	    				t.direction = -1;
-	    				t.sprite.runAction(cc.sequence( 
-	    					cc.moveTo(MOVE_SPEED,cc.p( targetX , lp.y )),
-	    					cc.callFunc(function() {
-	    		    			var lp = t.sprite.getPosition();
-	    		    			t.sprite.setPosition(targetX, lp.y);
-	    						t1.direction = 0;
-	    					}, self)
-	    				));
-	    			}*/
 	    		}
 	    		
 	    		if( !t.rotating ) {
@@ -817,9 +806,12 @@ var MuprisGameLayer = cc.Layer.extend({
 	    			}
 	    		}	    			    		
     		} else {
-    			
+
+				cc.log("touchStartPoint?");
+
     			if(self.touchStartPoint == null) {
     				// align to column
+    				cc.log("self.touchStartPoint is null!");
     				if( !t.isAligning ) {
         				alignToColumn(t,lp,undefined,function() {
         					t.isDragged = false;    					
@@ -828,7 +820,7 @@ var MuprisGameLayer = cc.Layer.extend({
     			} else {
 
     	    		if( moveHorizontalyAndCheckForBarrier(t,lp,tp) )
-        			lp.y = Math.min( lp.y , tp.y );
+        			//lp.y = Math.min( lp.y , tp.y );
         			
     	    		if(tp.y < lp.y) {
     	    			var fallingSpeed = FALLING_SPEED * 12;
