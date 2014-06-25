@@ -18,12 +18,13 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	// go through box array and look for prefixes
 	var checkForPrefixes = function(brc, cb) {
 
-		cc.log("checkForPrefixes at "+brc.row+"/"+brc.col+". ml.words is "+ml.words.length+" long.");
 		for( var i=Math.max(0,brc.col-2) ; i<Math.min(BOXES_PER_ROW-2,brc.col) ; i++) {
 			var prefix = (ml.boxes[brc.row][i]   && ml.boxes[brc.row][i].userData || " ")+
 						 (ml.boxes[brc.row][i+1] && ml.boxes[brc.row][i+1].userData || " ")+
 						 (ml.boxes[brc.row][i+2] && ml.boxes[brc.row][i+2].userData || " "),
 				words = ml.words[prefix];
+
+			cc.log("checkForPrefixes: Prefix at "+brc.row+"/"+brc.col+" is "+prefix);
 			
 			if( words && cb ) {
 				cc.log("checkForPrefixes: Found "+words.length+" words at "+brc.row+"/"+i);
@@ -53,7 +54,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	 * Param: tileBoxes: metrics of the boxes 
 	 * 
 	 */
-	muprisLayer.hookSetTileImages = function(tileBoxes, newTile, p) {
+	muprisLayer.hookSetTileImages = function(tileBoxes, newTile, p, userData) {
 
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
 			batch = this.getChildByTag(TAG_SPRITE_MANAGER);
@@ -71,7 +72,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
     	
     		sprite.retain();
         	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
-        	sprite.userData = letter.toUpperCase();
+        	userData[i] = letter.toUpperCase();
 	        tileSprite.addChild(sprite);
         }
         
@@ -84,7 +85,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			var brc = brcs[i];
 			cc.log("Looking for words at position "+brc.row+"/"+brc.col);
 			checkForPrefixes(brc, function(brc, words) {
-				var sprite = muprisLayer.boxes[brc.row][brc.col];
+				var sprite = muprisLayer.boxes[brc.row][brc.col].sprite;
 				if( !sprite.words ) {
 					sprite.words = words;
 					sprite.layer = new MuprisTileLayer(words, brc);
@@ -104,11 +105,9 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	
 	// read json file with words
-	cc.log("Loading res/words/dewords.words.json ...");
 	cc.loader.loadJson("res/words/dewords.words.json", function(err, text) {
 		if( !err ) {
-			cc.log("Loaded!");
-			muprisLayer.words = text;			
+			muprisLayer.words = text;
 		}
 	});
 };

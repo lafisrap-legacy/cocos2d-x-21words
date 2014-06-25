@@ -366,7 +366,8 @@ var MuprisGameLayer = cc.Layer.extend({
 		
 		// select a random tile type
 		var newTile = this.getRandomValue(TILE_OCCURANCES),
-			tileBoxes = TILE_BOXES[newTile];
+			tileBoxes = TILE_BOXES[newTile],
+			userData = {};
 		
 		//tileBoxes = TILE_BOXES[Math.floor(Math.random()*1)+0];
 		
@@ -375,7 +376,7 @@ var MuprisGameLayer = cc.Layer.extend({
 		cc.assert(p.x%(BS/2) === 0, "Mupris, buildTile: Tile is not aligned to column.");
 
 		if( this.hookSetTileImages ) {
-			var tileSprite = this.hookSetTileImages(tileBoxes, newTile, p );
+			var tileSprite = this.hookSetTileImages(tileBoxes, newTile, p, userData);
 		}
 		else {
 			// create sprite for tile and set is size 0, we only use its position and rotation
@@ -406,7 +407,8 @@ var MuprisGameLayer = cc.Layer.extend({
         	direction: 0,  // 0, -1, 1 
         	isRotating : false,
         	action: null,
-        	fallingSpeed: FALLING_SPEED
+        	fallingSpeed: FALLING_SPEED,
+        	userData: userData
         });
         
         tileSprite.setRotation(0);
@@ -704,10 +706,12 @@ var MuprisGameLayer = cc.Layer.extend({
     				newBrcs.push(brc);
         			
         			newSprite.setPosition(BOXES_X_OFFSET + brc.col*BS + BS/2 , BOXES_Y_OFFSET + brc.row*BS + BS/2);
-        			newSprite.userData = sprite.userData;
         	        batch.addChild(newSprite);
 
-            		self.boxes[brc.row][brc.col] = newSprite;     					
+            		self.boxes[brc.row][brc.col] = {
+            			sprite: newSprite,
+            			userData: t.userData[i]
+            		};     					
         		}    			
     		}
     		
@@ -751,7 +755,7 @@ var MuprisGameLayer = cc.Layer.extend({
 
 					for( var j=0 ; j<BOXES_PER_ROW ; j++ ) {
 						
-						var sprite = (self.boxes[i+rows] && self.boxes[i+rows][j]) || null;
+						var sprite = (self.boxes[i+rows] && self.boxes[i+rows][j].sprite) || null;
 						if( sprite ) {
 							sprite.runAction(cc.moveBy(MOVE_SPEED*rows, cc.p(0,-BS*rows)));
 						}
@@ -769,7 +773,7 @@ var MuprisGameLayer = cc.Layer.extend({
         	// delete row ... 
         	for( var i=0 ; i<BOXES_PER_ROW ; i++ ) {
         		// destroy sprite and body
-            	batch.removeChild(self.boxes[row][i]);
+            	batch.removeChild(self.boxes[row][i].sprite);
 		    	self.boxes[row][i] = null;		    	
     		}        	
     	};
