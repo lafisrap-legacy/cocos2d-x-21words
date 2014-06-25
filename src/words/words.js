@@ -1,11 +1,18 @@
 /*
  * Enhancement module for Mupris
  * 
+ * NEXT STEPS:
+ * 
+ * - check if words are too long
+ * - move selections together with rows, delete them if row is deleted
+ * - select a selection
+ * - show white frame, analyse it
  */
 
 var	LETTER_VALUES = {"A":1,"B":3,"C":4,"D":1,"E":1,"F":4,"G":2,"H":2,"I":1,"J":6,"K":4,"L":2,"M":3,"N":1,"O":2,"P":4,"Q":10,"R":1,"S":1,"T":1,"U":1,"V":6,"W":3,"X":8,"Y":10,"Z":3,"Ä":6,"Ö":8,"Ü":6},
 	LETTER_OCCURANCES = [5,2,2,4,15,2,3,4,6,1,2,3,4,9,3,1,1,6,7,6,6,1,1,1,1,1,1,1,1],
-	STAGE_COLORS = [{r:255,g:0,b:0},{r:0,g:255,b:0},{r:0,g:0,b:255},{r:255,g:0,b:255}];
+	STAGE_COLORS = [{r:255,g:0,b:0},{r:0,g:255,b:0},{r:0,g:0,b:255},{r:255,g:0,b:255}],
+	TINT_SPEED = 1.0;
 
 var MUPRIS_MODULE = function(muprisLayer) {
 
@@ -24,10 +31,11 @@ var MUPRIS_MODULE = function(muprisLayer) {
 						 (ml.boxes[brc.row][i+2] && ml.boxes[brc.row][i+2].userData || " "),
 				words = ml.words[prefix];
 
-			cc.log("checkForPrefixes: Prefix at "+brc.row+"/"+brc.col+" is "+prefix);
-			
 			if( words && cb ) {
 				cc.log("checkForPrefixes: Found "+words.length+" words at "+brc.row+"/"+i);
+				
+				// check if words are too long ...
+				
 				cb({row:brc.row,col:i}, words);
 			}
 		}
@@ -82,19 +90,32 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	muprisLayer.hookTileFixed = function( brcs ) {
 		
 		for( var i=0 ; i<brcs.length ; i++ ) {
-			var brc = brcs[i];
-			cc.log("Looking for words at position "+brc.row+"/"+brc.col);
+			var brc = brcs[i],
+				box = muprisLayer.boxes[brc.row][brc.col],
+				tintAction = cc.tintTo(TINT_SPEED, 100,100,100);
+				
+			box.color = box.sprite.getColor();
+        	box.sprite.runAction(tintAction);
 			checkForPrefixes(brc, function(brc, words) {
-				var sprite = muprisLayer.boxes[brc.row][brc.col].sprite;
-				if( !sprite.words ) {
-					sprite.words = words;
-					sprite.layer = new MuprisTileLayer(words, brc);
-					muprisLayer.addChild(sprite.layer);
+				var row = muprisLayer.boxes[brc.row];
+				setTimeout(function(brc) {
+					for( var i=0 ; i<3 ; i++ ) {
+						var box = muprisLayer.boxes[brc.row][brc.col+i],
+							c = box.color,
+							tintAction = cc.tintTo(TINT_SPEED, c.r,c.b,c.g);
+							box.sprite.runAction(tintAction);
+					}
+//					cc.log("Tinting "+words[0].word+" from column "+brc.col);
+				}, TINT_SPEED*1000,brc);
+				if( !box.words ) {
+					box.words = words;
+//					box.layer = new MuprisTileLayer(words, brc);
+//					muprisLayer.addChild(box.layer);
 					muprisLayer.selections.push({
 						brc: brc,
-						width: sprite.layer.width,
-						height: sprite.layer.height,
-						pos: sprite.layer.getPosition()
+//						width: box.layer.width,
+//						height: box.layer.height,
+//						pos: box.layer.getPosition()
 					});
 					
 					for( var i=0 ; i<words.length ; i++ ) cc.log("Retrieved word "+words[i].word+" at position "+brc.row+"/"+brc.col);
@@ -102,6 +123,10 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			});
 		}					
 	};	
+	
+	muprisLayer.hookDeleteBox = function(box) {
+		if( box.layer ) muprisLayer.removeChild(box.layer);
+	};
 	
 	
 	// read json file with words

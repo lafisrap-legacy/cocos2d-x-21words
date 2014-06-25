@@ -710,14 +710,14 @@ var MuprisGameLayer = cc.Layer.extend({
 
             		self.boxes[brc.row][brc.col] = {
             			sprite: newSprite,
-            			userData: t.userData[i]
+            			userData: t.userData && typeof t.userData === "object" && t.userData[i] || t.userData
             		};     					
         		}    			
     		}
     		
-    		checkForAndRemoveCompleteRows();
-
     		if( self.hookTileFixed ) self.hookTileFixed(newBrcs);
+
+    		checkForAndRemoveCompleteRows();
 
     		batch.removeChild(t.sprite);
        		delete t;
@@ -755,7 +755,7 @@ var MuprisGameLayer = cc.Layer.extend({
 
 					for( var j=0 ; j<BOXES_PER_ROW ; j++ ) {
 						
-						var sprite = (self.boxes[i+rows] && self.boxes[i+rows][j].sprite) || null;
+						var sprite = (self.boxes[i+rows] && self.boxes[i+rows][j] && self.boxes[i+rows][j].sprite) || null;
 						if( sprite ) {
 							sprite.runAction(cc.moveBy(MOVE_SPEED*rows, cc.p(0,-BS*rows)));
 						}
@@ -772,9 +772,11 @@ var MuprisGameLayer = cc.Layer.extend({
 
         	// delete row ... 
         	for( var i=0 ; i<BOXES_PER_ROW ; i++ ) {
-        		// destroy sprite and body
+		    	if( self.hookDeleteBox ) self.hookDeleteBox(self.boxes[row][i]);
+
+        		// destroy sprite and box        		
             	batch.removeChild(self.boxes[row][i].sprite);
-		    	self.boxes[row][i] = null;		    	
+		    	self.boxes[row][i] = null;			    	
     		}        	
     	};
 
@@ -841,8 +843,8 @@ var MuprisGameLayer = cc.Layer.extend({
     				if( !t.isAligning ) {
         	    		moveHorizontalyAndCheckForBarrier(t,lp,tp);    					
         			
-	    	    		if(tp.y < lp.y && !t.isRotating) {
-	    	    			t.fallingSpeed = Math.min(FALLING_SPEED * 36, lp.y - tp.y);
+	    	    		if(tp.y < lp.y - BS*2 && !t.isRotating) {
+	    	    			t.fallingSpeed = Math.min(FALLING_SPEED * 36, lp.y - BS*2 - tp.y);
 	    	    		} else {
 	    	    			t.fallingSpeed = FALLING_SPEED;
 	    	    		}
