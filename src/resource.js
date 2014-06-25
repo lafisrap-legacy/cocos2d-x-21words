@@ -1,4 +1,6 @@
 var res = {
+    tiles_png : "res/images/tiles.png",
+    tiles_plist : 'res/images/tiles.plist',
     letters_png : "res/images/letters/letters.png",
     letters_plist : 'res/images/letters/letters.plist',
 	title_png : "res/images/title.png",
@@ -15,13 +17,15 @@ var g_resources = [
     res.HelloWorld_png,
     res.CloseNormal_png,
     res.CloseSelected_png,
+    res.tiles_png,
     res.letters_png,
     res.empty_png,
     res.title_png,
     res.background_png,
 
     //plist
-    res.letters_plist
+    res.letters_plist,
+    res.tiles_plist
     
     //fnt
 
