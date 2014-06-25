@@ -34,9 +34,15 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			if( words && cb ) {
 				cc.log("checkForPrefixes: Found "+words.length+" words at "+brc.row+"/"+i);
 				
-				// check if words are too long ...
+				var w = [];
+				for( var j=0 ; j<words.length ; j++ ) w[j] = words[j].word; 
+				for( var j=words.length-1 ; j>=0 ; j-- ) {
+					if( i + w[j].length > BOXES_PER_ROW ) {
+						words.splice(j,1);
+					}
+				}
 				
-				cb({row:brc.row,col:i}, words);
+				if( words.length > 0 ) cb({row:brc.row,col:i}, words);
 			}
 		}
 	};
