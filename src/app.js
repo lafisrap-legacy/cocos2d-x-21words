@@ -18,7 +18,7 @@ var TAG_SPRITE_MANAGER = 1,
 	GAME_OVER_COL = 16,
 	BOXES_PER_ROW = 10,
 	BOXES_X_OFFSET = 0,
-	BOXES_Y_OFFSET = 0,
+	BOXES_Y_OFFSET = 64,
 	SNAP_SPEED = 10.0, // pixel per 1/60
 	FALLING_SPEED = 0.33, // pixel per 1/60
 	MOVE_SPEED = 0.09, // seconds
@@ -67,8 +67,8 @@ var MuprisGameLayer = cc.Layer.extend({
         if( typeof MUPRIS_MODULE !== 'undefined' ) MUPRIS_MODULE(this);
 
         this.startAnimation();
-        this.loadImages();
         this.initBoxSpace();
+        this.loadImages();
         
 	    this.tiles = [];
         return true;
@@ -128,7 +128,7 @@ var MuprisGameLayer = cc.Layer.extend({
             scale: 1.5,
             rotation: 0,
         });
-        this.addChild(title, 1);
+        this.addChild(title, 0);
 
         var sequenceA = cc.fadeIn(3);
         var sequenceB = cc.Spawn.create(cc.rotateTo(2,0),cc.scaleTo(2,10,10),cc.fadeOut(2));
@@ -145,11 +145,13 @@ var MuprisGameLayer = cc.Layer.extend({
 	        cc.spriteFrameCache.addSpriteFrames(res.tiles_plist);
 	        var tilesTexture = cc.textureCache.addImage(res.tiles_png),
 	        	tilesImages  = cc.SpriteBatchNode.create(tilesTexture,200);
-			this.addChild(tilesImages, 0, TAG_SPRITE_MANAGER);			
+			this.addChild(tilesImages, 10, TAG_SPRITE_MANAGER);			
 		}
 	},
 	
 	initBoxSpace: function() {
+        var size = this.size;
+        
 	    // initialize boxes arrays
 	    for( var i=0 ; i<BOXES_PER_COL ; i++ ) {
 		    for( var j=0 ; j<BOXES_PER_ROW ; j++ ) {
@@ -160,9 +162,9 @@ var MuprisGameLayer = cc.Layer.extend({
 
 	    // draw grid
 	    this.drawNode = cc.DrawNode.create();
-        this.addChild(this.drawNode,100);
+        this.addChild(this.drawNode,0);
         this.drawNode.clear();
-        for( var i=0 ; i<=BOXES_PER_ROW ; i++ ) {
+/*        for( var i=0 ; i<=BOXES_PER_ROW ; i++ ) {
             this.drawNode.drawSegment(cc.p(BOXES_X_OFFSET+i*BS,BOXES_Y_OFFSET), 
             						  cc.p(BOXES_X_OFFSET+i*BS,BOXES_Y_OFFSET+BOXES_PER_COL*BS),
             						  1,
@@ -173,7 +175,11 @@ var MuprisGameLayer = cc.Layer.extend({
             						  cc.p(BOXES_X_OFFSET+BOXES_PER_ROW*BS,BOXES_Y_OFFSET+i*BS),
             						  1,
             						  cc.color(255,100,100,30));         	
-        }
+        }*/
+        this.drawNode.drawPoly([cc.p(0,0),cc.p(size.width,0),cc.p(size.width,BS),cc.p(0,BS)],
+        						new cc.Color(0,0,0,255), 
+        						1, 
+        						new cc.Color(0,0,0,255));
 	},
 	
     initListeners: function() {
@@ -483,7 +489,7 @@ var MuprisGameLayer = cc.Layer.extend({
     	var getRowCol = function(box, lp) {
     		return {
     			col: Math.round((lp.x + box.x - BOXES_X_OFFSET - BS/2) / BS),
-    			row: Math.round((lp.y + box.y - BOXES_X_OFFSET - BS) / BS),
+    			row: Math.round((lp.y + box.y - BOXES_Y_OFFSET - BS) / BS),
     		}
     	};
     	
@@ -772,11 +778,13 @@ var MuprisGameLayer = cc.Layer.extend({
 
         	// delete row ... 
         	for( var i=0 ; i<BOXES_PER_ROW ; i++ ) {
-		    	if( self.hookDeleteBox ) self.hookDeleteBox(self.boxes[row][i]);
-
-        		// destroy sprite and box        		
-            	batch.removeChild(self.boxes[row][i].sprite);
-		    	self.boxes[row][i] = null;			    	
+		    	if( !self.hookDeleteBox || self.hookDeleteBox({row:row,col:i}) ) {
+		    		
+	        		// destroy sprite and box        		
+	            	batch.removeChild(self.boxes[row][i].sprite);
+	            	self.boxes[row][i].sprite = null;
+			    	self.boxes[row][i] = null;		    			    		
+		    	}
     		}        	
     	};
 
