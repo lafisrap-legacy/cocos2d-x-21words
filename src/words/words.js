@@ -16,7 +16,11 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	STAGE_COLORS = [{r:255,g:0,b:0},{r:0,g:255,b:0},{r:0,g:0,b:255},{r:255,g:0,b:255}],
 	TINT_SPEED = 1.0,
 	MARKER_SET = 1,
-	MARKER_OPT = 2;
+	MARKER_OPT = 2,
+	START_MARKER_X_OFFSET = -18,
+	START_MARKER_Y_OFFSET =  BS/2,
+	MARKER_X_OFFSET = BS/2,
+	MARKER_Y_OFFSET = -20;
 
 var MUPRIS_MODULE = function(muprisLayer) {
 
@@ -58,11 +62,22 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		
 		// Define sprites and show word start sprite
 		var setMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker0.png"),
-			optMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker1.png"),
-			startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2.png"),cc.rect(0,0,BS,BS));
-		startMarker.retain();
-		startMarker.setPosition(cc.p(BOXES_X_OFFSET + sw.brc.col * 64 - 18,BOXES_Y_OFFSET + sw.brc.row * 64 + 32));
-		batch.addChild(startMarker,5	);
+			optMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker1.png");
+		
+		if( !sw.startMarker ) {
+			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2.png"),cc.rect(0,0,BS,BS));
+			sw.startMarker.retain();			
+			sw.startMarker.setPosition(cc.p(BOXES_X_OFFSET + sw.brc.col * BS + START_MARKER_X_OFFSET,
+											BOXES_Y_OFFSET + sw.brc.row * BS + START_MARKER_Y_OFFSET));
+			batch.addChild(sw.startMarker,5);
+		}
+		var pos = sw.startMarker.getPosition(),
+			row = Math.round(pos.y-BOXES_Y_OFFSET-START_MARKER_Y_OFFSET)/BS;
+		if( row != sw.brc.row ) {
+			var rows = row - sw.brc.row;
+			sw.startMarker.runAction(cc.moveBy(MOVE_SPEED*rows, cc.p(0,-BS*rows)));			
+		}
+
 				
 		// Mark letters
 		// First look for all words that are still possible
@@ -108,9 +123,18 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					cc.assert(sw.sprites[col], "Mupris, updateSelectedWord: sprite is null.");
 					
 					sw.sprites[col].retain();
-					sw.sprites[col].setPosition(cc.p(BOXES_X_OFFSET + i * BS + BS/2, BOXES_Y_OFFSET + sw.brc.row * BS - 20));
 					batch.addChild(sw.sprites[col],5);
+					sw.sprites[col].setPosition(cc.p(BOXES_X_OFFSET + i * BS + MARKER_X_OFFSET, 
+							   						 BOXES_Y_OFFSET + sw.brc.row * BS + MARKER_Y_OFFSET));
 				}	
+			}
+			if( sw.sprites[col] ) {
+				var pos = sw.sprites[col].getPosition(),
+					row = Math.round(pos.y-BOXES_Y_OFFSET-MARKER_Y_OFFSET)/BS;
+				if( row != sw.brc.row ) {
+					var rows = row - sw.brc.row;
+					sw.sprites[col].runAction(cc.moveBy(MOVE_SPEED*rows, cc.p(0,-BS*rows)));			
+				}
 			}
 		}
 		
@@ -241,6 +265,18 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		return true;
 	};
 	
+	muprisLayer.hookMoveBoxDown = function(to,from) {
+		cc.log("to: ("+to.row+"/"+to.col+") from: ("+from.row+"/"+from.col+")");
+		var sw = ml.selectedWord;
+		if( sw && sw.brc.row === from.row && sw.brc.col === from.col ) {
+			sw.brc.row = to.row;
+			sw.brc.col = to.col;
+		}
+	};
+	
+	muprisLayer.hookAllBoxesMovedDown = function() {
+		updateSelectedWord();					
+	};
 	
 	// read json file with words
 	cc.loader.loadJson("res/words/dewords.words.json", function(err, text) {

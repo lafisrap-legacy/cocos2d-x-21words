@@ -27,9 +27,6 @@ var TAG_SPRITE_MANAGER = 1,
 	KEY_UP_CODE = 38,
 	KEY_RIGHT_CODE = 39,
 	KEY_DOWN_CODE = 40,
-	LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue"],
-	LETTER_VALUES = {"A":1,"B":3,"C":4,"D":1,"E":1,"F":4,"G":2,"H":2,"I":1,"J":6,"K":4,"L":2,"M":3,"N":1,"O":2,"P":4,"Q":10,"R":1,"S":1,"T":1,"U":1,"V":6,"W":3,"X":8,"Y":10,"Z":3,"Ä":6,"Ö":8,"Ü":6},
-	LETTER_OCCURANCES = [5,2,2,4,15,2,3,4,6,1,2,3,4,9,3,1,1,6,7,6,6,1,1,1,1,1,1,1,1],
 	TILE_BOXES = [
 	              [{x:-1.5*BS,y: 0.0*BS},{x:-0.5*BS,y: 0.0*BS},{x: 0.5*BS,y: 0.0*BS},{x: 1.5*BS,y: 0.0*BS}],
 	              [{x:-0.5*BS,y:-0.5*BS},{x:-0.5*BS,y: 0.5*BS},{x: 0.5*BS,y:-0.5*BS},{x: 0.5*BS,y: 0.5*BS}],
@@ -747,28 +744,39 @@ var MuprisGameLayer = cc.Layer.extend({
     		
     		// move rows above deleted rows down
     		if( rowsDeleted.length ) {
-    			var r = 0,
-					rows = 1,
-					row = rowsDeleted[r],
-					nextRow = rowsDeleted[++r] || null;
-
-    			for( var i=row ; i<BOXES_PER_COL ; i++ ) {
+    			for( var i=0 ; i<BOXES_PER_ROW ; i++ ) {
+    				// don't delete a box when it wasn't actually deleted (though it's row was)  
+    				var rd = [];
+    				for( var j=0 ; j<rowsDeleted.length ; j++) {
+    					if( self.boxes[rowsDeleted[j]][i] === null ) rd.push(rowsDeleted[j]);
+    				}
     				
-					while( i+rows == nextRow) {
-						nextRow = rowsDeleted[++r] || null;
-						rows++;
-					}
+	    			var r = 0,
+					rows = 1,
+					row = rd[0],
+					nextRow = rd[++r] || null;
 
-					for( var j=0 ; j<BOXES_PER_ROW ; j++ ) {
-						
-						var sprite = (self.boxes[i+rows] && self.boxes[i+rows][j] && self.boxes[i+rows][j].sprite) || null;
-						if( sprite ) {
-							sprite.runAction(cc.moveBy(MOVE_SPEED*rows, cc.p(0,-BS*rows)));
-						}
-						
-						self.boxes[i][j] = (self.boxes[i+rows] && self.boxes[i+rows][j]) || null;
-					}					
-				}
+	    			if( rd.length > 0 ) {
+		    			for( var j=row ; j<BOXES_PER_COL ; j++ ) {
+
+	    					while( j+rows == nextRow ) {
+	    						nextRow = rd[++r] || null;
+	    						rows++;
+	    					}
+
+							var sprite = (self.boxes[j+rows] && self.boxes[j+rows][i] && self.boxes[j+rows][i].sprite) || null;
+							if( sprite ) {
+								sprite.runAction(cc.moveBy(MOVE_SPEED*rows, cc.p(0,-BS*rows)));
+							}    						
+
+							self.boxes[j][i] = (self.boxes[j+rows] && self.boxes[j+rows][i]) || null;    
+							
+							if( self.hookMoveBoxDown ) self.hookMoveBoxDown({row:j,col:i},{row:j+rows,col:i});
+	    				}	   
+	    			}
+    			}
+    			
+    			if( self.hookAllBoxesMovedDown ) self.hookAllBoxesMovedDown();
     		}
     	};
     	
