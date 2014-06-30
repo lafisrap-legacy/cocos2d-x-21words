@@ -34,27 +34,77 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	 */
 	
 	// go through box array and look for prefixes
+	var setSelections = function( ) {
+		var s = ml.selections = [];
+		for( var i=0 ; i<BOXES_PER_COL ; i++) {
+			for( var j=0 ; j<BOXES_PER_ROW ; j++ ) {
+				var box = ml.boxes[i][j];				
+				if( box && box.sprite ) box.sprite.setOpacity(UNSELECTED_BOX_OPACITY);				
+			}
+			for( var j=0 ; j<BOXES_PER_ROW-2 ; j++ ) {
+				var box = ml.boxes[i][j];				
+				if(!box) continue;
+				
+				box.words = null;
+				checkForPrefixes({row:i,col:j}, function(brc, words) {
+					var row = ml.boxes[brc.row];
+					for( var k=0 ; k<3 ; k++ ) {
+						var box = ml.boxes[brc.row][brc.col+k];
+						if( box.sprite ) box.sprite.setOpacity(255);
+					}
+					box.words = words;
+					muprisLayer.selections.push({
+						brc: brc,
+						width: BS * 3,
+						height: BS,
+						pos: {
+							x: BOXES_X_OFFSET + brc.col * BS,
+							y: BOXES_Y_OFFSET + brc.row * BS,
+						},
+						box: [
+						      	ml.boxes[brc.row][brc.col],
+						      	ml.boxes[brc.row][brc.col+1],
+						      	ml.boxes[brc.row][brc.col+2],
+						]
+					});
+					
+					// if no word is currently selected, choose the first ...
+					if( !ml.selectedWord ) {
+						ml.selectedWord = {
+							brc: brc,
+							words: words,
+							markers: [],
+							sprites: []
+						}
+						updateSelectedWord();
+					}
+						
+					for( var i=0 ; i<words.length ; i++ ) cc.log("Retrieved word "+words[i].word+" at position "+brc.row+"/"+brc.col);
+				});
+			}
+		}
+	};
+	
+	// look for words at a specified position
 	var checkForPrefixes = function(brc, cb) {
 
-		for( var i=Math.max(0,brc.col-2) ; i<=Math.min(BOXES_PER_ROW-2,brc.col) ; i++) {
-			var prefix = (ml.boxes[brc.row][i]   && ml.boxes[brc.row][i].userData || " ")+
-						 (ml.boxes[brc.row][i+1] && ml.boxes[brc.row][i+1].userData || " ")+
-						 (ml.boxes[brc.row][i+2] && ml.boxes[brc.row][i+2].userData || " "),
-				words = ml.words[prefix];
+		var prefix = (ml.boxes[brc.row][brc.col]   && ml.boxes[brc.row][brc.col].userData || " ")+
+					 (ml.boxes[brc.row][brc.col+1] && ml.boxes[brc.row][brc.col+1].userData || " ")+
+					 (ml.boxes[brc.row][brc.col+2] && ml.boxes[brc.row][brc.col+2].userData || " "),
+			words = ml.words[prefix];
 
-			if( !(ml.boxes[brc.row][i] && ml.boxes[brc.row][i].words) && words && cb ) {
-				cc.log("checkForPrefixes: Found "+words.length+" words at "+brc.row+"/"+i);
-				
-				var w = [];
-				for( var j=0 ; j<words.length ; j++ ) w[j] = words[j].word; 
-				for( var j=words.length-1 ; j>=0 ; j-- ) {
-					if( i + w[j].length > BOXES_PER_ROW ) {
-						words.splice(j,1);
-					}
+		if( !(ml.boxes[brc.row][brc.col] && ml.boxes[brc.row][brc.col].words) && words && cb ) {
+			cc.log("checkForPrefixes: Found "+words.length+" words at "+brc.row+"/"+i);
+			
+			var w = [];
+			for( var i=0 ; i<words.length ; i++ ) w[i] = words[i].word; 
+			for( var i=words.length-1 ; i>=0 ; i-- ) {
+				if( brc.col + w[i].length > BOXES_PER_ROW ) {
+					words.splice(i,1);
 				}
-				
-				if( words.length > 0 ) cb({row:brc.row,col:i}, words);
 			}
+			
+			if( words.length > 0 ) cb(brc,words);
 		}
 	};
 	
@@ -62,6 +112,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	var updateSelectedWord = function() {
 		var sw = ml.selectedWord,
 		batch = ml.getChildByTag(TAG_SPRITE_MANAGER);
+		
+		if( !sw ) return;
 		
 		// Define sprites and show word start sprite
 		var setMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker0.png"),
@@ -191,52 +243,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	muprisLayer.hookTileFixed = function( brcs ) {
 		
-		for( var i=0 ; i<brcs.length ; i++ ) {
-			var brc = brcs[i],
-				box = muprisLayer.boxes[brc.row][brc.col];
-			
-			cc.assert(box , "Mupris, hookTileFixed: box should not be null.")
-				
-			box.color = box.sprite.getColor();
-			box.sprite.setOpacity(UNSELECTED_BOX_OPACITY);
-			checkForPrefixes(brc, function(brc, words) {
-				var row = muprisLayer.boxes[brc.row];
-				for( var i=0 ; i<3 ; i++ ) {
-					var box = muprisLayer.boxes[brc.row][brc.col+i];
-					if( box.sprite ) box.sprite.setOpacity(255);
-				}
-				if( !box.words ) {
-					box.words = words;
-					muprisLayer.selections.push({
-						
-						brc: brc,
-						width: BS * 3,
-						height: BS,
-						pos: {
-							x: BOXES_X_OFFSET + brc.col * BS,
-							y: BOXES_Y_OFFSET + brc.row * BS,
-						},
-						box: [
-						      	ml.boxes[brc.row][brc.col],
-						      	ml.boxes[brc.row][brc.col+1],
-						      	ml.boxes[brc.row][brc.col+2],
-						]
-					});
-					
-					for( var i=0 ; i<words.length ; i++ ) cc.log("Retrieved word "+words[i].word+" at position "+brc.row+"/"+brc.col);
-				}
-				
-				if( !ml.selectedWord ) {
-					ml.selectedWord = {
-						brc: brc,
-						words: words,
-						markers: [],
-						sprites: []
-					}
-					updateSelectedWord();
-				}
-			});
-		}					
+		setSelections();
 	};	
 	
 	muprisLayer.hookDeleteBox = function(brc) {
@@ -280,20 +287,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	};
 	
 	muprisLayer.hookAllBoxesMovedDown = function() {
-		updateSelectedWord();				
-		
-		// look if selections are still valid
-		var s = ml.selections;
-		for( var i=s.length-1 ; i>=0 ; i--) {
-			// check if all three letters are still in a row
-			for( var j=0 ; j<3 ; j++ ) {
-				if( s[i].box[j].userData !== ml.boxes[s[i].brc.row][s[i].brc.col] ) break;
-			}
-			if( i<3 ) {
-				for( var j=0 ; j<3 ; j++ ) s[i].box[j].sprite.setOpacity(UNSELECTED_BOX_OPACITY);
-				s.splice(i,1);
-			}
-		}
+		updateSelectedWord();		
+		setSelections();
 	};
 	
 	// read json file with words
