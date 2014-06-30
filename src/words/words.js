@@ -3,8 +3,10 @@
  * 
  * NEXT STEPS:
  * 
- * - show a selection, 
- * - move selections together with rows, delete them if row is deleted
+ * - refactor selections after delete:
+ * 		- look if selection are still ok, if not, unlight them
+ * 		- look in all rows and columns for new selections, except in those where there are some alreday
+ * 
  * - select a selection
  * - 
  */
@@ -20,7 +22,8 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	START_MARKER_X_OFFSET = -18,
 	START_MARKER_Y_OFFSET =  BS/2,
 	MARKER_X_OFFSET = BS/2,
-	MARKER_Y_OFFSET = -20;
+	MARKER_Y_OFFSET = -20,
+	UNSELECTED_BOX_OPACITY = 128;
 
 var MUPRIS_MODULE = function(muprisLayer) {
 
@@ -78,7 +81,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			sw.startMarker.runAction(cc.moveBy(MOVE_SPEED*rows, cc.p(0,-BS*rows)));			
 		}
 
-				
 		// Mark letters
 		// First look for all words that are still possible
 		var curWords = sw.words.slice();
@@ -196,37 +198,29 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			cc.assert(box , "Mupris, hookTileFixed: box should not be null.")
 				
 			box.color = box.sprite.getColor();
-			box.interval = setInterval(function(box) {	
-				var op = box.sprite.getOpacity();
-				op-=3;
-				if( op >= 128 ) box.sprite.setOpacity(op);
-				else {
-					clearInterval(box.interval);
-					box.interval = null;
-				}
-			},20,box);
+			box.sprite.setOpacity(UNSELECTED_BOX_OPACITY);
 			checkForPrefixes(brc, function(brc, words) {
 				var row = muprisLayer.boxes[brc.row];
 				for( var i=0 ; i<3 ; i++ ) {
 					var box = muprisLayer.boxes[brc.row][brc.col+i];
-					setTimeout(function(box) {
-						if( box.sprite ) box.sprite.setOpacity(255);
-						if( box.interval ) {
-							clearInterval(box.interval);
-							box.interval = null;
-						}
-					}, TINT_SPEED*1000,box);
+					if( box.sprite ) box.sprite.setOpacity(255);
 				}
 				if( !box.words ) {
 					box.words = words;
 					muprisLayer.selections.push({
+						
 						brc: brc,
 						width: BS * 3,
 						height: BS,
 						pos: {
 							x: BOXES_X_OFFSET + brc.col * BS,
 							y: BOXES_Y_OFFSET + brc.row * BS,
-						}
+						},
+						box: [
+						      	ml.boxes[brc.row][brc.col],
+						      	ml.boxes[brc.row][brc.col+1],
+						      	ml.boxes[brc.row][brc.col+2],
+						]
 					});
 					
 					for( var i=0 ; i<words.length ; i++ ) cc.log("Retrieved word "+words[i].word+" at position "+brc.row+"/"+brc.col);
@@ -259,23 +253,47 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		if( box.words ) {
 			var s = ml.selections;
 			for( var i=s.length-1 ; i>=0 ; i--) {
-				if( s[i].brc.col === brc.col && s[i].brc.row === brc.row ) s.splice(i,1);
+				if( s[i].brc.col === brc.col && s[i].brc.row === brc.row ) {
+					s.splice(i,1);
+					cc.log("Mupris, hookDeleteBox: Removing selection "+i+" at pos ("+brc.row+"/"+brc.col+")");
+				}
 			}
 		}
 		return true;
 	};
 	
-	muprisLayer.hookMoveBoxDown = function(to,from) {
-		cc.log("to: ("+to.row+"/"+to.col+") from: ("+from.row+"/"+from.col+")");
+	muprisLayer.hookMoveBoxDown = function(to,from) {		
+		// check if selected word has to move
 		var sw = ml.selectedWord;
 		if( sw && sw.brc.row === from.row && sw.brc.col === from.col ) {
 			sw.brc.row = to.row;
 			sw.brc.col = to.col;
 		}
+		// check if one of the other selections have to be moved
+		var s = ml.selections;
+		for( var i=0 ; i<s.length ; i++) {
+			if( s[i].brc.row === from.row && s[i].brc.col === from.col ) {
+				s[i].brc.row = to.row;
+				s[i].brc.col = to.col;
+			}
+		}
 	};
 	
 	muprisLayer.hookAllBoxesMovedDown = function() {
-		updateSelectedWord();					
+		updateSelectedWord();				
+		
+		// look if selections are still valid
+		var s = ml.selections;
+		for( var i=s.length-1 ; i>=0 ; i--) {
+			// check if all three letters are still in a row
+			for( var j=0 ; j<3 ; j++ ) {
+				if( s[i].box[j].userData !== ml.boxes[s[i].brc.row][s[i].brc.col] ) break;
+			}
+			if( i<3 ) {
+				for( var j=0 ; j<3 ; j++ ) s[i].box[j].sprite.setOpacity(UNSELECTED_BOX_OPACITY);
+				s.splice(i,1);
+			}
+		}
 	};
 	
 	// read json file with words
