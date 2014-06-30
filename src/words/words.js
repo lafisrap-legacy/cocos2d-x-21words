@@ -19,6 +19,7 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	TINT_SPEED = 1.0,
 	MARKER_SET = 1,
 	MARKER_OPT = 2,
+	MARKER_SEL = 3,
 	START_MARKER_X_OFFSET = -18,
 	START_MARKER_Y_OFFSET =  BS/2,
 	MARKER_X_OFFSET = BS/2,
@@ -28,14 +29,9 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 var MUPRIS_MODULE = function(muprisLayer) {
 
 	var ml = muprisLayer;
-	/*
-	 * Initializations
-	 * 
-	 */
-	
 	// go through box array and look for prefixes
 	var setSelections = function( ) {
-		var s = ml.selections = [];
+		var s = [];
 		for( var i=0 ; i<BOXES_PER_COL ; i++) {
 			for( var j=0 ; j<BOXES_PER_ROW ; j++ ) {
 				var box = ml.boxes[i][j];				
@@ -45,15 +41,17 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				var box = ml.boxes[i][j];				
 				if(!box) continue;
 				
+				var oldPrefix = box.words && box.words[0].word.substring(0,3);
 				box.words = null;
 				checkForPrefixes({row:i,col:j}, function(brc, words) {
-					var row = ml.boxes[brc.row];
-					for( var k=0 ; k<3 ; k++ ) {
-						var box = ml.boxes[brc.row][brc.col+k];
-						if( box.sprite ) box.sprite.setOpacity(255);
-					}
+					var newPrefix = words[0].word.substring(0,3);
 					box.words = words;
-					muprisLayer.selections.push({
+					for( var k=0 ; k<3 ; k++ ) {
+						var box1 = ml.boxes[brc.row][brc.col+k];
+						if( box1.sprite ) box1.sprite.setOpacity(255);
+						if( newPrefix != oldPrefix ) box1.sprite.runAction(cc.blink(0.5,3));
+					}
+					s.push({
 						brc: brc,
 						width: BS * 3,
 						height: BS,
@@ -117,7 +115,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		
 		// Define sprites and show word start sprite
 		var setMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker0.png"),
-			optMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker1.png");
+			optMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker1.png"),
+			selMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker3.png");
 		
 		if( !sw.startMarker ) {
 			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2.png"),cc.rect(0,0,BS,BS));
@@ -138,17 +137,18 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		var curWords = sw.words.slice();
 		for( var i=sw.brc.col ; i<BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
-			if( sw.markers[col] === MARKER_SET ) {
+			if( sw.markers[col] === MARKER_SET || sw.markers[col] === MARKER_SEL ) {
 				var letter = ml.boxes[sw.brc.row][i].userData;
 				// take out all words that don't match the letters where markers are set
 				for( var j=curWords.length-1 ; j>=0 ; j-- ) {
-					if( sw.words[j][col] != letter ) curWords.splice(j,1);
+//					cc.log("Murpis, updateSelectedWord: Comparing letters --- "+(curWords[j].word.substring(col,col+1))+" === "+letter+" ?");
+					if( curWords[j].word[col] != letter ) curWords.splice(j,1);
 				}
 			}
 		}
 		for( var i=sw.brc.col ; i<BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
-			if( sw.markers[col] === MARKER_SET ) {
+			if( sw.markers[col] === MARKER_SET || sw.markers[col] === MARKER_SEL ) {
 				// nothing to do
 				for( var j=0 ; j<curWords.length ; j++ ) {
 					cc.assert(ml.boxes[sw.brc.row][i] && curWords[j].word[col] === ml.boxes[sw.brc.row][i].userData, "Mupris, updateSelectedWord: Marker set on a letter that is not correct." );
@@ -243,6 +243,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	muprisLayer.hookTileFixed = function( brcs ) {
 		
+		updateSelectedWord();		
 		setSelections();
 	};	
 	
