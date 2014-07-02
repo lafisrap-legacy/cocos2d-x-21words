@@ -2,12 +2,7 @@
  * Enhancement module for Mupris
  * 
  * NEXT STEPS:
- * 
- * - refactor selections after delete:
- * 		- look if selection are still ok, if not, unlight them
- * 		- look in all rows and columns for new selections, except in those where there are some alreday
- * 
- * - select a selection
+ * - sel/opt/set-Problem: sel macht anderes sel zu set (MARTINA)
  * - 
  */
 
@@ -30,13 +25,19 @@ var MUPRIS_MODULE = function(muprisLayer) {
 
 	var ml = muprisLayer;
 	// go through box array and look for prefixes
-	var setSelections = function( ) {
-		var s = [];
+	var setSelections = function( dontSelectWord ) {
+		var s = [],
+			sw = ml.selectedWord;
+		
 		for( var i=0 ; i<BOXES_PER_COL ; i++) {
+			// dim all boxes in a row
 			for( var j=0 ; j<BOXES_PER_ROW ; j++ ) {
 				var box = ml.boxes[i][j];				
 				if( box && box.sprite ) box.sprite.setOpacity(UNSELECTED_BOX_OPACITY);				
 			}
+			// don't show selections in the row of the selected word
+			if( sw && sw.brc.row === i ) continue;
+			// check all boxes for word starts (prefixes)
 			for( var j=0 ; j<BOXES_PER_ROW-2 ; j++ ) {
 				var box = ml.boxes[i][j];				
 				if(!box) continue;
@@ -67,20 +68,22 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					});
 					
 					// if no word is currently selected, choose the first ...
-					if( !ml.selectedWord ) {
+					if( !dontSelectWord && !ml.selectedWord ) {
 						ml.selectedWord = {
 							brc: brc,
 							words: words,
 							markers: [],
 							sprites: []
 						}
-						updateSelectedWord();
 					}
 						
 					for( var i=0 ; i<words.length ; i++ ) cc.log("Retrieved word "+words[i].word+" at position "+brc.row+"/"+brc.col);
 				});
 			}
 		}
+		
+		ml.selections = s;
+		updateSelectedWord();
 	};
 	
 	// look for words at a specified position
@@ -133,7 +136,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		}
 
 		// Mark letters
-		// First look for all words that are still possible
+		// First look for all words that are still possible, looking at the markers set
 		var curWords = sw.words.slice();
 		for( var i=sw.brc.col ; i<BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
@@ -141,15 +144,15 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				var letter = ml.boxes[sw.brc.row][i].userData;
 				// take out all words that don't match the letters where markers are set
 				for( var j=curWords.length-1 ; j>=0 ; j-- ) {
-//					cc.log("Murpis, updateSelectedWord: Comparing letters --- "+(curWords[j].word.substring(col,col+1))+" === "+letter+" ?");
 					if( curWords[j].word[col] != letter ) curWords.splice(j,1);
 				}
 			}
 		}
 		for( var i=sw.brc.col ; i<BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
-			if( sw.markers[col] === MARKER_SET || sw.markers[col] === MARKER_SEL ) {
-				// nothing to do
+			if( sw.markers[col] === MARKER_SET ) {
+				// just set sprite opacity to full
+				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
 				for( var j=0 ; j<curWords.length ; j++ ) {
 					cc.assert(ml.boxes[sw.brc.row][i] && curWords[j].word[col] === ml.boxes[sw.brc.row][i].userData, "Mupris, updateSelectedWord: Marker set on a letter that is not correct." );
 				}
@@ -157,20 +160,27 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				// remove old sprite
 				if( sw.sprites[col] ) batch.removeChild( sw.sprites[col] );
 				sw.sprites[col] = null;
-				for( var j=0,hits=0 ; j<curWords.length ; j++ ) {
+				for( var j=curWords.length-1,hits=0 ; j>=0 ; j-- ) {
+					// look if the letter in the box matches the letter in the word 
 					if(ml.boxes[sw.brc.row][i] && curWords[j].word[col] === ml.boxes[sw.brc.row][i].userData ) hits++;
 				}
 				if( hits === 0 ) {
 					// letter in box matches with no word
 					sw.markers[col] = null;
+				} else if( sw.markers[col] === MARKER_SEL ) {
+					// if the user marked the letter, than show marker select sprite
+					sw.sprites[col] = cc.Sprite.create(selMarkerFrame,cc.rect(0,0,BS,BS));
+					ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
 				} else if( hits === curWords.length ) {
 					// letter in box matches with all words, draw sprite
 					sw.markers[col] = MARKER_SET;
 					sw.sprites[col] = cc.Sprite.create(setMarkerFrame,cc.rect(0,0,BS,BS));
+					ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
 				} else {
-					// letter in box matches with all words, draw sprite
+					// letter in box matches with some words, draw marker option sprite
 					sw.markers[col] = MARKER_OPT;
 					sw.sprites[col] = cc.Sprite.create(optMarkerFrame,cc.rect(0,0,BS,BS));					
+					ml.boxes[sw.brc.row][i].sprite.setOpacity(UNSELECTED_BOX_OPACITY);	
 				}
 				
 				if( hits > 0 ) {
@@ -193,6 +203,32 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		}
 		
 		// look if all marked letters form a complete word, then make them green
+	};
+	
+	moveSelectedWord = function(brc) {
+		var sw = ml.selectedWord;
+		
+		if( sw ) {
+			var batch = ml.getChildByTag(TAG_SPRITE_MANAGER);
+			
+			// first delete old sprites
+			if( sw.startMarker ) batch.removeChild( sw.startMarker );
+			for( var i=0 ; i<sw.sprites.length ; i++ ) if( sw.sprites[i]  ) batch.removeChild( sw.sprites[i] );
+		}
+			
+		// define a new one
+		if( brc ) {
+			ml.selectedWord = {
+				brc: brc,
+				words: ml.boxes[brc.row][brc.col].words,
+				markers: [],
+				sprites: []
+			};				
+		} else {
+			ml.selectedWord = null;
+		}
+		
+		updateSelectedWord();
 	};
 	
 	/*
@@ -251,21 +287,11 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		var sw = ml.selectedWord,
 			box = ml.boxes[brc.row][brc.col];
 		
-		if( sw && sw.brc.row === brc.row && sw.markers[brc.col-sw.brc.col] === MARKER_SET ) return false;
+		if( sw && sw.brc.row === brc.row && (sw.markers[brc.col-sw.brc.col] === MARKER_SET || sw.markers[brc.col-sw.brc.col] === MARKER_SEL) ) return false;
 
 		if( box.interval ) {
 			clearInterval(box.interval);
 			box.interval = null;
-		}
-		// look if there is a selection starting at this position ...
-		if( box.words ) {
-			var s = ml.selections;
-			for( var i=s.length-1 ; i>=0 ; i--) {
-				if( s[i].brc.col === brc.col && s[i].brc.row === brc.row ) {
-					s.splice(i,1);
-					cc.log("Mupris, hookDeleteBox: Removing selection "+i+" at pos ("+brc.row+"/"+brc.col+")");
-				}
-			}
 		}
 		return true;
 	};
@@ -290,6 +316,50 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	muprisLayer.hookAllBoxesMovedDown = function() {
 		updateSelectedWord();		
 		setSelections();
+	};
+	
+	muprisLayer.hookOnTap = function(tapPos, notBrc) {
+		var sw = ml.selectedWord;
+		if( sw ) {
+			var swPos = { 
+					x: BOXES_X_OFFSET + sw.brc.col * BS,
+					y: BOXES_Y_OFFSET + sw.brc.row * BS
+			};			
+		} 
+		
+		// check if selected word is hit
+		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y && tapPos.y <= swPos.y + BS ) {
+			var col = Math.floor((tapPos.x - swPos.x)/BS),
+				marker = sw.markers[col];
+			if( marker === MARKER_OPT || marker === MARKER_SEL ) {
+				cc.assert(ml.boxes[sw.brc.row][sw.brc.col+col].sprite, "Mupris, hookOnTap: There must be a sprite at position "+sw.brc.row+"/"+(sw.brc.col+col)+".");
+				if( marker === MARKER_OPT ) {
+					sw.markers[col] = MARKER_SEL;
+					ml.boxes[sw.brc.row][sw.brc.col+col].sprite.setOpacity(255);	
+				} else {
+					sw.markers[col] = MARKER_OPT;					
+					ml.boxes[sw.brc.row][sw.brc.col+col].sprite.setOpacity(UNSELECTED_BOX_OPACITY);	
+				}
+				updateSelectedWord();
+			} else {
+				moveSelectedWord(null);
+				setSelections(true);
+				ml.hookOnTap(tapPos, sw.brc);
+			}
+		} else {
+			for( var i=0 ; i<ml.selections.length ; i++) {
+				var s = ml.selections[i];
+
+				if( notBrc && notBrc.col === s.brc.col && notBrc.row === s.brc.row ) continue;
+				
+				if( tapPos.x >= s.pos.x && tapPos.x <= s.pos.x+s.width && tapPos.y >= s.pos.y && tapPos.y <= s.pos.y+s.height ) {
+					moveSelectedWord(s.brc);
+					setSelections();
+				}
+			}
+		}
+		
+
 	};
 	
 	// read json file with words

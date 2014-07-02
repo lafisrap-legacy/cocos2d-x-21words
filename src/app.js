@@ -288,6 +288,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	                
 	                if(!self.isSwipeUp && !self.isSwipeLeft && !self.isSwipeRight && !self.isSwipeDown) {
 	                	self.isTap = true;
+	                	if( self.hookOnTap ) self.hookOnTap(loc);
 	                } else {
 		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
 	                }
