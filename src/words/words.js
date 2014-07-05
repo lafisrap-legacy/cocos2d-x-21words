@@ -25,7 +25,8 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	START_MARKER_Y_OFFSET = BS/2,
 	MARKER_X_OFFSET = BS/2,
 	MARKER_Y_OFFSET = -20,
-	UNSELECTED_BOX_OPACITY = 128;
+	UNSELECTED_BOX_OPACITY = 128,
+	NEEDED_LETTERS_PROBABILITY = 0.5;
 
 var MUPRIS_MODULE = function(muprisLayer) {
 
@@ -108,7 +109,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			words = ml.words[prefix];
 
 		if( !(ml.boxes[brc.row][brc.col] && ml.boxes[brc.row][brc.col].words) && words && cb ) {
-			cc.log("checkForPrefixes: Found "+words.length+" words at "+brc.row+"/"+i);
+			cc.log("checkForPrefixes: Found "+words.length+" words at "+brc.row+"/"+brc.col);
 			
 			var w = [];
 			for( var i=0 ; i<words.length ; i++ ) w[i] = words[i].word; 
@@ -150,7 +151,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 
 		// Mark letters
 		// First look for all words that are still possible, looking at the markers set
-		var curWords = sw.words.slice();
+		var curWords = sw.words.slice(),
+			missingLetters = "";
 		for( var i=sw.brc.col ; i<BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
 			if( sw.markers[col] === MARKER_SET || sw.markers[col] === MARKER_SEL ) {
@@ -176,6 +178,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				for( var j=curWords.length-1,hits=0 ; j>=0 ; j-- ) {
 					// look if the letter in the box matches the letter in the word 
 					if(ml.boxes[sw.brc.row][i] && curWords[j].word[col] === ml.boxes[sw.brc.row][i].userData ) hits++;
+					else if( curWords[j].word[col] ) missingLetters += curWords[j].word[col];
 				}
 				if( hits === 0 ) {
 					// letter in box matches with no word
@@ -214,6 +217,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				}
 			}
 		}
+		
+		sw.missingLetters = missingLetters;
 		
 		// look if all marked letters form a complete word, then make them green
 	};
@@ -264,9 +269,13 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	        	y1 = Math.random()*ml.size.height,
 	        	bezier = [cc.p(word.x,word.y),
 	                      cc.p(x1,y1),
-	                      cc.p(x2,y2)];
-	        word.runAction(cc.sequence(cc.spawn(cc.rotateBy(5,-1080,-1080),cc.bezierTo(5,bezier)),cc.callFunc(function(){
-	        	batch.removeChild(this);
+	                      cc.p(x2,y2)],
+	            rotateAction = cc.rotateBy(5,-1080,-1080),
+	            bezierAction = cc.bezierTo(5,bezier);
+//	        word.runAction(cc.sequence(cc.spawn(cc.rotateBy(5,-1080,-1080),cc.bezierTo(5,bezier)),cc.callFunc(function(){
+	        word.runAction(rotateAction);
+	        word.runAction(cc.sequence(bezierAction,cc.callFunc(function(){
+	        	ml.removeChild(this);
 	        },word)));
 		}
 	};
@@ -304,7 +313,9 @@ var MUPRIS_MODULE = function(muprisLayer) {
         // add single boxes with letters to the tile
         for( var i=0 ; i<tileBoxes.length ; i++) {
         	
-        	var val = Math.floor(this.getRandomValue(LETTER_OCCURANCES)),
+        	var sw = ml.selectedWord;
+        	var val = (Math.random()>NEEDED_LETTERS_PROBABILITY || !sw || !sw.missingLetters.length)?  Math.floor(this.getRandomValue(LETTER_OCCURANCES)):
+						  		     LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]),
     			spriteFrame = cc.spriteFrameCache.getSpriteFrame(LETTER_NAMES[val]),
     			sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,BS,BS));
     	
