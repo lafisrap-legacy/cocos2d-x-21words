@@ -2,6 +2,12 @@
  * Enhancement module for Mupris
  * 
  * NEXT STEPS:
+ * - Fehler selected Word too far down 
+ * - Show all possibilities if word is selected (animation)
+ * - 50% of all letters are letters needed
+ * - show whole word ...
+ * 
+ * 
  * - sel/opt/set-Problem: sel macht anderes sel zu set (MARTINA)
  * - 
  */
@@ -16,7 +22,7 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	MARKER_OPT = 2,
 	MARKER_SEL = 3,
 	START_MARKER_X_OFFSET = -18,
-	START_MARKER_Y_OFFSET =  BS/2,
+	START_MARKER_Y_OFFSET = BS/2,
 	MARKER_X_OFFSET = BS/2,
 	MARKER_Y_OFFSET = -20,
 	UNSELECTED_BOX_OPACITY = 128;
@@ -50,7 +56,9 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					for( var k=0 ; k<3 ; k++ ) {
 						var box1 = ml.boxes[brc.row][brc.col+k];
 						if( box1.sprite ) box1.sprite.setOpacity(255);
-						if( newPrefix != oldPrefix ) box1.sprite.runAction(cc.blink(0.5,3));
+						if( newPrefix != oldPrefix ) {
+							box1.sprite.runAction(cc.blink(0.5,3));
+						}
 					}
 					s.push({
 						brc: brc,
@@ -75,6 +83,11 @@ var MUPRIS_MODULE = function(muprisLayer) {
 							markers: [],
 							sprites: []
 						}
+						
+						var x = BOXES_X_OFFSET + brc.col*BS + 1.5*BS,
+							y = BOXES_Y_OFFSET + brc.row*BS + 1.5*BS;
+						
+						blowWords(cc.p(x,y),words);
 					}
 						
 					for( var i=0 ; i<words.length ; i++ ) cc.log("Retrieved word "+words[i].word+" at position "+brc.row+"/"+brc.col);
@@ -205,7 +218,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		// look if all marked letters form a complete word, then make them green
 	};
 	
-	moveSelectedWord = function(brc) {
+	var moveSelectedWord = function(brc) {
 		var sw = ml.selectedWord;
 		
 		if( sw ) {
@@ -231,6 +244,33 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		updateSelectedWord();
 	};
 	
+	
+	var blowWords = function(pos, words) {
+
+		var angle = Math.random() * 360;
+		for( var i=0 ; i<words.length ; i++ ) {
+			var word = cc.LabelTTF.create(words[i].word, "Arial", 38),
+	        	x = pos.x + Math.sin(cc.degreesToRadians(angle))*100,
+	        	y = pos.y + Math.cos(cc.degreesToRadians(angle))*100;
+			
+			word.setPosition(x,y);
+	        word.setRotation(angle+90);
+	        word.retain();
+	        angle = (angle+79)%360;
+	        ml.addChild(word, 5);
+	        var x2 = Math.random()>0.5? -400 : ml.size.width + 400,
+	        	y2 = Math.random()*ml.size.height,
+	        	x1 = x2<0? ml.size.width:0,
+	        	y1 = Math.random()*ml.size.height,
+	        	bezier = [cc.p(word.x,word.y),
+	                      cc.p(x1,y1),
+	                      cc.p(x2,y2)];
+	        word.runAction(cc.sequence(cc.spawn(cc.rotateBy(5,-1080,-1080),cc.bezierTo(5,bezier)),cc.callFunc(function(){
+	        	batch.removeChild(this);
+	        },word)));
+		}
+	};
+	
 	/*
 	 * hookLoadImages
 	 * 
@@ -241,7 +281,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		cc.spriteFrameCache.addSpriteFrames(res.letters_plist);
 	    var lettersTexture = cc.textureCache.addImage(res.letters_png),
 	    	lettersImages  = cc.SpriteBatchNode.create(lettersTexture,200);
-	    muprisLayer.addChild(lettersImages, 0, TAG_SPRITE_MANAGER);
+	    muprisLayer.addChild(lettersImages, 2, TAG_SPRITE_MANAGER);
 	};
 
 	/*
@@ -279,7 +319,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	muprisLayer.hookTileFixed = function( brcs ) {
 		
-		updateSelectedWord();		
 		setSelections();
 	};	
 	
@@ -314,7 +353,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	};
 	
 	muprisLayer.hookAllBoxesMovedDown = function() {
-		updateSelectedWord();		
 		setSelections();
 	};
 	
@@ -355,6 +393,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				if( tapPos.x >= s.pos.x && tapPos.x <= s.pos.x+s.width && tapPos.y >= s.pos.y && tapPos.y <= s.pos.y+s.height ) {
 					moveSelectedWord(s.brc);
 					setSelections();
+					blowWords(cc.p(s.pos.x,s.pos.y),s.box[0].words);
 				}
 			}
 		}
@@ -368,4 +407,5 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			muprisLayer.words = text;
 		}
 	});
+	
 };

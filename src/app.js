@@ -159,7 +159,7 @@ var MuprisGameLayer = cc.Layer.extend({
 
 	    // draw grid
 	    this.drawNode = cc.DrawNode.create();
-        this.addChild(this.drawNode,0);
+        this.addChild(this.drawNode,1);
         this.drawNode.clear();
 /*        for( var i=0 ; i<=BOXES_PER_ROW ; i++ ) {
             this.drawNode.drawSegment(cc.p(BOXES_X_OFFSET+i*BS,BOXES_Y_OFFSET), 
