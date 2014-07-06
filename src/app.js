@@ -377,11 +377,10 @@ var MuprisGameLayer = cc.Layer.extend({
 	buildTile: function(p) {
 		
 		// select a random tile type
-		var newTile = this.getRandomValue(TILE_OCCURANCES),
+		var self = this,
+			newTile = self.hookSetTile? self.hookSetTile() : this.getRandomValue(TILE_OCCURANCES),
 			tileBoxes = TILE_BOXES[newTile],
 			userData = {};
-		
-		//tileBoxes = TILE_BOXES[Math.floor(Math.random()*1)+0];
 		
 		// set tile sprite to a column
 		p.x = Math.round(p.x/BS)*BS+(32-(Math.abs(tileBoxes[0].x)%BS));

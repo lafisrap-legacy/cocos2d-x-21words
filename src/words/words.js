@@ -2,14 +2,27 @@
  * Enhancement module for Mupris
  * 
  * NEXT STEPS:
- * - Fehler selected Word too far down 
- * - Show all possibilities if word is selected (animation)
- * - 50% of all letters are letters needed
- * - show whole word ...
+ * show whole word ...
+ * - make a yellow background sprite
+ * - copy all letter sprites into this sprite
+ * - scale background sprite to full frame
+ * - let is grow and rotate to top golden schnitt 
+ * - Ask: "Hinzufügen", "wegwerfen"
+ * - Put into "Wort-Schatz"
  * 
+ * Next: Show Wort-Schatz (Wert)
  * 
- * - sel/opt/set-Problem: sel macht anderes sel zu set (MARTINA)
- * - 
+ * Next: Medals 
+ * 
+ * Diamonds: Only Sphinx-Mode
+ * 
+ * White:
+ * Blue:
+ * Red:
+ * Purple:
+ * Pink:
+ * Green:
+ * 
  */
 
 var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.png","i.png","j.png","k.png","l.png","m.png","n.png","o.png","p.png","q.png","r.png","s.png","t.png","u.png","v.png","w.png","x.png","y.png","z.png","ae.png","oe.png","ue.png"],
@@ -27,11 +40,21 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	MARKER_Y_OFFSET = -20,
 	UNSELECTED_BOX_OPACITY = 128,
 	NEEDED_LETTERS_PROBABILITY = 0.5
-	MAX_LETTERS_BLOWN = 20;
+	MAX_LETTERS_BLOWN = 20,
+	TILES_PROGRAMS = [[
+	      { tile: 0, letters: "FAST" },
+	      { tile: 1, letters: "EFGH" },
+	      { tile: 2, letters: "IJKL" },
+	      { tile: 3, letters: "MNOP" },
+	   ]
+	];
 
 var MUPRIS_MODULE = function(muprisLayer) {
 
-	var ml = muprisLayer;
+	var ml = muprisLayer,
+		curProgram = null,
+		curProgramCnt = null;
+	
 	// go through box array and look for prefixes
 	var setSelections = function( dontSelectWord ) {
 		var s = [],
@@ -222,6 +245,37 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		sw.missingLetters = missingLetters;
 		
 		// look if all marked letters form a complete word, then make them green
+		for( var i=0 ; i<curWords.length ; i++ ) {
+			var word = curWords[i].word;
+			for( var j=0 ; j<word.length ; j++ ) {
+				if( !ml.boxes[sw.brc.row][j+sw.brc.col] || 
+					word[j] !== ml.boxes[sw.brc.row][j+sw.brc.col].userData || 
+				   (sw.markers[j] !== MARKER_SET && sw.markers[j] !== MARKER_SEL)) 
+						break;
+			}
+			if( j === word.length ) {
+				showFullWord( sw.brc , word , function( yesOrNo ) {
+					// delete complete row here or just take out the word from the word list, 
+					// if it was last word, take out prefix also
+				});
+			}
+		}
+	};
+	
+	var showFullWord = function( brc , word , cb ) {
+		var batch = ml.getChildByTag(TAG_SPRITE_MANAGER),
+			x = BOXES_X_OFFSET + brc.col * BS,
+			y = BOXES_Y_OFFSET + brc.row * BS,
+			width = word.length * BS,
+			height = BS;
+		
+		// create yellow frame sprite
+		var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png");
+		
+		var	wordFrameSprite = cc.Sprite.create(wordFrameFrame,cc.rect(0,0,width,height));
+		wordFrameSprite.retain();			
+		wordFrameSprite.setPosition(cc.p(x+width/2 , y+height/2));
+		batch.addChild(wordFrameSprite,15);
 	};
 	
 	var moveSelectedWord = function(brc) {
@@ -292,6 +346,19 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		}
 	};
 	
+	var startProgram = function(program) {
+	    // start program
+	    curProgram = program;
+	    curProgramCnt = 0;
+	};
+	
+	var incCurrentProgram = function() {
+		if( ++curProgramCnt >= TILES_PROGRAMS[curProgram].length ) {
+			curProgram = null;
+			curProgramCnt = null;
+		}
+	};
+	
 	/*
 	 * hookLoadImages
 	 * 
@@ -303,6 +370,21 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	    var lettersTexture = cc.textureCache.addImage(res.letters_png),
 	    	lettersImages  = cc.SpriteBatchNode.create(lettersTexture,200);
 	    muprisLayer.addChild(lettersImages, 2, TAG_SPRITE_MANAGER);
+	    
+	    startProgram(0);
+	};
+	
+	/*
+	 * hookSetTile
+	 * 
+	 * Called before building a tile to choose a tile
+	 * 
+	 * Param: none 
+	 * 
+	 */
+	muprisLayer.hookSetTile = function() {
+		if( curProgram !== null ) return TILES_PROGRAMS[curProgram][curProgramCnt].tile;
+		else return ml.getRandomValue(TILE_OCCURANCES);
 	};
 
 	/*
@@ -326,9 +408,15 @@ var MUPRIS_MODULE = function(muprisLayer) {
         for( var i=0 ; i<tileBoxes.length ; i++) {
         	
         	var sw = ml.selectedWord;
-        	var val = (Math.random()>NEEDED_LETTERS_PROBABILITY || !sw || !sw.missingLetters.length)?  Math.floor(this.getRandomValue(LETTER_OCCURANCES)):
-						  		     LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]),
-    			spriteFrame = cc.spriteFrameCache.getSpriteFrame(LETTER_NAMES[val]),
+        	if( curProgram !== null ) {
+        		var val = LETTERS.indexOf(TILES_PROGRAMS[curProgram][curProgramCnt].letters[i]);
+        	} else {
+	         	var val = (Math.random()>NEEDED_LETTERS_PROBABILITY || !sw || !sw.missingLetters.length)?  
+	        					Math.floor(this.getRandomValue(LETTER_OCCURANCES)):
+	        					LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]);
+        	}
+       					
+    		var	spriteFrame = cc.spriteFrameCache.getSpriteFrame(LETTER_NAMES[val]),
     			sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,BS,BS));
     	
     		sprite.retain();
@@ -336,6 +424,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
         	userData[i] = LETTERS[val];
 	        tileSprite.addChild(sprite);
         }
+        
+        if( curProgram !== null ) incCurrentProgram();
         
         return tileSprite;
 	};	
@@ -389,7 +479,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		} 
 		
 		// check if selected word is hit
-		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y && tapPos.y <= swPos.y + BS*2 ) {
+		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y - BS && tapPos.y <= swPos.y + BS ) {
 			var col = Math.floor((tapPos.x - swPos.x)/BS),
 				marker = sw.markers[col];
 			if( marker === MARKER_OPT || marker === MARKER_SEL ) {
@@ -443,6 +533,16 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	cc.loader.loadJson("res/words/dewords.words.json", function(err, text) {
 		if( !err ) {
 			muprisLayer.words = text;
+			
+			// check if word file is compatible
+			for( var prefix in text ) {
+				var words = text[prefix];
+				cc.assert(words && words[0].word, "Mupris, json loader: Prefix "+prefix+" has no words.");
+				for( var j=0 ; j<words.length ; j++ ) {
+					cc.assert(words[j].word.length >=4 && words[j].word.length <= BOXES_PER_ROW, 
+							"Mupris, json loader: Word '"+words[j].word+"' has wrong length.");	
+				}
+			}
 		}
 	});
 	
