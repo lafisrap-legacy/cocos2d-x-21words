@@ -26,7 +26,8 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	MARKER_X_OFFSET = BS/2,
 	MARKER_Y_OFFSET = -20,
 	UNSELECTED_BOX_OPACITY = 128,
-	NEEDED_LETTERS_PROBABILITY = 0.5;
+	NEEDED_LETTERS_PROBABILITY = 0.5
+	MAX_LETTERS_BLOWN = 20;
 
 var MUPRIS_MODULE = function(muprisLayer) {
 
@@ -252,8 +253,10 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	var blowWords = function(pos, words) {
 
-		var angle = Math.random() * 360;
-		for( var i=0 ; i<words.length ; i++ ) {
+		var angle = Math.random() * 360,
+			i = (words.length < MAX_LETTERS_BLOWN)? 0:
+				Math.floor(Math.random()*(words.length-MAX_LETTERS_BLOWN));
+		for( ; i<Math.min(words.length,MAX_LETTERS_BLOWN) ; i++ ) {
 			var word = cc.LabelTTF.create(words[i].word, "Arial", 38),
 	        	x = pos.x + Math.sin(cc.degreesToRadians(angle))*100,
 	        	y = pos.y + Math.cos(cc.degreesToRadians(angle))*100;
@@ -271,8 +274,17 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	                      cc.p(x1,y1),
 	                      cc.p(x2,y2)],
 	            rotateAction = cc.rotateBy(5,-1080,-1080),
-	            bezierAction = cc.bezierTo(5,bezier);
-//	        word.runAction(cc.sequence(cc.spawn(cc.rotateBy(5,-1080,-1080),cc.bezierTo(5,bezier)),cc.callFunc(function(){
+	            bezierAction = cc.bezierTo(5-Math.random(),bezier),
+	            fadeTime = Math.random()+1,
+	            fadeAction = cc.sequence(
+	            				cc.fadeTo((fadeTime-1)*2,255),
+								cc.fadeTo(fadeTime,128),
+								cc.fadeTo(fadeTime,255),
+								cc.fadeTo(fadeTime,128),
+								cc.fadeTo(fadeTime,255),
+								cc.fadeTo(fadeTime,128)
+	            			);
+	        word.runAction(fadeAction);
 	        word.runAction(rotateAction);
 	        word.runAction(cc.sequence(bezierAction,cc.callFunc(function(){
 	        	ml.removeChild(this);
@@ -377,7 +389,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		} 
 		
 		// check if selected word is hit
-		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y && tapPos.y <= swPos.y + BS ) {
+		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y && tapPos.y <= swPos.y + BS*2 ) {
 			var col = Math.floor((tapPos.x - swPos.x)/BS),
 				marker = sw.markers[col];
 			if( marker === MARKER_OPT || marker === MARKER_SEL ) {
@@ -410,6 +422,21 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		}
 		
 
+	};
+	
+	muprisLayer.hookOnLongTap = function(tapPos) {
+		var sw = ml.selectedWord;
+		if( sw ) {
+			var swPos = { 
+					x: BOXES_X_OFFSET + sw.brc.col * BS,
+					y: BOXES_Y_OFFSET + sw.brc.row * BS
+			};			
+		} 
+		
+		// check if selected word is hit
+		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y && tapPos.y <= swPos.y + BS*2 ) {
+			blowWords(tapPos,sw.words);
+		}
 	};
 	
 	// read json file with words

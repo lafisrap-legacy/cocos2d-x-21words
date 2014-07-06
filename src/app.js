@@ -20,6 +20,7 @@ var TAG_SPRITE_MANAGER = 1,
 	BOXES_X_OFFSET = 0,
 	BOXES_Y_OFFSET = 64,
 	SNAP_SPEED = 10.0, // pixel per 1/60
+	LONG_TAP_TIME = 300, // milliseconds
 	FALLING_SPEED = 0.33, // pixel per 1/60
 	MOVE_SPEED = 0.09, // seconds
     TOUCH_THRESHOLD = 6, // pixel
@@ -46,8 +47,10 @@ var MuprisGameLayer = cc.Layer.extend({
 	selections: [],
 	
     touchStartPoint: null,
+    touchStartTime: null,
     touchCurrentPoint: null,
     touchLastPoint: null,
+    touchStartTime: null,
     touchDistance: null,
     isSwipeUp: false,
     isSwipeLeft: false,
@@ -202,7 +205,9 @@ var MuprisGameLayer = cc.Layer.extend({
 	                self.touchLastPoint = {
 	                    	x: loc.x,
 	                    	y: loc.y
-	                };	                
+	                };	
+	                
+	                self.touchStartTime = new Date().getTime();
 	            },
 	            	
 	            onTouchesMoved: function(touches, event) {
@@ -281,14 +286,17 @@ var MuprisGameLayer = cc.Layer.extend({
 	            	//cc.log("onTouchesEnded!");
 	
 	            	var touch = touches[0],
-	            		loc = touch.getLocation()
-	            		size = self.size;
+	            		loc = touch.getLocation();
 	                
 	                self.touchStartPoint = null;
 	                
 	                if(!self.isSwipeUp && !self.isSwipeLeft && !self.isSwipeRight && !self.isSwipeDown) {
-	                	self.isTap = true;
-	                	if( self.hookOnTap ) self.hookOnTap(loc);
+	                	if( new Date().getTime() - self.touchStartTime > LONG_TAP_TIME ) {
+	    	                if( self.hookOnLongTap ) self.hookOnLongTap(loc);
+	                	} else {
+		                	self.isTap = true;
+		                	if( self.hookOnTap ) self.hookOnTap(loc);
+	                	}
 	                } else {
 		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
 	                }
@@ -861,7 +869,7 @@ var MuprisGameLayer = cc.Layer.extend({
         	    		moveHorizontalyAndCheckForBarrier(t,lp,tp);    					
         			
 	    	    		if(tp.y < lp.y - BS*2 && !t.isRotating) {
-	    	    			t.fallingSpeed = Math.min(FALLING_SPEED * 36, lp.y - BS*2 - tp.y);
+	    	    			t.fallingSpeed = Math.max( Math.min(FALLING_SPEED * 36, lp.y - BS*2 - tp.y) , FALLING_SPEED);
 	    	    		} else {
 	    	    			t.fallingSpeed = FALLING_SPEED;
 	    	    		}
