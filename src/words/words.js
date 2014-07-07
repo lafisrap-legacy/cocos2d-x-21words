@@ -42,7 +42,7 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	NEEDED_LETTERS_PROBABILITY = 0.5
 	MAX_LETTERS_BLOWN = 20,
 	WORD_FRAME_WIDTH = 8,
-	WORD_FRAME_ROTATE_TIME = 1.3,
+	WORD_FRAME_ROTATE_TIME = 3.4,
 	TILES_PROGRAMS = [[
 	      { tile: 0, letters: "AFAS" },
 	      { tile: 0, letters: "SUNG" },
@@ -281,7 +281,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		rect.height = height + WORD_FRAME_WIDTH * 2;
 		wordFrameSprite.setTextureRect(rect);
 		wordFrameSprite.setPosition(x,y);
-//		wordFrameSprite.setOpacity(0);
 		batch.addChild(wordFrameSprite,15);
 		
 		// add sprites of word
@@ -289,21 +288,20 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			cc.assert( ml.boxes[brc.row][brc.col+i].sprite , "Mupris, showFullword: Sprite is missing in box at position "+brc.row+"/"+brc.col );
 			
 			var orgSprite = ml.boxes[brc.row][brc.col+i].sprite,
-				sprite = cc.Sprite.create(orgSprite.displayFrame());
+				sprite = cc.Sprite.create(orgSprite.getTexture(),orgSprite.getTextureRect());
 			sprite.setPosition(BS/2+i*BS+WORD_FRAME_WIDTH,BS/2+WORD_FRAME_WIDTH);
 			wordFrameSprite.addChild( sprite );
 		}
 		
-//		wordFrameSprite.runAction(cc.sequence(cc.fadeIn(0.3),cc.callFunc(function() {
-			var bezier = [
-			      cc.p(x,y),
-                  cc.p(x<ml.size.width/2?ml.size.width*2:-ml.size.width,ml.size.height/2),
-                  cc.p(ml.size.width/2,ml.size.height-300)];
+		// move, rotate and scale word
+		var bezier = [
+		      cc.p(x,y),
+              cc.p(x<ml.size.width/2?ml.size.width*2:-ml.size.width,ml.size.height/2),
+              cc.p(ml.size.width/2,ml.size.height-300)];
 
-			wordFrameSprite.runAction(cc.EaseSineIn.create(cc.bezierTo(WORD_FRAME_ROTATE_TIME,bezier)));
-			wordFrameSprite.runAction(cc.rotateBy(WORD_FRAME_ROTATE_TIME,-360));
-			wordFrameSprite.runAction(cc.EaseSineIn.create(cc.sequence(cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,10),cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,1))));
-//		},wordFrameSprite)));
+		wordFrameSprite.runAction(cc.EaseSineIn.create(cc.bezierTo(WORD_FRAME_ROTATE_TIME,bezier)));
+		wordFrameSprite.runAction(cc.rotateBy(WORD_FRAME_ROTATE_TIME,-360));
+		wordFrameSprite.runAction(cc.EaseSineIn.create(cc.sequence(cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,5),cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,1))));
 
 	};
 	
