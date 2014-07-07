@@ -736,7 +736,7 @@ var MuprisGameLayer = cc.Layer.extend({
     		return ret;
     	};
     	
-    	var checkForAndRemoveCompleteRows = function() {
+    	var checkForAndRemoveCompleteRows = function(rowToDelete) {
     		
     		// always check all rows (for now)
     		var rowsDeleted = [];
@@ -744,7 +744,7 @@ var MuprisGameLayer = cc.Layer.extend({
     			for( j=0 ; j<BOXES_PER_ROW ; j++ ) {
     				if(!self.boxes[i][j]) break;
     			}
-    			if(j === BOXES_PER_ROW) {
+    			if(j === BOXES_PER_ROW || rowToDelete === i) {
     				deleteRow(i);
     				rowsDeleted.push(i);
     			}
@@ -891,8 +891,23 @@ var MuprisGameLayer = cc.Layer.extend({
     			delete self.tiles[tile];
 
     			if( ret == "gameover" ) {
+    				var menuItems = [{
+    					label: "WEITER SPIELEN", 
+    					cb: function(sender) {
+    			        	var gameLayer = this.getParent().getChildByTag(TAG_GAME_LAYER);
+    				        gameLayer.resume();
+    				        gameLayer.scheduleUpdate();
+
+    			            this.getParent().removeChild(this);
+    			        }
+    				},{
+    					label: "NEUES SPIEL", 
+    					cb: function(sender) {
+    			        	cc.director.runScene(new MuprisScene());
+    			        }
+    				}];
     	            this.getParent().addChild(
-    	            	new MuprisMenuLayer(new cc.Color(40,0,0,160),size.width,size.height),
+    	            	new MuprisMenuLayer("",menuItems),
     	            	2);
         	        this.pause();
         	        this.unscheduleUpdate();
@@ -909,56 +924,51 @@ var MuprisGameLayer = cc.Layer.extend({
 
 var MuprisMenuLayer = cc.LayerColor.extend({
     
-    ctor:function (color, width, height) {
-        this._super(color, width, height);
-
+    ctor:function (question, menuItems) {
         var size = this.size = cc.director.getWinSize(),
-        	self = this;            
-            
-        this.initMenu(color, width, height);
+    	self = this;            
+        
+        this._super(new cc.Color(40,0,0,160),size.width,size.height);
+
+        this.initMenu(question, menuItems);
         
         return true;
     },
 
-	initMenu: function(color, width, height) {
+	initMenu: function(question, menuItems) {
 		
         var size = this.size,
-        	self = this;
+        	self = this,
+        	items = [];
 
-        var item1 = cc.MenuItemFont.create("RESUME", function(sender) {
-        	var gameLayer = this.getParent().getChildByTag(TAG_GAME_LAYER);
-	        gameLayer.resume();
-	        gameLayer.scheduleUpdate();
-
-            this.getParent().removeChild(this);
-        }, this);
+        // Show question
+		var q = cc.LabelTTF.create(question, "Arial", 36),
+	    	x = size.width/2,
+	    	y = size.height/2 + menuItems.length * 96;
+	
+		q.setPosition(x,y);
+		q.retain();
+		this.addChild(q, 1);
         
-        var item2 = cc.MenuItemFont.create("RESTART", function(sender) {
-        	cc.director.runScene(new MuprisScene());
-        }, this);
+        // Show menu items
+        for( var i=0 ; i<menuItems.length ; i++ ) {
+            items[i] = cc.MenuItemFont.create(menuItems[i].label, menuItems[i].cb, this);
+            items[i].setFontSize(48);        	
+        }
 
-        item1.setFontSize(48);
-        item2.setFontSize(48);
-
-        var menu = cc.Menu.create(item1, item2);
+        var menu = cc.Menu.create(items);
         menu.x = size.width/2;
-        menu.y = 480;
+        menu.y = size.height/2;
         this.addChild(menu, 1);       
-        menu.alignItemsVertically();
+
+        menu.alignItemsVerticallyWithPadding(40);
 	}
 });
 
 var MuprisScene = cc.Scene.extend({
-	menuLayer: null,
-	
-	getMenuLayer: function() {
-		return this.menuLayer;
-	},
 	
     onEnter:function () {
         this._super();
-        
-        this.menuLayer = new MuprisMenuLayer();
         
         this.addChild(new MuprisGameLayer(), 1, TAG_GAME_LAYER);
     }

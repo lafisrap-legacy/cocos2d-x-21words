@@ -256,7 +256,14 @@ var MUPRIS_MODULE = function(muprisLayer) {
 						break;
 			}
 			if( j === word.length ) {
-				showFullWord( sw.brc , word , function( yesOrNo ) {
+				showFullWordAndAsk( sw.brc , word , function( takeWord ) {
+					if( takeWord ) {
+						var row = sw.brc.row;
+						moveSelectedWord(null);
+						ml.checkForAndRemoveCompleteRows(row);
+					} else {
+						
+					}
 					// delete complete row here or just take out the word from the word list, 
 					// if it was last word, take out prefix also
 				});
@@ -264,7 +271,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		}
 	};
 	
-	var showFullWord = function( brc , word , cb ) {
+	var showFullWordAndAsk = function( brc , word , cb ) {
 		var batch = ml.getChildByTag(TAG_SPRITE_MANAGER),
 			width = word.length * BS,
 			height = BS,
@@ -290,6 +297,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			var orgSprite = ml.boxes[brc.row][brc.col+i].sprite,
 				sprite = cc.Sprite.create(orgSprite.getTexture(),orgSprite.getTextureRect());
 			sprite.setPosition(BS/2+i*BS+WORD_FRAME_WIDTH,BS/2+WORD_FRAME_WIDTH);
+			sprite.retain();
 			wordFrameSprite.addChild( sprite );
 		}
 		
@@ -301,7 +309,56 @@ var MUPRIS_MODULE = function(muprisLayer) {
 
 		wordFrameSprite.runAction(cc.EaseSineIn.create(cc.bezierTo(WORD_FRAME_ROTATE_TIME,bezier)));
 		wordFrameSprite.runAction(cc.rotateBy(WORD_FRAME_ROTATE_TIME,-360));
-		wordFrameSprite.runAction(cc.EaseSineIn.create(cc.sequence(cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,5),cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,1))));
+		wordFrameSprite.runAction(cc.EaseSineIn.create(
+			cc.sequence(
+				cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,5),
+				cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,1),
+				cc.callFunc(function() {
+	   				var sprite = null,
+	   					resume = function(menuLayer) {
+					        ml.resume();
+					        ml.scheduleUpdate();
+				            ml.getParent().removeChild(menuLayer);
+					        sprite.removeAllChildren(true);
+					        ml.getParent().removeChild(sprite);
+					        wordFrameSprite.removeAllChildren(true);
+					        batch.removeChild(wordFrameSprite);	   						
+	   					},
+	   					menuItems = [{
+    					label: "JA", 
+    					cb: function(sender) {
+    						resume(this);
+    						cb(true);
+    			        }
+    				},{
+    					label: "NEIN", 
+    					cb: function(sender) {
+    						resume(this);
+    						cb(false);
+    			        }
+    				}];
+    	            ml.getParent().addChild(
+    	            	new MuprisMenuLayer("Willst du das Wort nehmen?",menuItems),
+    	            	2);
+    	            
+    				sprite = cc.Sprite.create(this.getTexture(),this.getTextureRect());
+    				var children = this.getChildren();
+    				for( var i=0 ; i<children.length ; i++ ) {
+    					var child = cc.Sprite.create(children[i].getTexture(),children[i].getTextureRect());
+        				child.retain();
+        				child.setPosition(children[i].getPosition());
+        				sprite.addChild(child,2);    					
+    				}
+    				sprite.setPosition(this.getPosition());
+    				sprite.retain();
+    				ml.getParent().addChild(sprite,2);
+    	            
+        	        ml.pause();
+        	        ml.unscheduleUpdate();
+
+				}, wordFrameSprite)
+			)
+		));
 
 	};
 	
