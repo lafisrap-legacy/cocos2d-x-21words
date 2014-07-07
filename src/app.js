@@ -728,7 +728,7 @@ var MuprisGameLayer = cc.Layer.extend({
     		
     		if( self.hookTileFixed ) self.hookTileFixed(newBrcs);
 
-    		checkForAndRemoveCompleteRows();
+    		self.checkForAndRemoveCompleteRows();
 
     		batch.removeChild(t.sprite);
        		delete t;
@@ -736,7 +736,7 @@ var MuprisGameLayer = cc.Layer.extend({
     		return ret;
     	};
     	
-    	var checkForAndRemoveCompleteRows = function(rowToDelete) {
+    	self.checkForAndRemoveCompleteRows = function(rowToDelete) {
     		
     		// always check all rows (for now)
     		var rowsDeleted = [];

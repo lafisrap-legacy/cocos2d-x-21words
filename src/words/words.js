@@ -525,10 +525,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		
 		if( sw && sw.brc.row === brc.row && (sw.markers[brc.col-sw.brc.col] === MARKER_SET || sw.markers[brc.col-sw.brc.col] === MARKER_SEL) ) return false;
 
-		if( box.interval ) {
-			clearInterval(box.interval);
-			box.interval = null;
-		}
 		return true;
 	};
 	
