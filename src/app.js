@@ -796,10 +796,12 @@ var MuprisGameLayer = cc.Layer.extend({
         	for( var i=0 ; i<BOXES_PER_ROW ; i++ ) {
 		    	if( !self.hookDeleteBox || self.hookDeleteBox({row:row,col:i}) ) {
 		    		
-	        		// destroy sprite and box        		
-	            	batch.removeChild(self.boxes[row][i].sprite);
-	            	self.boxes[row][i].sprite = null;
-			    	self.boxes[row][i] = null;		    			    		
+	        		// destroy sprite and box  
+		    		if( self.boxes[row][i] ) {
+		            	batch.removeChild(self.boxes[row][i].sprite);
+		            	self.boxes[row][i].sprite = null;
+				    	self.boxes[row][i] = null;		    			    				    			
+		    		}
 		    	}
     		}        	
     	};
@@ -956,7 +958,7 @@ var MuprisMenuLayer = cc.LayerColor.extend({
             items[i].setFontSize(48);        	
         }
 
-        var menu = cc.Menu.create(items);
+        var menu = cc.Menu.create(items);   // JS: assets/src/app.js:959:Error: Invalid Native Object (must be a list)
         menu.x = size.width/2;
         menu.y = size.height/2;
         this.addChild(menu, 1);       

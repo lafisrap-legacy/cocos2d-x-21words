@@ -3,12 +3,11 @@
  * 
  * NEXT STEPS:
  * show whole word ...
- * - make a yellow background sprite
- * - copy all letter sprites into this sprite
- * - scale background sprite to full frame
- * - let is grow and rotate to top golden schnitt 
- * - Ask: "Hinzufügen", "wegwerfen"
  * - Put into "Wort-Schatz"
+ * 
+ * - take out all words that are in the Wortschatz ...
+ * - take new words
+ * - limit words to specific length (4-10)
  * 
  * Next: Show Wort-Schatz (Wert)
  * 
@@ -42,10 +41,10 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	NEEDED_LETTERS_PROBABILITY = 0.5
 	MAX_LETTERS_BLOWN = 20,
 	WORD_FRAME_WIDTH = 8,
-	WORD_FRAME_ROTATE_TIME = 3.4,
+	WORD_FRAME_ROTATE_TIME = 2.4,
 	TILES_PROGRAMS = [[
-	      { tile: 0, letters: "AFAS" },
-	      { tile: 0, letters: "SUNG" },
+	      { tile: 0, letters: "ANEN" },
+	      { tile: 0, letters: "NENF" },
 	      { tile: 2, letters: "IJKL" },
 	      { tile: 3, letters: "MNOP" },
 	   ]
@@ -104,7 +103,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					
 					// if no word is currently selected, choose the first ...
 					if( !dontSelectWord && !ml.selectedWord ) {
-						ml.selectedWord = {
+						sw = ml.selectedWord = {
 							brc: brc,
 							words: words,
 							markers: [],
@@ -132,7 +131,15 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		var prefix = (ml.boxes[brc.row][brc.col]   && ml.boxes[brc.row][brc.col].userData || " ")+
 					 (ml.boxes[brc.row][brc.col+1] && ml.boxes[brc.row][brc.col+1].userData || " ")+
 					 (ml.boxes[brc.row][brc.col+2] && ml.boxes[brc.row][brc.col+2].userData || " "),
-			words = ml.words[prefix];
+			words = [];
+		
+		// copy word object
+		for( var i=0 ; ml.words[prefix] && i<ml.words[prefix].length ; i++ ) {
+			words.push({
+				word: ml.words[prefix][i].word,
+				value: ml.words[prefix][i].value,
+			});
+		}
 
 		if( !(ml.boxes[brc.row][brc.col] && ml.boxes[brc.row][brc.col].words) && words && cb ) {
 			cc.log("checkForPrefixes: Found "+words.length+" words at "+brc.row+"/"+brc.col);
@@ -257,18 +264,35 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			}
 			if( j === word.length ) {
 				showFullWordAndAsk( sw.brc , word , function( takeWord ) {
+					// delete word anyway
+					var ret = deleteWordFromList(word);					
+					cc.assert(ret,"Mupris, updateSelectedWord: No word to delete!")
+					
 					if( takeWord ) {
+						// delete complete row (row is not falling now ...)
 						var row = sw.brc.row;
-						moveSelectedWord(null);
+						unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
 					} else {
-						
+						moveSelectedWord(sw.brc);
+						setSelections();
 					}
-					// delete complete row here or just take out the word from the word list, 
-					// if it was last word, take out prefix also
 				});
+				break;
 			}
 		}
+	};
+	
+	var deleteWordFromList = function(word) {
+		var words = ml.words[word.substr(0,3)];
+		for( var i=0 ; i<words.length ; i++ ) {
+			if( words[i].word === word ) {
+				words.splice(i,1);
+				if( !words.length ) delete ml.words[word.substr(0,3)];
+				return true;
+			}
+		}
+		return false;
 	};
 	
 	var showFullWordAndAsk = function( brc , word , cb ) {
@@ -311,8 +335,12 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		wordFrameSprite.runAction(cc.rotateBy(WORD_FRAME_ROTATE_TIME,-360));
 		wordFrameSprite.runAction(cc.EaseSineIn.create(
 			cc.sequence(
-				cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,5),
-				cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,1),
+				cc.EaseSineOut.create(
+					cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,3.5)
+				),
+				cc.EaseSineIn.create(
+					cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,1)
+				),
 				cc.callFunc(function() {
 	   				var sprite = null,
 	   					resume = function(menuLayer) {
@@ -375,12 +403,17 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			
 		// define a new one
 		if( brc ) {
-			ml.selectedWord = {
-				brc: brc,
-				words: ml.boxes[brc.row][brc.col].words,
-				markers: [],
-				sprites: []
-			};				
+			var words = ml.words[ml.boxes[brc.row][brc.col].words[0].word.substr(0,3)];
+			if( words ) {
+				ml.selectedWord = {
+						brc: brc,
+						words: words,
+						markers: [],
+						sprites: []
+				};								
+			} else {
+				ml.selectedWord = null;
+			}
 		} else {
 			ml.selectedWord = null;
 		}
@@ -388,6 +421,9 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		updateSelectedWord();
 	};
 	
+	var unselectWord = function() {
+		moveSelectedWord(null);
+	}
 	
 	var blowWords = function(pos, words) {
 
@@ -573,7 +609,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				}
 				updateSelectedWord();
 			} else {
-				moveSelectedWord(null);
+				unselectWord();
 				setSelections(true);
 				ml.hookOnTap(tapPos, sw.brc);
 			}
@@ -612,7 +648,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	// read json file with words
 	cc.loader.loadJson("res/words/dewords.words.json", function(err, text) {
 		if( !err ) {
-			muprisLayer.words = text;
+			ml.words = text;
 			
 			// check if word file is compatible
 			for( var prefix in text ) {
