@@ -958,7 +958,7 @@ var MuprisMenuLayer = cc.LayerColor.extend({
             items[i].setFontSize(48);        	
         }
 
-        var menu = cc.Menu.create(items);   // JS: assets/src/app.js:959:Error: Invalid Native Object (must be a list)
+        var menu = cc.Menu.create.apply(this, items);
         menu.x = size.width/2;
         menu.y = size.height/2;
         this.addChild(menu, 1);       
