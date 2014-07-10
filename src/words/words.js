@@ -1,17 +1,55 @@
 /*
  * Enhancement module for Mupris
  * 
- * NEXT STEPS:
- * show whole word ...
- * - Put into "Wort-Schatz"
+ * - Find double word take
+ * - selection / deselection of word
  * 
+ * NEXT STEPS:
+ * + Put in 100000 words
+ * 
+ * 
+ * + WORTSCHATZ
+ * - Put full word into "Wort-Schatz"
  * - take out all words that are in the Wortschatz ...
  * - take new words
+ * - show wortschatz
+ * 
+ * + GAMEPLAY
+ * - 7 Levels
  * - limit words to specific length (4-10)
+ * - Medals:
+ * 	- Bronze
+ * 		- remove one row
+ * 		- remove two rows at a time
+ * 		- remove three rows at a time
+ * 		- remove four rows at a time
+ * 		- create a 4-letter word
+ * 		- create a 5-letter word
+ * 		- create a 6-letter word
+ * 		- create a 7-letter word
+ * 		- create a 10 points word 
+ * 		- have 5 boxes left on the field
+ * 		- have 4 boxes left on the field
+ * 		- create a word in the 5th row
+ * 	- Silver
+ * 		- create a 8-letter word
+ * 		- create a 9-letter word
+ * 		- create a 10-letter word
+ * 		- have 3 boxes left on the field
+ * 		- have 2 boxes left on the field
+ * 		- create a word in the 10th row
+ * 		- clear two rows at a time and get a word
+ * 		- clear three rows at a time and get a word
+ * 		- clear two complete rows with an L-tile
+ * 		- clear three complete rows with an L-tile
  * 
- * Next: Show Wort-Schatz (Wert)
+ * - Gold
+ * 		- have 1 box left on the field
+ * 		- have 0 boxes left on the field
+ * 		- clear four rows at a time and get a word
+ * 	
  * 
- * Next: Medals 
+ * 
  * 
  * Diamonds: Only Sphinx-Mode
  * 
@@ -41,10 +79,10 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	NEEDED_LETTERS_PROBABILITY = 0.5
 	MAX_LETTERS_BLOWN = 20,
 	WORD_FRAME_WIDTH = 8,
-	WORD_FRAME_ROTATE_TIME = 2.4,
+	WORD_FRAME_MOVE_TIME = 0.8,
 	TILES_PROGRAMS = [[
-	      { tile: 0, letters: "ANEN" },
-	      { tile: 0, letters: "NENF" },
+	      { tile: 0, letters: "ATEM" },
+	      { tile: 0, letters: "PELF" },
 	      { tile: 2, letters: "IJKL" },
 	      { tile: 3, letters: "MNOP" },
 	   ]
@@ -115,8 +153,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 						
 						blowWords(cc.p(x,y),words);
 					}
-						
-					for( var i=0 ; i<words.length ; i++ ) cc.log("Retrieved word "+words[i].word+" at position "+brc.row+"/"+brc.col);
 				});
 			}
 		}
@@ -141,7 +177,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			});
 		}
 
-		if( !(ml.boxes[brc.row][brc.col] && ml.boxes[brc.row][brc.col].words) && words && cb ) {
+		if( !(ml.boxes[brc.row][brc.col] && ml.boxes[brc.row][brc.col].words) && words.length && cb ) {
 			cc.log("checkForPrefixes: Found "+words.length+" words at "+brc.row+"/"+brc.col);
 			
 			var w = [];
@@ -164,9 +200,12 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		if( !sw ) return;
 		
 		// Define sprites and show word start sprite
-		var setMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker0.png"),
+		var setMarkerFrame = [],
 			optMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker1.png"),
 			selMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker3.png");
+		
+		setMarkerFrame[0] = cc.spriteFrameCache.getSpriteFrame("marker0-0.png");
+		setMarkerFrame[1] = cc.spriteFrameCache.getSpriteFrame("marker0-1.png");
 		
 		if( !sw.startMarker ) {
 			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2.png"),cc.rect(0,0,BS,BS));
@@ -223,7 +262,10 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				} else if( hits === curWords.length ) {
 					// letter in box matches with all words, draw sprite
 					sw.markers[col] = MARKER_SET;
-					sw.sprites[col] = cc.Sprite.create(setMarkerFrame,cc.rect(0,0,BS,BS));
+					sw.sprites[col] = cc.Sprite.create(
+						setMarkerFrame[Math.floor(Math.random()*setMarkerFrame.length)],
+						cc.rect(0,0,BS,BS)
+					);
 					ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
 				} else {
 					// letter in box matches with some words, draw marker option sprite
@@ -233,8 +275,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				}
 				
 				if( hits > 0 ) {
-					cc.assert(sw.sprites[col], "Mupris, updateSelectedWord: sprite is null.");
-					
 					sw.sprites[col].retain();
 					batch.addChild(sw.sprites[col],5);
 					sw.sprites[col].setPosition(cc.p(BOXES_X_OFFSET + i * BS + MARKER_X_OFFSET, 
@@ -263,19 +303,19 @@ var MUPRIS_MODULE = function(muprisLayer) {
 						break;
 			}
 			if( j === word.length ) {
-				showFullWordAndAsk( sw.brc , word , function( takeWord ) {
-					// delete word anyway
-					var ret = deleteWordFromList(word);					
-					cc.assert(ret,"Mupris, updateSelectedWord: No word to delete!")
-					
+				// delete word anyway
+				var ret = deleteWordFromList(word);					
+				cc.assert(ret,"Mupris, updateSelectedWord: No word to delete!");
+				unselectWord();
+
+				showFullWordAndAsk( sw.brc , word , function( takeWord ) {					
 					if( takeWord ) {
-						// delete complete row (row is not falling now ...)
+						// delete complete row
 						var row = sw.brc.row;
-						unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
 					} else {
+						setSelections(true);
 						moveSelectedWord(sw.brc);
-						setSelections();
 					}
 				});
 				break;
@@ -284,7 +324,9 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	};
 	
 	var deleteWordFromList = function(word) {
-		var words = ml.words[word.substr(0,3)];
+		var prefix = word.substr(0,3);
+		// delete word from full word list
+		var words = ml.words[prefix];
 		for( var i=0 ; i<words.length ; i++ ) {
 			if( words[i].word === word ) {
 				words.splice(i,1);
@@ -328,18 +370,18 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		// move, rotate and scale word
 		var bezier = [
 		      cc.p(x,y),
-              cc.p(x<ml.size.width/2?ml.size.width*2:-ml.size.width,ml.size.height/2),
+              cc.p(x<ml.size.width/2?ml.size.width:0,ml.size.height/2),
               cc.p(ml.size.width/2,ml.size.height-300)];
 
-		wordFrameSprite.runAction(cc.EaseSineIn.create(cc.bezierTo(WORD_FRAME_ROTATE_TIME,bezier)));
-		wordFrameSprite.runAction(cc.rotateBy(WORD_FRAME_ROTATE_TIME,-360));
+		wordFrameSprite.runAction(cc.EaseSineIn.create(cc.bezierTo(WORD_FRAME_MOVE_TIME,bezier)));
+		//wordFrameSprite.runAction(cc.rotateBy(WORD_FRAME_MOVE_TIME,-360));
 		wordFrameSprite.runAction(cc.EaseSineIn.create(
 			cc.sequence(
 				cc.EaseSineOut.create(
-					cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,3.5)
+					cc.scaleTo(WORD_FRAME_MOVE_TIME/2,1.5)
 				),
 				cc.EaseSineIn.create(
-					cc.scaleTo(WORD_FRAME_ROTATE_TIME/2,1)
+					cc.scaleTo(WORD_FRAME_MOVE_TIME/2,1)
 				),
 				cc.callFunc(function() {
 	   				var sprite = null,
@@ -403,7 +445,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			
 		// define a new one
 		if( brc ) {
-			var words = ml.words[ml.boxes[brc.row][brc.col].words[0].word.substr(0,3)];
+			//var words = ml.words[ml.boxes[brc.row][brc.col].words[0].word.substr(0,3)];
+			var words = ml.boxes[brc.row][brc.col].words;
 			if( words ) {
 				ml.selectedWord = {
 						brc: brc,
@@ -427,6 +470,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	var blowWords = function(pos, words) {
 
+		if( !words ) debugger;
 		var angle = Math.random() * 360,
 			i = (words.length < MAX_LETTERS_BLOWN)? 0:
 				Math.floor(Math.random()*(words.length-MAX_LETTERS_BLOWN));
@@ -552,7 +596,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	muprisLayer.hookTileFixed = function( brcs ) {
 		
-		setSelections();
+		setSelections(ml.firstTileAutoSelect? true : false);
+		ml.firstTileAutoSelect = true;
 	};	
 	
 	muprisLayer.hookDeleteBox = function(brc) {
@@ -582,7 +627,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	};
 	
 	muprisLayer.hookAllBoxesMovedDown = function() {
-		setSelections();
+		setSelections(true);
 	};
 	
 	muprisLayer.hookOnTap = function(tapPos, notBrc) {
@@ -621,7 +666,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				
 				if( tapPos.x >= s.pos.x && tapPos.x <= s.pos.x+s.width && tapPos.y >= s.pos.y && tapPos.y <= s.pos.y+s.height ) {
 					moveSelectedWord(s.brc);
-					setSelections();
+					setSelections(true);
 					blowWords(cc.p(s.pos.x,s.pos.y),s.box[0].words);
 				}
 			}
@@ -641,7 +686,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		
 		// check if selected word is hit
 		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y && tapPos.y <= swPos.y + BS*2 ) {
-			blowWords(tapPos,sw.words);
+			blowWords(tapPos,ml.boxes[sw.brc.row][sw.brc.col].words);
 		}
 	};
 	
