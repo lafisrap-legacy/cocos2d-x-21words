@@ -1,9 +1,6 @@
 /*
  * Enhancement module for Mupris
  * 
- * - Find double word take
- * - selection / deselection of word
- * 
  * NEXT STEPS:
  * + Put in 100000 words
  * 
@@ -691,7 +688,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	};
 	
 	// read json file with words
-	cc.loader.loadJson("res/words/dewords.words.json", function(err, text) {
+	cc.loader.loadJson("res/words/derewo100000.txt.words.json", function(err, text) {
 		if( !err ) {
 			ml.words = text;
 			
