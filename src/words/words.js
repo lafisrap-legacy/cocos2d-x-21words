@@ -2,8 +2,6 @@
  * Enhancement module for Mupris
  * 
  * NEXT STEPS:
- * + Put in 100000 words
- * 
  * 
  * + WORTSCHATZ
  * - Put full word into "Wort-Schatz"
@@ -24,12 +22,14 @@
  * 		- create a 5-letter word
  * 		- create a 6-letter word
  * 		- create a 7-letter word
+ * 		- create a 8-letter word
  * 		- create a 10 points word 
+ * 		- create a 15 points word 
+ * 		- create a 20 points word 
  * 		- have 5 boxes left on the field
  * 		- have 4 boxes left on the field
  * 		- create a word in the 5th row
  * 	- Silver
- * 		- create a 8-letter word
  * 		- create a 9-letter word
  * 		- create a 10-letter word
  * 		- have 3 boxes left on the field
@@ -78,8 +78,8 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	WORD_FRAME_WIDTH = 8,
 	WORD_FRAME_MOVE_TIME = 0.8,
 	TILES_PROGRAMS = [[
-	      { tile: 0, letters: "ATEM" },
-	      { tile: 0, letters: "PELF" },
+	      { tile: 0, letters: "VERR" },
+	      { tile: 0, letters: "ÄTER" },
 	      { tile: 2, letters: "IJKL" },
 	      { tile: 3, letters: "MNOP" },
 	   ]
@@ -469,10 +469,10 @@ var MUPRIS_MODULE = function(muprisLayer) {
 
 		if( !words ) debugger;
 		var angle = Math.random() * 360,
-			i = (words.length < MAX_LETTERS_BLOWN)? 0:
-				Math.floor(Math.random()*(words.length-MAX_LETTERS_BLOWN));
-		for( ; i<Math.min(words.length,MAX_LETTERS_BLOWN) ; i++ ) {
-			var word = cc.LabelTTF.create(words[i].word, "Arial", 38),
+			offset = (words.length < MAX_LETTERS_BLOWN)? 0:
+				Math.floor(Math.random()*words.length);
+		for( var i=0 ; i<Math.min(words.length,MAX_LETTERS_BLOWN) ; i++ ) {
+			var word = cc.LabelTTF.create(words[(i+offset)%words.length].word, "Arial", 38),
 	        	x = pos.x + Math.sin(cc.degreesToRadians(angle))*100,
 	        	y = pos.y + Math.cos(cc.degreesToRadians(angle))*100;
 			
@@ -572,7 +572,9 @@ var MUPRIS_MODULE = function(muprisLayer) {
         	if( curProgram !== null ) {
         		var val = LETTERS.indexOf(TILES_PROGRAMS[curProgram][curProgramCnt].letters[i]);
         	} else {
-	         	var val = (Math.random()>NEEDED_LETTERS_PROBABILITY || !sw || !sw.missingLetters.length)?  
+	         	var len = sw && sw.missingLetters.length;
+	         		prob = len <= 3? NEEDED_LETTERS_PROBABILITY / (5-len) : NEEDED_LETTERS_PROBABILITY; 
+	         		val = (Math.random()>prob || !sw || !len)?  
 	        					Math.floor(this.getRandomValue(LETTER_OCCURANCES)):
 	        					LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]);
         	}
@@ -627,7 +629,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		setSelections(true);
 	};
 	
-	muprisLayer.hookOnTap = function(tapPos, notBrc) {
+	muprisLayer.hookOnTap = function(tapPos) {
 		var sw = ml.selectedWord;
 		if( sw ) {
 			var swPos = { 
@@ -653,17 +655,15 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			} else {
 				unselectWord();
 				setSelections(true);
-				ml.hookOnTap(tapPos, sw.brc);
 			}
 		} else {
 			for( var i=0 ; i<ml.selections.length ; i++) {
 				var s = ml.selections[i];
 
-				if( notBrc && notBrc.col === s.brc.col && notBrc.row === s.brc.row ) continue;
-				
 				if( tapPos.x >= s.pos.x && tapPos.x <= s.pos.x+s.width && tapPos.y >= s.pos.y && tapPos.y <= s.pos.y+s.height ) {
 					moveSelectedWord(s.brc);
 					setSelections(true);
+					cc.log("MUPRIS, hookOnTap: Blowing "+s.box[0].words.length+" words.");
 					blowWords(cc.p(s.pos.x,s.pos.y),s.box[0].words);
 				}
 			}
@@ -683,6 +683,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		
 		// check if selected word is hit
 		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y && tapPos.y <= swPos.y + BS*2 ) {
+			cc.log("MUPRIS, hookOnLongTap: Blowing "+ml.boxes[sw.brc.row][sw.brc.col].words.length+" words.");
 			blowWords(tapPos,ml.boxes[sw.brc.row][sw.brc.col].words);
 		}
 	};

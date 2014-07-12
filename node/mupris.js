@@ -80,11 +80,12 @@ fs.readFile(filename, 'utf8', function(err, data) {
 		var match;
 		match = entry.exec(allWords[i]);
 		if( !match ) continue;
-		if( match[1].length < 4 || match[1].length > 10) continue;
-		
+
 		var word = match[1].toUpperCase();
 		var freq = match[2];
 
+		if( word.length < 4 || word.length > 10) continue;
+		
 		// get three letter prefixes
 		var prefix = word.substring(0,3);
 
