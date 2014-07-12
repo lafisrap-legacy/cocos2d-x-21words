@@ -186,10 +186,10 @@
                 <key>sourceSize</key>
                 <string>{64,64}</string>
             </dict>
-            <key>marker0.png</key>
+            <key>marker0-0.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,68},{64,19}}</string>
+                <string>{{926,2},{64,19}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -198,6 +198,19 @@
                 <string>{{0,0},{64,19}}</string>
                 <key>sourceSize</key>
                 <string>{64,19}</string>
+            </dict>
+            <key>marker0-1.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,68},{64,15}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{64,15}}</string>
+                <key>sourceSize</key>
+                <string>{64,15}</string>
             </dict>
             <key>marker1.png</key>
             <dict>
@@ -371,7 +384,7 @@
             <key>v.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,134},{64,64}}</string>
+                <string>{{926,68},{64,64}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -384,7 +397,7 @@
             <key>w.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{68,134},{64,64}}</string>
+                <string>{{2,134},{64,64}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -397,7 +410,7 @@
             <key>wordframe.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{134,134},{640,96}}</string>
+                <string>{{68,134},{640,96}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -410,7 +423,7 @@
             <key>x.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{776,134},{64,64}}</string>
+                <string>{{710,134},{64,64}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -423,7 +436,7 @@
             <key>y.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{842,134},{64,64}}</string>
+                <string>{{776,134},{64,64}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -436,7 +449,7 @@
             <key>z.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{908,134},{64,64}}</string>
+                <string>{{842,134},{64,64}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -454,9 +467,9 @@
             <key>realTextureFileName</key>
             <string>letters.png</string>
             <key>size</key>
-            <string>{974,232}</string>
+            <string>{992,232}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:c1dd2b4764b0d92cfa0348cb243732e8:2487fa8dec4a976a528465d240d6871d:d9daac387985471fbe36092f531019a5$</string>
+            <string>$TexturePacker:SmartUpdate:12b15d49c55957bc600a1a074e85648f:11c1ab867433cdb5fab91483f04dba63:d9daac387985471fbe36092f531019a5$</string>
             <key>textureFileName</key>
             <string>letters.png</string>
         </dict>

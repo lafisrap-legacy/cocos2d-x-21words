@@ -164,7 +164,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	    this.drawNode = cc.DrawNode.create();
         this.addChild(this.drawNode,1);
         this.drawNode.clear();
-/*        for( var i=0 ; i<=BOXES_PER_ROW ; i++ ) {
+ /*       for( var i=0 ; i<=BOXES_PER_ROW ; i++ ) {
             this.drawNode.drawSegment(cc.p(BOXES_X_OFFSET+i*BS,BOXES_Y_OFFSET), 
             						  cc.p(BOXES_X_OFFSET+i*BS,BOXES_Y_OFFSET+BOXES_PER_COL*BS),
             						  1,
@@ -502,16 +502,16 @@ var MuprisGameLayer = cc.Layer.extend({
     	 * check if a collision happened
     	 */
     	var checkForBottom = function(t, lp) {
-    		var b = t.rotatedBoxes;
+    		var b = t.rotatedBoxes; // usually four boxes of a tile
     		
+    		// check all boxes
     		for( var i=0 ; i<b.length ; i++ ) {
-    			var bx = lp.x + b[i].x,
-    				by = lp.y + b[i].y,
-    				brc = getRowCol(b[i], lp);
-    			    	
-    			// check for bottom or fixed boxes
-    			if( by - BS/2 <= BOXES_Y_OFFSET || 
-    				(brc.row < BOXES_PER_COL && self.boxes[brc.row][brc.col]) ) {
+    			var bx = lp.x + b[i].x,		// x pos of box
+    				by = lp.y + b[i].y,		// y pos of box
+    				brc1 = getRowCol(b[i], { x: lp.x + BS/2 - 1, y: lp.y}),
+					brc2 = getRowCol(b[i], { x: lp.x - BS/2 + 1, y: lp.y});
+    			if( by - BS/2 <= BOXES_Y_OFFSET ||    // bottom reached? 
+    				(brc1.row < BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
 
     				// align y to box border
     				lp.y = Math.round((lp.y - BOXES_Y_OFFSET)/(BS/2))*(BS/2) + BOXES_Y_OFFSET;
@@ -528,30 +528,37 @@ var MuprisGameLayer = cc.Layer.extend({
     	};
     	
     	var moveHorizontalyAndCheckForBarrier = function(t, lp, tp) {
-    		var b = t.rotatedBoxes,
-    			op = t.offsetToStartPoint,
+    		var b = t.rotatedBoxes,					// usually four tile boxes
+    			op = t.offsetToStartPoint, 			// distance of user finger to sprite center when grabbing a tile 
     			offset = 32-(Math.abs(t.rotatedBoxes[0].x) % BS),
-    			dir = Math.sign(tp.x-lp.x+op.x);
+    			dir = Math.sign(tp.x-lp.x+op.x);  	// direction, left = -1
     		
 			// limit horizontal movement to little less than one box per cycle
 			lp.x = (Math.abs(tp.x - lp.x + op.x) < BS)? tp.x + op.x : lp.x + (BS-1) * dir;
 			
+			// move tile to center of user finger in snap speed
 			if( Math.abs(op.x) > 0 ) op.x = Math.sign(op.x) * Math.max(Math.abs(op.x) - SNAP_SPEED, 0);
 
 			var newX = null;
+			// check all (four) boxes
     		for( var i=0 ; i<t.boxes.length ; i++) {
     			
-        		var brc = getRowCol(b[i], { x: lp.x-BS/2, y: lp.y} );
+        		var brc1 = getRowCol(b[i], { x: lp.x-BS/2, y: lp.y+BS-1} );
+        		var brc2 = getRowCol(b[i], { x: lp.x-BS/2, y: lp.y+1} );
     			// check for left and right border
     			if( dir === -1 ) {
+    				// left border?
     				if (lp.x + t.rotatedBoxes[i].x - BS/2 - BOXES_X_OFFSET < 0 ) {
     					var x = -t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET;
-    					newX = (newX === null)? x : Math.max(newX , -t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET);
+    					// take the tile that is the most left
+    					newX = (newX === null)? x : Math.max(newX , x);
     				}
     				
-    				if( self.boxes[brc.row][brc.col] ) {
-    					var x = (brc.col+1) * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET;
-    					newX = (newX === null)? x : Math.max(newX , brc.col * BS - t.rotatedBoxes[i].x - BS/2 + BOXES_X_OFFSET);
+    				// box on the left side?
+    				if( self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col] ) {
+        				if( i==0 ) cc.log("MUPRIS, moveHorizontalyAndCheckForBarrier: Correcting box!");
+    					var x = (brc1.col+1) * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET;
+    					newX = (newX === null)? x : Math.max(newX , brc1.col * BS - t.rotatedBoxes[i].x - BS/2 + BOXES_X_OFFSET);
     				}
     			} else {
     				if (lp.x + t.rotatedBoxes[i].x + BS/2 - BOXES_X_OFFSET >= BOXES_PER_ROW * BS ) {
@@ -559,11 +566,10 @@ var MuprisGameLayer = cc.Layer.extend({
     					newX = (newX === null)? x : Math.min(newX , BOXES_PER_ROW * BS - t.rotatedBoxes[i].x - BS/2 + BOXES_X_OFFSET);
     				}
 
-    				if( self.boxes[brc.row][brc.col+1] ) {
-    					var x = brc.col * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET;
-    					newX = (newX === null)? x : Math.min(newX , brc.col * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET);
+    				if( self.boxes[brc1.row][brc1.col+1] || self.boxes[brc2.row][brc2.col+1]  ) {
+    					var x = brc1.col * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET;
+    					newX = (newX === null)? x : Math.min(newX , brc1.col * BS - t.rotatedBoxes[i].x + BS/2 + BOXES_X_OFFSET);
     				}
-
     			}
     		}
     		
