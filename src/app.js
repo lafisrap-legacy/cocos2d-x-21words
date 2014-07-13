@@ -261,16 +261,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	
 	                // check for up
 	                if( loc.y > start.y + TOUCH_THRESHOLD ) {
-	                	// if direction changed while swiping right, set new base point
-//	                	if( loc.y < self.touchLastPoint.y ) {
-//	                		self.touchStartPoint = {
-//	                        		x: loc.x,
-//	                        		y: loc.y
-//	                        };
-//	                		self.isSwipeUp = false;
-//	                	} else {
-	                    	self.isSwipeUp = true;                		
-//	                	}
+                    	self.isSwipeUp = true;                		
 	                }
 	                
 	                self.touchLastPoint = {
@@ -309,30 +300,37 @@ var MuprisGameLayer = cc.Layer.extend({
 		 * KEYBOARD EVENTS
 		 */ 
        	
-       // TEST SUITE CODE
-  		if( 'keyboard' in cc.sys.capabilities ) {
-            cc.eventManager.addListener({
-                event: cc.EventListener.KEYBOARD,
-                onKeyPressed:function(key, event) {
-                    cc.log("Key down:" + key);
-                },
-                onKeyReleased:function(key, event) {
-                    cc.log("Key up:" + key);
-                }
-            }, this);
-        } else {
-            cc.log("KEYBOARD Not supported");
-        }
-
 	    if( false || 'keyboard' in cc.sys.capabilities ) {
 	        this._keyboardListener = cc.EventListener.create({
 	            event: cc.EventListener.KEYBOARD,
 	            onKeyPressed:function(key, event) {
+	            	var tile = self.tiles[self.tiles.length-1],
+	            		sprite = tile && tile.sprite;
+	            	if( !sprite ) return;
+	            	var pos = sprite.getPosition();
 	            	switch(key) {
+	            	case 'a':
 	            	case KEY_LEFT_CODE:
+	            		self.touchStartPoint = { 
+	            			x: pos.x,
+	            			y: pos.y
+	            		};
+	        			self.touchLastPoint = {
+	            			x: pos.x - BS,
+	            			y: pos.y
+	            		};
 	            		self.isSwipeLeft = true;
 	            		break;
+	            	case 's':
 	            	case KEY_RIGHT_CODE:
+	            		self.touchStartPoint = { 
+	            			x: pos.x,
+	            			y: pos.y
+	            		};
+	        			self.touchLastPoint = {
+	            			x: pos.x + BS,
+	            			y: pos.y
+	            		};
 	            		self.isSwipeRight = true;
 	            		break;
 	            	case KEY_UP_CODE:
@@ -346,9 +344,11 @@ var MuprisGameLayer = cc.Layer.extend({
 	            onKeyReleased:function(key, event) {
 	            	switch(key) {
 	            	case KEY_LEFT_CODE:
+		                self.touchStartPoint = null;
 	            		self.isSwipeLeft = false;
 	            		break;
 	            	case KEY_RIGHT_CODE:
+		                self.touchStartPoint = null;
 	            		self.isSwipeRight = false;
 	            		break;
 	            	case KEY_UP_CODE:
@@ -840,16 +840,18 @@ var MuprisGameLayer = cc.Layer.extend({
     		if( !t.isDragged && !t.isAligning ) {
 
     			if( !t.isRotating ) {
-    	    		if( self.isSwipeUp /*&& !(self.isSwipeLeft || self.isSwipeRight)*/ ) {
+    	    		if( self.isSwipeUp ) {
         				
         				t.isRotating = true;
         				t.fallingSpeed = FALLING_SPEED;
         				
         				rotateTile(t , lp);
-    	    		}    				
+    	    		} else if( self.isSwipeDown ) {
+    	    			t.fallingSpeed = FALLING_SPEED * 36;
+    	    		}			
     			}
     			
-    			if( isSwipe() &&
+    			if( isSwipe() && sp &&
 	    			sp.x < lp.x + BS*2 && sp.x > lp.x - BS*2 &&
 	    			sp.y < lp.y + BS*2 && sp.y > lp.y - BS*2	) { // move the tile if the touch is in range
 	  
