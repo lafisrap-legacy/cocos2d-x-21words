@@ -492,19 +492,63 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	            bezierAction = cc.bezierTo(5-Math.random(),bezier),
 	            fadeTime = Math.random()+1,
 	            fadeAction = cc.sequence(
-	            				cc.fadeTo((fadeTime-1)*2,255),
-								cc.fadeTo(fadeTime,128),
-								cc.fadeTo(fadeTime,255),
-								cc.fadeTo(fadeTime,128),
-								cc.fadeTo(fadeTime,255),
-								cc.fadeTo(fadeTime,128)
-	            			);
+    				cc.spawn(
+						cc.fadeTo((fadeTime-1)*2,255),
+						cc.scaleTo((fadeTime-1)*2,1.1)
+    				),
+    				cc.spawn(
+						cc.fadeTo(fadeTime,128),
+						cc.scaleTo(fadeTime,0.4)
+    				),
+    				cc.spawn(
+						cc.fadeTo(fadeTime,255),
+						cc.scaleTo(fadeTime,1.2)
+    				),
+    				cc.spawn(
+						cc.fadeTo(fadeTime,128),
+						cc.scaleTo(fadeTime,0.6)
+    				),
+    				cc.spawn(
+						cc.fadeTo(fadeTime,255),
+						cc.scaleTo(fadeTime,1.1)
+    				),
+    				cc.spawn(
+						cc.fadeTo(fadeTime,128),
+						cc.scaleTo(fadeTime,0.5)
+    				)
+	            );
 	        word.runAction(fadeAction);
 	        word.runAction(rotateAction);
 	        word.runAction(cc.sequence(bezierAction,cc.callFunc(function(){
 	        	ml.removeChild(this);
 	        },word)));
 		}
+	};
+	
+	var addPoints = function( value , pos) {
+		var coin = cc.LabelTTF.create(value, "Arial", 20),
+			time = Math.random()/2+1;
+	
+		coin.setPosition(pos.x,pos.y);
+	    coin.retain();
+	    coin.setColor(cc.color(0,0,0));
+	    ml.addChild(coin, 5);
+	    coin.runAction(
+	    	cc.sequence(
+				cc.EaseSineOut.create(
+			    	cc.spawn(
+			    		cc.moveBy(time,cc.p(0,250)),
+			    		cc.scaleTo(time,2),
+			    		cc.fadeTo(time,0)
+			    	)
+			    ),
+			    cc.callFunc(function() {
+			    	ml.removeChild(this);
+			    },coin)
+			)
+	    );
+	    
+	    ml.pointsToAdd.push(value);
 	};
 	
 	var startProgram = function(program) {
@@ -531,8 +575,26 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	    var lettersTexture = cc.textureCache.addImage(res.letters_png),
 	    	lettersImages  = cc.SpriteBatchNode.create(lettersTexture,200);
 	    muprisLayer.addChild(lettersImages, 2, TAG_SPRITE_MANAGER);
-	    
+	};
+	
+	muprisLayer.hookStartGame = function() {
 	    startProgram(0);
+	    
+		// points array
+		ml.pointsToAdd = [];
+		ml.totalPoints = 0;
+	    // draw score bar
+	    ml.scoreBar = new cc.LayerColor(cc.color(0,0,40,1),ml.size.width,BS*1.5);
+	    ml.scoreBar.setPosition(0,ml.size.height-BS*1.5);
+		ml.scoreBar.retain();
+		ml.addChild(ml.scoreBar, 5);
+		// draw score
+		ml.score = cc.LabelTTF.create(ml.totalPoints.toString(), "Arial", 60);
+		ml.score.setPosition(ml.size.width/2,BS*0.6);
+		ml.score.retain();
+		ml.score.setColor(cc.color(200,160,70));
+		ml.scoreBar.addChild(ml.score, 5);	
+		ml.scoreBar.runAction(cc.fadeTo(0.3,120));
 	};
 	
 	/*
@@ -605,6 +667,10 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		
 		if( sw && sw.brc.row === brc.row && (sw.markers[brc.col-sw.brc.col] === MARKER_SET || sw.markers[brc.col-sw.brc.col] === MARKER_SEL) ) return false;
 
+		// Score
+		var value = (LETTER_VALUES[box.userData] || 0) * (brc.row + 1);
+		addPoints(value, cc.p(BOXES_X_OFFSET + brc.col * BS + BS/2, BOXES_Y_OFFSET + brc.row * BS + BS));
+		
 		return true;
 	};
 	
@@ -685,6 +751,16 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y && tapPos.y <= swPos.y + BS*2 ) {
 			cc.log("MUPRIS, hookOnLongTap: Blowing "+ml.boxes[sw.brc.row][sw.brc.col].words.length+" words.");
 			blowWords(tapPos,ml.boxes[sw.brc.row][sw.brc.col].words);
+		}
+	};
+	
+	muprisLayer.hookUpdate = function(dt) {
+		if( !ml.pointsToAddCnt && ml.pointsToAdd.length ) {
+			ml.pointsToAddCnt = 5;
+			ml.totalPoints += parseInt(ml.pointsToAdd.splice(0,1));
+			ml.score.setString(ml.totalPoints.toString());
+		} else if( ml.pointsToAddCnt ) {
+			ml.pointsToAddCnt--;
 		}
 	};
 	

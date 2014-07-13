@@ -3,10 +3,6 @@
  * 
  * Tile placement
  * 
- * 1) correct rotation
- * 		tile doesn't rotate at the borders
- * 		rotating tiles multiple
- * 2) don't fix tiles while dragging
  */ 
 
 
@@ -81,7 +77,8 @@ var MuprisGameLayer = cc.Layer.extend({
 		this.initListeners();
 		
 		setTimeout(function() {
-		    self.scheduleUpdate();				
+		    self.scheduleUpdate();	
+		    if( self.hookStartGame ) self.hookStartGame();
 		},5000);
     },
     
@@ -265,15 +262,15 @@ var MuprisGameLayer = cc.Layer.extend({
 	                // check for up
 	                if( loc.y > start.y + TOUCH_THRESHOLD ) {
 	                	// if direction changed while swiping right, set new base point
-	                	if( loc.y < self.touchLastPoint.y ) {
-	                		self.touchStartPoint = {
-	                        		x: loc.x,
-	                        		y: loc.y
-	                        };
-	                		self.isSwipeUp = false;
-	                	} else {
+//	                	if( loc.y < self.touchLastPoint.y ) {
+//	                		self.touchStartPoint = {
+//	                        		x: loc.x,
+//	                        		y: loc.y
+//	                        };
+//	                		self.isSwipeUp = false;
+//	                	} else {
 	                    	self.isSwipeUp = true;                		
-	                	}
+//	                	}
 	                }
 	                
 	                self.touchLastPoint = {
@@ -312,7 +309,7 @@ var MuprisGameLayer = cc.Layer.extend({
 		 * KEYBOARD EVENTS
 		 */ 
        	
-/*       TEST SUITE CODE
+       // TEST SUITE CODE
   		if( 'keyboard' in cc.sys.capabilities ) {
             cc.eventManager.addListener({
                 event: cc.EventListener.KEYBOARD,
@@ -325,9 +322,9 @@ var MuprisGameLayer = cc.Layer.extend({
             }, this);
         } else {
             cc.log("KEYBOARD Not supported");
-        }*/
+        }
 
-	    if( 'keyboard' in cc.sys.capabilities ) {
+	    if( false || 'keyboard' in cc.sys.capabilities ) {
 	        this._keyboardListener = cc.EventListener.create({
 	            event: cc.EventListener.KEYBOARD,
 	            onKeyPressed:function(key, event) {
@@ -508,8 +505,8 @@ var MuprisGameLayer = cc.Layer.extend({
     		for( var i=0 ; i<b.length ; i++ ) {
     			var bx = lp.x + b[i].x,		// x pos of box
     				by = lp.y + b[i].y,		// y pos of box
-    				brc1 = getRowCol(b[i], { x: lp.x + BS/2 - 1, y: lp.y}),
-					brc2 = getRowCol(b[i], { x: lp.x - BS/2 + 1, y: lp.y});
+    				brc1 = getRowCol(b[i], { x: lp.x + BS/2 - 3, y: lp.y}),
+					brc2 = getRowCol(b[i], { x: lp.x - BS/2 + 3, y: lp.y});
     			if( by - BS/2 <= BOXES_Y_OFFSET ||    // bottom reached? 
     				(brc1.row < BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
 
@@ -812,6 +809,9 @@ var MuprisGameLayer = cc.Layer.extend({
     		}        	
     	};
 
+    	// call hook
+    	if( self.hookUpdate ) self.hookUpdate(dt);
+    	
     	// if there is no tile flying, build a new one
         var tilesFlying = self.tiles.filter(function(value) { return value !== undefined }).length;
         if( !tilesFlying ) {
@@ -840,7 +840,7 @@ var MuprisGameLayer = cc.Layer.extend({
     		if( !t.isDragged && !t.isAligning ) {
 
     			if( !t.isRotating ) {
-    	    		if( self.isSwipeUp && !(self.isSwipeLeft || self.isSwipeRight) ) {
+    	    		if( self.isSwipeUp /*&& !(self.isSwipeLeft || self.isSwipeRight)*/ ) {
         				
         				t.isRotating = true;
         				t.fallingSpeed = FALLING_SPEED;
