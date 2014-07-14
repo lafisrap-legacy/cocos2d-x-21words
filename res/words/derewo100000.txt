@@ -16833,9 +16833,7 @@ entspannen 13
 Leverkusener 13
 überreichen 13
 Versicherte 13
-UNHCR 13
 Nachtragshaushalt 13
-Sp 13
 Gastgeberinnen 13
 gelaunt 13
 Andersen 13
@@ -31977,7 +31975,6 @@ Mustern 14
 Dienstleistungsunternehmen 14
 Wahlerfolg 14
 Heldt 14
-György 14
 Gewichtheber 14
 verbleibende 14
 Küstenwache 14
@@ -55867,7 +55864,6 @@ Weltmeistern 15
 Naturforscher 15
 Meiers 15
 Henk 15
-Györ 15
 zierten 15
 zerstochen 15
 vorgreifen 15
@@ -90359,7 +90355,6 @@ Klangbilder 17
 Grotesken 17
 Direktübertragung 17
 Barschaft 17
-Ökosystems 17
 verachteten 17
 umbrachte 17
 telefoniere 17
@@ -99993,3 +99988,4 @@ Viehhaltung 17
 Untersuchungsrichters 17
 Tarnkappe 17
 Steinwürfen 17
+Cypherpunk 20

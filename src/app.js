@@ -212,6 +212,8 @@ var MuprisGameLayer = cc.Layer.extend({
 	                var loc = touch.getLocation(),
 	                	start = self.touchStartPoint;
 	
+	                if( !loc ) return;
+	                
 	                self.touchDistance = {
 	            			x: Math.abs(loc.x - start.x),
 	            			y: Math.abs(loc.y - start.y)
@@ -514,7 +516,7 @@ var MuprisGameLayer = cc.Layer.extend({
     				lp.y = Math.round((lp.y - BOXES_Y_OFFSET)/(BS/2))*(BS/2) + BOXES_Y_OFFSET;
     				
     				// fix tile
-    				if( !t.isDragged ) {
+    				if( !t.isDragged && !t.isRotating ) {
     					
     					return fixTile(t, lp);
     				}
@@ -729,9 +731,10 @@ var MuprisGameLayer = cc.Layer.extend({
         		}    			
     		}
     		
-    		if( self.hookTileFixed ) self.hookTileFixed(newBrcs);
-
-    		self.checkForAndRemoveCompleteRows();
+    		var tileRet = false;
+    		if( self.hookTileFixed ) tileRet = self.hookTileFixed(newBrcs);
+    		// let function save newBrcs to check if potential tile is being deleted ...
+    		if( !tileRet ) self.checkForAndRemoveCompleteRows();
 
     		batch.removeChild(t.sprite);
        		delete t;

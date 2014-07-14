@@ -12,40 +12,6 @@
  * + GAMEPLAY
  * - 7 Levels
  * - limit words to specific length (4-10)
- * - Medals:
- * 	- Bronze
- * 		- remove one row
- * 		- remove two rows at a time
- * 		- remove three rows at a time
- * 		- remove four rows at a time
- * 		- create a 4-letter word
- * 		- create a 5-letter word
- * 		- create a 6-letter word
- * 		- create a 7-letter word
- * 		- create a 8-letter word
- * 		- create a 10 points word 
- * 		- create a 15 points word 
- * 		- create a 20 points word 
- * 		- have 5 boxes left on the field
- * 		- have 4 boxes left on the field
- * 		- create a word in the 5th row
- * 	- Silver
- * 		- create a 9-letter word
- * 		- create a 10-letter word
- * 		- have 3 boxes left on the field
- * 		- have 2 boxes left on the field
- * 		- create a word in the 10th row
- * 		- clear two rows at a time and get a word
- * 		- clear three rows at a time and get a word
- * 		- clear two complete rows with an L-tile
- * 		- clear three complete rows with an L-tile
- * 
- * - Gold
- * 		- have 1 box left on the field
- * 		- have 0 boxes left on the field
- * 		- clear four rows at a time and get a word
- * 	
- * 
  * 
  * 
  * Diamonds: Only Sphinx-Mode
@@ -78,9 +44,9 @@ var	LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.p
 	WORD_FRAME_WIDTH = 8,
 	WORD_FRAME_MOVE_TIME = 0.8,
 	TILES_PROGRAMS = [[
+	      { tile: 0, letters: "CYPH" },
 	      { tile: 0, letters: "VERR" },
-	      { tile: 0, letters: "ÄTER" },
-	      { tile: 2, letters: "IJKL" },
+	      { tile: 2, letters: "ATKL" },
 	      { tile: 3, letters: "MNOP" },
 	   ]
 	];
@@ -155,7 +121,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		}
 		
 		ml.selections = s;
-		updateSelectedWord();
+		return updateSelectedWord();
 	};
 	
 	// look for words at a specified position
@@ -194,7 +160,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		var sw = ml.selectedWord,
 		batch = ml.getChildByTag(TAG_SPRITE_MANAGER);
 		
-		if( !sw ) return;
+		if( !sw ) return false;
 		
 		// Define sprites and show word start sprite
 		var setMarkerFrame = [],
@@ -309,15 +275,23 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					if( takeWord ) {
 						// delete complete row
 						var row = sw.brc.row;
+						for( var j=0 ; j<word.length ; j++ ) {
+							// calculate points and let them fly ...
+							var value = LETTER_VALUES[word[j]] * 10 * (sw.brc.row+1) * (word.length-3);
+							addPoints(value, cc.p(BOXES_X_OFFSET + (sw.brc.col+j) * BS + BS/2, BOXES_Y_OFFSET + sw.brc.row * BS + BS), true);							
+						}
 						ml.checkForAndRemoveCompleteRows(row);
 					} else {
 						setSelections(true);
 						moveSelectedWord(sw.brc);
+						ml.checkForAndRemoveCompleteRows();
 					}
 				});
-				break;
+				return true; // a word was found
 			}
 		}
+		
+		return false;
 	};
 	
 	var deleteWordFromList = function(word) {
@@ -378,7 +352,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					cc.scaleTo(WORD_FRAME_MOVE_TIME/2,1.5)
 				),
 				cc.EaseSineIn.create(
-					cc.scaleTo(WORD_FRAME_MOVE_TIME/2,1)
+					cc.scaleTo(WORD_FRAME_MOVE_TIME/2,0.95)
 				),
 				cc.callFunc(function() {
 	   				var sprite = null,
@@ -409,17 +383,34 @@ var MUPRIS_MODULE = function(muprisLayer) {
     	            	2);
     	            
     				sprite = cc.Sprite.create(this.getTexture(),this.getTextureRect());
-    				var children = this.getChildren();
+    				var children = this.getChildren(),
+    					childSprites = [];
     				for( var i=0 ; i<children.length ; i++ ) {
-    					var child = cc.Sprite.create(children[i].getTexture(),children[i].getTextureRect());
-        				child.retain();
-        				child.setPosition(children[i].getPosition());
-        				sprite.addChild(child,2);    					
+    					childSprites[i] = cc.Sprite.create(children[i].getTexture(),children[i].getTextureRect());
+    					childSprites[i].retain();
+    					childSprites[i].setPosition(children[i].getPosition());
+        				sprite.addChild(childSprites[i],2);    					
     				}
     				sprite.setPosition(this.getPosition());
     				sprite.retain();
     				ml.getParent().addChild(sprite,2);
-    	            
+    				
+    				// display value of word
+    				for( var i=0,sum=0 ; i<word.length ; i++ ) {
+        				var value = cc.LabelTTF.create(LETTER_VALUES[word[i]], "Arial", 32),
+        					pos = childSprites[i].getPosition();
+        				sum += LETTER_VALUES[word[i]];
+        				value.setPosition(pos.x , pos.y + BS + 10);
+        				value.retain();
+        				value.setColor(cc.color(200,160,0));
+        				sprite.addChild(value, 5);	    					
+    				}
+    				var value = cc.LabelTTF.create("Wortwert: "+sum, "Arial", 48);
+					value.setPosition(sprite.getTextureRect().width/2 , pos.y + BS * 2 + 10);
+					value.retain();
+					value.setColor(cc.color(200,160,0));
+					sprite.addChild(value, 5);	    					
+
         	        ml.pause();
         	        ml.unscheduleUpdate();
 
@@ -525,19 +516,19 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		}
 	};
 	
-	var addPoints = function( value , pos) {
-		var coin = cc.LabelTTF.create(value, "Arial", 20),
-			time = Math.random()/2+1;
+	var addPoints = function( value , pos, big) {
+		var coin = cc.LabelTTF.create(value, "Arial", big? 40 : 20),
+			time = big? Math.random()+0.5 : Math.random()/2+1;
 	
 		coin.setPosition(pos.x,pos.y);
 	    coin.retain();
-	    coin.setColor(cc.color(0,0,0));
+	    coin.setColor(big? cc.color(40,0,0) : cc.color(0,0,0));
 	    ml.addChild(coin, 5);
 	    coin.runAction(
 	    	cc.sequence(
 				cc.EaseSineOut.create(
 			    	cc.spawn(
-			    		cc.moveBy(time,cc.p(0,250)),
+			    		cc.moveBy(time,cc.p((pos.x-ml.size.width/2)/4,big? 500 : 250)),
 			    		cc.scaleTo(time,2),
 			    		cc.fadeTo(time,0)
 			    	)
@@ -584,8 +575,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		ml.pointsToAdd = [];
 		ml.totalPoints = 0;
 	    // draw score bar
-	    ml.scoreBar = new cc.LayerColor(cc.color(0,0,40,1),ml.size.width,BS*1.5);
-	    ml.scoreBar.setPosition(0,ml.size.height-BS*1.5);
+	    ml.scoreBar = new cc.LayerColor(cc.color(0,0,40,1),ml.size.width,BS*1.2);
+	    ml.scoreBar.setPosition(0,ml.size.height-BS*1.2);
 		ml.scoreBar.retain();
 		ml.addChild(ml.scoreBar, 5);
 		// draw score
@@ -657,19 +648,38 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	muprisLayer.hookTileFixed = function( brcs ) {
 		
-		setSelections(ml.firstTileAutoSelect? true : false);
-		ml.firstTileAutoSelect = true;
+		ml.lastBrcs = brcs;
+		
+		// selections are set before deleting, so if autoSelect is enabled you cannot delete a selection
+		
+		var ret = setSelections(ml.dontAutoSelectWord? true : false);
+		// when first first is found turn off auto select
+		if( ret ) ml.dontAutoSelectWord = true;
+		return ret;
 	};	
 	
 	muprisLayer.hookDeleteBox = function(brc) {
 		var sw = ml.selectedWord,
 			box = ml.boxes[brc.row][brc.col];
-		
-		if( sw && sw.brc.row === brc.row && (sw.markers[brc.col-sw.brc.col] === MARKER_SET || sw.markers[brc.col-sw.brc.col] === MARKER_SEL) ) return false;
+
+		var lb = ml.lastBrcs,
+			newBox = false;
+		if( lb ) {
+			for( var i=0 ; i<lb.length ; i++) 
+				if( lb[i].row === brc.row && lb[i].col === brc.col ) 
+					break;
+			if( i<lb.length ) newBox = true;
+		}
+		if( sw && sw.brc.row === brc.row && (
+				sw.markers[brc.col-sw.brc.col] === MARKER_SET || 
+				sw.markers[brc.col-sw.brc.col] === MARKER_SEL || 
+				newBox && sw.markers[brc.col-sw.brc.col] === MARKER_OPT
+			)
+		) return false;
 
 		// Score
-		var value = (LETTER_VALUES[box.userData] || 0) * (brc.row + 1);
-		addPoints(value, cc.p(BOXES_X_OFFSET + brc.col * BS + BS/2, BOXES_Y_OFFSET + brc.row * BS + BS));
+		var value = box && (LETTER_VALUES[box.userData] || 0) * (brc.row + 1);
+		if( value ) addPoints(value, cc.p(BOXES_X_OFFSET + brc.col * BS + BS/2, BOXES_Y_OFFSET + brc.row * BS + BS));
 		
 		return true;
 	};
@@ -756,7 +766,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	muprisLayer.hookUpdate = function(dt) {
 		if( !ml.pointsToAddCnt && ml.pointsToAdd.length ) {
-			ml.pointsToAddCnt = 5;
+			ml.pointsToAddCnt = 3;
 			ml.totalPoints += parseInt(ml.pointsToAdd.splice(0,1));
 			ml.score.setString(ml.totalPoints.toString());
 		} else if( ml.pointsToAddCnt ) {
