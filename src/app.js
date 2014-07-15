@@ -507,8 +507,8 @@ var MuprisGameLayer = cc.Layer.extend({
     		for( var i=0 ; i<b.length ; i++ ) {
     			var bx = lp.x + b[i].x,		// x pos of box
     				by = lp.y + b[i].y,		// y pos of box
-    				brc1 = getRowCol(b[i], { x: lp.x + BS/2 - 3, y: lp.y}),
-					brc2 = getRowCol(b[i], { x: lp.x - BS/2 + 3, y: lp.y});
+    				brc1 = getRowCol(b[i], { x: lp.x + BS/2 - 5, y: lp.y}),
+					brc2 = getRowCol(b[i], { x: lp.x - BS/2 + 5, y: lp.y});
     			if( by - BS/2 <= BOXES_Y_OFFSET ||    // bottom reached? 
     				(brc1.row < BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
 
