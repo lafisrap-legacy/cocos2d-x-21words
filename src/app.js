@@ -177,6 +177,7 @@ var MuprisGameLayer = cc.Layer.extend({
         						new cc.Color(0,0,0,255), 
         						1, 
         						new cc.Color(0,0,0,255));
+        
 	},
 	
     initListeners: function() {
@@ -212,12 +213,15 @@ var MuprisGameLayer = cc.Layer.extend({
 	                var loc = touch.getLocation(),
 	                	start = self.touchStartPoint;
 	
-	                if( !loc ) return;
+	                if( !loc || !start ) {
+		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
+	                	return;
+	                }
 	                
 	                self.touchDistance = {
 	            			x: Math.abs(loc.x - start.x),
 	            			y: Math.abs(loc.y - start.y)
-	            	}
+	            	};
 	                
 	                // check for left
 	                if( loc.x < start.x - TOUCH_THRESHOLD) {
