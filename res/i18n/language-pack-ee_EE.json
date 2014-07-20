@@ -1,0 +1,18 @@
+{
+    "name": "eesti",
+    "wordlist": "www.cl.ut.ee-ressursid-sagedused-tabel1.txt",
+    "apptext": {
+        "reached_top_continue": "MÄNGI EDASI",
+        "reached_top_end_game": "LÕPETA MÄNG",
+        "take_word_yes": "JAH",
+        "take_word_no": "EI",
+        "take_word_question": "Kas tahad seda sõna võtta?",
+        "take_word_wordvalue": "Sõnaväärtus",
+        "score_bar_highscore": "Rekord",
+        "score_bar_treasure": "Sõnalaegas",
+        "score_bar_mvw1": "Kõige väärtuslikum",
+        "score_bar_mvw2": "sõna",
+        "score_bar_level": "Aste",
+        "new_level_level": "Aste"
+    }
+}

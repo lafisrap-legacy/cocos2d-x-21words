@@ -7,18 +7,11 @@ var res = {
     letters_plist : 'res/images/letters/letters.plist',
 	title_png : "res/images/title.png",
 	background_png : "res/images/background.png",
-
-	empty_png : "res/empty.png",
-	HelloWorld_png : "res/HelloWorld.png",
-    CloseNormal_png : "res/CloseNormal.png",
-    CloseSelected_png : "res/CloseSelected.png"
+	empty_png : "res/empty.png"
 };
 
 var g_resources = [
     //image
-    res.HelloWorld_png,
-    res.CloseNormal_png,
-    res.CloseSelected_png,
     res.tiles_png,
     res.marker_png,
     res.letters_png,
@@ -29,7 +22,7 @@ var g_resources = [
     //plist
     res.letters_plist,
     res.marker_plist,
-    res.tiles_plist,
+    res.tiles_plist
     
     //fnt
 
@@ -39,3 +32,10 @@ var g_resources = [
 
     //effect
 ];
+
+var i18n_language_packs = [
+ 	"language-pack-de_DE.json",
+    "language-pack-en_US.json",
+    "language-pack-ee_EE.json"
+];
+           	         

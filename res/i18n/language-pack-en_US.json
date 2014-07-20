@@ -1,0 +1,18 @@
+{
+    "name": "english",
+    "wordlist": "derewo100000.txt",
+    "apptext": {
+        "reached_top_continue": "CONTINUE",
+        "reached_top_end_game": "END GAME",
+        "take_word_yes": "YES",
+        "take_word_no": "NO",
+        "take_word_question": "Take the word?",
+        "take_word_wordvalue": "Word value",
+        "score_bar_highscore": "Highscore",
+        "score_bar_treasure": "Word treasure",
+        "score_bar_mvw1": "Most valuable",
+        "score_bar_mvw2": "Word",
+        "score_bar_level": "Level",
+        "new_level_level": "Level"
+    }
+}

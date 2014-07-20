@@ -6,7 +6,13 @@
  */ 
 
 
-var TAG_SPRITE_MANAGER = 1,
+var MUPRIS_GLOBALS = { 
+		t : { 
+			"reached_top_continue" : "WEITER SPIELEN",
+			"reached_top_end_game"	: "SPIEL BEENDEN"
+		}
+	},
+	TAG_SPRITE_MANAGER = 1,
 	TAG_MENU_LAYER = 2,
 	TAG_GAME_LAYER = 3,
 	BS = 64, // pixel
@@ -14,7 +20,7 @@ var TAG_SPRITE_MANAGER = 1,
 	GAME_OVER_COL = 16,
 	BOXES_PER_ROW = 10,
 	BOXES_X_OFFSET = 0,
-	BOXES_Y_OFFSET = 64,
+	BOXES_Y_OFFSET = 96,
 	SNAP_SPEED = 10.0, // pixel per 1/60
 	LONG_TAP_TIME = 300, // milliseconds
 	FALLING_SPEED = 0.33, // pixel per 1/60
@@ -58,7 +64,6 @@ var MuprisGameLayer = cc.Layer.extend({
         this._super();
 
         var size = this.size = cc.director.getWinSize();
-        
         
         if( typeof MUPRIS_MODULE !== 'undefined' ) MUPRIS_MODULE(this);
 
@@ -173,7 +178,7 @@ var MuprisGameLayer = cc.Layer.extend({
             						  1,
             						  cc.color(255,100,100,30));         	
         }*/
-        this.drawNode.drawPoly([cc.p(0,0),cc.p(size.width,0),cc.p(size.width,BS),cc.p(0,BS)],
+        this.drawNode.drawPoly([cc.p(0,0),cc.p(size.width,0),cc.p(size.width,BOXES_Y_OFFSET ),cc.p(0,BOXES_Y_OFFSET )],
         						new cc.Color(0,0,0,255), 
         						1, 
         						new cc.Color(0,0,0,255));
@@ -488,7 +493,8 @@ var MuprisGameLayer = cc.Layer.extend({
 	
     update: function(dt) {
     	
-    	var self = this,
+    	var mg = MUPRIS_GLOBALS,
+    		self = this,
 			size = this.size;
 
     	/*
@@ -909,7 +915,7 @@ var MuprisGameLayer = cc.Layer.extend({
 
     			if( ret == "gameover" ) {
     				var menuItems = [{
-    					label: "WEITER SPIELEN", 
+    					label: mg.t.reached_top_continue, 
     					cb: function(sender) {
     			        	var gameLayer = this.getParent().getChildByTag(TAG_GAME_LAYER);
     				        gameLayer.resume();
@@ -918,8 +924,9 @@ var MuprisGameLayer = cc.Layer.extend({
     			            this.getParent().removeChild(this);
     			        }
     				},{
-    					label: "NEUES SPIEL", 
+    					label: mg.t.reached_top_end_game, 
     					cb: function(sender) {
+    						if( self.hookEndGame ) self.hookEndGame();
     			        	cc.director.runScene(new MuprisScene());
     			        }
     				}];
