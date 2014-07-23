@@ -1,6 +1,6 @@
 {
     "name": "deutsch",
-    "wordlist": "derewo100000.txt",
+    "wordlist": "derewo57000.txt",
     "apptext": {
         "reached_top_continue": "WEITER SPIELEN",
         "reached_top_end_game": "SPIEL BEENDEN",
