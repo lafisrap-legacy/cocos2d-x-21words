@@ -859,12 +859,14 @@ var MuprisGameLayer = cc.Layer.extend({
         				t.fallingSpeed = $MU.FALLING_SPEED;
         				
         				rotateTile(t , lp);
-    	    		} else if( self.isSwipeDown ) {
+    	    		} else if( self.isSwipeDown && !sp || self.isSwipeDown &&
+    		    			sp.x < lp.x + $MU.BS*2 && sp.x > lp.x - $MU.BS*2 &&
+    		    			sp.y < lp.y + $MU.BS*2 && sp.y > lp.y - $MU.BS*2) {
     	    			t.fallingSpeed = $MU.FALLING_SPEED * 36;
     	    		}			
     			}
     			
-    			if( isSwipe() && sp &&
+    			if( !t.isRotating && isSwipe() && sp &&
 	    			sp.x < lp.x + $MU.BS*2 && sp.x > lp.x - $MU.BS*2 &&
 	    			sp.y < lp.y + $MU.BS*2 && sp.y > lp.y - $MU.BS*2	) { // move the tile if the touch is in range
 	  

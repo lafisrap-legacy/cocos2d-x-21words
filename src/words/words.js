@@ -5,12 +5,12 @@
  * 
  * + GAMEPLAY
  * - buy:
- * 		single box tile for word value x 1000
+ * 		single box tile for > 1000 coins
+ * 		if spare money is there, than icon appears
  * - present fitting tiles for tileValues, if no possible tile is there
  * - new score bar
  * 
  * + WORTSCHATZ
- * - letter occurences made of letter value table
  * - show wortschatz
  * 
  * + INTERNATIONALIZATION
@@ -38,6 +38,12 @@
 
 $MU.LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.png","i.png","j.png","k.png","l.png","m.png","n.png","o.png","p.png","q.png","r.png","s.png","t.png","u.png","v.png","w.png","x.png","y.png","z.png","ae.png","oe.png","ue.png","6.png"],
 $MU.LETTERS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä","Ö","Ü","Õ"],
+$MU.LEVEL_SCORE = [0,   200,   500,  1000,  2000,  3000,  4000,  5000,  6000,  8000, 10000,
+                      12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000,
+                      33000, 36000, 39000, 42000, 45000, 48000, 51000, 54000, 57000, 60000,
+                      64000, 68000, 72000, 76000, 80000, 84000, 88000, 92000, 96000,100000,
+                     110000, 120000
+                   ]
 $MU.MARKER_SET = 1,
 $MU.MARKER_OPT = 2,
 $MU.MARKER_SEL = 3,
@@ -55,10 +61,7 @@ $MU.SCORE_WORD_MULTIPLYER = 15,
 $MU.SCORE_COLOR_DIMM = cc.color(160,120,55),
 $MU.SCORE_COLOR_BRIGHT = cc.color(240,170,70),
 $MU.TILES_PROGRAMS = [[
-      { tile: 0, letters: "SAYN" },
-      { tile: 0, letters: "ERPU" },
-      { tile: 2, letters: "NKKL" },
-      { tile: 3, letters: "CUPS" },
+      { tile: 0, letters: "HAUT" },
    ]
 ];
 
@@ -278,8 +281,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			var word = curWords[i].word;
 			for( var j=0 ; j<word.length ; j++ ) {
 				if( !ml.boxes[sw.brc.row][j+sw.brc.col] || 
-					word[j] !== ml.boxes[sw.brc.row][j+sw.brc.col].userData || 
-				   (sw.markers[j] !== $MU.MARKER_SET && sw.markers[j] !== $MU.MARKER_SEL)) 
+					word[j] !== ml.boxes[sw.brc.row][j+sw.brc.col].userData /*|| 
+				   (sw.markers[j] !== $MU.MARKER_SET && sw.markers[j] !== $MU.MARKER_SEL)*/) 
 						break;
 			}
 			if( j === word.length ) {
@@ -295,7 +298,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 						for( var j=0, value=0 ; j<word.length ; j++ ) {
 							// calculate points and let them fly ...
 							var v = mg.letterValues[word[j]],
-								points = parseInt(v * mg.maxWordValue * ((sw.brc.row*$MU.SCORE_ROW_MULTIPLYER)+1) * (word.length-3));
+								points = parseInt(v * mg.maxWordValue * 2 * ((sw.brc.row*$MU.SCORE_ROW_MULTIPLYER)+1) * (word.length-3));
 							value += v;
 							addPoints(points, cc.p($MU.BOXES_X_OFFSET + (sw.brc.col+j) * $MU.BS + $MU.BS/2, $MU.BOXES_Y_OFFSET + sw.brc.row * $MU.BS + $MU.BS), true);							
 						}
@@ -788,7 +791,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
         	wt = mg.wordTreasure = json.length? JSON.parse(json) : [];
         	
 		mg.maxPoints = ls.getItem("maxPoints") || 0;
-		mg.maxWordValue = ls.getItem("maxWordValue") || 8;
+		mg.maxWordValue = ls.getItem("maxWordValue") || 4;
 		
 		// points array
 		ml.pointsToAdd = [];
@@ -1019,7 +1022,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 
 			// next level?
 			cc.log("ml.totalPoints = "+ml.totalPoints+", ml.currentLevel = "+ml.currentLevel+", ml.wordTreasureBestWord = "+ml.wordTreasureBestWord+", ml.currentLeve = "+ml.currentLevel);
-			if( ml.totalPoints >= (ml.currentLevel+1)*1000 && ml.wordTreasureBestWord.value > ml.currentLevel) {
+			if( ml.totalPoints >= $MU.LEVEL_SCORE[ml.currentLevel] && ml.wordTreasureBestWord.value > ml.currentLevel) {
 				var ls = cc.sys.localStorage;
 
 				ml.currentLevel++;
@@ -1060,18 +1063,22 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	var loadLanguagePack = function( pack ) {
 		
+		cc.log("Mupris, loadLanguagePack: STARTING LOADING ...");
 		var filename = i18n_language_packs[pack];
 		cc.loader.loadJson("res/i18n/"+filename, function(err, json) {
 			if( !err ) {
+				cc.log("Mupris, loadLanguagePack: ... LOADED LANGUAGE PACK, GOING ON ...");
 				var lg = mg.languagePack = json;
 				mg.t = lg.apptext;
 				
 				cc.loader.loadJson("res/words/"+lg.wordlist+".words.json", function(err, json) {
 					if( !err ) {
+						cc.log("Mupris, loadLanguagePack: ... LOADED WORDS, GOING ON ...");
 						mg.words = json;
 
 						cc.loader.loadJson("res/words/"+lg.wordlist+".letters.json", function(err, json) {
 							if( !err ) {
+								cc.log("Mupris, loadLanguagePack: ... LOADED LETTERS!");
 								var lv = mg.letterValues = json,
 									l = $MU.LETTERS;
 								// get the most common
@@ -1111,6 +1118,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	// read json file with words
 	if( !mg.languagePack ) {
-		loadLanguagePack(2);
+		loadLanguagePack(0);
 	}
 }
