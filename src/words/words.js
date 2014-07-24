@@ -9,6 +9,8 @@
  * 		if spare money is there, than icon appears
  * - present fitting tiles for tileValues, if no possible tile is there
  * - new score bar
+ * 		- left side score with next level score
+ * 		- rolling 1: Level
  * 
  * + WORTSCHATZ
  * - show wortschatz
@@ -38,30 +40,30 @@
 
 $MU.LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.png","i.png","j.png","k.png","l.png","m.png","n.png","o.png","p.png","q.png","r.png","s.png","t.png","u.png","v.png","w.png","x.png","y.png","z.png","ae.png","oe.png","ue.png","6.png"],
 $MU.LETTERS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä","Ö","Ü","Õ"],
-$MU.LEVEL_SCORE = [0,   200,   500,  1000,  2000,  3000,  4000,  5000,  6000,  8000, 10000,
+$MU.LEVEL_SCORE = [0,   500,  1000,  2000,  3000,  4000,  5000,  6000,  7000,  8000, 10000,
                       12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000,
                       33000, 36000, 39000, 42000, 45000, 48000, 51000, 54000, 57000, 60000,
                       64000, 68000, 72000, 76000, 80000, 84000, 88000, 92000, 96000,100000,
                      110000, 120000
-                   ]
-$MU.MARKER_SET = 1,
-$MU.MARKER_OPT = 2,
-$MU.MARKER_SEL = 3,
-$MU.START_MARKER_X_OFFSET = -18,
-$MU.START_MARKER_Y_OFFSET = $MU.BS/2,
-$MU.MARKER_X_OFFSET = $MU.BS/2,
-$MU.MARKER_Y_OFFSET = -10,
-$MU.UNSELECTED_BOX_OPACITY = 128,
-$MU.NEEDED_LETTERS_PROBABILITY = 0.5
-$MU.MAX_LETTERS_BLOWN = 20,
-$MU.WORD_FRAME_WIDTH = 8,
-$MU.WORD_FRAME_MOVE_TIME = 0.8,
-$MU.SCORE_ROW_MULTIPLYER = 0.1,
-$MU.SCORE_WORD_MULTIPLYER = 15,
-$MU.SCORE_COLOR_DIMM = cc.color(160,120,55),
-$MU.SCORE_COLOR_BRIGHT = cc.color(240,170,70),
+                   ];
+$MU.MARKER_SET = 1;
+$MU.MARKER_OPT = 2;
+$MU.MARKER_SEL = 3;
+$MU.START_MARKER_X_OFFSET = -18;
+$MU.START_MARKER_Y_OFFSET = $MU.BS/2;
+$MU.MARKER_X_OFFSET = $MU.BS/2;
+$MU.MARKER_Y_OFFSET = -10;
+$MU.UNSELECTED_BOX_OPACITY = 128;
+$MU.NEEDED_LETTERS_PROBABILITY = 0.5;
+$MU.MAX_LETTERS_BLOWN = 20;
+$MU.WORD_FRAME_WIDTH = 8;
+$MU.WORD_FRAME_MOVE_TIME = 0.8;
+$MU.SCORE_ROW_MULTIPLYER = 0.1;
+$MU.SCORE_WORD_MULTIPLYER = 15;
+$MU.SCORE_COLOR_DIMM = cc.color(160,120,55);
+$MU.SCORE_COLOR_BRIGHT = cc.color(240,170,70);
 $MU.TILES_PROGRAMS = [[
-      { tile: 0, letters: "HAUT" },
+      { tile: 0, letters: "ANXR" },
    ]
 ];
 
@@ -309,7 +311,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 								value: value
 							};
 						mg.wordTreasure.push(w);
-						moveRollingLayer(2);
+						moveRollingLayer(0);
 						if( !ml.wordTreasureBestWord || ml.wordTreasureBestWord.value < w.value ) {
 							ml.wordTreasureBestWord = w;
 						}
@@ -592,7 +594,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		return label;
 	};
 	
-	var drawWordSprite = function(word,pos,wordSprite,parent) {
+	var drawWordSprite = function(word,pos,wordSprite,scale,parent) {
 		// create yellow frame sprite
 		if( !wordSprite ) {
 			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
@@ -603,7 +605,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			rect.height = word.length? $MU.BS + $MU.WORD_FRAME_WIDTH * 2 : 8;
 			wordFrameSprite.setTextureRect(rect);
 			wordFrameSprite.setPosition(pos.x,pos.y);
-			wordFrameSprite.setScale(0.3);
+			wordFrameSprite.setScale(scale || 0.3);
 			parent.addChild(wordFrameSprite,4);
 		} else {
 			var wordFrameSprite = wordSprite,
@@ -638,20 +640,18 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			sb.retain();
 			ml.addChild(sb, 5);
 			
-			// draw total point
-			ml.score = drawText(ml.totalPoints.toString(),cc.p(ml.size.width/2,50),84,$MU.SCORE_COLOR_BRIGHT,sb);
-	
+			// draw total points
+			ml.score = drawText(ml.totalPoints.toString(),cc.p(105,40),72,$MU.SCORE_COLOR_BRIGHT,sb);
+			ml.nextScore = drawText("▲ "+$MU.LEVEL_SCORE[ml.currentLevel].toString(),cc.p(105,80),24,$MU.SCORE_COLOR_DIMM,sb);
 			
 			// draw clipping rect
 	        var clipper = cc.ClippingNode.create();
-	        clipper.tag = 101;
-	        clipper.width = 200;
+	        clipper.width = 440;
 		    clipper.height = $MU.BOXES_Y_OFFSET;
 	        clipper.anchorX = 0.5;
 	        clipper.anchorY = 0.5;
-	        clipper.x = 540;
+	        clipper.x = 420;
 	        clipper.y = $MU.BOXES_Y_OFFSET / 2;
-//	        clipper.runAction(cc.RepeatForever.create(cc.RotateBy.create(1, 45)));
 
 	        var stencil = cc.DrawNode.create();
 	        var rectangle = [cc.p(0, 0),cc.p(clipper.width, 0),
@@ -672,40 +672,31 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			var wt = mg.wordTreasure,
 				bw = ml.wordTreasureBestWord,
 				len = bw? bw.word.length : 0;
-			for( var i=0,value=0 ; i<wt.length ; i++ ) value += wt[i].value;
-			
-			// draw highscore into clipper
-			drawText(mg.t.score_bar_highscore,cc.p(100,75),28,$MU.SCORE_COLOR_DIMM,rl);			
-			ml.highscore1 = drawText(mg.maxPoints.toString(),cc.p(100,35),42,$MU.SCORE_COLOR_BRIGHT,rl);	
-			drawText(mg.t.score_bar_highscore,cc.p(100,363),28,$MU.SCORE_COLOR_DIMM,rl);			
-			ml.highscore2 = drawText(mg.maxPoints.toString(),cc.p(100,323),42,$MU.SCORE_COLOR_BRIGHT,rl);	
-			
-			// draw number of words in treasure into clipper
-			drawText(mg.t.score_bar_treasure,cc.p(100,160),28,$MU.SCORE_COLOR_DIMM,rl);
-			ml.wordCnt = drawText(wt.length.toString(),cc.p(100,130),28,$MU.SCORE_COLOR_BRIGHT,rl);			
 
-			// draw most valuable word
-			drawText(mg.t.score_bar_mvw1,cc.p(100,272),24,$MU.SCORE_COLOR_DIMM,rl);
-			ml.bestWordValue = drawText(mg.t.score_bar_mvw2+": "+(bw? bw.value:""),cc.p(100,244),24,$MU.SCORE_COLOR_BRIGHT,rl);
-			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(100,214),ml.bestWordSprite,rl);							
-		
-			// draw the word sprite and the number of letters
-			sb.wordIconText = drawText("",cc.p(140,60),28,$MU.SCORE_COLOR_BRIGHT,sb);		
-			sb.wordIconSprite = drawWordSprite("",cc.p(130,20),sb.wordIconSprite,sb);							
-			
 			// draw the level and the level label
-			drawText(mg.t.score_bar_level,cc.p(35,80),28,$MU.SCORE_COLOR_DIMM,sb);		
-			sb.currentLevel = drawText(ml.currentLevel,cc.p(30,40),84,$MU.SCORE_COLOR_BRIGHT,sb);		
+			drawText(mg.t.score_bar_level,cc.p(405,82),24,$MU.SCORE_COLOR_DIMM,rl);		
+			sb.currentLevel = drawText(ml.currentLevel,cc.p(400,45),84,$MU.SCORE_COLOR_BRIGHT,rl);		
 
+			// draw the word sprite and the number of letters
+			sb.wordIconText = drawText("",cc.p(185,75),24,$MU.SCORE_COLOR_BRIGHT,rl);		
+			sb.wordIconSprite = drawWordSprite("",cc.p(185,35),sb.wordIconSprite,0.47,rl);							
+
+			// draw highscore into clipper
+			drawText(mg.t.score_bar_highscore,cc.p(100,171),24,$MU.SCORE_COLOR_DIMM,rl);			
+			ml.highscore = drawText(mg.maxPoints.toString(),cc.p(100,130),42,$MU.SCORE_COLOR_BRIGHT,rl);	
+			
+			// draw most valuable word
+			ml.bestWordValue = drawText(mg.t.score_bar_mvw+": "+(bw? bw.value:""),cc.p(300,171),24,$MU.SCORE_COLOR_DIMM,rl);
+			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.38,rl);							
 		} else {
 			var wt = mg.wordTreasure,
 				bw = ml.wordTreasureBestWord;
 
 			ml.score.setString(ml.totalPoints.toString());
-			ml.highscore1.setString(mg.maxPoints.toString());
-			ml.highscore2.setString(mg.maxPoints.toString());
-			ml.wordCnt.setString(wt.length);
-			ml.bestWordValue.setString(mg.t.score_bar_mvw2+": "+(bw? bw.value:""));
+			ml.nextScore.setString("▲ "+$MU.LEVEL_SCORE[ml.currentLevel].toString());
+
+			ml.highscore.setString(mg.maxPoints.toString());
+			ml.bestWordValue.setString(mg.t.score_bar_mvw+": "+(bw? bw.value:""));
 			sb.currentLevel.setString(ml.currentLevel);
 			if( newSprite ) {
 				var wc = [],
@@ -726,9 +717,9 @@ var MUPRIS_MODULE = function(muprisLayer) {
 						word = sw.words[i].word;
 					}
 				}
-				sb.wordIconText.setString(max);
-				sb.wordIconSprite = drawWordSprite(word,cc.p(130+word.length*10,20),sb.wordIconSprite,sb);
-				ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(100,214),ml.bestWordSprite,rl);
+				sb.wordIconText.setString("Wortwert: "+max);
+				sb.wordIconSprite = drawWordSprite(word,cc.p(185,35),sb.wordIconSprite,0.47,sb);
+				ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.37,rl);
 			}
 		}
 	};
@@ -736,9 +727,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	var moveRollingLayer = function(stage) {
 
 		if( stage != undefined ) ml.rollingLayerStage = stage;
-		else if( ++ml.rollingLayerStage > 3 ) {
-			ml.rollingLayer.setPosition(0,0);
-			ml.rollingLayerStage = 1;
+		else {
+			ml.rollingLayerStage = 1-ml.rollingLayerStage;
 		}
 		
 		if( !ml.layerIsRolling ) {
@@ -791,7 +781,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
         	wt = mg.wordTreasure = json.length? JSON.parse(json) : [];
         	
 		mg.maxPoints = ls.getItem("maxPoints") || 0;
-		mg.maxWordValue = ls.getItem("maxWordValue") || 4;
+		mg.maxWordValue = ls.getItem("maxWordValue") || 5;
 		
 		// points array
 		ml.pointsToAdd = [];
@@ -1015,14 +1005,19 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			if( ml.totalPoints > mg.maxPoints ) {
 				mg.maxPoints = ml.totalPoints;
 				
-				moveRollingLayer(0);
+				moveRollingLayer(1);
 			}
 
 			drawScoreBar();
 
 			// next level?
 			cc.log("ml.totalPoints = "+ml.totalPoints+", ml.currentLevel = "+ml.currentLevel+", ml.wordTreasureBestWord = "+ml.wordTreasureBestWord+", ml.currentLeve = "+ml.currentLevel);
-			if( ml.totalPoints >= $MU.LEVEL_SCORE[ml.currentLevel] && ml.wordTreasureBestWord.value > ml.currentLevel) {
+			if( ml.totalPoints >= $MU.LEVEL_SCORE[ml.currentLevel] && 
+					(
+						ml.currentLevel < 4 || 
+						ml.wordTreasureBestWord && ml.wordTreasureBestWord.value > ml.currentLevel
+					)
+				) {
 				var ls = cc.sys.localStorage;
 
 				ml.currentLevel++;
