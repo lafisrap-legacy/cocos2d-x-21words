@@ -56,7 +56,7 @@ $MU.MARKER_SEL = 3;
 $MU.START_MARKER_X_OFFSET = -18;
 $MU.START_MARKER_Y_OFFSET = $MU.BS/2;
 $MU.MARKER_X_OFFSET = $MU.BS/2;
-$MU.MARKER_Y_OFFSET = -30;
+$MU.MARKER_Y_OFFSET = -25;
 $MU.UNSELECTED_BOX_OPACITY = 128;
 $MU.NEEDED_LETTERS_PROBABILITY = 0.5;
 $MU.MAX_LETTERS_BLOWN = 20;
@@ -285,7 +285,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 						for( var j=0, value=0 ; j<word.length ; j++ ) {
 							// calculate points and let them fly ...
 							var v = mg.letterValues[word[j]],
-								points = parseInt(v * mg.maxWordValue * 2 * ((sw.brc.row*$MU.SCORE_ROW_MULTIPLYER)+1) * (word.length-3));
+								points = parseInt(v * mg.maxWordValue * 4 * ((sw.brc.row*$MU.SCORE_ROW_MULTIPLYER)+1));
 							value += v;
 							addPoints(points, cc.p($MU.BOXES_X_OFFSET + (sw.brc.col+j) * $MU.BS + $MU.BS/2, $MU.BOXES_Y_OFFSET + sw.brc.row * $MU.BS + $MU.BS), true);							
 						}
@@ -664,8 +664,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			ml.addChild(sb, 5);
 			
 			// draw total points
-			ml.score = drawText(ml.totalPoints.toString(),cc.p(105,40),72,$MU.SCORE_COLOR_BRIGHT,sb);
-			ml.nextScore = drawText("+ "+$MU.LEVEL_SCORE[ml.currentLevel].toString(),cc.p(105,80),24,$MU.SCORE_COLOR_DIMM,sb);
+			ml.score = drawText(ml.totalPoints.toString(),cc.p(110,40),56,$MU.SCORE_COLOR_BRIGHT,sb);
+			ml.nextScore = drawText("^ "+$MU.LEVEL_SCORE[ml.currentLevel].toString(),cc.p(105,80),24,$MU.SCORE_COLOR_DIMM,sb);
 			
 			// draw clipping rect
 	        var clipper = cc.ClippingNode.create();
@@ -697,8 +697,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				len = bw? bw.word.length : 0;
 
 			// draw the level and the level label
-			drawText(mg.t.score_bar_level,cc.p(405,82),24,$MU.SCORE_COLOR_DIMM,rl);		
-			sb.currentLevel = drawText(ml.currentLevel,cc.p(400,45),84,$MU.SCORE_COLOR_BRIGHT,rl);		
+			drawText(mg.t.score_bar_level,cc.p(400,82),24,$MU.SCORE_COLOR_DIMM,rl);		
+			sb.currentLevel = drawText(ml.currentLevel,cc.p(394,45),72,$MU.SCORE_COLOR_BRIGHT,rl);		
 
 			// draw the word sprite and the number of letters
 			sb.wordIconText = drawText(mg.t.score_bar_no_word,cc.p(185,75),24,$MU.SCORE_COLOR_BRIGHT,rl);		
@@ -706,7 +706,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 
 			// draw highscore into clipper
 			drawText(mg.t.score_bar_highscore,cc.p(100,171),24,$MU.SCORE_COLOR_DIMM,rl);			
-			ml.highscore = drawText(mg.maxPoints.toString(),cc.p(100,130),48,$MU.SCORE_COLOR_BRIGHT,rl);	
+			ml.highscore = drawText(mg.maxPoints.toString(),cc.p(100,130),36,$MU.SCORE_COLOR_BRIGHT,rl);	
 			
 			// draw most valuable word
 			ml.bestWordValue = drawText(mg.t.score_bar_mvw+": "+(bw? bw.value:""),cc.p(300,171),24,$MU.SCORE_COLOR_DIMM,rl);
@@ -716,7 +716,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				bw = ml.wordTreasureBestWord;
 
 			ml.score.setString(ml.totalPoints.toString());
-			ml.nextScore.setString("+ "+$MU.LEVEL_SCORE[ml.currentLevel].toString());
+			ml.nextScore.setString("^ "+$MU.LEVEL_SCORE[ml.currentLevel].toString());
 
 			ml.highscore.setString(mg.maxPoints.toString());
 			ml.bestWordValue.setString(mg.t.score_bar_mvw+": "+(bw? bw.value:""));
@@ -741,10 +741,10 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					}
 				}
 				sb.wordIconText.setString(max?mg.t.score_bar_wordvalue+": "+max:mg.t.score_bar_no_word);
-//				sb.wordIconSprite = drawWordSprite(word,cc.p(185,35),sb.wordIconSprite,0.47,sb);
-//				ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.37,rl);
-				sb.wordIconSprite = drawWordSprite("CYPHERPUNK",cc.p(185,35),sb.wordIconSprite,0.47,sb);
-				ml.bestWordSprite = drawWordSprite("CYPHERPUNK",cc.p(300,130),ml.bestWordSprite,0.37,rl);
+				sb.wordIconSprite = drawWordSprite(word,cc.p(185,35),sb.wordIconSprite,0.47,sb);
+				ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.37,rl);
+//				sb.wordIconSprite = drawWordSprite("CYPHERPUNK",cc.p(185,35),sb.wordIconSprite,0.47,sb);
+//				ml.bestWordSprite = drawWordSprite("CYPHERPUNK",cc.p(300,130),ml.bestWordSprite,0.37,rl);
 			}
 		}
 	};
@@ -819,13 +819,13 @@ var MUPRIS_MODULE = function(muprisLayer) {
         	wt = mg.wordTreasure = json.length? JSON.parse(json) : [];
         	
 		mg.maxPoints = ls.getItem("maxPoints") || 0;
-		mg.maxWordValue = ls.getItem("maxWordValue") || 10;
+		mg.maxWordValue = ls.getItem("maxWordValue") || 4;
 		
 		// points array
 		ml.pointsToAdd = [];
-		ml.totalPoints = 223432;
+		ml.totalPoints = 0;
 		ml.rollingLayerStage = 0;
-		ml.currentLevel = 42;
+		ml.currentLevel = 1;
 		ml.dontAutoSelectWord = false;
 		
 		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
@@ -1029,6 +1029,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					moveSelectedWord(s.brc);
 					ml.dontAutoSelectWord = false;
 					setSelections();
+					updateSelectedWord();
 					
 					var x = $MU.BOXES_X_OFFSET + s.brc.col*$MU.BS + 1.5*$MU.BS,
 					y = $MU.BOXES_Y_OFFSET + s.brc.row*$MU.BS + 1.5*$MU.BS;
@@ -1071,8 +1072,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			if( ml.totalPoints >= $MU.LEVEL_SCORE[ml.currentLevel] ) {
 				var ls = cc.sys.localStorage;
 
-				ml.currentLevel++;
-				mg.maxWordValue = Math.max( ml.wordTreasureBestWord.value , ml.currentLevel );
+				var cl = ++ml.currentLevel;
+				mg.maxWordValue = Math.max( ml.wordTreasureBestWord.value , cl === 3? 5 : cl === 5? 6 : cl );
 				ls.setItem("maxWordValue" , JSON.stringify(mg.maxWordValue));
 
 				drawScoreBar(true);
@@ -1171,6 +1172,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	// read json file with words
 	if( !mg.languagePack ) {
-		loadLanguagePack(2);
+		loadLanguagePack(0);
 	}
 }

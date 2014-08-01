@@ -429,7 +429,7 @@ var MuprisGameLayer = cc.Layer.extend({
         	direction: 0,  // 0, -1, 1 
         	isRotating : false,
         	action: null,
-        	fallingSpeed: $MU.FALLING_SPEED,
+        	fallingSpeed: $MU.FALLING_SPEED * 33,
         	userData: userData
         });
         
@@ -842,7 +842,7 @@ var MuprisGameLayer = cc.Layer.extend({
     	// if there is no tile flying, build a new one
         var tilesFlying = self.tiles.filter(function(value) { return value !== undefined }).length;
         if( !tilesFlying ) {
-            self.buildTile(cc.p(Math.random()*($MU.BOXES_PER_ROW-4)*$MU.BS+$MU.BOXES_X_OFFSET+2*$MU.BS, size.height));        	
+            self.buildTile(cc.p(Math.random()*($MU.BOXES_PER_ROW-4)*$MU.BS+$MU.BOXES_X_OFFSET+2*$MU.BS, size.height)); 
         }
         
         var isSwipe = function() {
@@ -917,6 +917,11 @@ var MuprisGameLayer = cc.Layer.extend({
     		
     		if( self.isTap ) {
     			self.isTap = false;
+    			t.fallingSpeed = $MU.FALLING_SPEED;
+    		}
+    		
+    		// stop the initial falling of a tile
+    		if( t.fallingSpeed === $MU.FALLING_SPEED * 33 && lp.y < size.height - $MU.BS ) {
     			t.fallingSpeed = $MU.FALLING_SPEED;
     		}
     		
