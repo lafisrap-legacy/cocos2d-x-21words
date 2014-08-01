@@ -10,9 +10,11 @@
         "take_word_wordvalue": "Sõnaväärtus",
         "score_bar_highscore": "Rekord",
         "score_bar_treasure": "Sõnalaegas",
-        "score_bar_mvw1": "Kõige väärtuslikum",
-        "score_bar_mvw2": "sõna",
+        "score_bar_mvw": "Väärtuslikeim sõna",
         "score_bar_level": "Aste",
-        "new_level_level": "Aste"
+        "score_bar_wordvalue": "Sõnaväärtus",
+        "score_bar_no_word": "Sõnu pole",
+        "new_level_level": "Aste",
+        "new_level_value": "Sõnaväärtus"
     }
 }

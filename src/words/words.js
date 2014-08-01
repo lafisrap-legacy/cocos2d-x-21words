@@ -3,6 +3,9 @@
  * 
  * NEXT STEPS:
  * 
+ * + FEHLER
+ * - Buchstabe V erscheint bei Wortwert 4
+ * 
  * + GAMEPLAY
  * - buy:
  * 		single box tile for > 1000 coins
@@ -23,6 +26,7 @@
  * 
  * 
  * + STABILIZATION
+ * - load images and words before game start ...
  * - retain ...
  * 
  * 
@@ -40,11 +44,11 @@
 
 $MU.LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.png","i.png","j.png","k.png","l.png","m.png","n.png","o.png","p.png","q.png","r.png","s.png","t.png","u.png","v.png","w.png","x.png","y.png","z.png","ae.png","oe.png","ue.png","6.png"],
 $MU.LETTERS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä","Ö","Ü","Õ"],
-$MU.LEVEL_SCORE = [0,   500,  1000,  2000,  3000,  4000,  5000,  6000,  7000,  8000, 10000,
-                      12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000,
-                      33000, 36000, 39000, 42000, 45000, 48000, 51000, 54000, 57000, 60000,
-                      64000, 68000, 72000, 76000, 80000, 84000, 88000, 92000, 96000,100000,
-                     110000, 120000
+$MU.LEVEL_SCORE = [0,   500,  1000,  1500,  2000,  3000,  4000,  5000,  6000,  8000, 10000,
+                      12000, 14000, 16000, 18000, 20000, 25000, 30000, 35000, 40000, 50000,
+                      60000, 70000, 80000, 90000,100000,110000,120000,130000,140000,150000,
+                     160000,180000,200000,220000,240000,260000,280000,300000,320000,350000,
+                     400000,500000
                    ];
 $MU.MARKER_SET = 1;
 $MU.MARKER_OPT = 2;
@@ -52,7 +56,7 @@ $MU.MARKER_SEL = 3;
 $MU.START_MARKER_X_OFFSET = -18;
 $MU.START_MARKER_Y_OFFSET = $MU.BS/2;
 $MU.MARKER_X_OFFSET = $MU.BS/2;
-$MU.MARKER_Y_OFFSET = -10;
+$MU.MARKER_Y_OFFSET = -30;
 $MU.UNSELECTED_BOX_OPACITY = 128;
 $MU.NEEDED_LETTERS_PROBABILITY = 0.5;
 $MU.MAX_LETTERS_BLOWN = 20;
@@ -63,24 +67,20 @@ $MU.SCORE_WORD_MULTIPLYER = 15;
 $MU.SCORE_COLOR_DIMM = cc.color(160,120,55);
 $MU.SCORE_COLOR_BRIGHT = cc.color(240,170,70);
 $MU.TILES_PROGRAMS = [[
-      { tile: 0, letters: "ANXR" },
+      { tile: 0, letters: "ANNA" },
    ]
 ];
 
 var MUPRIS_MODULE = function(muprisLayer) {
 
 	var mg = MUPRIS_GLOBALS,
-		ml = muprisLayer,
-		curProgram = null,
-		curProgramCnt = null,
-		language_name;
+		ml = muprisLayer;
 	
 	// go through box array and look for prefixes
 	var setSelections = function( dontSelectWord ) {
 		var s = [],
-			sw = ml.selectedWord;
-
-		//ml.wordCandidates = [];
+			sw = ml.selectedWord,
+			nsw = null;
 
 		for( var i=0 ; i<$MU.BOXES_PER_COL ; i++) {
 			// dim all boxes in a row
@@ -125,27 +125,13 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					      	ml.boxes[brc.row][brc.col+2],
 						]
 					});
-					
-					// if no word is currently selected, choose the first ...
-					if( !dontSelectWord && !ml.selectedWord ) {
-						sw = ml.selectedWord = {
-							brc: brc,
-							words: words,
-							markers: [],
-							sprites: []
-						}
-						
-						var x = $MU.BOXES_X_OFFSET + brc.col*$MU.BS + 1.5*$MU.BS,
-							y = $MU.BOXES_Y_OFFSET + brc.row*$MU.BS + 1.5*$MU.BS;
-						
-						blowWords(cc.p(x,y),words);
-					}
 				});
 			}
 		}
 		
 		ml.selections = s;
-		return updateSelectedWord();
+		cc.log("Mupris, setSelections: calling updateSelectedWord()");
+		//return updateSelectedWord();
 	};
 	
 	// look for words at a specified position
@@ -289,9 +275,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			}
 			if( j === word.length ) {
 				// delete word anyway
-				var ret = deleteWordFromList(word);					
-				cc.assert(ret,"Mupris, updateSelectedWord: No word to delete!");
-				unselectWord();
+				var ret = deleteWordFromList(word);
+				cc.assert(ret,"Mupris, updateSelectedWord: "+word+" is not in the list!");
 
 				showFullWordAndAsk( sw.brc , word , function( takeWord ) {					
 					if( takeWord ) {
@@ -311,19 +296,19 @@ var MUPRIS_MODULE = function(muprisLayer) {
 								value: value
 							};
 						mg.wordTreasure.push(w);
-						moveRollingLayer(0);
 						if( !ml.wordTreasureBestWord || ml.wordTreasureBestWord.value < w.value ) {
 							ml.wordTreasureBestWord = w;
 						}
+						unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
-						setSelections(true);
+						setSelections();
 						drawScoreBar(true);
 
 						ls.setItem("wordTreasure" , JSON.stringify(mg.wordTreasure));
 					} else {
-						setSelections(true);
-						moveSelectedWord(sw.brc);
 						ml.checkForAndRemoveCompleteRows();
+						setSelections();
+						moveSelectedWord(sw.brc);
 					}
 				});
 				return true; // a word was found
@@ -460,6 +445,41 @@ var MUPRIS_MODULE = function(muprisLayer) {
 
 	};
 	
+	var selectBestWord = function() {
+		var s = ml.selections,
+			sw = ml.selectedWord,
+			nsw = null;
+
+		if( !s.length ) return false;
+		if( sw ) unselectWord();
+		
+		for( var i=s.length-1 ; i>=0 ; i-- ) {
+			var words = s[i].words;
+			for( var j=0,max=0 ; j<words.length ; j++ ) max = Math.max(max,words[j].value);
+
+			if( !nsw || max > nsw.maxValue ) {
+				nsw = {
+					brc: s[i].brc,
+					words: words,
+					markers: [],
+					sprites: [],
+					maxValue: max
+				} 
+			}
+		}
+		
+		cc.assert(nsw, "Mupris, selectBestWord: No word to select.");
+
+		ml.selectedWord = nsw;		
+		var x = $MU.BOXES_X_OFFSET + nsw.brc.col*$MU.BS + 1.5*$MU.BS,
+			y = $MU.BOXES_Y_OFFSET + nsw.brc.row*$MU.BS + 1.5*$MU.BS;
+		
+		blowWords(cc.p(x,y),nsw.words);
+		
+		updateSelectedWord();
+		
+	};
+	
 	var moveSelectedWord = function(brc) {
 		var sw = ml.selectedWord;
 		
@@ -484,15 +504,17 @@ var MUPRIS_MODULE = function(muprisLayer) {
 						words: words,
 						markers: markers || [],
 						sprites: []
-				};								
+				};
+				
+				cc.log("Mupris, moveSelectedWord: calling updateSelectedWord()");
+				updateSelectedWord();
+
 			} else {
 				ml.selectedWord = null;
 			}
 		} else {
 			ml.selectedWord = null;
-		}
-		
-		updateSelectedWord();
+		}		
 	};
 	
 	var unselectWord = function() {
@@ -585,7 +607,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	};
 	
 	var drawText = function(text,pos,size,color,parent) {
-		var label = cc.LabelTTF.create(text, "res/fonts/American Typewriter.ttf", size);
+		
+		var label = cc.LabelBMFont.create( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT, cc.p(0, 0) );
 		label.setPosition(pos);
 		label.retain();
 		label.setColor(color);
@@ -642,7 +665,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			
 			// draw total points
 			ml.score = drawText(ml.totalPoints.toString(),cc.p(105,40),72,$MU.SCORE_COLOR_BRIGHT,sb);
-			ml.nextScore = drawText("▲ "+$MU.LEVEL_SCORE[ml.currentLevel].toString(),cc.p(105,80),24,$MU.SCORE_COLOR_DIMM,sb);
+			ml.nextScore = drawText("+ "+$MU.LEVEL_SCORE[ml.currentLevel].toString(),cc.p(105,80),24,$MU.SCORE_COLOR_DIMM,sb);
 			
 			// draw clipping rect
 	        var clipper = cc.ClippingNode.create();
@@ -678,12 +701,12 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			sb.currentLevel = drawText(ml.currentLevel,cc.p(400,45),84,$MU.SCORE_COLOR_BRIGHT,rl);		
 
 			// draw the word sprite and the number of letters
-			sb.wordIconText = drawText("",cc.p(185,75),24,$MU.SCORE_COLOR_BRIGHT,rl);		
+			sb.wordIconText = drawText(mg.t.score_bar_no_word,cc.p(185,75),24,$MU.SCORE_COLOR_BRIGHT,rl);		
 			sb.wordIconSprite = drawWordSprite("",cc.p(185,35),sb.wordIconSprite,0.47,rl);							
 
 			// draw highscore into clipper
 			drawText(mg.t.score_bar_highscore,cc.p(100,171),24,$MU.SCORE_COLOR_DIMM,rl);			
-			ml.highscore = drawText(mg.maxPoints.toString(),cc.p(100,130),42,$MU.SCORE_COLOR_BRIGHT,rl);	
+			ml.highscore = drawText(mg.maxPoints.toString(),cc.p(100,130),48,$MU.SCORE_COLOR_BRIGHT,rl);	
 			
 			// draw most valuable word
 			ml.bestWordValue = drawText(mg.t.score_bar_mvw+": "+(bw? bw.value:""),cc.p(300,171),24,$MU.SCORE_COLOR_DIMM,rl);
@@ -693,7 +716,7 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				bw = ml.wordTreasureBestWord;
 
 			ml.score.setString(ml.totalPoints.toString());
-			ml.nextScore.setString("▲ "+$MU.LEVEL_SCORE[ml.currentLevel].toString());
+			ml.nextScore.setString("+ "+$MU.LEVEL_SCORE[ml.currentLevel].toString());
 
 			ml.highscore.setString(mg.maxPoints.toString());
 			ml.bestWordValue.setString(mg.t.score_bar_mvw+": "+(bw? bw.value:""));
@@ -703,7 +726,13 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					s = ml.selections,
 					sw = ml.selectedWord;
 				
-				for( var i=s.length-1,max=0,word="" ; i>=0 ; i--) {
+				for( i=0,max=0,word="" ; sw && i<sw.words.length ; i++ ) {
+					if( sw.words[i].value > max ) {
+						max = sw.words[i].value;
+						word = sw.words[i].word;
+					}
+				}
+				for( var i=s.length-1 ; i>=0 ; i--) {
 					for( var j=0 ; j<s[i].words.length ; j++ ) {
 						if( s[i].words[j].value > max ) {
 							max = s[i].words[j].value;
@@ -711,38 +740,47 @@ var MUPRIS_MODULE = function(muprisLayer) {
 						}
 					}
 				}
-				for( i=0 ; sw && i<sw.words.length ; i++ ) {
-					if( sw.words[i].value > max ) {
-						max = sw.words[i].value;
-						word = sw.words[i].word;
-					}
-				}
-				sb.wordIconText.setString("Wortwert: "+max);
-				sb.wordIconSprite = drawWordSprite(word,cc.p(185,35),sb.wordIconSprite,0.47,sb);
-				ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.37,rl);
+				sb.wordIconText.setString(max?mg.t.score_bar_wordvalue+": "+max:mg.t.score_bar_no_word);
+//				sb.wordIconSprite = drawWordSprite(word,cc.p(185,35),sb.wordIconSprite,0.47,sb);
+//				ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.37,rl);
+				sb.wordIconSprite = drawWordSprite("CYPHERPUNK",cc.p(185,35),sb.wordIconSprite,0.47,sb);
+				ml.bestWordSprite = drawWordSprite("CYPHERPUNK",cc.p(300,130),ml.bestWordSprite,0.37,rl);
 			}
 		}
 	};
 
-	var moveRollingLayer = function(stage) {
+	var moveRollingLayer = function(stage, delay) {
 
-		if( stage != undefined ) ml.rollingLayerStage = stage;
-		else {
-			ml.rollingLayerStage = 1-ml.rollingLayerStage;
-		}
-		
 		if( !ml.layerIsRolling ) {
+			if( stage === ml.rollingLayerStage ) return;
+			if( stage != undefined ) ml.rollingLayerStage = stage;
+			else {
+				ml.rollingLayerStage = 1-ml.rollingLayerStage;
+			}
+		
+			cc.log("Mupris, moveRollingLayer: Starting rolling ...")
 			ml.layerIsRolling = true;
 			ml.rollingLayer.runAction(
-				cc.sequence(
-					cc.EaseSineOut.create(
-						cc.moveTo(1,cc.p(0,-ml.rollingLayerStage*$MU.BOXES_Y_OFFSET))
-					),
+				cc.EaseSineOut.create(
+					cc.moveTo(1,cc.p(0,-ml.rollingLayerStage*$MU.BOXES_Y_OFFSET))
+				)
+			);
+			if( ml.rollingLayerDelay ) {
+				cc.log("Mupris, moveRollingLayer: Killing old delay ...")
+				ml.rollingLayer.stopAction(ml.rollingLayerDelay);
+			}
+			cc.log("Mupris, moveRollingLayer: Starting delay ...")
+			ml.rollingLayerDelay = ml.rollingLayer.runAction(
+				cc.sequence( 
+					cc.delayTime(delay || 1),
 					cc.callFunc(function() {
+						cc.log("Mupris, moveRollingLayer: ... ending delay.")
 						ml.layerIsRolling = false;
+						ml.rollingLayerDelay = null;
 					})
 				)
-			);			
+			);
+			
 		}
 	}
 	
@@ -781,13 +819,14 @@ var MUPRIS_MODULE = function(muprisLayer) {
         	wt = mg.wordTreasure = json.length? JSON.parse(json) : [];
         	
 		mg.maxPoints = ls.getItem("maxPoints") || 0;
-		mg.maxWordValue = ls.getItem("maxWordValue") || 5;
+		mg.maxWordValue = ls.getItem("maxWordValue") || 10;
 		
 		// points array
 		ml.pointsToAdd = [];
-		ml.totalPoints = 0;
+		ml.totalPoints = 223432;
 		ml.rollingLayerStage = 0;
-		ml.currentLevel = 1;
+		ml.currentLevel = 42;
+		ml.dontAutoSelectWord = false;
 		
 		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
 		ml.wordTreasureBestWord = wt[bw] || null;
@@ -807,6 +846,11 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			}
 		}
 		
+//        var label1 = cc.LabelBMFont.create("Test", "res/fonts/testxxx.fnt");
+//        label1.x = 100;
+//        label1.y = 100;
+//        ml.addChild(label1,100);
+
 		drawScoreBar();
 	};
 	
@@ -822,8 +866,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	 * 
 	 */
 	muprisLayer.hookSetTile = function() {
-		moveRollingLayer();
-		
 		if( curProgram !== null ) return $MU.TILES_PROGRAMS[curProgram][curProgramCnt].tile;
 		else return ml.getRandomValue($MU.TILE_OCCURANCES);
 	};
@@ -852,11 +894,19 @@ var MUPRIS_MODULE = function(muprisLayer) {
         	if( curProgram !== null ) {
         		var val = $MU.LETTERS.indexOf($MU.TILES_PROGRAMS[curProgram][curProgramCnt].letters[i]);
         	} else {
-	         	var len = sw && sw.missingLetters.length;
-	         		prob = len <= 3? $MU.NEEDED_LETTERS_PROBABILITY / (5-len) : $MU.NEEDED_LETTERS_PROBABILITY; 
+	         	var len = sw && sw.missingLetters.length,
+         			prob = len <= 3? $MU.NEEDED_LETTERS_PROBABILITY / (5-len) : $MU.NEEDED_LETTERS_PROBABILITY; 
+        		for( var j=0 ; j<5 ; j++ ) {
 	         		val = (Math.random()>prob || !sw || !len)?  
-	        					Math.floor(this.getRandomValue(mg.letterOccurences)):
-	        					$MU.LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]);
+	         					Math.floor(this.getRandomValue(mg.letterOccurences)):
+	        					$MU.LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]);        			
+	         					
+	        	    for( k=0 ; k<i ; k++ ) 
+	        	    	if( userData[k] === $MU.LETTERS[val] ) 
+	        	    		break;
+	        	    if( k < i ) continue;
+	         		if( mg.letterValues[$MU.LETTERS[val]] <= mg.maxWordValue - 3 ) break;
+        		}
         	}
        					
     		var	spriteFrame = cc.spriteFrameCache.getSpriteFrame($MU.LETTER_NAMES[val]),
@@ -877,20 +927,20 @@ var MUPRIS_MODULE = function(muprisLayer) {
 		
 		ml.lastBrcs = brcs;
 		
-		// selections are set before deleting, so if autoSelect is enabled you cannot delete a selection
-		
-		var ret = setSelections(ml.dontAutoSelectWord? true : false);
-		// when first first is found turn off auto select
-		if( ret ) ml.dontAutoSelectWord = true;
-		
+		setSelections();
+		return updateSelectedWord();
+	};	
+
+	muprisLayer.hookTileFixedAfterRowsDeleted = function( ) {
+
+		if( !ml.selectedWord && !ml.dontAutoSelectWord ) selectBestWord();
+
 		drawScoreBar(true);
 
 		var ls = cc.sys.localStorage;
 		ls.setItem("maxPoints",mg.maxPoints);
+	}
 
-		return ret;
-	};	
-	
 	muprisLayer.hookDeleteBox = function(brc) {
 		var sw = ml.selectedWord,
 			box = ml.boxes[brc.row][brc.col];
@@ -935,7 +985,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	};
 	
 	muprisLayer.hookAllBoxesMovedDown = function() {
-		setSelections(true);
+		setSelections();
+		updateSelectedWord();
 		drawScoreBar(true);
 	};
 	
@@ -961,24 +1012,31 @@ var MUPRIS_MODULE = function(muprisLayer) {
 					sw.markers[col] = $MU.MARKER_OPT;					
 					ml.boxes[sw.brc.row][sw.brc.col+col].sprite.setOpacity($MU.UNSELECTED_BOX_OPACITY);	
 				}
+				cc.log("Mupris, hookOnTap: calling updateSelectedWord()");
 				updateSelectedWord();
 			} else {
 				unselectWord();
-				setSelections(true);
+				setSelections();
+				ml.dontAutoSelectWord = true;
 			}
+		} else if( tapPos.y < $MU.BOXES_Y_OFFSET ) {
+			moveRollingLayer(undefined,3);
 		} else {
 			for( var i=ml.selections.length-1 ; i>=0 ; i--) {
 				var s = ml.selections[i];
 
-				if( tapPos.x >= s.pos.x && tapPos.x <= s.pos.x+s.width && tapPos.y >= s.pos.y && tapPos.y <= s.pos.y+s.height ) {
+				if( s && tapPos.x >= s.pos.x && tapPos.x <= s.pos.x+s.width && tapPos.y >= s.pos.y && tapPos.y <= s.pos.y+s.height ) {
 					moveSelectedWord(s.brc);
-					setSelections(true);
-					if( s.box[0].words ) blowWords(cc.p(s.pos.x,s.pos.y),s.box[0].words);
+					ml.dontAutoSelectWord = false;
+					setSelections();
+					
+					var x = $MU.BOXES_X_OFFSET + s.brc.col*$MU.BS + 1.5*$MU.BS,
+					y = $MU.BOXES_Y_OFFSET + s.brc.row*$MU.BS + 1.5*$MU.BS;
+				
+					blowWords(cc.p(x,y),s.words);
 				}
 			}
 		}
-		
-
 	};
 	
 	muprisLayer.hookOnLongTap = function(tapPos) {
@@ -1001,27 +1059,20 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			ml.pointsToAddCnt = 3;
 			ml.totalPoints += parseInt(ml.pointsToAdd.splice(0,1));
 			
+			moveRollingLayer(1,3);
+
 			// highscore?
-			if( ml.totalPoints > mg.maxPoints ) {
-				mg.maxPoints = ml.totalPoints;
-				
-				moveRollingLayer(1);
-			}
+			mg.maxPoints = Math.max(ml.totalPoints , mg.maxPoints);
 
 			drawScoreBar();
 
 			// next level?
 			cc.log("ml.totalPoints = "+ml.totalPoints+", ml.currentLevel = "+ml.currentLevel+", ml.wordTreasureBestWord = "+ml.wordTreasureBestWord+", ml.currentLeve = "+ml.currentLevel);
-			if( ml.totalPoints >= $MU.LEVEL_SCORE[ml.currentLevel] && 
-					(
-						ml.currentLevel < 4 || 
-						ml.wordTreasureBestWord && ml.wordTreasureBestWord.value > ml.currentLevel
-					)
-				) {
+			if( ml.totalPoints >= $MU.LEVEL_SCORE[ml.currentLevel] ) {
 				var ls = cc.sys.localStorage;
 
 				ml.currentLevel++;
-				mg.maxWordValue = Math.max(ml.wordTreasureBestWord.value,ml.currentLevel+1);
+				mg.maxWordValue = Math.max( ml.wordTreasureBestWord.value , ml.currentLevel );
 				ls.setItem("maxWordValue" , JSON.stringify(mg.maxWordValue));
 
 				drawScoreBar(true);
@@ -1029,12 +1080,17 @@ var MUPRIS_MODULE = function(muprisLayer) {
 				// if its level 42: YOU WON THE GAME!
 				// ......
 				
-				var text = [{t:mg.t.new_level_level,scale:5} , {t:ml.currentLevel,scale:10}];
-				for( var i=0 ; i<2 ; i++ ) {
+				var text = [{t:mg.t.new_level_level,scale:5,color:cc.color(0,128,0)} , 
+				            {t:ml.currentLevel,scale:10,color:cc.color(0,160,0)}];
+				if( mg.maxWordValue > ml.wordTreasureBestWord.value ) text = text.concat(
+					[{t:mg.t.new_level_value,scale:5,color:cc.color(128,128,0)} , 
+			         {t:mg.maxWordValue,scale:10,color:cc.color(128,128,0)}]
+				);
+				for( var i=0 ; i<text.length ; i++ ) {
 					label = cc.LabelTTF.create(text[i].t, "res/fonts/American Typewriter.ttf", 160);
 					label.setPosition(ml.size.width/2,ml.size.height/2);
 					label.setScale(0.1,0.1);
-					label.setColor(cc.color(0,128,0));
+					label.setColor(text[i].color);
 					ml.addChild(label, 5);
 					label.runAction(
 						cc.sequence(
@@ -1052,6 +1108,8 @@ var MUPRIS_MODULE = function(muprisLayer) {
 			}
 		} else if( ml.pointsToAddCnt ) {
 			ml.pointsToAddCnt--;
+		} else {
+			moveRollingLayer(0);
 		}
 	};
 	
@@ -1113,6 +1171,6 @@ var MUPRIS_MODULE = function(muprisLayer) {
 	
 	// read json file with words
 	if( !mg.languagePack ) {
-		loadLanguagePack(0);
+		loadLanguagePack(2);
 	}
 }

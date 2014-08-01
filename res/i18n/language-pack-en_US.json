@@ -10,9 +10,11 @@
         "take_word_wordvalue": "Word value",
         "score_bar_highscore": "Highscore",
         "score_bar_treasure": "Word treasure",
-        "score_bar_mvw1": "Most valuable",
-        "score_bar_mvw2": "Word",
+        "score_bar_mvw": "Most Valuable Word",
         "score_bar_level": "Level",
-        "new_level_level": "Level"
+        "score_bar_wordvalue": "Word value",
+        "score_bar_no_word": "No word",
+        "new_level_level": "Level",
+        "new_level_value": "Wortwert"
     }
 }

@@ -74,6 +74,7 @@ var MuprisGameLayer = cc.Layer.extend({
         this.loadImages();
         
 	    this.tiles = [];
+	    
         return true;
     },
 
@@ -646,6 +647,10 @@ var MuprisGameLayer = cc.Layer.extend({
 					alignToColumn(t, lp);
 				}
 				
+				// play sound
+				if( self.rotateEffectId ) cc.audioEngine.stopEffect(self.rotateEffectId);
+				self.rotateEffectId = cc.audioEngine.playEffect(res.plopp_mp3);
+
 				t.sprite.runAction(cc.sequence( 
 						cc.rotateTo($MU.MOVE_SPEED*2,t.rotation),
 						cc.callFunc(function() {
@@ -653,7 +658,8 @@ var MuprisGameLayer = cc.Layer.extend({
 						})));
 				for( var i=0 ; i<t.sprite.children.length ; i++ ) {
 					t.sprite.children[i].runAction(cc.rotateTo($MU.MOVE_SPEED*2,(360-t.rotation)%360));					
-				}					
+				}	
+					       		
 				
 				return true;
 			} else {
@@ -743,12 +749,16 @@ var MuprisGameLayer = cc.Layer.extend({
     		
     		var tileRet = false;
     		if( self.hookTileFixed ) tileRet = self.hookTileFixed(newBrcs);
-    		// let function save newBrcs to check if potential tile is being deleted ...
     		if( !tileRet ) self.checkForAndRemoveCompleteRows();
+    		if( self.hookTileFixedAfterRowsDeleted ) tileRet = self.hookTileFixedAfterRowsDeleted();
 
     		batch.removeChild(t.sprite);
        		delete t;
-    		
+       		
+			// play sound
+			if( self.fixEffectId ) cc.audioEngine.stopEffect(self.fixEffectId);
+			self.fixEffectId = cc.audioEngine.playEffect(res.pling_mp3);
+
     		return ret;
     	};
     	
@@ -768,6 +778,10 @@ var MuprisGameLayer = cc.Layer.extend({
     		
     		// move rows above deleted rows down
     		if( rowsDeleted.length ) {
+    			// play sound
+    			if( self.rowEffectId ) cc.audioEngine.stopEffect(self.rowEffectId);
+    			self.rowEffectId = cc.audioEngine.playEffect(res.ritsch_mp3);
+
     			for( var i=0 ; i<$MU.BOXES_PER_ROW ; i++ ) {
     				// don't delete a box when it wasn't actually deleted (though it's row was)  
     				var rd = [];
@@ -828,7 +842,7 @@ var MuprisGameLayer = cc.Layer.extend({
     	// if there is no tile flying, build a new one
         var tilesFlying = self.tiles.filter(function(value) { return value !== undefined }).length;
         if( !tilesFlying ) {
-            self.buildTile(cc.p(Math.random()*($MU.BOXES_PER_ROW-4)*$MU.BS+$MU.BOXES_X_OFFSET+2*$MU.BS, size.height-$MU.BS));        	
+            self.buildTile(cc.p(Math.random()*($MU.BOXES_PER_ROW-4)*$MU.BS+$MU.BOXES_X_OFFSET+2*$MU.BS, size.height));        	
         }
         
         var isSwipe = function() {
@@ -995,7 +1009,7 @@ var MuprisScene = cc.Scene.extend({
 	
     onEnter:function () {
         this._super();
-        
+
         this.addChild(new MuprisGameLayer(), 1, $MU.TAG_GAME_LAYER);
     }
 });
