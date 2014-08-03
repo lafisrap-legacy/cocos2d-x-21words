@@ -6,7 +6,7 @@
  */ 
 
 
-var MUPRIS_GLOBALS = { 
+var _42_GLOBALS = { 
 	t : { 
 			"reached_top_continue" : "WEITER SPIELEN",
 			"reached_top_end_game"	: "SPIEL BEENDEN"
@@ -41,9 +41,9 @@ var MUPRIS_GLOBALS = {
 	],
 	TILE_OCCURANCES : [10,5,7,7,2,2,7,2,0]
 };
-var $MU = MUPRIS_GLOBALS;
+var $42 = _42_GLOBALS;
 
-var MuprisGameLayer = cc.Layer.extend({
+var _42GameLayer = cc.Layer.extend({
     sprite:null,
     
     tiles: [],
@@ -67,7 +67,7 @@ var MuprisGameLayer = cc.Layer.extend({
 
         var size = this.size = cc.director.getWinSize();
         
-        if( typeof MUPRIS_MODULE !== 'undefined' ) MUPRIS_MODULE(this);
+        if( typeof _42_MODULE !== 'undefined' ) _42_MODULE(this);
 
         this.startAnimation();
         this.initBoxSpace();
@@ -150,7 +150,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	        cc.spriteFrameCache.addSpriteFrames(res.tiles_plist);
 	        var tilesTexture = cc.textureCache.addImage(res.tiles_png),
 	        	tilesImages  = cc.SpriteBatchNode.create(tilesTexture,200);
-			this.addChild(tilesImages, 10, $MU.TAG_SPRITE_MANAGER);			
+			this.addChild(tilesImages, 10, $42.TAG_SPRITE_MANAGER);			
 		}
 	},
 	
@@ -158,8 +158,8 @@ var MuprisGameLayer = cc.Layer.extend({
         var size = this.size;
         
 	    // initialize boxes arrays
-	    for( var i=0 ; i<$MU.BOXES_PER_COL ; i++ ) {
-		    for( var j=0 ; j<$MU.BOXES_PER_ROW ; j++ ) {
+	    for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) {
+		    for( var j=0 ; j<$42.BOXES_PER_ROW ; j++ ) {
 		    	if( !this.boxes[i] ) this.boxes[i] = []; 
 		    	this.boxes[i][j] = null;		    	
 		    }		    	
@@ -169,19 +169,19 @@ var MuprisGameLayer = cc.Layer.extend({
 	    this.drawNode = cc.DrawNode.create();
         this.addChild(this.drawNode,1);
         this.drawNode.clear();
- /*       for( var i=0 ; i<=$MU.BOXES_PER_ROW ; i++ ) {
-            this.drawNode.drawSegment(cc.p($MU.BOXES_X_OFFSET+i*$MU.BS,$MU.BOXES_Y_OFFSET), 
-            						  cc.p($MU.BOXES_X_OFFSET+i*$MU.BS,$MU.BOXES_Y_OFFSET+$MU.BOXES_PER_COL*$MU.BS),
+ /*       for( var i=0 ; i<=$42.BOXES_PER_ROW ; i++ ) {
+            this.drawNode.drawSegment(cc.p($42.BOXES_X_OFFSET+i*$42.BS,$42.BOXES_Y_OFFSET), 
+            						  cc.p($42.BOXES_X_OFFSET+i*$42.BS,$42.BOXES_Y_OFFSET+$42.BOXES_PER_COL*$42.BS),
             						  1,
             						  cc.color(255,100,100,60));         	
         }
-        for( var i=0 ; i<=$MU.BOXES_PER_COL ; i++ ) {
-            this.drawNode.drawSegment(cc.p($MU.BOXES_X_OFFSET,$MU.BOXES_Y_OFFSET+i*$MU.BS), 
-            						  cc.p($MU.BOXES_X_OFFSET+$MU.BOXES_PER_ROW*$MU.BS,$MU.BOXES_Y_OFFSET+i*$MU.BS),
+        for( var i=0 ; i<=$42.BOXES_PER_COL ; i++ ) {
+            this.drawNode.drawSegment(cc.p($42.BOXES_X_OFFSET,$42.BOXES_Y_OFFSET+i*$42.BS), 
+            						  cc.p($42.BOXES_X_OFFSET+$42.BOXES_PER_ROW*$42.BS,$42.BOXES_Y_OFFSET+i*$42.BS),
             						  1,
             						  cc.color(255,100,100,30));         	
         }*/
-        this.drawNode.drawPoly([cc.p(0,0),cc.p(size.width,0),cc.p(size.width,$MU.BOXES_Y_OFFSET ),cc.p(0,$MU.BOXES_Y_OFFSET )],
+        this.drawNode.drawPoly([cc.p(0,0),cc.p(size.width,0),cc.p(size.width,$42.BOXES_Y_OFFSET ),cc.p(0,$42.BOXES_Y_OFFSET )],
         						new cc.Color(0,0,0,255), 
         						1, 
         						new cc.Color(0,0,0,255));
@@ -232,7 +232,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	            	};
 	                
 	                // check for left
-	                if( loc.x < start.x - $MU.TOUCH_THRESHOLD) {
+	                if( loc.x < start.x - $42.TOUCH_THRESHOLD) {
 	                	// if direction changed while swiping left, set new base point
 	                	if( loc.x > self.touchLastPoint.x ) {
 	                		start = self.touchStartPoint = {
@@ -246,7 +246,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	                }
 	                
 	                // check for right
-	                if( loc.x > start.x + $MU.TOUCH_THRESHOLD ) {
+	                if( loc.x > start.x + $42.TOUCH_THRESHOLD ) {
 	                	// if direction changed while swiping right, set new base point
 	                	if( loc.x < self.touchLastPoint.x ) {
 	                		self.touchStartPoint = {
@@ -260,7 +260,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	                }
 	
 	                // check for down
-	                if( loc.y < start.y - $MU.TOUCH_THRESHOLD * 3 ) {
+	                if( loc.y < start.y - $42.TOUCH_THRESHOLD * 3 ) {
 	                	// if direction changed while swiping down, set new base point
 	                	if( loc.y > self.touchLastPoint.y ) {
 	                		self.touchStartPoint = {
@@ -274,7 +274,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	                }
 	
 	                // check for up
-	                if( loc.y > start.y + $MU.TOUCH_THRESHOLD ) {
+	                if( loc.y > start.y + $42.TOUCH_THRESHOLD ) {
                     	self.isSwipeUp = true;                		
 	                }
 	                
@@ -293,7 +293,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	                self.touchStartPoint = null;
 	                
 	                if(!self.isSwipeUp && !self.isSwipeLeft && !self.isSwipeRight && !self.isSwipeDown) {
-	                	if( new Date().getTime() - self.touchStartTime > $MU.LONG_TAP_TIME ) {
+	                	if( new Date().getTime() - self.touchStartTime > $42.LONG_TAP_TIME ) {
 	    	                if( self.hookOnLongTap ) self.hookOnLongTap(loc);
 	                	} else {
 		                	self.isTap = true;
@@ -324,51 +324,51 @@ var MuprisGameLayer = cc.Layer.extend({
 	            	var pos = sprite.getPosition();
 	            	switch(key) {
 	            	case 'a':
-	            	case $MU.KEY_LEFT_CODE:
+	            	case $42.KEY_LEFT_CODE:
 	            		self.touchStartPoint = { 
 	            			x: pos.x,
 	            			y: pos.y
 	            		};
 	        			self.touchLastPoint = {
-	            			x: pos.x - $MU.BS,
+	            			x: pos.x - $42.BS,
 	            			y: pos.y
 	            		};
 	            		self.isSwipeLeft = true;
 	            		break;
 	            	case 's':
-	            	case $MU.KEY_RIGHT_CODE:
+	            	case $42.KEY_RIGHT_CODE:
 	            		self.touchStartPoint = { 
 	            			x: pos.x,
 	            			y: pos.y
 	            		};
 	        			self.touchLastPoint = {
-	            			x: pos.x + $MU.BS,
+	            			x: pos.x + $42.BS,
 	            			y: pos.y
 	            		};
 	            		self.isSwipeRight = true;
 	            		break;
-	            	case $MU.KEY_UP_CODE:
+	            	case $42.KEY_UP_CODE:
 	            		self.isSwipeUp = true;
 	            		break;
-	            	case $MU.KEY_DOWN_CODE:
+	            	case $42.KEY_DOWN_CODE:
 	            		self.isSwipeDown = true;
 	            		break;
 	            	}
 	            },
 	            onKeyReleased:function(key, event) {
 	            	switch(key) {
-	            	case $MU.KEY_LEFT_CODE:
+	            	case $42.KEY_LEFT_CODE:
 		                self.touchStartPoint = null;
 	            		self.isSwipeLeft = false;
 	            		break;
-	            	case $MU.KEY_RIGHT_CODE:
+	            	case $42.KEY_RIGHT_CODE:
 		                self.touchStartPoint = null;
 	            		self.isSwipeRight = false;
 	            		break;
-	            	case $MU.KEY_UP_CODE:
+	            	case $42.KEY_UP_CODE:
 	            		self.isSwipeUp = false;
 	            		break;
-	            	case $MU.KEY_DOWN_CODE:
+	            	case $42.KEY_DOWN_CODE:
 	            		self.isSwipeDown = false;
 	            		break;
 	                }
@@ -389,13 +389,13 @@ var MuprisGameLayer = cc.Layer.extend({
 		
 		// select a random tile type
 		var self = this,
-			newTile = self.hookSetTile? self.hookSetTile() : this.getRandomValue($MU.TILE_OCCURANCES),
-			tileBoxes = $MU.TILE_BOXES[newTile],
+			newTile = self.hookSetTile? self.hookSetTile() : this.getRandomValue($42.TILE_OCCURANCES),
+			tileBoxes = $42.TILE_BOXES[newTile],
 			userData = {};
 		
 		// set tile sprite to a column
-		p.x = Math.round(p.x/$MU.BS)*$MU.BS+(32-(Math.abs(tileBoxes[0].x)%$MU.BS));
-		cc.assert(p.x%($MU.BS/2) === 0, "Mupris, buildTile: Tile is not aligned to column.");
+		p.x = Math.round(p.x/$42.BS)*$42.BS+(32-(Math.abs(tileBoxes[0].x)%$42.BS));
+		cc.assert(p.x%($42.BS/2) === 0, "_42, buildTile: Tile is not aligned to column.");
 
 		if( this.hookSetTileImages ) {
 			var tileSprite = this.hookSetTileImages(tileBoxes, newTile, p, userData);
@@ -403,7 +403,7 @@ var MuprisGameLayer = cc.Layer.extend({
 		else {
 			// create sprite for tile and set is size 0, we only use its position and rotation
 			var tileSprite = cc.Sprite.create(res.tiles_png,cc.rect(0,0,0,0)),
-				batch = this.getChildByTag($MU.TAG_SPRITE_MANAGER);
+				batch = this.getChildByTag($42.TAG_SPRITE_MANAGER);
 			
 			tileSprite.retain();
 	        tileSprite.setPosition(p);
@@ -413,7 +413,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	        for( var i=0 ; i<tileBoxes.length ; i++) {
 	        	
 	    		spriteFrame = cc.spriteFrameCache.getSpriteFrame(newTile+".png"),
-	    		sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$MU.BS,$MU.BS));
+	    		sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
 
 	    		sprite.retain();
 	        	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
@@ -429,12 +429,16 @@ var MuprisGameLayer = cc.Layer.extend({
         	direction: 0,  // 0, -1, 1 
         	isRotating : false,
         	action: null,
-        	fallingSpeed: $MU.FALLING_SPEED * 33,
+        	fallingSpeed: $42.FALLING_SPEED * 33,
         	userData: userData
         });
         
         tileSprite.setRotation(0);
 		rt = this.rotateBoxes(this.tiles[this.tiles.length-1]);
+		
+		// play sound
+		if( self.newtileEffectId ) cc.audioEngine.stopEffect(self.newtileEffectId);
+		self.newtileEffectId = cc.audioEngine.playEffect(res.plopp_mp3);
 		
 		//tileSprite.children[0].runAction(cc.tintTo(1,0,0,0));
 	},
@@ -494,7 +498,7 @@ var MuprisGameLayer = cc.Layer.extend({
 	
     update: function(dt) {
     	
-    	var mg = MUPRIS_GLOBALS,
+    	var mg = _42_GLOBALS,
     		self = this,
 			size = this.size;
 
@@ -503,8 +507,8 @@ var MuprisGameLayer = cc.Layer.extend({
     	 */
     	var getRowCol = function(box, lp) {
     		return {
-    			col: Math.round((lp.x + box.x - $MU.BOXES_X_OFFSET - $MU.BS/2) / $MU.BS),
-    			row: Math.round((lp.y + box.y - $MU.BOXES_Y_OFFSET - $MU.BS) / $MU.BS),
+    			col: Math.round((lp.x + box.x - $42.BOXES_X_OFFSET - $42.BS/2) / $42.BS),
+    			row: Math.round((lp.y + box.y - $42.BOXES_Y_OFFSET - $42.BS) / $42.BS),
     		}
     	};
     	
@@ -518,13 +522,13 @@ var MuprisGameLayer = cc.Layer.extend({
     		for( var i=0 ; i<b.length ; i++ ) {
     			var bx = lp.x + b[i].x,		// x pos of box
     				by = lp.y + b[i].y,		// y pos of box
-    				brc1 = getRowCol(b[i], { x: lp.x + $MU.BS/2 - 5, y: lp.y}),
-					brc2 = getRowCol(b[i], { x: lp.x - $MU.BS/2 + 5, y: lp.y});
-    			if( by - $MU.BS/2 <= $MU.BOXES_Y_OFFSET ||    // bottom reached? 
-    				(brc1.row < $MU.BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
+    				brc1 = getRowCol(b[i], { x: lp.x + $42.BS/2 - 5, y: lp.y}),
+					brc2 = getRowCol(b[i], { x: lp.x - $42.BS/2 + 5, y: lp.y});
+    			if( by - $42.BS/2 <= $42.BOXES_Y_OFFSET ||    // bottom reached? 
+    				(brc1.row < $42.BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
 
     				// align y to box border
-    				lp.y = Math.round((lp.y - $MU.BOXES_Y_OFFSET)/($MU.BS/2))*($MU.BS/2) + $MU.BOXES_Y_OFFSET;
+    				lp.y = Math.round((lp.y - $42.BOXES_Y_OFFSET)/($42.BS/2))*($42.BS/2) + $42.BOXES_Y_OFFSET;
     				
     				// fix tile
     				if( !t.isDragged && !t.isRotating ) {
@@ -540,45 +544,45 @@ var MuprisGameLayer = cc.Layer.extend({
     	var moveHorizontalyAndCheckForBarrier = function(t, lp, tp) {
     		var b = t.rotatedBoxes,					// usually four tile boxes
     			op = t.offsetToStartPoint, 			// distance of user finger to sprite center when grabbing a tile 
-    			offset = 32-(Math.abs(t.rotatedBoxes[0].x) % $MU.BS),
+    			offset = 32-(Math.abs(t.rotatedBoxes[0].x) % $42.BS),
     			dir = Math.sign(tp.x-lp.x+op.x);  	// direction, left = -1
     		
 			// limit horizontal movement to little less than one box per cycle
-			lp.x = (Math.abs(tp.x - lp.x + op.x) < $MU.BS)? tp.x + op.x : lp.x + ($MU.BS-1) * dir;
+			lp.x = (Math.abs(tp.x - lp.x + op.x) < $42.BS)? tp.x + op.x : lp.x + ($42.BS-1) * dir;
 			
 			// move tile to center of user finger in snap speed
-			if( Math.abs(op.x) > 0 ) op.x = Math.sign(op.x) * Math.max(Math.abs(op.x) - $MU.SNAP_SPEED, 0);
+			if( Math.abs(op.x) > 0 ) op.x = Math.sign(op.x) * Math.max(Math.abs(op.x) - $42.SNAP_SPEED, 0);
 
 			var newX = null;
 			// check all (four) boxes
     		for( var i=0 ; i<t.boxes.length ; i++) {
     			
-        		var brc1 = getRowCol(b[i], { x: lp.x-$MU.BS/2, y: lp.y+$MU.BS-1} );
-        		var brc2 = getRowCol(b[i], { x: lp.x-$MU.BS/2, y: lp.y+1} );
+        		var brc1 = getRowCol(b[i], { x: lp.x-$42.BS/2, y: lp.y+$42.BS-1} );
+        		var brc2 = getRowCol(b[i], { x: lp.x-$42.BS/2, y: lp.y+1} );
     			// check for left and right border
     			if( dir === -1 ) {
     				// left border?
-    				if (lp.x + t.rotatedBoxes[i].x - $MU.BS/2 - $MU.BOXES_X_OFFSET < 0 ) {
-    					var x = -t.rotatedBoxes[i].x + $MU.BS/2 + $MU.BOXES_X_OFFSET;
+    				if (lp.x + t.rotatedBoxes[i].x - $42.BS/2 - $42.BOXES_X_OFFSET < 0 ) {
+    					var x = -t.rotatedBoxes[i].x + $42.BS/2 + $42.BOXES_X_OFFSET;
     					// take the tile that is the most left
     					newX = (newX === null)? x : Math.max(newX , x);
     				}
     				
     				// box on the left side?
     				if( self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col] ) {
-        				if( i==0 ) cc.log("MUPRIS, moveHorizontalyAndCheckForBarrier: Correcting box!");
-    					var x = (brc1.col+1) * $MU.BS - t.rotatedBoxes[i].x + $MU.BS/2 + $MU.BOXES_X_OFFSET;
-    					newX = (newX === null)? x : Math.max(newX , brc1.col * $MU.BS - t.rotatedBoxes[i].x - $MU.BS/2 + $MU.BOXES_X_OFFSET);
+        				if( i==0 ) cc.log("_42, moveHorizontalyAndCheckForBarrier: Correcting box!");
+    					var x = (brc1.col+1) * $42.BS - t.rotatedBoxes[i].x + $42.BS/2 + $42.BOXES_X_OFFSET;
+    					newX = (newX === null)? x : Math.max(newX , brc1.col * $42.BS - t.rotatedBoxes[i].x - $42.BS/2 + $42.BOXES_X_OFFSET);
     				}
     			} else {
-    				if (lp.x + t.rotatedBoxes[i].x + $MU.BS/2 - $MU.BOXES_X_OFFSET >= $MU.BOXES_PER_ROW * $MU.BS ) {
-    					var x = $MU.BOXES_PER_ROW * $MU.BS - t.rotatedBoxes[i].x - $MU.BS/2 + $MU.BOXES_X_OFFSET;
-    					newX = (newX === null)? x : Math.min(newX , $MU.BOXES_PER_ROW * $MU.BS - t.rotatedBoxes[i].x - $MU.BS/2 + $MU.BOXES_X_OFFSET);
+    				if (lp.x + t.rotatedBoxes[i].x + $42.BS/2 - $42.BOXES_X_OFFSET >= $42.BOXES_PER_ROW * $42.BS ) {
+    					var x = $42.BOXES_PER_ROW * $42.BS - t.rotatedBoxes[i].x - $42.BS/2 + $42.BOXES_X_OFFSET;
+    					newX = (newX === null)? x : Math.min(newX , $42.BOXES_PER_ROW * $42.BS - t.rotatedBoxes[i].x - $42.BS/2 + $42.BOXES_X_OFFSET);
     				}
 
     				if( self.boxes[brc1.row][brc1.col+1] || self.boxes[brc2.row][brc2.col+1]  ) {
-    					var x = brc1.col * $MU.BS - t.rotatedBoxes[i].x + $MU.BS/2 + $MU.BOXES_X_OFFSET;
-    					newX = (newX === null)? x : Math.min(newX , brc1.col * $MU.BS - t.rotatedBoxes[i].x + $MU.BS/2 + $MU.BOXES_X_OFFSET);
+    					var x = brc1.col * $42.BS - t.rotatedBoxes[i].x + $42.BS/2 + $42.BOXES_X_OFFSET;
+    					newX = (newX === null)? x : Math.min(newX , brc1.col * $42.BS - t.rotatedBoxes[i].x + $42.BS/2 + $42.BOXES_X_OFFSET);
     				}
     			}
     		}
@@ -591,10 +595,10 @@ var MuprisGameLayer = cc.Layer.extend({
     	};
     	
 		var alignToColumn = function(t, lp, doneFn) {
-			var tileOffset = $MU.BS/2 - Math.abs(t.rotatedBoxes[0].x%$MU.BS),
-				offset = (lp.x-$MU.BOXES_X_OFFSET-tileOffset)%$MU.BS;
+			var tileOffset = $42.BS/2 - Math.abs(t.rotatedBoxes[0].x%$42.BS),
+				offset = (lp.x-$42.BOXES_X_OFFSET-tileOffset)%$42.BS;
 				
-			offset = offset < $MU.BS/2? -offset : $MU.BS - offset;
+			offset = offset < $42.BS/2? -offset : $42.BS - offset;
 			
 			if( t.isRotating && t.rotation%180 ) offset = -offset;
 				
@@ -603,7 +607,7 @@ var MuprisGameLayer = cc.Layer.extend({
 			if( offset ) {
 				t.isAligning = true;
 				t.sprite.runAction(cc.sequence( 
-					cc.moveBy($MU.MOVE_SPEED,cc.p(offset,0)),
+					cc.moveBy($42.MOVE_SPEED,cc.p(offset,0)),
 					cc.callFunc(function() {
 		    			var lp = t.sprite.getPosition();
 		    			t.sprite.setPosition(targetX, lp.y);
@@ -634,7 +638,7 @@ var MuprisGameLayer = cc.Layer.extend({
 					if( t.direction ) {
 						t.isAligning = true;
 						t.sprite.runAction(cc.sequence( 
-								cc.moveBy($MU.MOVE_SPEED*2,cc.p(shiftTile,0)),
+								cc.moveBy($42.MOVE_SPEED*2,cc.p(shiftTile,0)),
 								cc.callFunc(function() {
 					    			var lp = t.sprite.getPosition();
 					    			t.sprite.setPosition(targetX, lp.y);
@@ -649,15 +653,15 @@ var MuprisGameLayer = cc.Layer.extend({
 				
 				// play sound
 				if( self.rotateEffectId ) cc.audioEngine.stopEffect(self.rotateEffectId);
-				self.rotateEffectId = cc.audioEngine.playEffect(res.plopp_mp3);
+				self.rotateEffectId = cc.audioEngine.playEffect(res.klack_mp3);
 
 				t.sprite.runAction(cc.sequence( 
-						cc.rotateTo($MU.MOVE_SPEED*2,t.rotation),
+						cc.rotateTo($42.MOVE_SPEED*2,t.rotation),
 						cc.callFunc(function() {
 							t.isRotating = false;
 						})));
 				for( var i=0 ; i<t.sprite.children.length ; i++ ) {
-					t.sprite.children[i].runAction(cc.rotateTo($MU.MOVE_SPEED*2,(360-t.rotation)%360));					
+					t.sprite.children[i].runAction(cc.rotateTo($42.MOVE_SPEED*2,(360-t.rotation)%360));					
 				}	
 					       		
 				
@@ -683,15 +687,15 @@ var MuprisGameLayer = cc.Layer.extend({
         		var brc = getRowCol(b[i], lp);
         		
         		// record left and right extremes
-        		minOffset = Math.min(minOffset, lp.x + b[i].x - $MU.BOXES_X_OFFSET - $MU.BS/2);
-        		maxOffset = Math.max(maxOffset, lp.x + b[i].x - $MU.BOXES_X_OFFSET + $MU.BS/2);
+        		minOffset = Math.min(minOffset, lp.x + b[i].x - $42.BOXES_X_OFFSET - $42.BS/2);
+        		maxOffset = Math.max(maxOffset, lp.x + b[i].x - $42.BOXES_X_OFFSET + $42.BS/2);
         		
         		// check if other tiles are at the play
         		if( brc.row < 0 || self.boxes[brc.row][brc.col] ) return "collision";
     		}
     		
-    		if( minOffset < 0 || maxOffset > $MU.BOXES_PER_ROW * $MU.BS ) {
-    			var offset = minOffset? minOffset : maxOffset - $MU.BOXES_PER_ROW * $MU.BS,
+    		if( minOffset < 0 || maxOffset > $42.BOXES_PER_ROW * $42.BS ) {
+    			var offset = minOffset? minOffset : maxOffset - $42.BOXES_PER_ROW * $42.BS,
     				newLp = {
     					x: lp.x - offset,
     					y: lp.y
@@ -708,7 +712,7 @@ var MuprisGameLayer = cc.Layer.extend({
     	 * Tile gets fixed on the ground
     	 */
     	var fixTile = function fixTile(t, lp) {
-    		var batch = self.getChildByTag($MU.TAG_SPRITE_MANAGER),
+    		var batch = self.getChildByTag($42.TAG_SPRITE_MANAGER),
     			b = t.rotatedBoxes,
     			newBrcs = [],
     			ret = "ok";
@@ -716,12 +720,12 @@ var MuprisGameLayer = cc.Layer.extend({
     		// check if a tile is too high
     		for( var i=0 ; i<b.length ; i++ ) {
 				var brc = getRowCol(b[i], lp);
-				if( brc.row >= $MU.GAME_OVER_COL ) {
+				if( brc.row >= $42.GAME_OVER_COL ) {
 					ret = "gameover";
 				}
 				if( brc.row < 0 || self.boxes[brc.row][brc.col] != null ) {
 					// if a box is occupied already, move tile one up 
-					return fixTile(t, {x:lp.x,y:lp.y+$MU.BS});
+					return fixTile(t, {x:lp.x,y:lp.y+$42.BS});
 				}
     		}
     		
@@ -737,7 +741,7 @@ var MuprisGameLayer = cc.Layer.extend({
     				var brc = getRowCol(b[i], lp);
     				newBrcs.push(brc);
         			
-        			newSprite.setPosition($MU.BOXES_X_OFFSET + brc.col*$MU.BS + $MU.BS/2 , $MU.BOXES_Y_OFFSET + brc.row*$MU.BS + $MU.BS/2);
+        			newSprite.setPosition($42.BOXES_X_OFFSET + brc.col*$42.BS + $42.BS/2 , $42.BOXES_Y_OFFSET + brc.row*$42.BS + $42.BS/2);
         	        batch.addChild(newSprite);
 
             		self.boxes[brc.row][brc.col] = {
@@ -755,10 +759,6 @@ var MuprisGameLayer = cc.Layer.extend({
     		batch.removeChild(t.sprite);
        		delete t;
        		
-			// play sound
-			if( self.fixEffectId ) cc.audioEngine.stopEffect(self.fixEffectId);
-			self.fixEffectId = cc.audioEngine.playEffect(res.pling_mp3);
-
     		return ret;
     	};
     	
@@ -766,11 +766,11 @@ var MuprisGameLayer = cc.Layer.extend({
     		
     		// always check all rows (for now)
     		var rowsDeleted = [];
-    		for( var i=0 ; i<$MU.BOXES_PER_COL ; i++ ) {
-    			for( j=0 ; j<$MU.BOXES_PER_ROW ; j++ ) {
+    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) {
+    			for( j=0 ; j<$42.BOXES_PER_ROW ; j++ ) {
     				if(!self.boxes[i][j]) break;
     			}
-    			if(j === $MU.BOXES_PER_ROW || rowToDelete === i) {
+    			if(j === $42.BOXES_PER_ROW || rowToDelete === i) {
     				deleteRow(i);
     				rowsDeleted.push(i);
     			}
@@ -782,7 +782,7 @@ var MuprisGameLayer = cc.Layer.extend({
     			if( self.rowEffectId ) cc.audioEngine.stopEffect(self.rowEffectId);
     			self.rowEffectId = cc.audioEngine.playEffect(res.ritsch_mp3);
 
-    			for( var i=0 ; i<$MU.BOXES_PER_ROW ; i++ ) {
+    			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
     				// don't delete a box when it wasn't actually deleted (though it's row was)  
     				var rd = [];
     				for( var j=0 ; j<rowsDeleted.length ; j++) {
@@ -795,7 +795,7 @@ var MuprisGameLayer = cc.Layer.extend({
 					nextRow = rd[++r] || null;
 
 	    			if( rd.length > 0 ) {
-		    			for( var j=row ; j<$MU.BOXES_PER_COL ; j++ ) {
+		    			for( var j=row ; j<$42.BOXES_PER_COL ; j++ ) {
 
 	    					while( j+rows == nextRow ) {
 	    						nextRow = rd[++r] || null;
@@ -804,7 +804,7 @@ var MuprisGameLayer = cc.Layer.extend({
 
 							var sprite = (self.boxes[j+rows] && self.boxes[j+rows][i] && self.boxes[j+rows][i].sprite) || null;
 							if( sprite ) {
-								sprite.runAction(cc.moveBy($MU.MOVE_SPEED*rows, cc.p(0,-$MU.BS*rows)));
+								sprite.runAction(cc.moveBy($42.MOVE_SPEED*rows, cc.p(0,-$42.BS*rows)));
 							}    						
 
 							self.boxes[j][i] = (self.boxes[j+rows] && self.boxes[j+rows][i]) || null;    
@@ -820,10 +820,10 @@ var MuprisGameLayer = cc.Layer.extend({
     	
        	var deleteRow = function(row) {
 
-        	var batch = self.getChildByTag($MU.TAG_SPRITE_MANAGER);
+        	var batch = self.getChildByTag($42.TAG_SPRITE_MANAGER);
 
         	// delete row ... 
-        	for( var i=0 ; i<$MU.BOXES_PER_ROW ; i++ ) {
+        	for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
 		    	if( !self.hookDeleteBox || self.hookDeleteBox({row:row,col:i}) ) {
 		    		
 	        		// destroy sprite and box  
@@ -842,7 +842,7 @@ var MuprisGameLayer = cc.Layer.extend({
     	// if there is no tile flying, build a new one
         var tilesFlying = self.tiles.filter(function(value) { return value !== undefined }).length;
         if( !tilesFlying ) {
-            self.buildTile(cc.p(Math.random()*($MU.BOXES_PER_ROW-4)*$MU.BS+$MU.BOXES_X_OFFSET+2*$MU.BS, size.height)); 
+            self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, size.height)); 
         }
         
         var isSwipe = function() {
@@ -870,19 +870,19 @@ var MuprisGameLayer = cc.Layer.extend({
     	    		if( self.isSwipeUp ) {
         				
         				t.isRotating = true;
-        				t.fallingSpeed = $MU.FALLING_SPEED;
+        				t.fallingSpeed = $42.FALLING_SPEED;
         				
         				rotateTile(t , lp);
     	    		} else if( self.isSwipeDown && !sp || self.isSwipeDown &&
-    		    			sp.x < lp.x + $MU.BS*2 && sp.x > lp.x - $MU.BS*2 &&
-    		    			sp.y < lp.y + $MU.BS*2 && sp.y > lp.y - $MU.BS*2) {
-    	    			t.fallingSpeed = $MU.FALLING_SPEED * 36;
+    		    			sp.x < lp.x + $42.BS*2 && sp.x > lp.x - $42.BS*2 &&
+    		    			sp.y < lp.y + $42.BS*2 && sp.y > lp.y - $42.BS*2) {
+    	    			t.fallingSpeed = $42.FALLING_SPEED * 36;
     	    		}			
     			}
     			
     			if( !t.isRotating && isSwipe() && sp &&
-	    			sp.x < lp.x + $MU.BS*2 && sp.x > lp.x - $MU.BS*2 &&
-	    			sp.y < lp.y + $MU.BS*2 && sp.y > lp.y - $MU.BS*2	) { // move the tile if the touch is in range
+	    			sp.x < lp.x + $42.BS*2 && sp.x > lp.x - $42.BS*2 &&
+	    			sp.y < lp.y + $42.BS*2 && sp.y > lp.y - $42.BS*2	) { // move the tile if the touch is in range
 	  
 	    			t.isDragged = true;
 	    			t.offsetToStartPoint = {
@@ -906,10 +906,10 @@ var MuprisGameLayer = cc.Layer.extend({
     				if( !t.isAligning ) {
         	    		moveHorizontalyAndCheckForBarrier(t,lp,tp);    					
         			
-	    	    		if(tp.y < lp.y - $MU.BS*2 && !t.isRotating) {
-	    	    			t.fallingSpeed = Math.max( Math.min($MU.FALLING_SPEED * 36, lp.y - $MU.BS*2 - tp.y) , $MU.FALLING_SPEED);
+	    	    		if(tp.y < lp.y - $42.BS*2 && !t.isRotating) {
+	    	    			t.fallingSpeed = Math.max( Math.min($42.FALLING_SPEED * 36, lp.y - $42.BS*2 - tp.y) , $42.FALLING_SPEED);
 	    	    		} else {
-	    	    			t.fallingSpeed = $MU.FALLING_SPEED;
+	    	    			t.fallingSpeed = $42.FALLING_SPEED;
 	    	    		}
     				}    	    		
     			}
@@ -917,12 +917,12 @@ var MuprisGameLayer = cc.Layer.extend({
     		
     		if( self.isTap ) {
     			self.isTap = false;
-    			t.fallingSpeed = $MU.FALLING_SPEED;
+    			t.fallingSpeed = $42.FALLING_SPEED;
     		}
     		
     		// stop the initial falling of a tile
-    		if( t.fallingSpeed === $MU.FALLING_SPEED * 33 && lp.y < size.height - $MU.BS ) {
-    			t.fallingSpeed = $MU.FALLING_SPEED;
+    		if( t.fallingSpeed === $42.FALLING_SPEED * 33 && lp.y < size.height - $42.BS ) {
+    			t.fallingSpeed = $42.FALLING_SPEED;
     		}
     		
 	    	
@@ -938,7 +938,7 @@ var MuprisGameLayer = cc.Layer.extend({
     				var menuItems = [{
     					label: mg.t.reached_top_continue, 
     					cb: function(sender) {
-    			        	var gameLayer = this.getParent().getChildByTag($MU.TAG_GAME_LAYER);
+    			        	var gameLayer = this.getParent().getChildByTag($42.TAG_GAME_LAYER);
     				        gameLayer.resume();
     				        gameLayer.scheduleUpdate();
 
@@ -948,11 +948,11 @@ var MuprisGameLayer = cc.Layer.extend({
     					label: mg.t.reached_top_end_game, 
     					cb: function(sender) {
     						if( self.hookEndGame ) self.hookEndGame();
-    			        	cc.director.runScene(new MuprisScene());
+    			        	cc.director.runScene(new _42Scene());
     			        }
     				}];
     	            this.getParent().addChild(
-    	            	new MuprisMenuLayer("",menuItems),
+    	            	new _42MenuLayer("",menuItems),
     	            	2);
         	        this.pause();
         	        this.unscheduleUpdate();
@@ -967,7 +967,7 @@ var MuprisGameLayer = cc.Layer.extend({
 });
 
 
-var MuprisMenuLayer = cc.LayerColor.extend({
+var _42MenuLayer = cc.LayerColor.extend({
     
     ctor:function (question, menuItems) {
         var size = this.size = cc.director.getWinSize(),
@@ -1010,12 +1010,12 @@ var MuprisMenuLayer = cc.LayerColor.extend({
 	}
 });
 
-var MuprisScene = cc.Scene.extend({
+var _42Scene = cc.Scene.extend({
 	
     onEnter:function () {
         this._super();
 
-        this.addChild(new MuprisGameLayer(), 1, $MU.TAG_GAME_LAYER);
+        this.addChild(new _42GameLayer(), 1, $42.TAG_GAME_LAYER);
     }
 });
 

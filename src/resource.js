@@ -18,6 +18,7 @@ var res = {
 	plopp_mp3 : "res/sounds/plopp.mp3",
 	pling_mp3 : "res/sounds/pling.mp3",
 	ritsch_mp3 : "res/sounds/ritsch.mp3",
+	klack_mp3 : "res/sounds/klack.mp3",
 
 	amtype24_fnt : "res/fonts/amtype24.fnt",
 	amtype48_fnt : "res/fonts/amtype48.fnt",
@@ -64,7 +65,8 @@ var g_resources = [
     //effect
     res.plopp_mp3,
     res.pling_mp3,
-    res.ritsch_mp3
+    res.ritsch_mp3,
+    res.klack_mp3
 ];
 
 var i18n_language_packs = [
