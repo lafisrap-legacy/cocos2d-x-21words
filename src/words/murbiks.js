@@ -50,7 +50,7 @@ var MURBIKS_MODULE = function(layer) {
 	        	str = name + (i < 10 ? ("0" + i) : i) + ".png";
 	        	frames.push(cc.spriteFrameCache.getSpriteFrame(str));        	
 	    	}
-	    	var anim = cc.Animation.create(frames, 0.06, 10);
+	    	var anim = cc.Animation.create(frames, 0.06);
 	    	anims[name] = cc.animate(anim);
 		}
 
@@ -67,7 +67,11 @@ var MURBIKS_MODULE = function(layer) {
         mostafa.retain();
     	ml.addChild(mostafa, 5);
 
-        var mostafaAction = mostafa.runAction(cc.spawn(cc.moveTo(2.5, cc.p(500,500)),anims["mostafa_fly"]));
+    	var animAction = mostafa.runAction(cc.repeatForever(anims["mostafa_fly"]));
+        var moveAction = mostafa.runAction(cc.sequence(cc.moveTo(2.5, cc.p(500,500)),cc.callFunc(function() {
+        	ml.stopAction(animAction);
+        	animAction = mostafa.runAction(anims["mostafa_land"]);
+        })));
 	};
 	
 
