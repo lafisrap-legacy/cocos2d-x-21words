@@ -26,6 +26,7 @@ var res = {
 	amtype72_fnt : "res/fonts/amtype72.fnt",
 	
 	// murbiks / tutorial
+    murbiks_single_png : "res/images/murbiks/mostafa_fly01.png",
     murbiks_png : "res/images/murbiks/murbiks.png",
     murbiks_plist : 'res/images/murbiks/murbiks.plist',
 };
@@ -66,6 +67,7 @@ var g_resources = [
     res.klack_mp3,
     
     // murbiks, tutorial
+    res.murbiks_single_png,
     res.murbiks_png,
     res.murbiks_plist
 ];

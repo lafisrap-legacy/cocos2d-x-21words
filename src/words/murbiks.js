@@ -12,7 +12,9 @@ var MURBIKS_MODULE = function(layer) {
 	var ml = layer,
 		lg = null,
 		curProgram = null,
-		curProgramCnt = null;
+		curProgramCnt = null,
+		mostafa = null,
+		anims = {};
 
 	/*
 	 * Program 1
@@ -25,7 +27,6 @@ var MURBIKS_MODULE = function(layer) {
 	};
 	
 	
-	
 	/* 
 	 * Service programs
 	 */
@@ -36,8 +37,39 @@ var MURBIKS_MODULE = function(layer) {
 	    curProgramCnt = 0;
 	};
 	
+	initAnimation = function() {
+		
+		// Load sprite frames to frame cache, add texture node
+        cc.spriteFrameCache.addSpriteFrames(res.murbiks_plist);
+        var murbiksImages  = cc.SpriteBatchNode.create(cc.textureCache.addImage(res.murbiks_png));
+		ml.addChild(murbiksImages);
+
+		var loadFrames = function(name,cnt) {
+			var frames = [];
+	    	for (var i = 1; i <= cnt; i++) {
+	        	str = name + (i < 10 ? ("0" + i) : i) + ".png";
+	        	frames.push(cc.spriteFrameCache.getSpriteFrame(str));        	
+	    	}
+	    	var anim = cc.Animation.create(frames, 0.06, 10);
+	    	anims[name] = cc.animate(anim);
+		}
+
+		loadFrames("mostafa_fly",9);
+		loadFrames("mostafa_land",7);
+		
+        mostafa = cc.Sprite.create(res.murbiks_single_png);        
+        mostafa.attr({
+        	x: 0,
+        	y: 0,
+        	scale: 1.5,
+        	rotation: 0
+    	});
+        mostafa.retain();
+    	ml.addChild(mostafa, 5);
+
+        var mostafaAction = mostafa.runAction(cc.spawn(cc.moveTo(2.5, cc.p(500,500)),anims["mostafa_fly"]));
+	};
 	
-	// ... integrate program
 
 	/*
 	 * All programs
@@ -69,6 +101,6 @@ var MURBIKS_MODULE = function(layer) {
 		return curProgram[curProgramCnt++];
 	};
 	
-
+	initAnimation();
 },
 $MM = MURBIKS_MODULE;
