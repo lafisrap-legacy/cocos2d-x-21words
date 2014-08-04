@@ -9,24 +9,25 @@ var res = {
 	background_png : "res/images/background.png",
 	empty_png : "res/empty.png",
 	amtype24_png : "res/fonts/amtype24.png",
-	amtype48_png : "res/fonts/amtype48.png",
 	amtype36_png : "res/fonts/amtype36.png",
 	amtype56_png : "res/fonts/amtype56.png",
 	amtype72_png : "res/fonts/amtype72.png",
-	amtype84_png : "res/fonts/amtype84.png",
 
+	// sounds
 	plopp_mp3 : "res/sounds/plopp.mp3",
 	pling_mp3 : "res/sounds/pling.mp3",
 	ritsch_mp3 : "res/sounds/ritsch.mp3",
 	klack_mp3 : "res/sounds/klack.mp3",
 
+	// fonts
 	amtype24_fnt : "res/fonts/amtype24.fnt",
-	amtype48_fnt : "res/fonts/amtype48.fnt",
 	amtype36_fnt : "res/fonts/amtype36.fnt",
 	amtype56_fnt : "res/fonts/amtype56.fnt",
 	amtype72_fnt : "res/fonts/amtype72.fnt",
-	amtype84_fnt : "res/fonts/amtype84.fnt",
-
+	
+	// murbiks / tutorial
+    murbiks_png : "res/images/murbiks/murbiks.png",
+    murbiks_plist : 'res/images/murbiks/murbiks.plist',
 };
 
 var g_resources = [
@@ -38,11 +39,9 @@ var g_resources = [
     res.title_png,
     res.background_png,
     res.amtype24_png,
-    res.amtype48_png,
     res.amtype36_png,
     res.amtype56_png,
     res.amtype72_png,
-    res.amtype84_png,
 
 
     //plist
@@ -52,11 +51,9 @@ var g_resources = [
     
     //fnt
     res.amtype24_fnt,
-    res.amtype48_fnt,
     res.amtype36_fnt,
     res.amtype56_fnt,
     res.amtype72_fnt,
-    res.amtype84_fnt,
 
     //tmx
 
@@ -66,7 +63,11 @@ var g_resources = [
     res.plopp_mp3,
     res.pling_mp3,
     res.ritsch_mp3,
-    res.klack_mp3
+    res.klack_mp3,
+    
+    // murbiks, tutorial
+    res.murbiks_png,
+    res.murbiks_plist
 ];
 
 var i18n_language_packs = [

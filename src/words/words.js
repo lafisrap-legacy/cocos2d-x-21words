@@ -3,16 +3,12 @@
  * NEXT STEPS:
  * 
  * + FEHLER
- * - Buchstabe V erscheint bei Wortwert 4
  * 
  * + GAMEPLAY
  * - buy:
  * 		single box tile for > 1000 coins
  * 		if spare money is there, than icon appears
  * - present fitting tiles for tileValues, if no possible tile is there
- * - new score bar
- * 		- left side score with next level score
- * 		- rolling 1: Level
  * 
  * + WORTSCHATZ
  * - show wortschatz
@@ -73,8 +69,8 @@ $42.TILES_PROGRAMS = [[
 
 var _42_MODULE = function(_42Layer) {
 
-	var mg = _42_GLOBALS,
-		ml = _42Layer;
+	var ml = _42Layer,
+		nextTile = null;
 	
 	// go through box array and look for prefixes
 	var setSelections = function( dontSelectWord ) {
@@ -141,17 +137,17 @@ var _42_MODULE = function(_42Layer) {
 			words = [];
 		
 		// copy word object
-		for( var i=0 ; mg.words[prefix] && i<mg.words[prefix].length ; i++ ) {
+		for( var i=0 ; $42.words[prefix] && i<$42.words[prefix].length ; i++ ) {
 			words.push({
-				word: mg.words[prefix][i].word,
-				value: mg.words[prefix][i].value,
+				word: $42.words[prefix][i].word,
+				value: $42.words[prefix][i].value,
 			});
 		}
 
 		if( !(ml.boxes[brc.row][brc.col] && ml.boxes[brc.row][brc.col].words) && words.length && cb ) {
 
 			for( var i=words.length-1 ; i>=0 ; i-- ) {
-				if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || words[i].value > mg.maxWordValue ) {
+				if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || words[i].value > $42.maxWordValue ) {
 					words.splice(i,1);
 				}
 			}
@@ -169,7 +165,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		if( !sw ) return false;
 		
-		cc.log("_42, updateSelectedWord, Enter function!");
+		cc.log("42words, updateSelectedWord, Enter function!");
 		
 		// Define sprites and show word start sprite
 		var setMarkerFrame = [],
@@ -275,7 +271,7 @@ var _42_MODULE = function(_42Layer) {
 			if( j === word.length ) {
 				// delete word from global word list
 				var ret = deleteWordFromList(word);
-				cc.assert(ret,"_42, updateSelectedWord: "+word+" is not in the list!");
+				cc.assert(ret,"42words, updateSelectedWord: "+word+" is not in the list!");
 				// also delete if from selected word list
 				sw.words.splice(i,1);
 				if( !sw.words.length ) unselectWord();
@@ -287,8 +283,8 @@ var _42_MODULE = function(_42Layer) {
 						var row = sw.brc.row;
 						for( var j=0, value=0 ; j<word.length ; j++ ) {
 							// calculate points and let them fly ...
-							var v = mg.letterValues[word[j]],
-								points = parseInt(v * mg.maxWordValue * 4 * ((sw.brc.row*$42.SCORE_ROW_MULTIPLYER)+1));
+							var v = $42.letterValues[word[j]],
+								points = parseInt(v * $42.maxWordValue * 4 * ((sw.brc.row*$42.SCORE_ROW_MULTIPLYER)+1));
 							value += v;
 							addPoints(points, cc.p($42.BOXES_X_OFFSET + (sw.brc.col+j) * $42.BS + $42.BS/2, $42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.BS), true);							
 						}
@@ -298,21 +294,21 @@ var _42_MODULE = function(_42Layer) {
 								word: word,
 								value: value
 							};
-						mg.wordTreasure.push(w);
+						$42.wordTreasure.push(w);
 						if( !ml.wordTreasureBestWord || ml.wordTreasureBestWord.value < w.value ) {
 							ml.wordTreasureBestWord = w;
 						}
 						unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
 						
-						cc.log("_42, updateSelectedWord, takeWord = true: setSelection()");
+						cc.log("42words, updateSelectedWord, takeWord = true: setSelection()");
 						setSelections();
 						drawScoreBar(true);
 
-						ls.setItem("wordTreasure" , JSON.stringify(mg.wordTreasure));
+						ls.setItem("wordTreasure" , JSON.stringify($42.wordTreasure));
 					} else {
 						ml.checkForAndRemoveCompleteRows();
-						cc.log("_42, updateSelectedWord, takeWord = false: setSelection()");
+						cc.log("42words, updateSelectedWord, takeWord = false: setSelection()");
 						unselectWord();
 						setSelections();
 						moveSelectedWord(sw.brc);
@@ -329,11 +325,11 @@ var _42_MODULE = function(_42Layer) {
 	var deleteWordFromList = function(word) {
 		var prefix = word.substr(0,3);
 		// delete word from full word list
-		var words = mg.words[prefix];
+		var words = $42.words[prefix];
 		for( var i=0 ; i<words.length ; i++ ) {
 			if( words[i].word === word ) {
 				words.splice(i,1);
-				if( !words.length ) delete mg.words[word.substr(0,3)];
+				if( !words.length ) delete $42.words[word.substr(0,3)];
 				return true;
 			}
 		}
@@ -361,7 +357,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		// add sprites of word
 		for( var i=0 ; i<word.length ; i++) {
-			cc.assert( ml.boxes[brc.row][brc.col+i].sprite , "_42, showFullword: Sprite is missing in box at position "+brc.row+"/"+brc.col );
+			cc.assert( ml.boxes[brc.row][brc.col+i].sprite , "42words, showFullword: Sprite is missing in box at position "+brc.row+"/"+brc.col );
 			
 			var orgSprite = ml.boxes[brc.row][brc.col+i].sprite,
 				sprite = cc.Sprite.create(orgSprite.getTexture(),orgSprite.getTextureRect());
@@ -403,20 +399,20 @@ var _42_MODULE = function(_42Layer) {
 					        batch.removeChild(wordFrameSprite);	   						
 	   					},
 	   					menuItems = [{
-    					label: mg.t.take_word_yes, 
+    					label: $42.t.take_word_yes, 
     					cb: function(sender) {
     						resume(this);
     						cb(true);
     			        }
     				},{
-    					label: mg.t.take_word_no, 
+    					label: $42.t.take_word_no, 
     					cb: function(sender) {
     						resume(this);
     						cb(false);
     			        }
     				}];
     	            ml.getParent().addChild(
-    	            	new _42MenuLayer(mg.t.take_word_question,menuItems),
+    	            	new _42MenuLayer($42.t.take_word_question,menuItems),
     	            	2);
     	            
     				sprite = cc.Sprite.create(this.getTexture(),this.getTextureRect());
@@ -435,15 +431,15 @@ var _42_MODULE = function(_42Layer) {
     				
     				// display value of word
     				for( var i=0,sum=0 ; i<word.length ; i++ ) {
-        				var value = cc.LabelTTF.create(mg.letterValues[word[i]], "Arial", 32),
+        				var value = cc.LabelTTF.create($42.letterValues[word[i]], "Arial", 32),
         					pos = childSprites[i].getPosition();
-        				sum += mg.letterValues[word[i]];
+        				sum += $42.letterValues[word[i]];
         				value.setPosition(pos.x , pos.y + $42.BS + 10);
         				value.retain();
         				value.setColor(cc.color(200,160,0));
         				sprite.addChild(value, 5);	    					
     				}
-    				var value = cc.LabelTTF.create(mg.t.take_word_wordvalue+": "+sum, "Arial", 48);
+    				var value = cc.LabelTTF.create($42.t.take_word_wordvalue+": "+sum, "Arial", 48);
 					value.setPosition(sprite.getTextureRect().width/2 , pos.y + $42.BS * 2 + 10);
 					value.retain();
 					value.setColor(cc.color(200,160,0));
@@ -481,7 +477,7 @@ var _42_MODULE = function(_42Layer) {
 			}
 		}
 		
-		cc.assert(nsw, "_42, selectBestWord: No word to select.");
+		cc.assert(nsw, "42words, selectBestWord: No word to select.");
 
 		ml.selectedWord = nsw;		
 		var x = $42.BOXES_X_OFFSET + nsw.brc.col*$42.BS + 1.5*$42.BS,
@@ -489,7 +485,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		blowWords(cc.p(x,y),nsw.words);
 		
-		cc.log("_42, selectBestWord: Calling updateSelectedWord()");
+		cc.log("42words, selectBestWord: Calling updateSelectedWord()");
 		updateSelectedWord();
 		
 	};
@@ -508,7 +504,7 @@ var _42_MODULE = function(_42Layer) {
 			
 		// define a new one
 		if( brc ) {
-			//var words = mg.words[ml.boxes[brc.row][brc.col].words[0].word.substr(0,3)];
+			//var words = $42.words[ml.boxes[brc.row][brc.col].words[0].word.substr(0,3)];
 			var box = ml.boxes[brc.row][brc.col],
 				words = box.words,
 				markers = box.markers;
@@ -520,7 +516,7 @@ var _42_MODULE = function(_42Layer) {
 						sprites: []
 				};
 				
-				cc.log("_42, moveSelectedWord: calling updateSelectedWord()");
+				cc.log("42words, moveSelectedWord: calling updateSelectedWord()");
 				updateSelectedWord();
 
 			} else {
@@ -706,34 +702,34 @@ var _42_MODULE = function(_42Layer) {
 			clipper.addChild(rl, 5);
 			
 			// prepare values for display
-			var wt = mg.wordTreasure,
+			var wt = $42.wordTreasure,
 				bw = ml.wordTreasureBestWord,
 				len = bw? bw.word.length : 0;
 
 			// draw the level and the level label
-			drawText(mg.t.score_bar_level,cc.p(400,82),24,$42.SCORE_COLOR_DIMM,rl);		
+			drawText($42.t.score_bar_level,cc.p(400,82),24,$42.SCORE_COLOR_DIMM,rl);		
 			sb.currentLevel = drawText(ml.currentLevel,cc.p(394,45),72,$42.SCORE_COLOR_BRIGHT,rl);		
 
 			// draw the word sprite and the number of letters
-			sb.wordIconText = drawText(mg.t.score_bar_no_word,cc.p(185,75),24,$42.SCORE_COLOR_BRIGHT,rl);		
+			sb.wordIconText = drawText($42.t.score_bar_no_word,cc.p(185,75),24,$42.SCORE_COLOR_BRIGHT,rl);		
 			sb.wordIconSprite = drawWordSprite("",cc.p(185,35),sb.wordIconSprite,0.47,rl);							
 
 			// draw highscore into clipper
-			drawText(mg.t.score_bar_highscore,cc.p(100,171),24,$42.SCORE_COLOR_DIMM,rl);			
-			ml.highscore = drawText(mg.maxPoints.toString(),cc.p(100,130),36,$42.SCORE_COLOR_BRIGHT,rl);	
+			drawText($42.t.score_bar_highscore,cc.p(100,171),24,$42.SCORE_COLOR_DIMM,rl);			
+			ml.highscore = drawText($42.maxPoints.toString(),cc.p(100,130),36,$42.SCORE_COLOR_BRIGHT,rl);	
 			
 			// draw most valuable word
-			ml.bestWordValue = drawText(mg.t.score_bar_mvw+": "+(bw? bw.value:""),cc.p(300,171),24,$42.SCORE_COLOR_DIMM,rl);
+			ml.bestWordValue = drawText($42.t.score_bar_mvw+": "+(bw? bw.value:""),cc.p(300,171),24,$42.SCORE_COLOR_DIMM,rl);
 			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.38,rl);							
 		} else {
-			var wt = mg.wordTreasure,
+			var wt = $42.wordTreasure,
 				bw = ml.wordTreasureBestWord;
 
 			ml.score.setString(ml.totalPoints.toString());
 			ml.nextScore.setString("^ "+$42.LEVEL_SCORE[ml.currentLevel].toString());
 
-			ml.highscore.setString(mg.maxPoints.toString());
-			ml.bestWordValue.setString(mg.t.score_bar_mvw+": "+(bw? bw.value:""));
+			ml.highscore.setString($42.maxPoints.toString());
+			ml.bestWordValue.setString($42.t.score_bar_mvw+": "+(bw? bw.value:""));
 			sb.currentLevel.setString(ml.currentLevel);
 			if( newSprite ) {
 				var wc = [],
@@ -754,7 +750,7 @@ var _42_MODULE = function(_42Layer) {
 						}
 					}
 				}
-				sb.wordIconText.setString(max?mg.t.score_bar_wordvalue+": "+max:mg.t.score_bar_no_word);
+				sb.wordIconText.setString(max?$42.t.score_bar_wordvalue+": "+max:$42.t.score_bar_no_word);
 				sb.wordIconSprite = drawWordSprite(word,cc.p(185,35),sb.wordIconSprite,0.47,sb);
 				ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.37,rl);
 //				sb.wordIconSprite = drawWordSprite("CYPHERPUNK",cc.p(185,35),sb.wordIconSprite,0.47,sb);
@@ -793,20 +789,7 @@ var _42_MODULE = function(_42Layer) {
 			
 		}
 	}
-	
-	var startProgram = function(program) {
-	    // start program
-	    curProgram = program;
-	    curProgramCnt = 0;
-	};
-	
-	var incCurrentProgram = function() {
-		if( ++curProgramCnt >= $42.TILES_PROGRAMS[curProgram].length ) {
-			curProgram = null;
-			curProgramCnt = null;
-		}
-	};
-	
+		
 	/*
 	 * hookLoadImages
 	 * 
@@ -821,15 +804,15 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookStartGame = function() {
-	    startProgram(0);
+		if( ml.hookStartProgram ) ml.hookStartProgram( 0 , false );			
 	    
         // global data init
         var ls = cc.sys.localStorage,
         	json = ls.getItem("wordTreasure") || [],
-        	wt = mg.wordTreasure = json.length? JSON.parse(json) : [];
+        	wt = $42.wordTreasure = json.length? JSON.parse(json) : [];
         	
-		mg.maxPoints = ls.getItem("maxPoints") || 0;
-		mg.maxWordValue = ls.getItem("maxWordValue") || 4;
+		$42.maxPoints = ls.getItem("maxPoints") || 0;
+		$42.maxWordValue = ls.getItem("maxWordValue") || 4;
 		
 		// points array
 		ml.pointsToAdd = [];
@@ -844,23 +827,18 @@ var _42_MODULE = function(_42Layer) {
 		// remove all words that are already in the treasure
 		for( var i=0 ; i<wt.length ; i++) {
 			var prefix = wt[i].word.substr(0,3);
-				words = mg.words[prefix];
+				words = $42.words[prefix];
 			for( var j=words? words.length-1 : 0 ; words && j>=0 ; j-- ) {
 				if( words[j].word === wt[i].word ) {
 					words.splice(j,1);
 					if( words.length === 0 ) {
-						delete mg.words[prefix];
+						delete $42.words[prefix];
 					}
 					break;
 				}				
 			}
 		}
 		
-//        var label1 = cc.LabelBMFont.create("Test", "res/fonts/testxxx.fnt");
-//        label1.x = 100;
-//        label1.y = 100;
-//        ml.addChild(label1,100);
-
 		drawScoreBar();
 	};
 	
@@ -876,8 +854,10 @@ var _42_MODULE = function(_42Layer) {
 	 * 
 	 */
 	_42Layer.hookSetTile = function() {
-		if( curProgram !== null ) return $42.TILES_PROGRAMS[curProgram][curProgramCnt].tile;
-		else return ml.getRandomValue($42.TILE_OCCURANCES);
+		
+		if( ml.hookGetProgrammedTile ) nextTile = ml.hookGetProgrammedTile();
+		
+		return nextTile? nextTile.tile : ml.getRandomValue($42.TILE_OCCURANCES);
 	};
 
 	/*
@@ -901,21 +881,21 @@ var _42_MODULE = function(_42Layer) {
         for( var i=0 ; i<tileBoxes.length ; i++) {
         	
         	var sw = ml.selectedWord;
-        	if( curProgram !== null ) {
-        		var val = $42.LETTERS.indexOf($42.TILES_PROGRAMS[curProgram][curProgramCnt].letters[i]);
+        	if( nextTile !== null ) {
+        		var val = $42.LETTERS.indexOf(nextTile.letters[i]);
         	} else {
 	         	var len = sw && sw.missingLetters.length,
          			prob = len <= 3? $42.NEEDED_LETTERS_PROBABILITY / (5-len) : $42.NEEDED_LETTERS_PROBABILITY; 
         		for( var j=0 ; j<5 ; j++ ) {
 	         		val = (Math.random()>prob || !sw || !len)?  
-	         					Math.floor(this.getRandomValue(mg.letterOccurences)):
+	         					Math.floor(this.getRandomValue($42.letterOccurences)):
 	        					$42.LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]);        			
 	         					
 	        	    for( k=0 ; k<i ; k++ ) 
 	        	    	if( userData[k] === $42.LETTERS[val] ) 
 	        	    		break;
 	        	    if( k < i ) continue;
-	         		if( mg.letterValues[$42.LETTERS[val]] <= mg.maxWordValue - 3 ) break;
+	         		if( $42.letterValues[$42.LETTERS[val]] <= $42.maxWordValue - 3 ) break;
         		}
         	}
        					
@@ -927,8 +907,9 @@ var _42_MODULE = function(_42Layer) {
         	userData[i] = $42.LETTERS[val];
 	        tileSprite.addChild(sprite);
         }
-        
-        if( curProgram !== null ) incCurrentProgram();
+
+        // tile was used, so delete it
+        nextTile = null;
         
         return tileSprite;
 	};	
@@ -937,9 +918,9 @@ var _42_MODULE = function(_42Layer) {
 		
 		ml.lastBrcs = brcs;
 		
-		cc.log("_42, hookTileFixed: setSelection()");
+		cc.log("42words, hookTileFixed: setSelection()");
 		setSelections();
-		cc.log("_42, hookTileFixed: Calling updateSelectedWord()");
+		cc.log("42words, hookTileFixed: Calling updateSelectedWord()");
 		return updateSelectedWord();
 	};	
 
@@ -950,7 +931,7 @@ var _42_MODULE = function(_42Layer) {
 		drawScoreBar(true);
 
 		var ls = cc.sys.localStorage;
-		ls.setItem("maxPoints",mg.maxPoints);
+		ls.setItem("maxPoints",$42.maxPoints);
 	}
 
 	_42Layer.hookDeleteBox = function(brc) {
@@ -973,7 +954,7 @@ var _42_MODULE = function(_42Layer) {
 		) return false;
 
 		// Score
-		var value = box && parseInt((mg.letterValues[box.userData] || 0) * ((brc.row*$42.SCORE_ROW_MULTIPLYER) + 1));
+		var value = box && parseInt(($42.letterValues[box.userData] || 0) * ((brc.row*$42.SCORE_ROW_MULTIPLYER) + 1));
 		if( value ) addPoints(value * 2, cc.p($42.BOXES_X_OFFSET + brc.col * $42.BS + $42.BS/2, $42.BOXES_Y_OFFSET + brc.row * $42.BS + $42.BS));
 		
 		return true;
@@ -997,9 +978,9 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookAllBoxesMovedDown = function() {
-		cc.log("_42, hookAllBoxesMovedDown: setSelection()");
+		cc.log("42words, hookAllBoxesMovedDown: setSelection()");
 		setSelections();
-		cc.log("_42, hookAllBoxesMovedDown: Calling updateSelectedWord()");
+		cc.log("42words, hookAllBoxesMovedDown: Calling updateSelectedWord()");
 		updateSelectedWord();
 		drawScoreBar(true);
 	};
@@ -1018,7 +999,7 @@ var _42_MODULE = function(_42Layer) {
 			var col = Math.floor((tapPos.x - swPos.x)/$42.BS),
 				marker = sw.markers[col];
 			if( marker === $42.MARKER_OPT || marker === $42.MARKER_SEL ) {
-				cc.assert(ml.boxes[sw.brc.row][sw.brc.col+col].sprite, "_42, hookOnTap: There must be a sprite at position "+sw.brc.row+"/"+(sw.brc.col+col)+".");
+				cc.assert(ml.boxes[sw.brc.row][sw.brc.col+col].sprite, "42words, hookOnTap: There must be a sprite at position "+sw.brc.row+"/"+(sw.brc.col+col)+".");
 				if( marker === $42.MARKER_OPT ) {
 					sw.markers[col] = $42.MARKER_SEL;
 					ml.boxes[sw.brc.row][sw.brc.col+col].sprite.setOpacity(255);	
@@ -1026,7 +1007,7 @@ var _42_MODULE = function(_42Layer) {
 					sw.markers[col] = $42.MARKER_OPT;					
 					ml.boxes[sw.brc.row][sw.brc.col+col].sprite.setOpacity($42.UNSELECTED_BOX_OPACITY);	
 				}
-				cc.log("_42, hookOnTap: calling updateSelectedWord()");
+				cc.log("42words, hookOnTap: calling updateSelectedWord()");
 				updateSelectedWord();
 			} else {
 				unselectWord();
@@ -1042,9 +1023,9 @@ var _42_MODULE = function(_42Layer) {
 				if( s && tapPos.x >= s.pos.x && tapPos.x <= s.pos.x+s.width && tapPos.y >= s.pos.y && tapPos.y <= s.pos.y+s.height ) {
 					moveSelectedWord(s.brc);
 					ml.dontAutoSelectWord = false;
-					cc.log("_42, hookOnTap, selections: setSelection()");
+					cc.log("42words, hookOnTap, selections: setSelection()");
 					setSelections();
-					cc.log("_42, hookOnTap, selections: Calling updateSelectedWord()");
+					cc.log("42words, hookOnTap, selections: Calling updateSelectedWord()");
 					updateSelectedWord();
 					
 					var x = $42.BOXES_X_OFFSET + s.brc.col*$42.BS + 1.5*$42.BS,
@@ -1079,7 +1060,7 @@ var _42_MODULE = function(_42Layer) {
 			moveRollingLayer(1,3);
 
 			// highscore?
-			mg.maxPoints = Math.max(ml.totalPoints , mg.maxPoints);
+			$42.maxPoints = Math.max(ml.totalPoints , $42.maxPoints);
 
 			drawScoreBar();
 
@@ -1088,19 +1069,19 @@ var _42_MODULE = function(_42Layer) {
 				var ls = cc.sys.localStorage;
 
 				var cl = ++ml.currentLevel;
-				mg.maxWordValue = Math.max( ml.wordTreasureBestWord.value , cl === 3? 5 : cl === 5? 6 : cl );
-				ls.setItem("maxWordValue" , JSON.stringify(mg.maxWordValue));
+				$42.maxWordValue = Math.max( ml.wordTreasureBestWord.value , cl === 3? 5 : cl === 5? 6 : cl );
+				ls.setItem("maxWordValue" , JSON.stringify($42.maxWordValue));
 
 				drawScoreBar(true);
 
 				// if its level 42: YOU WON THE GAME!
 				// ......
 				
-				var text = [{t:mg.t.new_level_level,scale:5,color:cc.color(0,128,0)} , 
+				var text = [{t:$42.t.new_level_level,scale:5,color:cc.color(0,128,0)} , 
 				            {t:ml.currentLevel,scale:10,color:cc.color(0,160,0)}];
-				if( mg.maxWordValue > ml.wordTreasureBestWord.value ) text = text.concat(
-					[{t:mg.t.new_level_value,scale:5,color:cc.color(128,128,0)} , 
-			         {t:mg.maxWordValue,scale:10,color:cc.color(128,128,0)}]
+				if( $42.maxWordValue > ml.wordTreasureBestWord.value ) text = text.concat(
+					[{t:$42.t.new_level_value,scale:5,color:cc.color(128,128,0)} , 
+			         {t:$42.maxWordValue,scale:10,color:cc.color(128,128,0)}]
 				);
 				for( var i=0 ; i<text.length ; i++ ) {
 					label = cc.LabelTTF.create(text[i].t, "res/fonts/American Typewriter.ttf", 160);
@@ -1132,23 +1113,23 @@ var _42_MODULE = function(_42Layer) {
 	
 	var loadLanguagePack = function( pack ) {
 		
-		cc.log("_42, loadLanguagePack: STARTING LOADING ...");
+		cc.log("42words, loadLanguagePack: STARTING LOADING ...");
 		var filename = i18n_language_packs[pack];
 		cc.loader.loadJson("res/i18n/"+filename, function(err, json) {
 			if( !err ) {
-				cc.log("_42, loadLanguagePack: ... LOADED LANGUAGE PACK, GOING ON ...");
-				var lg = mg.languagePack = json;
-				mg.t = lg.apptext;
+				cc.log("42words, loadLanguagePack: ... LOADED LANGUAGE PACK, GOING ON ...");
+				var lg = $42.languagePack = json;
+				$42.t = lg.apptext;
 				
 				cc.loader.loadJson("res/words/"+lg.wordlist+".words.json", function(err, json) {
 					if( !err ) {
-						cc.log("_42, loadLanguagePack: ... LOADED WORDS, GOING ON ...");
-						mg.words = json;
+						cc.log("42words, loadLanguagePack: ... LOADED WORDS, GOING ON ...");
+						$42.words = json;
 
 						cc.loader.loadJson("res/words/"+lg.wordlist+".letters.json", function(err, json) {
 							if( !err ) {
-								cc.log("_42, loadLanguagePack: ... LOADED LETTERS!");
-								var lv = mg.letterValues = json,
+								cc.log("42words, loadLanguagePack: ... LOADED LETTERS!");
+								var lv = $42.letterValues = json,
 									l = $42.LETTERS;
 								// get the most common
 								var max=0;
@@ -1156,10 +1137,10 @@ var _42_MODULE = function(_42Layer) {
 									max=Math.max(max,lv[letter]);
 								}
 
-								mg.letterOccurences = [];
+								$42.letterOccurences = [];
 								for( var i=0 ; i<l.length ; i++ ) {
 									var occ = lv[l[i]] && parseInt(1/lv[l[i]]*max);
-									mg.letterOccurences[i] = occ || 0; 
+									$42.letterOccurences[i] = occ || 0; 
 								}
 							} else {
 								throw err;
@@ -1169,10 +1150,10 @@ var _42_MODULE = function(_42Layer) {
 						// check if word file is compatible
 						for( var prefix in json ) {
 							var words = json[prefix];
-							cc.assert(words && words[0].word, "_42, json loader: Prefix "+prefix+" has no words.");
+							cc.assert(words && words[0].word, "42words, json loader: Prefix "+prefix+" has no words.");
 							for( var j=0 ; j<words.length ; j++ ) {
 								cc.assert(words[j].word.length >=4 && words[j].word.length <= $42.BOXES_PER_ROW, 
-										"_42, json loader: Word '"+words[j].word+"' has wrong length.");	
+										"42words, json loader: Word '"+words[j].word+"' has wrong length.");	
 							}
 						}
 					} else {
@@ -1186,7 +1167,10 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	// read json file with words
-	if( !mg.languagePack ) {
+	if( !$42.languagePack ) {
 		loadLanguagePack(0);
 	}
+	
+	// call tutorial module if available
+	if( MURBIKS_MODULE ) MURBIKS_MODULE(ml);
 }

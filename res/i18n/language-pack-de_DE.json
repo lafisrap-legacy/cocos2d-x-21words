@@ -16,5 +16,11 @@
         "score_bar_no_word": "Kein Wort",
         "new_level_level": "Level",
         "new_level_value": "Wortwert"
+    },
+    "tiles": {
+    	"turning_moving_falling_choosing": [
+		    { "tile": 0, "letters": "NENT" },
+		    { "tile": 2, "letters": "ESTN" }
+		]
     }
 }
