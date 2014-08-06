@@ -1,243 +1,322 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-    <dict>
-        <key>frames</key>
-        <dict>
-            <key>hand.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{2,2},{364,640}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{364,640}}</string>
-                <key>sourceSize</key>
-                <string>{364,640}</string>
-            </dict>
-            <key>mostafa_fly01.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{368,2},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_fly02.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{2,644},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_fly03.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{104,644},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_fly04.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{206,644},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_fly05.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{308,644},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_fly06.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{410,644},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_fly07.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{2,746},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_fly08.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{104,746},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_fly09.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{206,746},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_land01.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{206,746},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_land02.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{308,746},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_land03.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{410,746},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_land04.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{2,848},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_land05.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{104,848},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_land06.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{206,848},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-            <key>mostafa_land07.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{308,848},{100,100}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{100,100}}</string>
-                <key>sourceSize</key>
-                <string>{100,100}</string>
-            </dict>
-        </dict>
-        <key>metadata</key>
-        <dict>
-            <key>format</key>
-            <integer>2</integer>
-            <key>realTextureFileName</key>
-            <string>murbiks.png</string>
-            <key>size</key>
-            <string>{512,950}</string>
-            <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:08b7397d662070bb356615ae5e763a10:e1cf5beee8788ea5e4568d10cab82c9f:26928e92b16fc2be55fd250249d2542a$</string>
-            <key>textureFileName</key>
-            <string>murbiks.png</string>
-        </dict>
-    </dict>
-</plist>
+<dict>
+	<key>frames</key>
+	<dict>
+		<key>bluebutton</key>
+		<dict>
+			<key>frame</key>
+			<string>{{0, 0}, {250, 70}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 0}, {250, 70}}</string>
+			<key>sourceSize</key>
+			<string>{250, 70}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>hand</key>
+		<dict>
+			<key>frame</key>
+			<string>{{0, 70}, {364, 640}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 0}, {364, 640}}</string>
+			<key>sourceSize</key>
+			<string>{364, 640}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_fly01</key>
+		<dict>
+			<key>frame</key>
+			<string>{{0, 710}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 11}, {99, 83}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_fly02</key>
+		<dict>
+			<key>frame</key>
+			<string>{{0, 810}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{21, 4}, {79, 87}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_fly03</key>
+		<dict>
+			<key>frame</key>
+			<string>{{0, 910}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 3}, {100, 86}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_fly04</key>
+		<dict>
+			<key>frame</key>
+			<string>{{100, 710}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{16, 8}, {84, 83}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_fly05</key>
+		<dict>
+			<key>frame</key>
+			<string>{{100, 810}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 8}, {98, 83}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_fly06</key>
+		<dict>
+			<key>frame</key>
+			<string>{{100, 910}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{9, 4}, {88, 87}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_fly07</key>
+		<dict>
+			<key>frame</key>
+			<string>{{200, 710}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{3, 3}, {95, 90}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_fly08</key>
+		<dict>
+			<key>frame</key>
+			<string>{{200, 810}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{7, 4}, {91, 86}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_fly09</key>
+		<dict>
+			<key>frame</key>
+			<string>{{200, 910}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{1, 17}, {99, 76}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_land01</key>
+		<dict>
+			<key>frame</key>
+			<string>{{300, 710}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{1, 17}, {99, 76}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_land02</key>
+		<dict>
+			<key>frame</key>
+			<string>{{300, 810}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{1, 29}, {98, 65}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_land03</key>
+		<dict>
+			<key>frame</key>
+			<string>{{300, 910}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 29}, {98, 66}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_land04</key>
+		<dict>
+			<key>frame</key>
+			<string>{{400, 0}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{1, 30}, {98, 60}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_land05</key>
+		<dict>
+			<key>frame</key>
+			<string>{{500, 0}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{3, 31}, {97, 63}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_land06</key>
+		<dict>
+			<key>frame</key>
+			<string>{{600, 0}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 31}, {98, 63}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>mostafa_land07</key>
+		<dict>
+			<key>frame</key>
+			<string>{{700, 0}, {100, 100}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{1, 45}, {94, 48}}</string>
+			<key>sourceSize</key>
+			<string>{100, 100}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		</dict>
+		<key>metadata</key>
+		<dict>
+		<key>format</key>
+		<integer>2</integer>
+		<key>textureFileName</key>
+		<string>murbiks.png</string>
+		<key>size</key>
+		<string>{1024, 1024}</string>
+	</dict></dict></plist>
