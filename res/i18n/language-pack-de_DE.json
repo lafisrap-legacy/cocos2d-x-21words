@@ -15,12 +15,20 @@
         "score_bar_wordvalue": "Wortwert",
         "score_bar_no_word": "Kein Wort",
         "new_level_level": "Level",
-        "new_level_value": "Wortwert"
+        "new_level_value": "Wortwert",
+        "murbiks_skip_tutorial": "Überspringen"
     },
     "tiles": {
     	"turning_moving_falling_choosing": [
 		    { "tile": 0, "letters": "NENT" },
 		    { "tile": 2, "letters": "ESTN" }
 		]
+    },
+    "mostafa": {
+    	"hi" 		: "Hi! Ich bin Mostafa. Ich zeige dir, wie 42 Worte funktioniert.",
+    	"dukannst01": "Bausteine drehen, bewegen und fallen lassen. Wie bei Tetris.",
+    	"dukannst02": "42 Worte erkennt Wortanfänge und färbt sie ein.",
+    	"dukannst03": "Versuche Worte mit mindestens 4 Buchstaben zu finden.",
+    	"dukannst04": "Ein gefundenes Wort kannst du wählen oder ablehnen."
     }
 }

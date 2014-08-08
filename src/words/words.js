@@ -37,13 +37,13 @@
  * 
  */
 
-$42.LETTER_NAMES = ["a.png","b.png","c.png","d.png","e.png","f.png","g.png","h.png","i.png","j.png","k.png","l.png","m.png","n.png","o.png","p.png","q.png","r.png","s.png","t.png","u.png","v.png","w.png","x.png","y.png","z.png","ae.png","oe.png","ue.png","6.png"],
+$42.LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6"],
 $42.LETTERS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä","Ö","Ü","Õ"],
-$42.LEVEL_SCORE = [0,   500,  1000,  1500,  2000,  3000,  4000,  5000,  6000,  8000, 10000,
-                      12000, 14000, 16000, 18000, 20000, 25000, 30000, 35000, 40000, 50000,
-                      60000, 70000, 80000, 90000,100000,110000,120000,130000,140000,150000,
-                     160000,180000,200000,220000,240000,260000,280000,300000,320000,350000,
-                     400000,500000
+$42.LEVEL_SCORE = [0,   500,  1000,  1500,  2000,  3000,  4000,  5000,  6500,  8000, 10000,
+                      12000, 14000, 16000, 18000, 20000, 24000, 28000, 32000, 36000, 40000,
+                      45000, 50000, 55000, 60000, 70000, 80000, 90000,100000,120000,150000,
+                     200000,250000,300000,350000,400000,450000,500000,550000,600000,650000,
+                     700000,750000
                    ];
 $42.MARKER_SET = 1;
 $42.MARKER_OPT = 2;
@@ -57,8 +57,8 @@ $42.NEEDED_LETTERS_PROBABILITY = 0.5;
 $42.MAX_LETTERS_BLOWN = 20;
 $42.WORD_FRAME_WIDTH = 8;
 $42.WORD_FRAME_MOVE_TIME = 0.8;
-$42.SCORE_ROW_MULTIPLYER = 0.1;
-$42.SCORE_WORD_MULTIPLYER = 15;
+$42.SCORE_ROW_MULTIPLYER = 0.25;
+$42.SCORE_WORD_MULTIPLYER = 7;
 $42.SCORE_COLOR_DIMM = cc.color(160,120,55);
 $42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);
 $42.TILES_PROGRAMS = [[
@@ -169,14 +169,14 @@ var _42_MODULE = function(_42Layer) {
 		
 		// Define sprites and show word start sprite
 		var setMarkerFrame = [],
-			optMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker1.png"),
-			selMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker3.png");
+			optMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker1"),
+			selMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker3");
 		
-		setMarkerFrame[0] = cc.spriteFrameCache.getSpriteFrame("marker0-0.png");
-		setMarkerFrame[1] = cc.spriteFrameCache.getSpriteFrame("marker0-1.png");
+		setMarkerFrame[0] = cc.spriteFrameCache.getSpriteFrame("marker0-0");
+		setMarkerFrame[1] = cc.spriteFrameCache.getSpriteFrame("marker0-1");
 		
 		if( !sw.startMarker ) {
-			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2.png"),cc.rect(0,0,$42.BS,$42.BS));
+			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2"),cc.rect(0,0,$42.BS,$42.BS));
 			sw.startMarker.retain();			
 			sw.startMarker.setPosition(cc.p($42.BOXES_X_OFFSET + sw.brc.col * $42.BS + $42.START_MARKER_X_OFFSET,
 											$42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.START_MARKER_Y_OFFSET));
@@ -284,7 +284,7 @@ var _42_MODULE = function(_42Layer) {
 						for( var j=0, value=0 ; j<word.length ; j++ ) {
 							// calculate points and let them fly ...
 							var v = $42.letterValues[word[j]],
-								points = parseInt(v * $42.maxWordValue * 4 * ((sw.brc.row*$42.SCORE_ROW_MULTIPLYER)+1));
+								points = parseInt(v * $42.maxWordValue * $42.SCORE_WORD_MULTIPLYER * ((sw.brc.row*$42.SCORE_ROW_MULTIPLYER)+1));
 							value += v;
 							addPoints(points, cc.p($42.BOXES_X_OFFSET + (sw.brc.col+j) * $42.BS + $42.BS/2, $42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.BS), true);							
 						}
@@ -344,7 +344,7 @@ var _42_MODULE = function(_42Layer) {
 			y = $42.BOXES_Y_OFFSET + brc.row * $42.BS + height/2;
 		
 		// create yellow frame sprite
-		var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png");
+		var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe");
 		
 		var	wordFrameSprite = cc.Sprite.create(wordFrameFrame),
 			rect = wordFrameSprite.getTextureRect();
@@ -385,6 +385,7 @@ var _42_MODULE = function(_42Layer) {
 				cc.callFunc(function() {
 					
 					// play sound
+					cc.log("Depricated: wordlandEffectId.");
 					if( ml.wordlandEffectId ) cc.audioEngine.stopEffect(ml.wordlandEffectId);
 					ml.wordlandEffectId = cc.audioEngine.playEffect(res.pling_mp3);
 
@@ -630,7 +631,7 @@ var _42_MODULE = function(_42Layer) {
 	var drawWordSprite = function(word,pos,wordSprite,scale,parent) {
 		// create yellow frame sprite
 		if( !wordSprite ) {
-			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
+			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe"),
 				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
 				rect = wordFrameSprite.getTextureRect();
 			wordFrameSprite.retain();
@@ -664,6 +665,7 @@ var _42_MODULE = function(_42Layer) {
 	
 	var drawScoreBar = function(newSprite) {
 		var sb = ml.scoreBar;
+		cc.log("Enter drawScoreBar.");
 		if( !sb ) {
 			
 		    // draw score bar
@@ -674,7 +676,8 @@ var _42_MODULE = function(_42Layer) {
 			ml.addChild(sb, 5);
 			
 			// draw total points
-			ml.score = drawText(ml.totalPoints.toString(),cc.p(110,40),56,$42.SCORE_COLOR_BRIGHT,sb);
+			$42.score = drawText($42.totalPoints.toString(),cc.p(110,40),56,$42.SCORE_COLOR_BRIGHT,sb);
+			cc.log("Create $42.score ("+$42.score+") and set string to "+$42.totalPoints+".");
 			ml.nextScore = drawText("^ "+$42.LEVEL_SCORE[ml.currentLevel].toString(),cc.p(105,80),24,$42.SCORE_COLOR_DIMM,sb);
 			
 			// draw clipping rect
@@ -725,7 +728,8 @@ var _42_MODULE = function(_42Layer) {
 			var wt = $42.wordTreasure,
 				bw = ml.wordTreasureBestWord;
 
-			ml.score.setString(ml.totalPoints.toString());
+			cc.log("Set $42.score ("+$42.score+") string to "+$42.totalPoints+".");
+			$42.score.setString($42.totalPoints.toString());
 			ml.nextScore.setString("^ "+$42.LEVEL_SCORE[ml.currentLevel].toString());
 
 			ml.highscore.setString($42.maxPoints.toString());
@@ -816,7 +820,8 @@ var _42_MODULE = function(_42Layer) {
 		
 		// points array
 		ml.pointsToAdd = [];
-		ml.totalPoints = 0;
+		cc.log("Set $42.totalPoints to "+$42.totalPoints+".");
+		$42.totalPoints = 0;
 		ml.rollingLayerStage = 0;
 		ml.currentLevel = 1;
 		ml.dontAutoSelectWord = false;
@@ -1053,19 +1058,20 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookUpdate = function(dt) {
-		if( !ml.pointsToAddCnt && ml.pointsToAdd.length ) {
+		if( !ml.pointsToAddCnt && ml.pointsToAdd && ml.pointsToAdd.length ) {
 			ml.pointsToAddCnt = 3;
-			ml.totalPoints += parseInt(ml.pointsToAdd.splice(0,1));
+			$42.totalPoints += parseInt(ml.pointsToAdd.splice(0,1));
+			cc.log("Set $42.totalPoints to "+$42.totalPoints+".");
 			
 			moveRollingLayer(1,3);
 
 			// highscore?
-			$42.maxPoints = Math.max(ml.totalPoints , $42.maxPoints);
+			$42.maxPoints = Math.max($42.totalPoints , $42.maxPoints);
 
 			drawScoreBar();
 
 			// next level?
-			if( ml.totalPoints >= $42.LEVEL_SCORE[ml.currentLevel] ) {
+			if( $42.totalPoints >= $42.LEVEL_SCORE[ml.currentLevel] ) {
 				var ls = cc.sys.localStorage;
 
 				var cl = ++ml.currentLevel;
@@ -1172,5 +1178,5 @@ var _42_MODULE = function(_42Layer) {
 	}
 	
 	// call tutorial module if available
-	if( MURBIKS_MODULE ) MURBIKS_MODULE(ml);
+	if( typeof MURBIKS_MODULE === 'function' ) MURBIKS_MODULE(ml);
 }
