@@ -310,6 +310,23 @@
 
 			</array>
 		</dict>
+		<key>wordcloud</key>
+		<dict>
+			<key>frame</key>
+			<string>{{400, 100}, {480, 300}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{7, 0}, {473, 300}}</string>
+			<key>sourceSize</key>
+			<string>{480, 300}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
 		</dict>
 		<key>metadata</key>
 		<dict>

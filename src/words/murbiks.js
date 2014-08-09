@@ -8,6 +8,12 @@
  * 
  * */
 
+$42.SPEECH_BUBBLE_WIDTH = 480;
+$42.SPEECH_BUBBLE_HEIGHT = 300;
+$42.SPEECH_BUBBLE_COLOR = cc.color(0,0,70);
+$42.SPEECH_BUBBLE_FONTSIZE = 36;
+$42.SPEECH_BUBBLE_LINE_COLOR = cc.color(110,110,150);
+
 var MURBIKS_MODULE = function(layer) {
 	var ml = layer,
 		lg = null,
@@ -15,7 +21,10 @@ var MURBIKS_MODULE = function(layer) {
 		curProgramCnt = null,
 		mostafa = null,
 		anims = {},
-		blueButton = null;
+		blueButton = null,
+		speechBubbleCloud = null,
+		speechBubbleLine = null,
+		speechBubble = null;
 
 	/*
 	 * Program 1
@@ -23,7 +32,7 @@ var MURBIKS_MODULE = function(layer) {
 	 * Turning a tile, moving it, let it fall and choosing it.
 	 * 
 	 */
-	turning_moving_falling_choosing = function(cb) {
+	var turning_moving_falling_choosing = function(cb) {
 		
 		// menu functions
 		var clickOnSkip = function() {
@@ -65,7 +74,11 @@ var MURBIKS_MODULE = function(layer) {
         		)
         	); 
         	
-        var buttonAction = blueButton.runAction(cc.bezierTo(2.5, bezierButton));
+        var buttonAction = blueButton.runAction(cc.sequence(cc.bezierTo(2.5, bezierButton),cc.callFunc(function() {
+        	showSpeechBubble($42.t.mostafa_hi , mostafa.getPosition());
+        }, this)));
+        
+        
 	};
 	
 	
@@ -73,13 +86,35 @@ var MURBIKS_MODULE = function(layer) {
 	 * Service programs
 	 */
 	
-	startTileProgram = function(program) {
+	var startTileProgram = function(program) {
 	    // start program
 	    curProgram = program;
 	    curProgramCnt = 0;
 	};
 	
-	initAnimation = function() {
+	var showSpeechBubble = function(text, pos) {
+		
+    	speechBubble.setString(text);
+		speechBubble.setPosition(ml.size.width/2 , ml.size.height/2);
+		speechBubbleCloud.setPosition(ml.size.width/2 , ml.size.height/2);
+		speechBubbleCloud.setScaleY((speechBubble.getContentSize().height+2*$42.SPEECH_BUBBLE_FONTSIZE) / $42.SPEECH_BUBBLE_HEIGHT);
+
+		speechBubbleLine.clear();
+		var xDist = ml.size.width/2 - pos.x,
+			yDist = ml.size.height/2 - pos.y;
+		speechBubbleLine.drawSegment(
+			cc.p(pos.x + xDist/4, pos.y + yDist/4), 
+            cc.p(ml.size.width/2 - xDist/2,ml.size.height/2 - yDist/2),
+            2,
+            $42.SPEECH_BUBBLE_LINE_COLOR
+        );         	
+
+        ml.addChild(speechBubbleLine,5);
+		ml.addChild(speechBubbleCloud,5);
+		ml.addChild(speechBubble,5);
+	};
+	
+	var initAnimation = function() {
 
 		// Load sprite frames to frame cache, add texture node
         cc.spriteFrameCache.addSpriteFrames(res.murbiks_plist);
@@ -111,6 +146,16 @@ var MURBIKS_MODULE = function(layer) {
     	// load menu items
 		blueButton = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("bluebutton"),cc.rect(0,0,250,70));
 		blueButton.retain();
+		
+		// speech bubble load cloud and text object
+		speechBubbleCloud = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("wordcloud"),cc.rect(0,0,480,300));
+		speechBubbleCloud.retain();
+		speechBubbleCloud.setOpacity(80);
+		speechBubble = cc.LabelTTF.create("", "Arial", $42.SPEECH_BUBBLE_FONTSIZE, cc.size($42.SPEECH_BUBBLE_WIDTH,0),cc.TEXT_ALIGNMENT_CENTER, cc.VERTICAL_TEXT_ALIGNMENT_CENTER);
+		speechBubble.retain();
+		speechBubble.setColor($42.SPEECH_BUBBLE_COLOR);
+		speechBubbleLine = cc.DrawNode.create();
+		speechBubbleLine.retain();
 	};
 	
 

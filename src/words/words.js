@@ -676,8 +676,8 @@ var _42_MODULE = function(_42Layer) {
 			ml.addChild(sb, 5);
 			
 			// draw total points
-			$42.score = drawText($42.totalPoints.toString(),cc.p(110,40),56,$42.SCORE_COLOR_BRIGHT,sb);
-			cc.log("Create $42.score ("+$42.score+") and set string to "+$42.totalPoints+".");
+			ml.score = drawText(ml.totalPoints.toString(),cc.p(110,40),56,$42.SCORE_COLOR_BRIGHT,sb);
+			cc.log("Create ml.score ("+ml.score+") and set string to "+ml.totalPoints+".");
 			ml.nextScore = drawText("^ "+$42.LEVEL_SCORE[ml.currentLevel].toString(),cc.p(105,80),24,$42.SCORE_COLOR_DIMM,sb);
 			
 			// draw clipping rect
@@ -728,8 +728,7 @@ var _42_MODULE = function(_42Layer) {
 			var wt = $42.wordTreasure,
 				bw = ml.wordTreasureBestWord;
 
-			cc.log("Set $42.score ("+$42.score+") string to "+$42.totalPoints+".");
-			$42.score.setString($42.totalPoints.toString());
+			ml.score.setString(ml.totalPoints.toString());
 			ml.nextScore.setString("^ "+$42.LEVEL_SCORE[ml.currentLevel].toString());
 
 			ml.highscore.setString($42.maxPoints.toString());
@@ -820,8 +819,8 @@ var _42_MODULE = function(_42Layer) {
 		
 		// points array
 		ml.pointsToAdd = [];
-		cc.log("Set $42.totalPoints to "+$42.totalPoints+".");
-		$42.totalPoints = 0;
+		cc.log("Set ml.totalPoints to "+ml.totalPoints+".");
+		ml.totalPoints = 0;
 		ml.rollingLayerStage = 0;
 		ml.currentLevel = 1;
 		ml.dontAutoSelectWord = false;
@@ -1060,18 +1059,18 @@ var _42_MODULE = function(_42Layer) {
 	_42Layer.hookUpdate = function(dt) {
 		if( !ml.pointsToAddCnt && ml.pointsToAdd && ml.pointsToAdd.length ) {
 			ml.pointsToAddCnt = 3;
-			$42.totalPoints += parseInt(ml.pointsToAdd.splice(0,1));
-			cc.log("Set $42.totalPoints to "+$42.totalPoints+".");
+			ml.totalPoints += parseInt(ml.pointsToAdd.splice(0,1));
+			cc.log("Set ml.totalPoints to "+ml.totalPoints+".");
 			
 			moveRollingLayer(1,3);
 
 			// highscore?
-			$42.maxPoints = Math.max($42.totalPoints , $42.maxPoints);
+			$42.maxPoints = Math.max(ml.totalPoints , $42.maxPoints);
 
 			drawScoreBar();
 
 			// next level?
-			if( $42.totalPoints >= $42.LEVEL_SCORE[ml.currentLevel] ) {
+			if( ml.totalPoints >= $42.LEVEL_SCORE[ml.currentLevel] ) {
 				var ls = cc.sys.localStorage;
 
 				var cl = ++ml.currentLevel;
