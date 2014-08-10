@@ -1,0 +1,81 @@
+{"spritesheet":
+{"bluebutton":
+{
+	"frame": {"x":0, "y":0, "width":250, "height":70}
+},
+"hand":
+{
+	"frame": {"x":0, "y":70, "width":364, "height":640}
+},
+"mostafa_fly01":
+{
+	"frame": {"x":0, "y":710, "width":100, "height":100}
+},
+"mostafa_fly02":
+{
+	"frame": {"x":0, "y":810, "width":100, "height":100}
+},
+"mostafa_fly03":
+{
+	"frame": {"x":0, "y":910, "width":100, "height":100}
+},
+"mostafa_fly04":
+{
+	"frame": {"x":0, "y":1010, "width":100, "height":100}
+},
+"mostafa_fly05":
+{
+	"frame": {"x":0, "y":1110, "width":100, "height":100}
+},
+"mostafa_fly06":
+{
+	"frame": {"x":0, "y":1210, "width":100, "height":100}
+},
+"mostafa_fly07":
+{
+	"frame": {"x":0, "y":1310, "width":100, "height":100}
+},
+"mostafa_fly08":
+{
+	"frame": {"x":0, "y":1410, "width":100, "height":100}
+},
+"mostafa_fly09":
+{
+	"frame": {"x":0, "y":1510, "width":100, "height":100}
+},
+"mostafa_land01":
+{
+	"frame": {"x":0, "y":1610, "width":100, "height":100}
+},
+"mostafa_land02":
+{
+	"frame": {"x":0, "y":1710, "width":100, "height":100}
+},
+"mostafa_land03":
+{
+	"frame": {"x":0, "y":1810, "width":100, "height":100}
+},
+"mostafa_land04":
+{
+	"frame": {"x":0, "y":1910, "width":100, "height":100}
+},
+"mostafa_land05":
+{
+	"frame": {"x":100, "y":710, "width":100, "height":100}
+},
+"mostafa_land06":
+{
+	"frame": {"x":100, "y":810, "width":100, "height":100}
+},
+"mostafa_land07":
+{
+	"frame": {"x":100, "y":910, "width":100, "height":100}
+},
+"wordcloud":
+{
+	"frame": {"x":100, "y":1010, "width":600, "height":375}
+}
+},
+{
+	"imageFileName":"/Applications/MAMP/htdocs/42words/res/images/murbiks/murbiks.png"}
+}

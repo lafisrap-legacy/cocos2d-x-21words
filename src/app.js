@@ -381,8 +381,8 @@ var _42GameLayer = cc.Layer.extend({
     },
     
     stopListeners: function() {
-        cc.eventManager.removeListener(this._touchListener, this);
-        cc.eventManager.removeListener(this._keyboardListener, this);
+        cc.eventManager.removeListener(this._touchListener);
+        cc.eventManager.removeListener(this._keyboardListener);
     },
 
 	buildTile: function(p) {

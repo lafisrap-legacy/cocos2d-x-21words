@@ -807,7 +807,7 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookStartGame = function() {
-		if( ml.hookStartProgram ) ml.hookStartProgram( 0 , false );			
+		if( ml.hookStartProgram ) ml.hookStartProgram( 0 , true );			
 	    
         // global data init
         var ls = cc.sys.localStorage,
