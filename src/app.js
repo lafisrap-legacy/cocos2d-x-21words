@@ -198,10 +198,14 @@ var _42GameLayer = cc.Layer.extend({
        	if( true || 'touches' in cc.sys.capabilities ) { // touches work on mac but return false
 	    	this._touchListener = cc.EventListener.create({
 	            event: cc.EventListener.TOUCH_ALL_AT_ONCE,
-	            onTouchesBegan: function(touches, event) {
-	            	
-	            	var touch = touches[0];
-	                var loc = touch.getLocation();
+	            onTouchesBegan: function(touches, event, pos) {
+
+	            	if( !pos || !pos.x === undefined ) {
+		            	var touch = touches[0],
+		            		loc = touch.getLocation();	            		
+	            	} else {
+	            		loc = pos;
+	            	}
 	                
 	                self.touchStartPoint = {
 	                	x: loc.x,
@@ -216,10 +220,16 @@ var _42GameLayer = cc.Layer.extend({
 	                self.touchStartTime = new Date().getTime();
 	            },
 	            	
-	            onTouchesMoved: function(touches, event) {
-	            	var touch = touches[0];
-	                var loc = touch.getLocation(),
-	                	start = self.touchStartPoint;
+	            onTouchesMoved: function(touches, event, pos) {
+	            	
+	            	if( !pos || !pos.x === undefined ) {
+		            	var touch = touches[0],
+		            		loc = touch.getLocation();	            		
+	            	} else {
+	            		loc = pos;
+	            	}
+	                
+	            	var start = self.touchStartPoint;
 	
 	                if( !loc || !start ) {
 		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
@@ -284,11 +294,15 @@ var _42GameLayer = cc.Layer.extend({
 	                };
 	            },
 	            	
-	            onTouchesEnded: function(touches, event){
+	            onTouchesEnded: function(touches, event, pos){
 	            	//cc.log("onTouchesEnded!");
 	
-	            	var touch = touches[0],
-	            		loc = touch.getLocation();
+	            	if( !pos || !pos.x === undefined ) {
+		            	var touch = touches[0],
+		            		loc = touch.getLocation();	            		
+	            	} else {
+	            		loc = pos;
+	            	}
 	                
 	                self.touchStartPoint = null;
 	                

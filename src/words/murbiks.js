@@ -14,13 +14,16 @@ $42.SPEECH_BUBBLE_COLOR = cc.color(0,0,70);
 $42.SPEECH_BUBBLE_FONTSIZE = 48;
 $42.SPEECH_BUBBLE_OPACITY = 120;
 $42.SPEECH_BUBBLE_LINE_COLOR = cc.color(170,170,185);
-$42.HAND_TAG = 101;
+$42.SPEECH_BUBBLE_TAG = 101;
+$42.SPEECH_BUBBLE_LINE_TAG = 102;
+$42.SPEECH_BUBBLE_CLOUD_TAG = 103;
+$42.HAND_TAG = 104;
 $42.FINGER_TAG = 102;
 $42.HAND_ROTATION = 60;
 $42.HAND_FINGER_OFFSET = 2;
 $42.HAND_CONTACT_SIZE = 40;
 $42.HAND_CONTACT_COLOR = cc.color(0,0,70);
-$42.HAND_CONTACT_TIME = 1.1;
+$42.HAND_CONTACT_TIME = 0.3;
 
 
 var MURBIKS_MODULE = function(layer) {
@@ -32,12 +35,16 @@ var MURBIKS_MODULE = function(layer) {
 		anims = {},
 		blueButton = null,
 		hand = null,
+		contacts = [],
+		contactActions = [],
 		speechBubbleCloud = null,
 		speechBubbleLine = null,
 		speechBubble = null,
 		timer = null,
 		animCnt = null,
-		animPrograms = null;
+		animPrograms = null,
+		fingerIsPressed = false,
+		fingerPos = null;
 
 	/*
 	 * Program 1
@@ -61,24 +68,70 @@ var MURBIKS_MODULE = function(layer) {
 		            showSpeechBubble(3.0 , $42.t.mostafa_hi , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 6.0,
+		    	time: 5.0,
 		    	anim: function() {
 		            showSpeechBubble(8.0 , $42.t.mostafa_basic01 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 7.5,
+		    	time: 6.5,
 		    	anim: function() {
-		    		pressFingerTo(2.0 , cc.p(400,800), cc.p(-200,400));		    		
+		    		jumpHandTo(cc.p(0,0));
+		    		moveHandTo(2.0 , cc.p(280,500), cc.p(280,300));		    		
+		    	}
+		    },{
+		    	time: 8.5,
+		    	anim: function() {
+		            pressFingerTo(0.4 , cc.p(290,650));		    		
+		    	}
+		    },{
+		    	time: 9.5,
+		    	anim: function() {
+		    		moveHandTo(0.5 , cc.p(270,520));		    		
 		    	}
 		    },{
 		    	time: 10.0,
 		    	anim: function() {
-		            pressFingerTo(2.0 , cc.p(100,400), cc.p(-200,400));		    		
+		    		pressFingerTo(0.4 , cc.p(280,670));		    		
 		    	}
 		    },{
-		    	time: 12.5,
+		    	time: 11.0,
 		    	anim: function() {
-		    		pressFingerTo(2.0 , cc.p(0,1152), cc.p(640,800));		    		
+		    		var tilePos = getTilePosition(),
+		    			handPos = getHandPosition();
+		    		
+		    		tilePos.y -= 40;
+		    		
+		    		moveHandTo(0.8 , tilePos);		    		
+		    	}
+		    },{
+		    	time: 11.8,
+		    	anim: function() {
+		    		var tilePos = getTilePosition(),
+		    			handPos = getHandPosition();
+		    		
+		    		handPos.x = handPos.x < 320? 530 : 110;
+		    		
+		    		pressFingerTo(1.5 , handPos);		    		
+		    	}
+		    },{
+		    	time: 13.3,
+		    	anim: function() {
+		    		var tilePos = getTilePosition(),
+		    			handPos = getHandPosition();
+		    		
+		    		handPos.x = handPos.x < 320? 530 : 110;
+		    		
+		    		pressFingerTo(1.5 , handPos);		    		
+		    	}
+		    },{
+		    	time: 14.8,
+		    	anim: function() {
+		    		pressFingerTo(1.0 , cc.p(200,300));		    		
+		    	}
+		    },{
+		    	time: 15.9,
+		    	anim: function() {
+		    		moveHandTo(0.8 , cc.p(-200,0));		    		
 		    	}
 		    },{
 		    	time: 20.5,
@@ -115,6 +168,7 @@ var MURBIKS_MODULE = function(layer) {
 	            cc.p(500,75)
 			];
 		menuBox.retain();
+		animAction.retain();
 		blueButton.x = 0;
 		blueButton.y = 0;
 		menuBox.x = 125;
@@ -129,6 +183,7 @@ var MURBIKS_MODULE = function(layer) {
 	        		cc.callFunc(function() {
 	        			ml.stopAction(animAction);
 	        			animAction = mostafa.runAction(anims.mostafa_land);
+	        			animAction.retain();
 	        		})
 	    		)
 	    	); 
@@ -137,6 +192,10 @@ var MURBIKS_MODULE = function(layer) {
 	};
 
 	var showSpeechBubble = function(time, text, pos) {
+		
+		if( ml.getChildByTag( $42.SPEECH_BUBBLE_TAG ) ) ml.removeChild(speechBubble);
+		if( ml.getChildByTag( $42.SPEECH_BUBBLE_LINE_TAG ) ) ml.removeChild(speechBubbleLine);
+		if( ml.getChildByTag( $42.SPEECH_BUBBLE_CLOUD_TAG ) ) ml.removeChild(speechBubbleCloud);
 		
     	speechBubble.setString(text);
 		speechBubble.setPosition(ml.size.width/2 , ml.size.height/2);
@@ -157,9 +216,9 @@ var MURBIKS_MODULE = function(layer) {
 		speechBubbleCloud.setOpacity(0);
 		speechBubble.setOpacity(0);
 		
-        ml.addChild(speechBubbleLine,5);
-		ml.addChild(speechBubbleCloud,5);
-		ml.addChild(speechBubble,5);
+        ml.addChild(speechBubbleLine,5,$42.SPEECH_BUBBLE_LINE_TAG);
+		ml.addChild(speechBubbleCloud,5,$42.SPEECH_BUBBLE_CLOUD_TAG);
+		ml.addChild(speechBubble,5,$42.SPEECH_BUBBLE_TAG);
 		
 		speechBubbleCloud.runAction(
 			cc.sequence(
@@ -185,14 +244,36 @@ var MURBIKS_MODULE = function(layer) {
 		);			
 	};
 	
+	var getTilePosition = function() {
+		return ml.tiles[ml.tiles.length-1].sprite.getPosition();
+	};
+	
+	var getHandPosition = function() {
+		var fo = getFingerOffset(),
+			hp = hand.getPosition();
+
+		return cc.p(hp.x + fo.x, hp.y + fo.y);
+	};
+	
+	var getFingerOffset = function() {
+		var finger = hand.getChildByTag($42.FINGER_TAG);
+		return cc.p(
+			hand.convertToWorldSpace(finger.getPosition()).x - ml.convertToWorldSpace(hand.getPosition()).x,
+			hand.convertToWorldSpace(finger.getPosition()).y - ml.convertToWorldSpace(hand.getPosition()).y
+		);
+	};
+		
+	var jumpHandTo = function(pos) {
+		
+		var fo = getFingerOffset();
+
+		hand.setPosition(cc.p( pos.x - fo.x , pos.y - fo.y) );
+	};
+
 	var moveHandTo = function(time, pos, bezierPoint, contact) {
 		
 		var curPos = hand.getPosition(),
-			finger = hand.getChildByTag($42.FINGER_TAG),
-			fo = cc.p(
-				hand.convertToWorldSpace(finger.getPosition()).x - ml.convertToWorldSpace(hand.getPosition()).x,
-				hand.convertToWorldSpace(finger.getPosition()).y - ml.convertToWorldSpace(hand.getPosition()).y
-			),
+			fo = getFingerOffset(),
 			bezierHand = bezierPoint? [
 				cc.p(curPos.x - fo.x,curPos.y - fo.y),
 	            cc.p(bezierPoint.x - fo.x, bezierPoint.y - fo.y),
@@ -201,43 +282,73 @@ var MURBIKS_MODULE = function(layer) {
 		
 		if( !ml.getChildByTag($42.HAND_TAG) ) ml.addChild(hand, 5, $42.HAND_TAG);
 		
-	    if( bezierPoint ) hand.runAction(cc.bezierTo(time, bezierHand));
-	    else hand.runAction(cc.moveTo(time, cc.p(pos.x- fo.x, pos.y - fo.y)));
-	    
-	    if( contact ) {
-	    	var contacts = finger.getChildren();
+		// stop everything, we have new orders ...
+		hand.stopAllActions();
+    	for( var i=0 ; i<contacts.length ; i++ ) {
+    		contacts[i].setScale(0);
+    		contacts[i].stopAllActions();
+    	}
+		
+	    if( !contact ) {
+		    if( bezierPoint ) hand.runAction(cc.EaseSineIn.create(cc.bezierTo(time, bezierHand)));
+		    else hand.runAction(cc.EaseSineIn.create(cc.moveTo(time, cc.p(pos.x- fo.x, pos.y - fo.y))));
+		    
+	    } else {
+	    	
+	    	fingerIsPressed = true;
+		    if( bezierPoint ) hand.runAction(
+		    	cc.sequence(
+		    		cc.scaleTo(time*0.15 ,0.9),
+		    		cc.EaseSineIn.create(
+		    			cc.bezierTo(time*0.7 , bezierHand)
+		    		),
+		    		cc.scaleTo(time*0.15,1)    		
+		    	)
+		    );
+		    else hand.runAction(
+		    	cc.sequence(
+		    		cc.scaleTo(time*0.15,0.9),
+		    		cc.EaseSineIn.create(
+		    			cc.moveTo(time*0.7, cc.p(pos.x- fo.x, pos.y - fo.y))
+		    		),
+		    		cc.scaleTo(time*0.15,1)    				    		
+		    	)
+		    );
+	    	
 	    	for( var i=0 ; i<contacts.length ; i++ ) {
 	    		contacts[i].runAction(
 	    			cc.sequence(
+	    				cc.scaleTo(0, 0.5),
 	    				cc.delayTime($42.HAND_CONTACT_TIME/contacts.length*i),
 	    				cc.callFunc(function() {
-	    		    		this.contactAction = this.runAction(
-	    			    			cc.sequence(
-	    			    				cc.repeatForever(
-	    				    				cc.sequence(
-	    					    				cc.scaleTo($42.HAND_CONTACT_TIME, 1.7),
-	    					    				cc.scaleTo(0, 0)
-	    					    			)
-	    					    		)
-	    						    )
-	    			    		);	    					
+	    		    		this.runAction(
+			    				cc.repeatForever(
+				    				cc.sequence(
+					    				cc.scaleTo($42.HAND_CONTACT_TIME, 3),
+					    				cc.scaleTo(0, 0.3)
+					    			)
+					    		)
+				    		);	 
 	    				}, contacts[i])
 	    			)
-	    		)
+	    		);
 	    	}
 
 	    	// stop circles after the movement
 	    	hand.runAction(
-	    		cc.sequence(
-    				cc.delayTime(time),
-    				cc.callFunc( function() {
-    			    	for( var i=0 ; i<contacts.length ; i++ ) {
-    			    		contacts[i].setScale(0);
-    			    		contacts[i].stopAction(contacts[i].contactAction);
-    			    	}
-    				})
-	    		)
-	    	)
+	    		cc.spawn(
+		    		cc.sequence(
+	    				cc.delayTime(time),
+	    				cc.callFunc( function() {
+	    			    	for( var i=0 ; i<contacts.length ; i++ ) {
+	    			    		contacts[i].setScale(0);
+	    			    		contacts[i].stopAllActions();
+	    			    	}
+    				    	fingerIsPressed = false;
+	    				})
+		    		)
+		    	)
+	    	);
 	    }
 	};
 	
@@ -303,16 +414,16 @@ var MURBIKS_MODULE = function(layer) {
 		hand.addChild(finger,-1,$42.FINGER_TAG);
 		
 		for( var i=0 ; i<3 ; i++ ) {
-			var contact = cc.DrawNode.create();
-			contact.retain();
-			contact.clear();
-			contact.setScale(0);
-			contact.drawCircle(cc.p(0,0), $42.HAND_CONTACT_SIZE, 0, 100, false, 2, $42.HAND_CONTACT_COLOR);
-			finger.addChild(contact);
+			contacts[i] = cc.DrawNode.create();
+			contacts[i].clear();
+			contacts[i].setScale(0);
+			contacts[i].drawCircle(cc.p(0,0), $42.HAND_CONTACT_SIZE, 0, 100, false, 3, $42.HAND_CONTACT_COLOR);
+			finger.addChild(contacts[i]);
+			contacts[i].retain();
 		}
 	};
 	
-
+ 
 	/*
 	 * All programs
 	 */
@@ -350,6 +461,30 @@ var MURBIKS_MODULE = function(layer) {
 			if( animPrograms[animCnt].time < timer ) animPrograms[animCnt++].anim();
 			if( animCnt >= animPrograms.length ) animCnt = null;
 		}
+		
+		// Emulate touch events
+    	if( fingerIsPressed ) {
+			var fo = getFingerOffset(),
+				pos = hand.getPosition();
+				pos.x += fo.x; pos.y += fo.y;
+			
+    		if( !fingerPos ) {
+    			fingerPos = pos;
+
+    			ml._touchListener.onTouchesBegan(undefined, undefined, fingerPos);
+    		} else {
+    			fingerPos = pos;
+    			
+    			ml._touchListener.onTouchesMoved(undefined, undefined, fingerPos);
+    		}
+    	} else {
+    		if( fingerPos ) {
+    			
+    			ml._touchListener.onTouchesEnded(undefined, undefined, cc.p(0,0));
+    			fingerPos = null;
+    		}
+    	};
+
 	};
 	
 	initAnimation();
