@@ -18,6 +18,9 @@ $42.HAND_TAG = 101;
 $42.FINGER_TAG = 102;
 $42.HAND_ROTATION = 60;
 $42.HAND_FINGER_OFFSET = 2;
+$42.HAND_CONTACT_SIZE = 40;
+$42.HAND_CONTACT_COLOR = cc.color(0,0,70);
+$42.HAND_CONTACT_TIME = 1.1;
 
 
 var MURBIKS_MODULE = function(layer) {
@@ -65,17 +68,17 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 7.5,
 		    	anim: function() {
-		            moveHandTo(2.0 , cc.p(400,800), cc.p(-200,400));		    		
+		    		pressFingerTo(2.0 , cc.p(400,800), cc.p(-200,400));		    		
 		    	}
 		    },{
 		    	time: 10.0,
 		    	anim: function() {
-		            moveHandTo(2.0 , cc.p(100,400), cc.p(-200,400));		    		
+		            pressFingerTo(2.0 , cc.p(100,400), cc.p(-200,400));		    		
 		    	}
 		    },{
 		    	time: 12.5,
 		    	anim: function() {
-		            moveHandTo(2.0 , cc.p(0,1152), cc.p(640,800));		    		
+		    		pressFingerTo(2.0 , cc.p(0,1152), cc.p(640,800));		    		
 		    	}
 		    },{
 		    	time: 20.5,
@@ -182,7 +185,7 @@ var MURBIKS_MODULE = function(layer) {
 		);			
 	};
 	
-	var moveHandTo = function(time, pos, bezierPoint) {
+	var moveHandTo = function(time, pos, bezierPoint, contact) {
 		
 		var curPos = hand.getPosition(),
 			finger = hand.getChildByTag($42.FINGER_TAG),
@@ -200,8 +203,47 @@ var MURBIKS_MODULE = function(layer) {
 		
 	    if( bezierPoint ) hand.runAction(cc.bezierTo(time, bezierHand));
 	    else hand.runAction(cc.moveTo(time, cc.p(pos.x- fo.x, pos.y - fo.y)));
+	    
+	    if( contact ) {
+	    	var contacts = finger.getChildren();
+	    	for( var i=0 ; i<contacts.length ; i++ ) {
+	    		contacts[i].runAction(
+	    			cc.sequence(
+	    				cc.delayTime($42.HAND_CONTACT_TIME/contacts.length*i),
+	    				cc.callFunc(function() {
+	    		    		this.contactAction = this.runAction(
+	    			    			cc.sequence(
+	    			    				cc.repeatForever(
+	    				    				cc.sequence(
+	    					    				cc.scaleTo($42.HAND_CONTACT_TIME, 1.7),
+	    					    				cc.scaleTo(0, 0)
+	    					    			)
+	    					    		)
+	    						    )
+	    			    		);	    					
+	    				}, contacts[i])
+	    			)
+	    		)
+	    	}
+
+	    	// stop circles after the movement
+	    	hand.runAction(
+	    		cc.sequence(
+    				cc.delayTime(time),
+    				cc.callFunc( function() {
+    			    	for( var i=0 ; i<contacts.length ; i++ ) {
+    			    		contacts[i].setScale(0);
+    			    		contacts[i].stopAction(contacts[i].contactAction);
+    			    	}
+    				})
+	    		)
+	    	)
+	    }
 	};
 	
+	var pressFingerTo = function(time, pos, bezierPoint) {
+		moveHandTo( time, pos, bezierPoint, true );
+	};
 	
 	var startTileProgram = function(program) {
 	    // start program
@@ -251,14 +293,23 @@ var MURBIKS_MODULE = function(layer) {
 		speechBubbleLine = cc.DrawNode.create();
 		speechBubbleLine.retain();
 		
-		// load hand
+		// load hand, finger and contact
 		hand = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("hand"),cc.rect(0,0,364,640));
 		hand.setRotation($42.HAND_ROTATION);
 		hand.retain();
 		finger = cc.Node.create();
 		finger.setPosition(260,620);
 		finger.retain();
-		hand.addChild(finger,0,$42.FINGER_TAG);
+		hand.addChild(finger,-1,$42.FINGER_TAG);
+		
+		for( var i=0 ; i<3 ; i++ ) {
+			var contact = cc.DrawNode.create();
+			contact.retain();
+			contact.clear();
+			contact.setScale(0);
+			contact.drawCircle(cc.p(0,0), $42.HAND_CONTACT_SIZE, 0, 100, false, 2, $42.HAND_CONTACT_COLOR);
+			finger.addChild(contact);
+		}
 	};
 	
 
