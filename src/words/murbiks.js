@@ -12,6 +12,7 @@ $42.SPEECH_BUBBLE_WIDTH = 480;
 $42.SPEECH_BUBBLE_HEIGHT = 300;
 $42.SPEECH_BUBBLE_COLOR = cc.color(0,0,70);
 $42.SPEECH_BUBBLE_FONTSIZE = 36;
+$42.SPEECH_BUBBLE_OPACITY = 80;
 $42.SPEECH_BUBBLE_LINE_COLOR = cc.color(110,110,150);
 
 var MURBIKS_MODULE = function(layer) {
@@ -24,7 +25,10 @@ var MURBIKS_MODULE = function(layer) {
 		blueButton = null,
 		speechBubbleCloud = null,
 		speechBubbleLine = null,
-		speechBubble = null;
+		speechBubble = null,
+		timer = null,
+		animCnt = null,
+		animPrograms = null;
 
 	/*
 	 * Program 1
@@ -34,27 +38,63 @@ var MURBIKS_MODULE = function(layer) {
 	 */
 	var turning_moving_falling_choosing = function(cb) {
 		
+		startTileProgram(lg.tiles.turning_moving_falling_choosing);
+		
+		timer = animCnt = 0;
+		animPrograms = [{
+		    	time: 0,
+		    	anim: function() {
+		    		showMostafaAndButton(2.5);		    		
+		    	}
+		    },{
+		    	time: 3.5,
+		    	anim: function() {
+		            showSpeechBubble(3.0 , $42.t.mostafa_hi , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 7.5,
+		    	anim: function() {
+		            showSpeechBubble(3.0 , $42.t.mostafa_dukannst01 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 12.5,
+		    	anim: function() {
+		            showSpeechBubble(3.0 , $42.t.mostafa_42macht01 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 18.5,
+		    	anim: function() {
+		            showSpeechBubble(3.0 , $42.t.mostafa_versuche01 , mostafa.getPosition());		    		
+		    	}
+		    }  
+		];
+	};
+	
+	
+	/* 
+	 * Service programs
+	 */
+	
+	var showMostafaAndButton = function(time) {
+		
 		// menu functions
 		var clickOnSkip = function() {
 			cc.log("Skip tutorial!");
 		};
 		
-		startTileProgram(lg.tiles.turning_moving_falling_choosing);
-		
-		// let Mostafa fly in
     	var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
-    		menuText = cc.MenuItemFont.create($42.t.murbiks_skip_tutorial, clickOnSkip , ml),
+			menuText = cc.MenuItemFont.create($42.t.murbiks_skip_tutorial, clickOnSkip , ml),
 			menuBox = cc.Menu.create(menuText),
 			bezierMostafa = [
 			    cc.p(0,0),
-                cc.p(200,520),
-                cc.p(500,180)
+	            cc.p(200,520),
+	            cc.p(500,180)
 		    ],
 			bezierButton = [
- 			    cc.p(0,-145),
-                cc.p(200,415),
-                cc.p(500,75)
- 		    ];
+				cc.p(0,-145),
+	            cc.p(200,415),
+	            cc.p(500,75)
+			];
 		menuBox.retain();
 		blueButton.x = 0;
 		blueButton.y = 0;
@@ -64,27 +104,18 @@ var MURBIKS_MODULE = function(layer) {
 		blueButton.addChild(menuBox,5);
 		ml.addChild(blueButton,10);
 			
-        var mostafaAction = mostafa.runAction(
+	    mostafa.runAction(
 	        	cc.sequence(
-	        		cc.bezierTo(2.5, bezierMostafa),
+	        		cc.bezierTo(time, bezierMostafa),
 	        		cc.callFunc(function() {
 	        			ml.stopAction(animAction);
 	        			animAction = mostafa.runAction(anims.mostafa_land);
 	        		})
-        		)
-        	); 
-        	
-        var buttonAction = blueButton.runAction(cc.sequence(cc.bezierTo(2.5, bezierButton),cc.callFunc(function() {
-        	showSpeechBubble($42.t.mostafa_hi , mostafa.getPosition());
-        }, this)));
-        
-        
+	    		)
+	    	); 
+	    	
+	    blueButton.runAction(cc.bezierTo(time, bezierButton));
 	};
-	
-	
-	/* 
-	 * Service programs
-	 */
 	
 	var startTileProgram = function(program) {
 	    // start program
@@ -92,7 +123,7 @@ var MURBIKS_MODULE = function(layer) {
 	    curProgramCnt = 0;
 	};
 	
-	var showSpeechBubble = function(text, pos) {
+	var showSpeechBubble = function(time, text, pos) {
 		
     	speechBubble.setString(text);
 		speechBubble.setPosition(ml.size.width/2 , ml.size.height/2);
@@ -109,9 +140,33 @@ var MURBIKS_MODULE = function(layer) {
             $42.SPEECH_BUBBLE_LINE_COLOR
         );         	
 
+		speechBubbleCloud.setOpacity(0);
+		speechBubble.setOpacity(0);
+		
         ml.addChild(speechBubbleLine,5);
 		ml.addChild(speechBubbleCloud,5);
 		ml.addChild(speechBubble,5);
+		
+		speechBubbleCloud.runAction(
+			cc.sequence(
+				cc.fadeTo(0.3,$42.SPEECH_BUBBLE_OPACITY),
+				cc.delayTime((time || 3)-3*0.3),
+				cc.fadeOut(0.9),
+				cc.delayTime(0.3),
+				cc.callFunc( function() {
+			        ml.removeChild(speechBubbleLine);
+					ml.removeChild(speechBubbleCloud);
+					ml.removeChild(speechBubble);
+				})
+			)
+		);
+		speechBubble.runAction(
+			cc.sequence(
+				cc.fadeIn(0.3),
+				cc.delayTime(time || 3),
+				cc.fadeOut(0.3)
+			)
+		);			
 	};
 	
 	var initAnimation = function() {
@@ -150,7 +205,6 @@ var MURBIKS_MODULE = function(layer) {
 		// speech bubble load cloud and text object
 		speechBubbleCloud = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("wordcloud"),cc.rect(0,0,480,300));
 		speechBubbleCloud.retain();
-		speechBubbleCloud.setOpacity(80);
 		speechBubble = cc.LabelTTF.create("", "Arial", $42.SPEECH_BUBBLE_FONTSIZE, cc.size($42.SPEECH_BUBBLE_WIDTH,0),cc.TEXT_ALIGNMENT_CENTER, cc.VERTICAL_TEXT_ALIGNMENT_CENTER);
 		speechBubble.retain();
 		speechBubble.setColor($42.SPEECH_BUBBLE_COLOR);
@@ -187,6 +241,15 @@ var MURBIKS_MODULE = function(layer) {
 		}
 		
 		return curProgram[curProgramCnt++];
+	};
+	
+	ml.hookMurbiksUpdate = function(dt) {
+		if( animCnt !== null ) {
+			timer += dt;
+			
+			if( animPrograms[animCnt].time < timer ) animPrograms[animCnt++].anim();
+			if( animCnt >= animPrograms.length ) animCnt = null;
+		}
 	};
 	
 	initAnimation();

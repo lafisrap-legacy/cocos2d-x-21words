@@ -1057,6 +1057,9 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookUpdate = function(dt) {
+		
+		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);
+		
 		if( !ml.pointsToAddCnt && ml.pointsToAdd && ml.pointsToAdd.length ) {
 			ml.pointsToAddCnt = 3;
 			ml.totalPoints += parseInt(ml.pointsToAdd.splice(0,1));
