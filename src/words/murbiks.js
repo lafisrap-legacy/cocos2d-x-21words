@@ -12,8 +12,13 @@ $42.SPEECH_BUBBLE_WIDTH = 600;
 $42.SPEECH_BUBBLE_HEIGHT = 450;
 $42.SPEECH_BUBBLE_COLOR = cc.color(0,0,70);
 $42.SPEECH_BUBBLE_FONTSIZE = 48;
-$42.SPEECH_BUBBLE_OPACITY = 80;
+$42.SPEECH_BUBBLE_OPACITY = 120;
 $42.SPEECH_BUBBLE_LINE_COLOR = cc.color(170,170,185);
+$42.HAND_TAG = 101;
+$42.FINGER_TAG = 102;
+$42.HAND_ROTATION = 60;
+$42.HAND_FINGER_OFFSET = 2;
+
 
 var MURBIKS_MODULE = function(layer) {
 	var ml = layer,
@@ -23,6 +28,7 @@ var MURBIKS_MODULE = function(layer) {
 		mostafa = null,
 		anims = {},
 		blueButton = null,
+		hand = null,
 		speechBubbleCloud = null,
 		speechBubbleLine = null,
 		speechBubble = null,
@@ -55,6 +61,21 @@ var MURBIKS_MODULE = function(layer) {
 		    	time: 6.0,
 		    	anim: function() {
 		            showSpeechBubble(8.0 , $42.t.mostafa_basic01 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 7.5,
+		    	anim: function() {
+		            moveHandTo(2.0 , cc.p(400,800), cc.p(-200,400));		    		
+		    	}
+		    },{
+		    	time: 10.0,
+		    	anim: function() {
+		            moveHandTo(2.0 , cc.p(100,400), cc.p(-200,400));		    		
+		    	}
+		    },{
+		    	time: 12.5,
+		    	anim: function() {
+		            moveHandTo(2.0 , cc.p(0,1152), cc.p(640,800));		    		
 		    	}
 		    },{
 		    	time: 20.5,
@@ -161,6 +182,26 @@ var MURBIKS_MODULE = function(layer) {
 		);			
 	};
 	
+	var moveHandTo = function(time, pos, bezierPoint) {
+		
+		var curPos = hand.getPosition(),
+			finger = hand.getChildByTag($42.FINGER_TAG),
+			fo = cc.p(
+				hand.convertToWorldSpace(finger.getPosition()).x - ml.convertToWorldSpace(hand.getPosition()).x,
+				hand.convertToWorldSpace(finger.getPosition()).y - ml.convertToWorldSpace(hand.getPosition()).y
+			),
+			bezierHand = bezierPoint? [
+				cc.p(curPos.x - fo.x,curPos.y - fo.y),
+	            cc.p(bezierPoint.x - fo.x, bezierPoint.y - fo.y),
+	            cc.p(pos.x - fo.x,pos.y - fo.y)
+            ] : null;
+		
+		if( !ml.getChildByTag($42.HAND_TAG) ) ml.addChild(hand, 5, $42.HAND_TAG);
+		
+	    if( bezierPoint ) hand.runAction(cc.bezierTo(time, bezierHand));
+	    else hand.runAction(cc.moveTo(time, cc.p(pos.x- fo.x, pos.y - fo.y)));
+	};
+	
 	
 	var startTileProgram = function(program) {
 	    // start program
@@ -209,6 +250,15 @@ var MURBIKS_MODULE = function(layer) {
 		speechBubble.setColor($42.SPEECH_BUBBLE_COLOR);
 		speechBubbleLine = cc.DrawNode.create();
 		speechBubbleLine.retain();
+		
+		// load hand
+		hand = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("hand"),cc.rect(0,0,364,640));
+		hand.setRotation($42.HAND_ROTATION);
+		hand.retain();
+		finger = cc.Node.create();
+		finger.setPosition(260,620);
+		finger.retain();
+		hand.addChild(finger,0,$42.FINGER_TAG);
 	};
 	
 
