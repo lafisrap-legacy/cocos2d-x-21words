@@ -230,6 +230,7 @@ var _42_MODULE = function(_42Layer) {
 				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
 			} else if( sw.markers[col] === $42.MARKER_SEL && hits > 0 || hits === curWords.length ) {
 				// if the user marked the letter, than show marker select sprite
+				sw.markers[col] = $42.MARKER_SEL;
 				sw.sprites[col] = cc.Sprite.create(selMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
 				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
 			} else if( hits === 0 ) {
