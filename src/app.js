@@ -11,8 +11,13 @@ var _42_GLOBALS = {
 			"reached_top_continue" : "WEITER SPIELEN",
 			"reached_top_end_game"	: "SPIEL BEENDEN"
 	},
+	TITLE_WORDS: "WORTE",
+	TITLE_START_GAME: "SPIEL STARTEN",
+	TITLE_END_GAME: "BEENDEN",
+	TITLE_MENU_COLOR: cc.color(0,40,0,255),
 	TAG_SPRITE_MANAGER : 1,
 	TAG_GAME_LAYER : 3,
+	TAG_TITLE_LAYER : 4,
 	BS : 64, // pixel
 	BOXES_PER_COL : 22,
 	GAME_OVER_COL : 16,
@@ -87,7 +92,7 @@ var _42GameLayer = cc.Layer.extend({
 		setTimeout(function() {
 		    self.scheduleUpdate();	
 		    if( self.hookStartGame ) self.hookStartGame();
-		},5000);
+		},3000);
     },
     
     onExit: function() {
@@ -99,24 +104,7 @@ var _42GameLayer = cc.Layer.extend({
     
 	startAnimation: function() {
 		
-        var size = this.size,
-        	closeItem = cc.MenuItemImage.create(
-            res.CloseNormal_png,
-            res.CloseSelected_png,
-            function () {
-                cc.log("Menu is clicked!");
-            }, this);
-        closeItem.attr({
-            x: size.width - 20,
-            y: 20,
-            anchorX: 0.5,
-            anchorY: 0.5
-        });
-
-        var menu = cc.Menu.create(closeItem);
-        menu.x = 0;
-        menu.y = 0;
-        this.addChild(menu, 1);
+        var size = this.size;
 
         var background = cc.Sprite.create(res.background_png);
         background.attr({
@@ -126,19 +114,7 @@ var _42GameLayer = cc.Layer.extend({
             rotation: 0
         });
         this.addChild(background, 0);
-        var title = cc.Sprite.create(res.title_png);
-        title.attr({
-            x: size.width / 2,
-            y: size.height / 2,
-            scale: 1.5,
-            rotation: 0,
-        });
-        this.addChild(title, 0);
-
-        var sequenceA = cc.fadeIn(3);
-        var sequenceB = cc.Spawn.create(cc.rotateTo(2,0),cc.scaleTo(2,10,10),cc.fadeOut(2));
-        title.setOpacity(0);
-        title.runAction(cc.sequence(sequenceA,sequenceB));
+        background.retain();
 	},
 	
 	loadImages: function() {
@@ -1025,12 +1001,113 @@ var _42MenuLayer = cc.LayerColor.extend({
 	}
 });
 
+var _42TitleLayer = cc.Layer.extend({
+    
+    ctor:function () {
+        this._super();
+
+        var self = this,
+        	size = this.size = cc.director.getWinSize();
+
+		cc.spriteFrameCache.addSpriteFrames(res.title_plist);
+
+		var addImage = function(image, pos) {
+			var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(image));
+			sprite.attr({
+	            scale: 1,
+	            rotation: 0,
+	            opacity: 0
+	        });
+			sprite.setPosition(pos);
+			sprite.retain();
+	        self.addChild(sprite, 0);	
+	        return sprite;
+		};
+		
+		var titleBg = addImage("42background", cc.p(size.width/2, size.height/2)),
+			title42 = addImage("42", cc.p(size.width/2, size.height*3/4));
+		
+		var word = $42.TITLE_WORDS,
+			letters = [];
+		
+		for( var i=0 ; i<word.length ; i++ ) {
+			letters[i] = addImage(word.substr(i,1).toLowerCase()+"_", cc.p(140+90*i, 632));
+		}
+
+		titleBg.runAction(cc.fadeIn(3));
+		title42.setScale(10,10);
+		title42.runAction(
+			cc.sequence(
+				cc.EaseSineIn.create(
+					cc.spawn(
+						cc.fadeIn(2.5),
+						cc.rotateBy(2.5,360),
+						cc.scaleTo(2.5,1.3,1.3)
+					)
+				)
+			)
+		);
+		for( var i=0 ; i<word.length ; i++ ) {
+			letters[i].runAction(
+				cc.sequence(
+					cc.delayTime(2+i/4),
+					cc.fadeIn(2)
+				)
+			);
+		}
+		
+        // Show menu items
+		var addMenu = function(name, fontSize, cb) {
+	        var item = cc.MenuItemFont.create(name, cb, self);
+	        item.setFontName("Arial");        	
+	        item.setFontSize(fontSize);  
+	        item.setOpacity(0);  
+	        item.setColor($42.TITLE_MENU_COLOR);
+	        
+	        return item;
+		}
+		
+        var item1 = addMenu($42.TITLE_START_GAME, 52, function() {
+        	self.getParent().addChild(new _42GameLayer(), 1, $42.TAG_GAME_LAYER);
+        	titleBg.stopAllActions();
+    		titleBg.runAction(cc.sequence(cc.EaseSineOut.create(cc.fadeOut(3)),cc.callFunc(function() {
+				self.getParent().removeChild(self);
+			})));
+        	title42.stopAllActions();
+    		title42.runAction(cc.EaseSineOut.create(cc.spawn(cc.fadeOut(3))));
+    		for( var i=0 ; i<word.length ; i++ ) {
+    			letters[i].stopAllActions();
+    			letters[i].runAction(cc.sequence(cc.delayTime(i/4),cc.fadeOut(3-word.length*0.25)));
+    		}
+        	menu.stopAllActions();
+        	menu.setEnabled(false);
+            menu.runAction(cc.EaseSineOut.create(cc.fadeOut(2)));
+        });
+        		
+        var item2 = addMenu($42.TITLE_END_GAME, 36 , function() {
+        	// still has to be filled
+        });
+
+        var menu = cc.Menu.create.apply(this, [item1, item2] );
+        menu.x = size.width/2;
+        menu.y = 350;
+        menu.setOpacity(0);
+        self.addChild(menu, 1);       
+        menu.alignItemsVerticallyWithPadding(70);
+        menu.runAction(cc.EaseSineIn.create(cc.fadeIn(4)));
+        
+        return true;
+    }
+});
+
+
 var _42Scene = cc.Scene.extend({
 	
     onEnter:function () {
         this._super();
 
-        this.addChild(new _42GameLayer(), 1, $42.TAG_GAME_LAYER);
+        this.addChild(new _42TitleLayer(), 2, $42.TAG_TITLE_LAYER);
+//        
     }
 });
 

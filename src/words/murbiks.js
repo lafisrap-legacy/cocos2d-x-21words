@@ -288,7 +288,7 @@ var MURBIKS_MODULE = function(layer) {
 		};
 		
     	var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
-			menuText = cc.MenuItemFont.create($42.t.murbiks_skip_tutorial, clickOnSkip , mul),
+			menuText = cc.MenuItemFont.create($42.t.murbiks_tutorial, clickOnSkip , mul),
 			menuBox = cc.Menu.create(menuText),
 			bezierMostafa = [
 			    cc.p(0,0),
@@ -301,6 +301,7 @@ var MURBIKS_MODULE = function(layer) {
 	            cc.p(500,75)
 			];
 		menuBox.retain();
+		menuText.retain();
 		animAction.retain();
 		menuBox.x = 125;
 		menuBox.y = 35;		
@@ -319,7 +320,9 @@ var MURBIKS_MODULE = function(layer) {
 	    		)
 	    	); 
 	    	
-	    blueButton.runAction(cc.bezierTo(time, bezierButton));
+	    blueButton.runAction(cc.sequence(cc.bezierTo(time, bezierButton),cc.callFunc(function() {
+	    	menuText.setString($42.t.murbiks_skip_tutorial);
+	    })));
 	};
 	
 	var moveMostafaAndButton = function( time, bezier ) {

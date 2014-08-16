@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>frames</key>
+	<dict>
+		<key>d_</key>
+		<dict>
+			<key>frame</key>
+			<string>{{0, 0}, {90, 90}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{2, 2}, {86, 86}}</string>
+			<key>sourceSize</key>
+			<string>{90, 90}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>o_</key>
+		<dict>
+			<key>frame</key>
+			<string>{{90, 0}, {90, 90}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{2, 2}, {86, 86}}</string>
+			<key>sourceSize</key>
+			<string>{90, 90}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>r_</key>
+		<dict>
+			<key>frame</key>
+			<string>{{180, 0}, {90, 90}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{2, 2}, {86, 86}}</string>
+			<key>sourceSize</key>
+			<string>{90, 90}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>s_</key>
+		<dict>
+			<key>frame</key>
+			<string>{{270, 0}, {90, 90}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{2, 2}, {86, 86}}</string>
+			<key>sourceSize</key>
+			<string>{90, 90}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>w_</key>
+		<dict>
+			<key>frame</key>
+			<string>{{360, 0}, {90, 90}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{2, 2}, {86, 86}}</string>
+			<key>sourceSize</key>
+			<string>{90, 90}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>42background</key>
+		<dict>
+			<key>frame</key>
+			<string>{{450, 0}, {648, 1152}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 0}, {648, 1152}}</string>
+			<key>sourceSize</key>
+			<string>{648, 1152}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>e_</key>
+		<dict>
+			<key>frame</key>
+			<string>{{1098, 0}, {90, 90}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{2, 2}, {86, 86}}</string>
+			<key>sourceSize</key>
+			<string>{90, 90}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>t_</key>
+		<dict>
+			<key>frame</key>
+			<string>{{1188, 0}, {90, 90}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{2, 2}, {86, 86}}</string>
+			<key>sourceSize</key>
+			<string>{90, 90}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>42</key>
+		<dict>
+			<key>frame</key>
+			<string>{{1278, 0}, {200, 169}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 0}, {200, 169}}</string>
+			<key>sourceSize</key>
+			<string>{200, 169}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		</dict>
+		<key>metadata</key>
+		<dict>
+		<key>format</key>
+		<integer>2</integer>
+		<key>textureFileName</key>
+		<string>title.png</string>
+		<key>size</key>
+		<string>{2048, 2048}</string>
+	</dict></dict></plist>
