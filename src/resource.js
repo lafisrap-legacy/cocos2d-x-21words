@@ -44,7 +44,6 @@ var g_resources = [
     res.amtype56_png,
     res.amtype72_png,
 
-
     //plist
     res.letters_plist,
     res.marker_plist,

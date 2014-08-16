@@ -512,8 +512,7 @@ var _42GameLayer = cc.Layer.extend({
 	
     update: function(dt) {
     	
-    	var mg = _42_GLOBALS,
-    		self = this,
+    	var self = this,
 			size = this.size;
 
     	/*
@@ -767,8 +766,10 @@ var _42GameLayer = cc.Layer.extend({
     		
     		var tileRet = false;
     		if( self.hookTileFixed ) tileRet = self.hookTileFixed(newBrcs);
-    		if( !tileRet ) self.checkForAndRemoveCompleteRows();
-    		if( self.hookTileFixedAfterRowsDeleted ) tileRet = self.hookTileFixedAfterRowsDeleted();
+    		if( !tileRet ) {
+    			self.checkForAndRemoveCompleteRows();
+        		if( self.hookTileFixedAfterRowsDeleted ) self.hookTileFixedAfterRowsDeleted();
+    		}
 
     		batch.removeChild(t.sprite);
        		delete t;
@@ -950,7 +951,7 @@ var _42GameLayer = cc.Layer.extend({
 
     			if( ret == "gameover" ) {
     				var menuItems = [{
-    					label: mg.t.reached_top_continue, 
+    					label: $42.t.reached_top_continue, 
     					cb: function(sender) {
     			        	var gameLayer = this.getParent().getChildByTag($42.TAG_GAME_LAYER);
     				        gameLayer.resume();
@@ -959,7 +960,7 @@ var _42GameLayer = cc.Layer.extend({
     			            this.getParent().removeChild(this);
     			        }
     				},{
-    					label: mg.t.reached_top_end_game, 
+    					label: $42.t.reached_top_end_game, 
     					cb: function(sender) {
     						if( self.hookEndGame ) self.hookEndGame();
     			        	cc.director.runScene(new _42Scene());

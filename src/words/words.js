@@ -40,7 +40,7 @@ $42.LEVEL_SCORE = [0,   500,  1000,  1500,  2000,  3000,  4000,  5000,  6500,  8
                       12000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000,
                       70000, 80000, 90000,100000,110000,120000,130000,140000,150000,160000,
                      170000,180000,190000,200000,220000,240000,260000,280000,300000,350000,
-                     400000,500000
+                     400000,500000,10000000,100000000
                    ];
 $42.MARKER_SET = 1;
 $42.MARKER_OPT = 2;
@@ -60,6 +60,13 @@ $42.SCORE_COLOR_DIMM = cc.color(160,120,55);
 $42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);
 $42.POINTS_TO_ADD_CYCLES = 3;
 $42.LEVELS_TO_BLOW_CYCLES = 30;
+$42.PLUS1_BUTTON_X = 80;
+$42.PLUS1_BUTTON_Y = 1200;
+$42.PLUS1_BUTTON_COST = 1000;
+$42.PLUS1_BUTTON_TOPROW = 10;
+$42.PLUS3_BUTTON_X = 440;
+$42.PLUS3_BUTTON_Y = 1200;
+$42.PLUS3_BUTTON_COST = 10000;
 
 var _42_MODULE = function(_42Layer) {
 
@@ -213,18 +220,17 @@ var _42_MODULE = function(_42Layer) {
 				if(ml.boxes[sw.brc.row][i] && curWords[j].word[col] === ml.boxes[sw.brc.row][i].userData ) hits++;
 				else if( curWords[j].word[col] ) missingLetters += curWords[j].word[col];
 			}
-			if( sw.markers[col] === $42.MARKER_SEL && hits > 0 ) {
-				// if the user marked the letter, than show marker select sprite
-				sw.sprites[col] = cc.Sprite.create(selMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
-				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
-			} else if( sw.markers[col] === $42.MARKER_SET || hits === curWords.length ) {
-				// just set sprite opacity to full
+			if( sw.markers[col] === $42.MARKER_SET || col <= 2) {
 				// letter in box matches with all words, draw sprite
 				sw.markers[col] = $42.MARKER_SET;
 				sw.sprites[col] = cc.Sprite.create(
 					setMarkerFrame[Math.floor(Math.random()*setMarkerFrame.length)],
 					cc.rect(0,0,$42.BS,$42.BS)
 				);
+				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
+			} else if( sw.markers[col] === $42.MARKER_SEL && hits > 0 || hits === curWords.length ) {
+				// if the user marked the letter, than show marker select sprite
+				sw.sprites[col] = cc.Sprite.create(selMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
 				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
 			} else if( hits === 0 ) {
 				// letter in box matches with no word
@@ -270,7 +276,7 @@ var _42_MODULE = function(_42Layer) {
 				sw.words.splice(i,1);
 				if( !sw.words.length ) unselectWord();
 				
-				showFullWordAndAsk( sw.brc , word , function( takeWord ) {
+				showFullWordAndAsk( sw.brc , word , function( takeWord ) {					
 					if( takeWord ) {
 
 						// delete complete row
@@ -329,7 +335,7 @@ var _42_MODULE = function(_42Layer) {
 		return false;
 	};
 	
-	var blowLevelAndWordValue = function(levelAndValue) {
+	var blowLevelAndWordValue = function(levelAndValue,cb) {
 		
 		var text = [];
 		
@@ -337,6 +343,10 @@ var _42_MODULE = function(_42Layer) {
 		                        {t:levelAndValue.level,scale:10,color:cc.color(0,160,0)}];
 		if( levelAndValue.value ) text = text.concat([{t:$42.t.new_level_value,scale:5,color:cc.color(128,128,0)} , 
 		                                        {t:levelAndValue.value,scale:10,color:cc.color(128,128,0)}]);
+		if( levelAndValue.win ) {
+			var t = $42.t.new_level_win;
+			for( var i=0 ; i<t.length ; i++ ) text = text.concat([{t:t.substr(i,1),scale:11,color:cc.color(200+(55/t.length*i),200+(55/t.length*i),30)}])
+		}
 		
 		for( var i=0 ; i<text.length ; i++ ) {
 			var label = cc.LabelTTF.create(text[i].t, "res/fonts/American Typewriter.ttf", 160);
@@ -344,6 +354,7 @@ var _42_MODULE = function(_42Layer) {
 			label.setScale(0.1,0.1);
 			label.setColor(text[i].color);
 			ml.addChild(label, 5);
+			label.i = i;
 			label.runAction(
 				cc.sequence(
 					cc.delayTime(i/2),
@@ -353,10 +364,11 @@ var _42_MODULE = function(_42Layer) {
 					),
 					cc.callFunc(function() {
 						ml.removeChild(this);
+						if( cb && this.i === text.length-1 ) cb();
 					}, label)
 				)
 			);
-		}
+		}		
 	};
 	
 	var deleteWordFromList = function(word) {
@@ -410,7 +422,6 @@ var _42_MODULE = function(_42Layer) {
               cc.p(ml.size.width/2,ml.size.height-300)];
 
 		wordFrameSprite.runAction(cc.EaseSineIn.create(cc.bezierTo($42.WORD_FRAME_MOVE_TIME,bezier)));
-		//wordFrameSprite.runAction(cc.rotateBy($42.WORD_FRAME_MOVE_TIME,-360));
 		wordFrameSprite.runAction(cc.EaseSineIn.create(
 			cc.sequence(
 				cc.EaseSineOut.create(
@@ -856,12 +867,14 @@ var _42_MODULE = function(_42Layer) {
 		$42.maxPoints = ls.getItem("maxPoints") || 0;
 		$42.maxWordValue = ls.getItem("maxWordValue") || 4;
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
-
-		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );			
+		
+		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
+		else if( ml.hookStartProgram ) ml.hookStartProgram( 1 , false );
 
 		// points array
 		ml.pointsToAdd = [];
 		ml.levelsToBlow = [];
+		ml.add1and3s = [];
 		cc.log("Set ml.totalPoints to "+ml.totalPoints+".");
 		ml.totalPoints = 0;
 		ml.rollingLayerStage = 0;
@@ -886,6 +899,53 @@ var _42_MODULE = function(_42Layer) {
 			}
 		}
 		
+		// draw two plus buttons
+		var plus1Background = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("plus1"),cc.rect(0,0,216,70)),
+			plus1BackgroundHighlit = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("plus1highlit"),cc.rect(0,0,216,70)),
+			plus1Label = cc.LabelTTF.create("-"+$42.PLUS1_BUTTON_COST, "Arial", 32),
+			plus3Background = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("plus3"),cc.rect(0,0,216,70)),
+			plus3BackgroundHighlit = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("plus3highlit"),cc.rect(0,0,216,70)),
+			plus3Label = cc.LabelTTF.create("-"+$42.PLUS3_BUTTON_COST, "Arial", 32);
+		plus1Background.retain();
+		plus1BackgroundHighlit.retain();
+		plus1Label.retain();
+		plus3Background.retain();
+		plus3BackgroundHighlit.retain();
+		plus3Label.retain();
+		
+        plus1Label.color = $42.SCORE_COLOR_BRIGHT;
+        plus3Label.color = $42.SCORE_COLOR_BRIGHT;
+
+        ml.plus1Button = cc.ControlButton.create(plus1Label, plus1Background);
+        ml.plus1Button.setBackgroundSpriteForState(plus1BackgroundHighlit, cc.CONTROL_STATE_HIGHLIGHTED);
+        ml.plus1Button.setTitleColorForState(cc.color.WHITE, cc.CONTROL_STATE_HIGHLIGHTED);
+        ml.plus1Button.x = $42.PLUS1_BUTTON_X;
+        ml.plus1Button.y = $42.PLUS1_BUTTON_Y;
+        ml.plus1Button.retain();
+        ml.plus1Button.addTargetWithActionForControlEvents(ml, function() {
+        	if( ml.totalPoints >= $42.PLUS1_BUTTON_COST ) {
+            	for( var i=0 ; i<10 ; i++ ) ml.pointsToAdd.push(-$42.PLUS1_BUTTON_COST/10);
+            	ml.add1and3s.push("1");        		
+        	}
+        }, cc.CONTROL_EVENT_TOUCH_DOWN);
+        
+        ml.addChild(ml.plus1Button, 10);
+
+        ml.plus3Button = cc.ControlButton.create(plus3Label, plus3Background);
+        ml.plus3Button.setBackgroundSpriteForState(plus3BackgroundHighlit, cc.CONTROL_STATE_HIGHLIGHTED);
+        ml.plus3Button.setTitleColorForState(cc.color.WHITE, cc.CONTROL_STATE_HIGHLIGHTED);
+        ml.plus3Button.x = $42.PLUS3_BUTTON_X;
+        ml.plus3Button.y = $42.PLUS3_BUTTON_Y;
+        ml.plus3Button.retain();
+        ml.plus3Button.addTargetWithActionForControlEvents(ml, function() {
+        	if( ml.wordTreasureBestWord && ml.totalPoints >= $42.LEVEL_SCORE[ml.wordTreasureBestWord.value+2] ) {
+            	for( var i=0 ; i<10 ; i++ ) ml.pointsToAdd.push(-$42.PLUS3_BUTTON_COST/10);
+            	ml.add1and3s.push("3");        		
+        	}
+        }, cc.CONTROL_EVENT_TOUCH_DOWN);
+
+        ml.addChild(ml.plus3Button, 10);
+		
 		drawScoreBar();
 	};
 	
@@ -905,7 +965,7 @@ var _42_MODULE = function(_42Layer) {
 		if( ml.hookGetProgrammedTile ) nextTile = ml.hookGetProgrammedTile();
 		
 		return nextTile? 								nextTile.tile : 
-			   $42.add1and3s && $42.add1and3s.length? 	($42.add1and3s.splice(0,1)[0] === "1"? 7 : 8) :
+			   ml.add1and3s && ml.add1and3s.length? 	(ml.add1and3s.splice(0,1)[0] === "1"? 7 : 8) :
 					   									ml.getRandomValue($42.TILE_OCCURANCES);
 	};
 
@@ -976,6 +1036,15 @@ var _42_MODULE = function(_42Layer) {
 		
 		ml.lastBrcs = brcs;
 		
+		for( i=0 ; i<brcs.length ; i++ ) if( brcs[i].row > $42.PLUS1_BUTTON_TOPROW ) break;
+		if( !ml.plus1ButtonVisible && i !== brcs.length) {
+			ml.plus1ButtonVisible = true;
+			ml.plus1Button.runAction(cc.EaseSineIn.create(cc.moveBy(0.75,cc.p(0, -100))));
+		} else if( ml.plus1ButtonVisible && i === brcs.length) {
+			ml.plus1ButtonVisible = false;
+			ml.plus1Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0, 100))));					
+		}
+		
 		cc.log("42words, hookTileFixed: setSelection()");
 		setSelections();
 		cc.log("42words, hookTileFixed: Calling updateSelectedWord()");
@@ -1017,8 +1086,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		// 1 and 3 tiles
 		if( box && (box.userData === "1" || box.userData === "3") ) {
-			if( !$42.add1and3s ) $42.add1and3s = [];
-			$42.add1and3s.push(box.userData);
+			ml.add1and3s.push(box.userData);
 		}
 		
 		return true;
@@ -1031,6 +1099,8 @@ var _42_MODULE = function(_42Layer) {
 			sw.brc.row = to.row;
 			sw.brc.col = to.col;
 		}
+		
+		/*
 		// check if one of the other selections have to be moved
 		var s = ml.selections;
 		for( var i=0 ; i<s.length ; i++) {
@@ -1038,14 +1108,13 @@ var _42_MODULE = function(_42Layer) {
 				s[i].brc.row = to.row;
 				s[i].brc.col = to.col;
 			}
-		}
+		}*/
 	};
 	
 	_42Layer.hookAllBoxesMovedDown = function() {
-		cc.log("42words, hookAllBoxesMovedDown: setSelection()");
 		setSelections();
-		cc.log("42words, hookAllBoxesMovedDown: Calling updateSelectedWord()");
-		updateSelectedWord();
+		updateSelectedWord();			
+
 		drawScoreBar(true);
 	};
 	
@@ -1147,9 +1216,46 @@ var _42_MODULE = function(_42Layer) {
 				if( oldVal != $42.maxWordValue ) ml.levelsToBlow.push({ level: ml.currentLevel, value: $42.maxWordValue});
 				else ml.levelsToBlow.push({ level: ml.currentLevel, value: null});
 
-				// if its level 42: YOU WON THE GAME!
-				// ......
+				// if level is greater as 42: YOU WON THE GAME!
+				if( cl > 42 ) {
+					blowLevelAndWordValue({win:true}, function() {
+	    				var menuItems = [{
+	    					label: $42.t.won_continue, 
+	    					cb: function(sender) {
+	    				        ml.resume();
+	    				        ml.scheduleUpdate();
+
+	    			            this.getParent().removeChild(this);
+	    			        }
+	    				},{
+	    					label: $42.t.won_end_game, 
+	    					cb: function(sender) {
+	    						if( self.hookEndGame ) self.hookEndGame();
+	    			        	cc.director.runScene(new _42Scene());
+	    			        }
+	    				}];
+	    	            ml.getParent().addChild(
+	    	            	new _42MenuLayer("Du hast gewonnen!",menuItems),
+	    	            	2);
+	        	        ml.pause();
+	        	        ml.unscheduleUpdate();
+					});
+				}
 				
+			}
+			
+			// show plus 3 button if score is high enough 
+			if( !ml.plus3ButtonVisible && ml.wordTreasureBestWord && 
+					(ml.wordTreasureBestWord.value >= 40 ||
+					ml.totalPoints >= $42.LEVEL_SCORE[ml.wordTreasureBestWord.value+2])
+			) {
+				ml.plus3ButtonVisible = true;
+				ml.plus3Button.runAction(cc.EaseSineIn.create(cc.moveBy(0.75,cc.p(0, -100))));
+			} else if( ml.plus3ButtonVisible && ml.wordTreasureBestWord &&  
+					 ml.totalPoints <= $42.LEVEL_SCORE[ml.wordTreasureBestWord.value+2]
+			) {
+				ml.plus3ButtonVisible = false;
+				ml.plus3Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0, 100))));					
 			}
 		} else if( ml.pointsToAddCnt ) {
 			ml.pointsToAddCnt--;
@@ -1168,7 +1274,6 @@ var _42_MODULE = function(_42Layer) {
 		}
 		
 	};
-	
 	
 	var loadLanguagePack = function( pack ) {
 		

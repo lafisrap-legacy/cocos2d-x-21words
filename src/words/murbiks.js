@@ -271,6 +271,10 @@ var MURBIKS_MODULE = function(layer) {
 		];
 	};
 	
+	var test = function(cb) {
+		startTileProgram(lg.tiles.test);
+	};
+	
 	
 	/* 
 	 * Service programs
@@ -627,6 +631,7 @@ var MURBIKS_MODULE = function(layer) {
 	 */
 	var programs = [
         turning_moving_falling_choosing,		// 0
+        test
     ];
 
 	ml.hookStartProgram = function(program, stopEvents) {
