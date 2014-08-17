@@ -164,7 +164,7 @@ var _42_MODULE = function(_42Layer) {
 		var sw = ml.selectedWord,
 		batch = ml.getChildByTag($42.TAG_SPRITE_MANAGER);
 		
-		if( !sw ) return false;
+		if( !sw || ml.wordIsBeingSelected ) return false;
 		
 		cc.log("42words, updateSelectedWord, Enter function!");
 		
@@ -277,7 +277,9 @@ var _42_MODULE = function(_42Layer) {
 				sw.words.splice(i,1);
 				if( !sw.words.length ) ml.unselectWord();
 				
-				showFullWordAndAsk( sw.brc , word , function( takeWord ) {					
+				ml.wordIsBeingSelected = true;
+				showFullWordAndAsk( sw.brc , word , function( takeWord ) {	
+					ml.wordIsBeingSelected = false;
 					if( takeWord ) {
 
 						// delete complete row
@@ -870,7 +872,7 @@ var _42_MODULE = function(_42Layer) {
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
 		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
-		else if( ml.hookStartProgram ) ml.hookStartProgram( 10 , false );
+		else if( ml.hookStartProgram ) ml.hookStartProgram( 1 , false );
 
 		// points array
 		ml.pointsToAdd = [];
@@ -1046,9 +1048,7 @@ var _42_MODULE = function(_42Layer) {
 			ml.plus1Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0, 100))));					
 		}
 		
-		cc.log("42words, hookTileFixed: setSelection()");
 		setSelections();
-		cc.log("42words, hookTileFixed: Calling updateSelectedWord()");
 		return updateSelectedWord();
 	};	
 
@@ -1100,16 +1100,6 @@ var _42_MODULE = function(_42Layer) {
 			sw.brc.row = to.row;
 			sw.brc.col = to.col;
 		}
-		
-		/*
-		// check if one of the other selections have to be moved
-		var s = ml.selections;
-		for( var i=0 ; i<s.length ; i++) {
-			if( s[i].brc.row === from.row && s[i].brc.col === from.col ) {
-				s[i].brc.row = to.row;
-				s[i].brc.col = to.col;
-			}
-		}*/
 	};
 	
 	_42Layer.hookAllBoxesMovedDown = function() {

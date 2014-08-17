@@ -596,7 +596,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 74.2,
 		    	anim: function() {
-		            showSpeechBubble(4.0 , $42.t.mostafa_basic06 , mostafa.getPosition());		    		
+		            showSpeechBubble(4.0 , $42.t.mostafa_advanced09 , mostafa.getPosition());		    		
 		    	}
 		    },{
 		    	time: 75.3,
@@ -606,6 +606,24 @@ var MURBIKS_MODULE = function(layer) {
         	            cc.p(350,500),
         	            cc.p(800,1000)
         		    ]);		
+		    	}
+		    },{
+		    	time: 80.7,
+		    	anim: function() {
+		    		mostafaFlyingToMiddle(6.0, [
+					    cc.p(0,0),
+			            cc.p(200,520),
+			            cc.p(320,320)
+				    ],[
+						cc.p(320,320),
+			            cc.p(200,415),
+			            cc.p(1000,300)
+					] )	
+		    	}
+		    },{
+		    	time: 82.7,
+		    	anim: function() {
+		            showSpeechBubble(6.0 , $42.t.mostafa_advanced10 , mostafa.getPosition());		    		
 					cb();
 		    	}
 		    }
@@ -691,18 +709,18 @@ var MURBIKS_MODULE = function(layer) {
 	    blueButton.runAction(cc.bezierTo(time, bezierButton));		
 	};
 	
-	var mostafaFlyingToMiddle = function(time) {
+	var mostafaFlyingToMiddle = function(time, bezierIn , bezierOut) {
 		var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
-		bezierMostafaIn = [
-			cc.p(500,180),
-			cc.p(650,300),
-			cc.p(ml.size.width/2,ml.size.height/2)
-		];
-		bezierMostafaOut = [
-		    cc.p(ml.size.width/2,ml.size.height/2),
-   			cc.p(350,400),
-   			cc.p(500,180)
-   		];
+			bezierMostafaIn = bezierIn || [
+				cc.p(500,180),
+				cc.p(650,300),
+				cc.p(ml.size.width/2,ml.size.height/2)
+			];
+			bezierMostafaOut = bezierOut || [
+			    cc.p(ml.size.width/2,ml.size.height/2),
+	   			cc.p(350,400),
+	   			cc.p(500,180)
+	   		];
 		animAction.retain();
 			
 	    mostafa.runAction(
