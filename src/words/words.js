@@ -870,7 +870,7 @@ var _42_MODULE = function(_42Layer) {
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
 		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
-		else if( ml.hookStartProgram ) ml.hookStartProgram( 1 , false );
+		else if( ml.hookStartProgram ) ml.hookStartProgram( 10 , false );
 
 		// points array
 		ml.pointsToAdd = [];

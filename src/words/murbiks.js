@@ -97,7 +97,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 8.5,
 		    	anim: function() {
-		            pressFingerTo(0.4 , cc.p(290,650));		    		
+		            pressFingerTo(0.5 , cc.p(290,650));		    		
 		    	}
 		    },{
 		    	time: 9.5,
@@ -107,7 +107,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 10.0,
 		    	anim: function() {
-		    		pressFingerTo(0.4 , cc.p(280,670));		    		
+		    		pressFingerTo(0.5 , cc.p(280,670));		    		
 		    	}
 		    },{
 		    	time: 11.0,
@@ -361,7 +361,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 14.1,
 		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(222,400));		    		
+		    		pressFingerTo(1.0 , cc.p(192,400));		    		
 		    	}
 		    },{
 		    	time: 15.2,
@@ -381,11 +381,232 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(1.1 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 19.5,
+		    	time: 18.8,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,2);
 		    		
 		    		pressFingerTo(0.2 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 19.0,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,2);
+		    		
+		    		boxPos.x -= 100;
+		    		boxPos.y -= 30;
+		    		
+		    		moveHandTo(0.5 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 20.4,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,2);
+		    		
+		    		moveHandTo(1.1 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 21.8,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,2);
+		    		
+		    		pressFingerTo(0.2 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 22.0,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,2);
+		    		
+		    		boxPos.x -= 100;
+		    		boxPos.y -= 30;
+		    		
+		    		moveHandTo(0.5 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 25.0,
+		    	anim: function() {
+		    		var tilePos = getTilePosition();
+		    		
+		    		moveHandTo(1.1 , tilePos);		    		
+		    	}
+		    },{
+		    	time: 26.1,
+		    	anim: function() {
+		    		pressFingerTo(1.0 , cc.p(280,400));		    		
+		    	}
+		    },{
+		    	time: 27.2,
+		    	anim: function() {
+		    		moveHandTo(1.1 , cc.p(-200,0));	
+		    	}
+		    },{
+		    	time: 27.3,
+		    	anim: function() {
+		            showSpeechBubble(7.0 , $42.t.mostafa_advanced03 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 28.5,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,4);
+		    		
+		    		boxPos.y -= $42.BS;
+		    		
+		    		moveHandTo(0.5 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 34.3,
+		    	anim: function() {
+		            showSpeechBubble(7.0 , $42.t.mostafa_advanced04 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 35.5,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,5);
+
+		    		boxPos.y -= 40;
+		    		
+		    		moveHandTo(0.5 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 36.5,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,5);
+		    		
+		    		boxPos.y -= 40;
+		    		
+		    		pressFingerTo(0.2 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 37.0,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,5);
+		    		
+		    		boxPos.x -= 100;
+		    		boxPos.y -= 30;
+		    		
+		    		moveHandTo(0.5 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 40.0,
+		    	anim: function() {
+		    		moveHandTo(0.4 , cc.p(320,300));		    		
+		    	}
+		    },{
+		    	time: 40.4,
+		    	anim: function() {
+		    		pressFingerTo(0.2 , cc.p(320,500));		    		
+		    	}
+		    },{
+		    	time: 41.0,
+		    	anim: function() {
+		    		var tilePos = getTilePosition();
+		    		
+		    		moveHandTo(0.5 , tilePos);		    		
+		    	}
+		    },{
+		    	time: 41.5,
+		    	anim: function() {
+		    		pressFingerTo(1.0 , cc.p(0,100));		    		
+		    	}
+		    },{
+		    	time: 42.6,
+		    	anim: function() {
+		    		moveHandTo(1.1 , cc.p(-200,0));	
+		    	}
+		    },{
+		    	time: 43.3,
+		    	anim: function() {
+		            showSpeechBubble(7.0 , $42.t.mostafa_advanced05 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 43.4,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(2,3);
+
+		    		hand.setRotation(85);
+		    		moveHandTo(0.5 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 50.3,
+		    	anim: function() {
+		            showSpeechBubble(4.0 , $42.t.mostafa_advanced06 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 51.3,
+		    	anim: function() {
+		    		var tilePos = getTilePosition();
+		    		
+		    		moveHandTo(1.1 , tilePos);		    		
+		    		hand.runAction(cc.rotateTo(2.5,$42.HAND_ROTATION));
+		    	}
+		    },{
+		    	time: 52.4,
+		    	anim: function() {
+		    		pressFingerTo(1.0 , cc.p(550,100));		    		
+		    	}
+		    },{
+		    	time: 53.5,
+		    	anim: function() {
+		    		moveHandTo(1.1 , cc.p(-200,0));	
+		    	}
+		    },{
+		    	time: 54.0,
+		    	anim: function() {
+		            showSpeechBubble(6.0 , $42.t.mostafa_advanced07 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 55.0,
+		    	anim: function() {
+		    		var tilePos = getTilePosition();
+		    		
+		    		moveHandTo(1.7 , tilePos);		    		
+		    		hand.runAction(cc.rotateTo(1.7,105));
+		    	}
+		    },{
+		    	time: 56.8,
+		    	anim: function() {
+		    		pressFingerTo(10.0 , cc.p(480,300));		    		
+		    	}
+		    },{
+		    	time: 60.0,
+		    	anim: function() {
+		            showSpeechBubble(6.0 , $42.t.mostafa_advanced08 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 66.9,
+		    	anim: function() {
+		    		moveHandTo(2.5 , cc.p(-200,0));
+		    		hand.runAction(cc.rotateTo(2.5,$42.HAND_ROTATION));
+		    	}
+		    },{
+		    	time: 71.0,
+		    	anim: function() {
+		    		moveHandTo(0.8 , cc.p(340,640));		    		
+		    	}
+		    },{
+		    	time: 72.1,
+		    	anim: function() {
+		    		pressFingerTo(0.4 , cc.p(340,640));
+		    		hookResumeAskForWord(hookResumeMenuLayer , true);
+		    	}
+		    },{
+		    	time: 72.6,
+		    	anim: function() {
+		    		moveHandTo(0.8 , cc.p(-200,0));		    		
+		    	}
+		    },{
+		    	time: 74.2,
+		    	anim: function() {
+		            showSpeechBubble(4.0 , $42.t.mostafa_basic06 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 75.3,
+		    	anim: function() {
+		    		moveMostafaAndButton(3.0, [
+           			    cc.p(500,180),
+        	            cc.p(350,500),
+        	            cc.p(800,1000)
+        		    ]);		
+					cb();
 		    	}
 		    }
 		];
