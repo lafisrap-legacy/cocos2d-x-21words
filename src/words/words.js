@@ -275,7 +275,7 @@ var _42_MODULE = function(_42Layer) {
 				cc.assert(ret,"42words, updateSelectedWord: "+word+" is not in the list!");
 				// also delete if from selected word list
 				sw.words.splice(i,1);
-				if( !sw.words.length ) unselectWord();
+				if( !sw.words.length ) ml.unselectWord();
 				
 				showFullWordAndAsk( sw.brc , word , function( takeWord ) {					
 					if( takeWord ) {
@@ -311,7 +311,7 @@ var _42_MODULE = function(_42Layer) {
 							}
 
 						}
-						unselectWord();
+						ml.unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
 						
 						cc.log("42words, updateSelectedWord, takeWord = true: setSelection()");
@@ -322,7 +322,7 @@ var _42_MODULE = function(_42Layer) {
 					} else {
 						ml.checkForAndRemoveCompleteRows();
 						cc.log("42words, updateSelectedWord, takeWord = false: setSelection()");
-						unselectWord();
+						ml.unselectWord();
 						setSelections();
 						moveSelectedWord(sw.brc);
 						drawScoreBar(true);
@@ -513,7 +513,7 @@ var _42_MODULE = function(_42Layer) {
 			nsw = null;
 
 		if( !s.length ) return false;
-		if( sw ) unselectWord();
+		if( sw ) ml.unselectWord();
 		
 		for( var i=s.length-1 ; i>=0 ; i-- ) {
 			var words = s[i].words;
@@ -580,7 +580,7 @@ var _42_MODULE = function(_42Layer) {
 		}		
 	};
 	
-	var unselectWord = function() {
+	ml.unselectWord = function() {
 		moveSelectedWord(null);
 	}
 	
@@ -1144,7 +1144,7 @@ var _42_MODULE = function(_42Layer) {
 				cc.log("42words, hookOnTap: calling updateSelectedWord()");
 				updateSelectedWord();
 			} else {
-				unselectWord();
+				ml.unselectWord();
 				setSelections();
 				ml.dontAutoSelectWord = true;
 			}
@@ -1217,6 +1217,10 @@ var _42_MODULE = function(_42Layer) {
 				if( oldVal != $42.maxWordValue ) ml.levelsToBlow.push({ level: ml.currentLevel, value: $42.maxWordValue});
 				else ml.levelsToBlow.push({ level: ml.currentLevel, value: null});
 
+				// Init tutorial step 2
+				if( cl === 3 ) {
+					if( ml.hookStartProgram && $42.tutorialsDone < 2 ) ml.hookStartProgram( 1 , true );	
+				}
 				// if level is greater as 42: YOU WON THE GAME!
 				if( cl > 42 ) {
 					blowLevelAndWordValue({win:true}, function() {

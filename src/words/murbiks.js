@@ -20,7 +20,6 @@ $42.SPEECH_BUBBLE_CLOUD_TAG = 103;
 $42.HAND_TAG = 104;
 $42.FINGER_TAG = 102;
 $42.HAND_ROTATION = 60;
-$42.HAND_FINGER_OFFSET = 2;
 $42.HAND_CONTACT_SIZE = 40;
 $42.HAND_CONTACT_COLOR = cc.color(0,0,70);
 $42.HAND_CONTACT_TIME = 0.3;
@@ -36,7 +35,7 @@ var MURBIKS_MODULE = function(layer) {
 		anims = {},
 		blueButton = null,
 		hand = null,
-		contacts = [],
+		contactRings = [],
 		contactActions = [],
 		speechBubbleCloud = null,
 		speechBubbleLine = null,
@@ -113,8 +112,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 11.0,
 		    	anim: function() {
-		    		var tilePos = getTilePosition(),
-		    			handPos = getHandPosition();
+		    		var tilePos = getTilePosition();
 		    		
 		    		tilePos.y -= 40;
 		    		
@@ -123,8 +121,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 11.8,
 		    	anim: function() {
-		    		var tilePos = getTilePosition(),
-		    			handPos = getHandPosition();
+		    		var handPos = getHandPosition();
 		    		
 		    		handPos.x = handPos.x < 320? 530 : 110;
 		    		
@@ -271,6 +268,129 @@ var MURBIKS_MODULE = function(layer) {
 		];
 	};
 	
+	/*
+	 * Program 2
+	 * 
+	 * Selecting a tile, selecting single letters, deleting unwanted letters.
+	 * 
+	 */
+	var selecting_deleting = function(cb) {
+		
+		timer = animCnt = 0;
+		animPrograms = [{
+		    	time: 0,
+		    	anim: function() {
+		    		insertWordIfNotIn("RATTE",5,12);
+	    			$42.maxWordValue = 5;
+	    			
+	    			// tmp:
+	    			mostafa.setPosition(cc.p(800,1000));
+	    			blueButton.setPosition(cc.p(800,895));
+
+	    			showMostafaAndButton(3.0, function() {
+		    			stopTileProgram();
+		    			hideSpeechBubble();
+		    			moveMostafaAndButton(2.0, [
+	              			cc.p(500,180),
+	           	            cc.p(350,500),
+	           	            cc.p(800,1000)
+	           		    ]);
+		    			moveHandTo(1.1 , cc.p(-300,-300));
+		    			cb();
+		    			animCnt = null;
+		    		});		    		
+		    	}
+			},{
+		    	time: 3.0,
+		    	anim: function() {
+		    		var tilePos = getTilePosition();
+		    		
+		    		moveHandTo(1.1 , tilePos);		    		
+		    	}
+		    },{
+		    	time: 4.1,
+		    	anim: function() {
+		    		startTileProgram(lg.tiles.selecting_deleting);
+		    		pressFingerTo(1.0 , cc.p(240,400));		    		
+		    	}
+		    },{
+		    	time: 5.2,
+		    	anim: function() {
+		    		moveHandTo(1.1 , cc.p(-200,0));	
+		    	}
+		    },{
+		    	time: 5.5,
+		    	anim: function() {
+		    		mostafaFlyingToMiddle(5.5);	
+		    	}
+		    },{
+		    	time: 7.0,
+		    	anim: function() {
+		            showSpeechBubble(3.0 , $42.t.mostafa_advanced01 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 8.6,
+		    	anim: function() {
+		    		ml.unselectWord();
+		    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);
+		    	}		    	
+		    },{
+		    	time: 9.0,
+		    	anim: function() {
+		    		var tilePos = getTilePosition();
+		    		
+		    		moveHandTo(1.1 , tilePos);		    		
+		    	}
+		    },{
+		    	time: 10.1,
+		    	anim: function() {
+		    		pressFingerTo(1.0 , cc.p(140,400));		    		
+		    	}
+		    },{
+		    	time: 11.2,
+		    	anim: function() {
+		    		moveHandTo(1.1 , cc.p(-200,0));	
+		    	}
+		    },{
+		    	time: 13.0,
+		    	anim: function() {
+		    		var tilePos = getTilePosition();
+		    		
+		    		moveHandTo(1.1 , tilePos);		    		
+		    	}
+		    },{
+		    	time: 14.1,
+		    	anim: function() {
+		    		pressFingerTo(1.0 , cc.p(222,400));		    		
+		    	}
+		    },{
+		    	time: 15.2,
+		    	anim: function() {
+		    		moveHandTo(1.1 , cc.p(-200,0));	
+		    	}
+		    },{
+		    	time: 16.3,
+		    	anim: function() {
+		            showSpeechBubble(7.0 , $42.t.mostafa_advanced02 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 17.4,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,2);
+		    		
+		    		moveHandTo(1.1 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 19.5,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,2);
+		    		
+		    		pressFingerTo(0.2 , boxPos);		    		
+		    	}
+		    }
+		];
+	};
+	
 	var test = function(cb) {
 		startTileProgram(lg.tiles.test);
 	};
@@ -296,7 +416,7 @@ var MURBIKS_MODULE = function(layer) {
 	            cc.p(500,180)
 		    ],
 			bezierButton = [
-				cc.p(0,-145),
+				cc.p(0,-105),
 	            cc.p(200,415),
 	            cc.p(500,75)
 			];
@@ -348,6 +468,36 @@ var MURBIKS_MODULE = function(layer) {
 	    	); 
 	    	
 	    blueButton.runAction(cc.bezierTo(time, bezierButton));		
+	};
+	
+	var mostafaFlyingToMiddle = function(time) {
+		var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
+		bezierMostafaIn = [
+			cc.p(500,180),
+			cc.p(650,300),
+			cc.p(ml.size.width/2,ml.size.height/2)
+		];
+		bezierMostafaOut = [
+		    cc.p(ml.size.width/2,ml.size.height/2),
+   			cc.p(350,400),
+   			cc.p(500,180)
+   		];
+		animAction.retain();
+			
+	    mostafa.runAction(
+        	cc.sequence(
+        		cc.flipX(true),
+        		cc.bezierTo(2.0, bezierMostafaIn),
+        		cc.moveBy(time-4.0, cc.p(0,50)),
+        		cc.flipX(false),
+        		cc.bezierTo(2.0, bezierMostafaOut),
+        		cc.callFunc(function() {
+        			mul.stopAction(animAction);
+        			animAction = mostafa.runAction(anims.mostafa_land);
+        			animAction.retain();
+        		})
+    		)
+    	); 		
 	};
 
 	var showSpeechBubble = function(time, text, pos, bubbleY) {
@@ -426,6 +576,10 @@ var MURBIKS_MODULE = function(layer) {
 		return ml.tiles[ml.tiles.length-1].sprite.getPosition();
 	};
 	
+	var getBoxPosition = function(row,col) {
+		return ml.boxes[row][col].sprite.getPosition();
+	};
+	
 	var getHandPosition = function() {
 		var fo = getFingerOffset(),
 			hp = hand.getPosition();
@@ -470,9 +624,9 @@ var MURBIKS_MODULE = function(layer) {
 		
 		// stop everything, we have new orders ...
 		hand.stopAllActions();
-    	for( var i=0 ; i<contacts.length ; i++ ) {
-    		contacts[i].setScale(0);
-    		contacts[i].stopAllActions();
+    	for( var i=0 ; i<contactRings.length ; i++ ) {
+    		contactRings[i].setScale(0);
+    		contactRings[i].stopAllActions();
     	}
 		
 	    if( !contact ) {
@@ -480,32 +634,48 @@ var MURBIKS_MODULE = function(layer) {
 		    else hand.runAction(cc.EaseSineIn.create(cc.moveTo(time, cc.p(pos.x- fo.x, pos.y - fo.y))));
 		    
 	    } else {
+
+	    	// we must now the lower finger position shortly to get the target position
+	    	var fp = hand.convertToWorldSpace(finger.getPosition());
+	    	hand.setScale(0.9);
+			fo = getFingerOffset();
+	    	hand.setScale(1.0);
 	    	
-	    	fingerIsPressed = true;
+	    	// move hand with finger pressed down
 		    if( bezierPoint ) hand.runAction(
 		    	cc.sequence(
-		    		cc.scaleTo(time*0.15 ,0.9),
+		    		cc.spawn(
+		    			cc.scaleTo(time*0.15 ,0.9),
+		    			cc.moveTo(time*0.15, cc.p(fp.x-fo.x,fp.y-fo.y))
+		    		),
+		    		cc.callFunc(function() { fingerIsPressed = true; }),
 		    		cc.EaseSineIn.create(
 		    			cc.bezierTo(time*0.7 , bezierHand)
 		    		),
+		    		cc.callFunc(function() { fingerIsPressed = false; }),
 		    		cc.scaleTo(time*0.15,1)    		
 		    	)
 		    );
 		    else hand.runAction(
 		    	cc.sequence(
-		    		cc.scaleTo(time*0.15,0.9),
+		    		cc.spawn(
+		    			cc.scaleTo(time*0.15 ,0.9),
+		    			cc.moveTo(time*0.15, cc.p(fp.x-fo.x,fp.y-fo.y))
+		    		),
+		    		cc.callFunc(function() { fingerIsPressed = true; }),
 		    		cc.EaseSineIn.create(
 		    			cc.moveTo(time*0.7, cc.p(pos.x- fo.x, pos.y - fo.y))
 		    		),
+		    		cc.callFunc(function() { fingerIsPressed = false; }),
 		    		cc.scaleTo(time*0.15,1)    				    		
 		    	)
 		    );
 	    	
-	    	for( var i=0 ; i<contacts.length ; i++ ) {
-	    		contacts[i].runAction(
+	    	for( var i=0 ; i<contactRings.length ; i++ ) {
+	    		contactRings[i].runAction(
 	    			cc.sequence(
 	    				cc.scaleTo(0, 0.5),
-	    				cc.delayTime($42.HAND_CONTACT_TIME/contacts.length*i),
+	    				cc.delayTime($42.HAND_CONTACT_TIME/contactRings.length*i),
 	    				cc.callFunc(function() {
 	    		    		this.runAction(
 			    				cc.repeatForever(
@@ -515,7 +685,7 @@ var MURBIKS_MODULE = function(layer) {
 					    			)
 					    		)
 				    		);	 
-	    				}, contacts[i])
+	    				}, contactRings[i])
 	    			)
 	    		);
 	    	}
@@ -526,11 +696,10 @@ var MURBIKS_MODULE = function(layer) {
 		    		cc.sequence(
 	    				cc.delayTime(time),
 	    				cc.callFunc( function() {
-	    			    	for( var i=0 ; i<contacts.length ; i++ ) {
-	    			    		contacts[i].setScale(0);
-	    			    		contacts[i].stopAllActions();
+	    			    	for( var i=0 ; i<contactRings.length ; i++ ) {
+	    			    		contactRings[i].setScale(0);
+	    			    		contactRings[i].stopAllActions();
 	    			    	}
-    				    	fingerIsPressed = false;
 	    				})
 		    		)
 		    	)
@@ -612,12 +781,12 @@ var MURBIKS_MODULE = function(layer) {
 		hand.addChild(finger,-1,$42.FINGER_TAG);
 		
 		for( var i=0 ; i<3 ; i++ ) {
-			contacts[i] = cc.DrawNode.create();
-			contacts[i].clear();
-			contacts[i].setScale(0);
-			contacts[i].drawCircle(cc.p(0,0), $42.HAND_CONTACT_SIZE, 0, 100, false, 2, $42.HAND_CONTACT_COLOR);
-			finger.addChild(contacts[i]);
-			contacts[i].retain();
+			contactRings[i] = cc.DrawNode.create();
+			contactRings[i].clear();
+			contactRings[i].setScale(0);
+			contactRings[i].drawCircle(cc.p(0,0), $42.HAND_CONTACT_SIZE, 0, 100, false, 2, $42.HAND_CONTACT_COLOR);
+			finger.addChild(contactRings[i]);
+			contactRings[i].retain();
 		}
 	};
 	
@@ -634,6 +803,15 @@ var MURBIKS_MODULE = function(layer) {
 	 */
 	var programs = [
         turning_moving_falling_choosing,		// 0
+        selecting_deleting,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
         test
     ];
 
@@ -682,9 +860,7 @@ var MURBIKS_MODULE = function(layer) {
 		
 		// Emulate touch events
     	if( fingerIsPressed ) {
-			var fo = getFingerOffset(),
-				pos = hand.getPosition();
-				pos.x += fo.x; pos.y += fo.y;
+			var pos = hand.convertToWorldSpace(finger.getPosition());
 			
     		if( !fingerPos ) {
     			fingerPos = pos;
@@ -697,8 +873,7 @@ var MURBIKS_MODULE = function(layer) {
     		}
     	} else {
     		if( fingerPos ) {
-    			
-    			ml._touchListener.onTouchesEnded(undefined, undefined, cc.p(0,0));
+    			ml._touchListener.onTouchesEnded(undefined, undefined, fingerPos);
     			fingerPos = null;
     		}
     	};

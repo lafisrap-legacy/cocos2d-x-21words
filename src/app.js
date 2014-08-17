@@ -762,7 +762,7 @@ var _42GameLayer = cc.Layer.extend({
     				if(!self.boxes[i][j]) break;
     			}
     			if(j === $42.BOXES_PER_ROW || rowToDelete === i) {
-    				deleteRow(i);
+    				self.deleteRow(i);
     				rowsDeleted.push(i);
     			}
     		}
@@ -809,13 +809,13 @@ var _42GameLayer = cc.Layer.extend({
     		}
     	};
     	
-       	var deleteRow = function(row) {
+    	self.deleteRow = function(row, deleteAnyway) {
 
         	var batch = self.getChildByTag($42.TAG_SPRITE_MANAGER);
 
         	// delete row ... 
         	for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
-		    	if( !self.hookDeleteBox || self.hookDeleteBox({row:row,col:i}) ) {
+		    	if( deleteAnyway || !self.hookDeleteBox || self.hookDeleteBox({row:row,col:i}) ) {
 		    		
 	        		// destroy sprite and box  
 		    		if( self.boxes[row][i] ) {
