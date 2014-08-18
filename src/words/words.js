@@ -60,13 +60,15 @@ $42.SCORE_COLOR_DIMM = cc.color(160,120,55);
 $42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);
 $42.POINTS_TO_ADD_CYCLES = 3;
 $42.LEVELS_TO_BLOW_CYCLES = 30;
-$42.PLUS1_BUTTON_X = 80;
+$42.PLUS1_BUTTON_X = 130;
 $42.PLUS1_BUTTON_Y = 1200;
 $42.PLUS1_BUTTON_COST = 1000;
 $42.PLUS1_BUTTON_TOPROW = 10;
-$42.PLUS3_BUTTON_X = 440;
+$42.PLUS1_BUTTON_OPACITY = 170;
+$42.PLUS3_BUTTON_X = 490;
 $42.PLUS3_BUTTON_Y = 1200;
 $42.PLUS3_BUTTON_COST = 10000;
+$42.PLUS3_BUTTON_OPACITY = 170;
 
 var _42_MODULE = function(_42Layer) {
 
@@ -165,8 +167,6 @@ var _42_MODULE = function(_42Layer) {
 		batch = ml.getChildByTag($42.TAG_SPRITE_MANAGER);
 		
 		if( !sw || ml.wordIsBeingSelected ) return false;
-		
-		cc.log("42words, updateSelectedWord, Enter function!");
 		
 		// Define sprites and show word start sprite
 		var setMarkerFrame = [],
@@ -719,7 +719,6 @@ var _42_MODULE = function(_42Layer) {
 	
 	var drawScoreBar = function(newSprite) {
 		var sb = ml.scoreBar;
-		cc.log("Enter drawScoreBar.");
 		if( !sb ) {
 			
 		    // draw score bar
@@ -731,7 +730,6 @@ var _42_MODULE = function(_42Layer) {
 			
 			// draw total points
 			ml.score = drawText(ml.totalPoints.toString(),cc.p(110,40),56,$42.SCORE_COLOR_BRIGHT,sb);
-			cc.log("Create ml.score ("+ml.score+") and set string to "+ml.totalPoints+".");
 			ml.nextScore = drawText("^ "+$42.LEVEL_SCORE[ml.currentLevel].toString(),cc.p(105,80),24,$42.SCORE_COLOR_DIMM,sb);
 			
 			// draw clipping rect
@@ -872,7 +870,7 @@ var _42_MODULE = function(_42Layer) {
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
 		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
-		else if( ml.hookStartProgram ) ml.hookStartProgram( 1 , false );
+		else if( ml.hookStartProgram ) ml.hookStartProgram( 10 , false );
 
 		// points array
 		ml.pointsToAdd = [];
@@ -903,51 +901,31 @@ var _42_MODULE = function(_42Layer) {
 		}
 		
 		// draw two plus buttons
-		var plus1Background = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("plus1"),cc.rect(0,0,216,70)),
-			plus1BackgroundHighlit = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("plus1highlit"),cc.rect(0,0,216,70)),
-			plus1Label = cc.LabelTTF.create("-"+$42.PLUS1_BUTTON_COST, "Arial", 32),
-			plus3Background = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("plus3"),cc.rect(0,0,216,70)),
-			plus3BackgroundHighlit = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("plus3highlit"),cc.rect(0,0,216,70)),
-			plus3Label = cc.LabelTTF.create("-"+$42.PLUS3_BUTTON_COST, "Arial", 32);
-		plus1Background.retain();
-		plus1BackgroundHighlit.retain();
-		plus1Label.retain();
-		plus3Background.retain();
-		plus3BackgroundHighlit.retain();
-		plus3Label.retain();
-		
-        plus1Label.color = $42.SCORE_COLOR_BRIGHT;
-        plus3Label.color = $42.SCORE_COLOR_BRIGHT;
-
-        ml.plus1Button = cc.ControlButton.create(plus1Label, plus1Background);
-        ml.plus1Button.setBackgroundSpriteForState(plus1BackgroundHighlit, cc.CONTROL_STATE_HIGHLIGHTED);
-        ml.plus1Button.setTitleColorForState(cc.color.WHITE, cc.CONTROL_STATE_HIGHLIGHTED);
-        ml.plus1Button.x = $42.PLUS1_BUTTON_X;
-        ml.plus1Button.y = $42.PLUS1_BUTTON_Y;
-        ml.plus1Button.retain();
-        ml.plus1Button.addTargetWithActionForControlEvents(ml, function() {
+        var item = cc.MenuItemImage.create(cc.spriteFrameCache.getSpriteFrame("plus1"), cc.spriteFrameCache.getSpriteFrame("plus1highlit"), function() {
         	if( ml.totalPoints >= $42.PLUS1_BUTTON_COST ) {
             	for( var i=0 ; i<10 ; i++ ) ml.pointsToAdd.push(-$42.PLUS1_BUTTON_COST/10);
             	ml.add1and3s.push("1");        		
-        	}
-        }, cc.CONTROL_EVENT_TOUCH_DOWN);
-        
-        ml.addChild(ml.plus1Button, 10);
+        	}        	        	
+        } , ml);
+        item.setOpacity($42.PLUS1_BUTTON_OPACITY);
+        ml.plus1Button = cc.Menu.create( item );
+        ml.plus1Button.x = $42.PLUS1_BUTTON_X;
+        ml.plus1Button.y = $42.PLUS1_BUTTON_Y;
+        ml.plus1Button.retain();
+        ml.addChild(ml.plus1Button,10);
 
-        ml.plus3Button = cc.ControlButton.create(plus3Label, plus3Background);
-        ml.plus3Button.setBackgroundSpriteForState(plus3BackgroundHighlit, cc.CONTROL_STATE_HIGHLIGHTED);
-        ml.plus3Button.setTitleColorForState(cc.color.WHITE, cc.CONTROL_STATE_HIGHLIGHTED);
-        ml.plus3Button.x = $42.PLUS3_BUTTON_X;
-        ml.plus3Button.y = $42.PLUS3_BUTTON_Y;
-        ml.plus3Button.retain();
-        ml.plus3Button.addTargetWithActionForControlEvents(ml, function() {
+        var item = cc.MenuItemImage.create(cc.spriteFrameCache.getSpriteFrame("plus3"), cc.spriteFrameCache.getSpriteFrame("plus3highlit"), function() {
         	if( ml.wordTreasureBestWord && ml.totalPoints >= $42.LEVEL_SCORE[ml.wordTreasureBestWord.value+2] ) {
             	for( var i=0 ; i<10 ; i++ ) ml.pointsToAdd.push(-$42.PLUS3_BUTTON_COST/10);
             	ml.add1and3s.push("3");        		
         	}
-        }, cc.CONTROL_EVENT_TOUCH_DOWN);
-
-        ml.addChild(ml.plus3Button, 10);
+        } , ml);
+        item.setOpacity($42.PLUS3_BUTTON_OPACITY);
+        ml.plus3Button = cc.Menu.create( item );
+        ml.plus3Button.x = $42.PLUS3_BUTTON_X;
+        ml.plus3Button.y = $42.PLUS3_BUTTON_Y;
+        ml.plus3Button.retain();
+        ml.addChild(ml.plus3Button,10);
 		
 		drawScoreBar();
 	};
@@ -1040,10 +1018,10 @@ var _42_MODULE = function(_42Layer) {
 		ml.lastBrcs = brcs;
 		
 		for( i=0 ; i<brcs.length ; i++ ) if( brcs[i].row > $42.PLUS1_BUTTON_TOPROW ) break;
-		if( !ml.plus1ButtonVisible && i !== brcs.length) {
+		if( !ml.plus1ButtonVisible && i < brcs.length && ml.totalPoints >= $42.PLUS1_BUTTON_COST ) {
 			ml.plus1ButtonVisible = true;
 			ml.plus1Button.runAction(cc.EaseSineIn.create(cc.moveBy(0.75,cc.p(0, -100))));
-		} else if( ml.plus1ButtonVisible && i === brcs.length) {
+		} else if( ml.plus1ButtonVisible && (i === brcs.length || ml.totalPoints <= $42.PLUS1_BUTTON_COST) ) {
 			ml.plus1ButtonVisible = false;
 			ml.plus1Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0, 100))));					
 		}
