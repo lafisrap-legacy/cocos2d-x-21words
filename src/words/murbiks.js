@@ -76,6 +76,9 @@ var MURBIKS_MODULE = function(layer) {
 		    			moveHandTo(0.8 , cc.p(-300,-300));
 		    			cb();
 		    			animCnt = null;
+		    			fingerIsPressed = false;
+		    			ml._touchListener.onTouchesEnded(undefined, undefined, fingerPos);
+		    			fingerPos = null;
 		    		});		    		
 		    	}
 		    },{
@@ -97,12 +100,12 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 8.5,
 		    	anim: function() {
-		            pressFingerTo(0.5 , cc.p(290,650));		    		
+		            pressFingerTo(0.6 , cc.p(290,650));		    		
 		    	}
 		    },{
 		    	time: 9.5,
 		    	anim: function() {
-		    		moveHandTo(0.5 , cc.p(270,520));		    		
+		    		moveHandTo(0.6 , cc.p(270,520));		    		
 		    	}
 		    },{
 		    	time: 10.0,
@@ -297,6 +300,9 @@ var MURBIKS_MODULE = function(layer) {
 	           		    ]);
 		    			moveHandTo(1.1 , cc.p(-300,-300));
 		    			cb();
+		    			fingerIsPressed = false;
+		    			ml._touchListener.onTouchesEnded(undefined, undefined, fingerPos);
+		    			fingerPos = null;
 		    			animCnt = null;
 		    		});		    		
 		    	}
@@ -647,7 +653,7 @@ var MURBIKS_MODULE = function(layer) {
 		};
 		
     	var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
-			menuText = cc.MenuItemFont.create($42.t.murbiks_tutorial, clickOnSkip , mul),
+			menuText = cc.MenuItemFont.create(" ", clickOnSkip , mul),
 			menuBox = cc.Menu.create(menuText),
 			bezierMostafa = [
 			    cc.p(0,0),
@@ -665,6 +671,7 @@ var MURBIKS_MODULE = function(layer) {
 		menuBox.x = 125;
 		menuBox.y = 35;		
 		menuBox.setColor(cc.color(0,0,40,255));
+		menuText.setString($42.t.murbiks_tutorial);
 		blueButton.addChild(menuBox,5);
 		mul.addChild(blueButton,10);
 			
@@ -773,10 +780,11 @@ var MURBIKS_MODULE = function(layer) {
 		speechBubbleCloud.runAction(
 			cc.sequence(
 				cc.fadeTo(0.3,$42.SPEECH_BUBBLE_OPACITY),
-				cc.delayTime((time || 3)-(0.3+0.9+0.3)),
+				cc.delayTime(0.5),
 				cc.callFunc( function() {
 			        mul.removeChild(speechBubbleLine);
 				}),
+				cc.delayTime((time || 3)-(0.3+0.9+0.3+0.5)),
 				cc.fadeOut(0.9),
 				cc.delayTime(0.3),
 				cc.callFunc( function() {

@@ -870,7 +870,7 @@ var _42_MODULE = function(_42Layer) {
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
 		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
-		else if( ml.hookStartProgram ) ml.hookStartProgram( 10 , false );
+		else if( ml.hookStartProgram ) ml.hookStartProgram( 0 , false );
 
 		// points array
 		ml.pointsToAdd = [];
@@ -983,7 +983,7 @@ var _42_MODULE = function(_42Layer) {
         	if( nextTile !== null ) {
         		var val = $42.LETTERS.indexOf(nextTile.letters[i]);
         	} else {
-	         	var len = sw && sw.missingLetters.length,
+	         	var len = sw && sw.missingLetters && sw.missingLetters.length || 0,
          			prob = len <= 3? $42.NEEDED_LETTERS_PROBABILITY / (5-len) : $42.NEEDED_LETTERS_PROBABILITY; 
         		for( var j=0 ; j<5 ; j++ ) {
 	         		val = (Math.random()>prob || !sw || !len)?  
@@ -1000,10 +1000,13 @@ var _42_MODULE = function(_42Layer) {
        					
     		var	spriteFrame = cc.spriteFrameCache.getSpriteFrame($42.LETTER_NAMES[val]),
     			sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
-    	
+    		
     		sprite.retain();
         	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
         	userData[i] = $42.LETTERS[val];
+        	
+        	cc.log("42words, hookSetTileImages: Creating new tile letter "+userData[i]+" on position "+i);
+        	
 	        tileSprite.addChild(sprite);
         }
 
