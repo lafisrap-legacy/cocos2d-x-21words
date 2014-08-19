@@ -162,7 +162,7 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	// update selected word
-	var updateSelectedWord = function() {
+	var updateSelectedWord = function(options) {
 		var sw = ml.selectedWord,
 		batch = ml.getChildByTag($42.TAG_SPRITE_MANAGER);
 		
@@ -274,7 +274,7 @@ var _42_MODULE = function(_42Layer) {
 				if( !sw.words.length ) ml.unselectWord();
 				
 				ml.wordIsBeingSelected = true;
-				showFullWordAndAsk( sw.brc , word , function( takeWord ) {	
+				showFullWordAndAsk( sw.brc , word , options && options.rowsDeleted || 0 , function( takeWord ) {	
 					ml.wordIsBeingSelected = false;
 					if( takeWord ) {
 
@@ -384,7 +384,7 @@ var _42_MODULE = function(_42Layer) {
 		return false;
 	};
 	
-	var showFullWordAndAsk = function( brc , word , cb ) {
+	var showFullWordAndAsk = function( brc , word , rowsDeleted , cb ) {
 		var batch = ml.getChildByTag($42.TAG_SPRITE_MANAGER),
 			width = word.length * $42.BS,
 			height = $42.BS,
@@ -420,9 +420,17 @@ var _42_MODULE = function(_42Layer) {
               cc.p(x<ml.size.width/2?ml.size.width:0,ml.size.height/2),
               cc.p(ml.size.width/2,ml.size.height-300)];
 
-		wordFrameSprite.runAction(cc.EaseSineIn.create(cc.bezierTo($42.WORD_FRAME_MOVE_TIME,bezier)));
+		wordFrameSprite.runAction(
+			cc.sequence(
+				cc.delayTime($42.MOVE_SPEED*rowsDeleted),
+				cc.EaseSineIn.create(
+					cc.bezierTo($42.WORD_FRAME_MOVE_TIME,bezier)
+				)
+			)
+		);
 		wordFrameSprite.runAction(cc.EaseSineIn.create(
 			cc.sequence(
+				cc.delayTime($42.MOVE_SPEED*rowsDeleted),
 				cc.EaseSineOut.create(
 					cc.scaleTo($42.WORD_FRAME_MOVE_TIME/2,1.5)
 				),
@@ -1079,9 +1087,9 @@ var _42_MODULE = function(_42Layer) {
 		}
 	};
 	
-	_42Layer.hookAllBoxesMovedDown = function() {
+	_42Layer.hookAllBoxesMovedDown = function(rowsDeleted) {
 		setSelections();
-		updateSelectedWord();			
+		updateSelectedWord({ rowsDeleted: rowsDeleted});			
 
 		drawScoreBar(true);
 	};

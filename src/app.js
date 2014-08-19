@@ -807,7 +807,7 @@ var _42GameLayer = cc.Layer.extend({
 	    			}
     			}
     			
-    			if( self.hookAllBoxesMovedDown ) self.hookAllBoxesMovedDown();
+    			if( self.hookAllBoxesMovedDown ) self.hookAllBoxesMovedDown(rowsDeleted.length);
     		}
     	};
     	
