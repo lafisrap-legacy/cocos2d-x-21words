@@ -1119,9 +1119,7 @@ var _42_MODULE = function(_42Layer) {
 				cc.log("42words, hookOnTap: calling updateSelectedWord()");
 				updateSelectedWord();
 			} else {
-				ml.unselectWord();
-				setSelections();
-				ml.dontAutoSelectWord = true;
+				blowWords(tapPos,ml.boxes[sw.brc.row][sw.brc.col].words);
 			}
 		} else if( tapPos.y < $42.BOXES_Y_OFFSET ) {
 			moveRollingLayer(undefined,3);
@@ -1156,8 +1154,10 @@ var _42_MODULE = function(_42Layer) {
 		} 
 		
 		// check if selected word is hit
-		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y && tapPos.y <= swPos.y + $42.BS*2 ) {
-			blowWords(tapPos,ml.boxes[sw.brc.row][sw.brc.col].words);
+		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y - $42.BS && tapPos.y <= swPos.y + $42.BS ) {
+			ml.unselectWord();
+			setSelections();
+			ml.dontAutoSelectWord = true;
 		}
 	};
 	
