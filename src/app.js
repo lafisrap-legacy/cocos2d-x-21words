@@ -284,9 +284,11 @@ var _42GameLayer = cc.Layer.extend({
 	                
 	                if(!self.isSwipeUp && !self.isSwipeLeft && !self.isSwipeRight && !self.isSwipeDown) {
 	                	if( new Date().getTime() - self.touchStartTime > $42.LONG_TAP_TIME ) {
+	    		    		cc.log("42words, _touchListener: hookOnLongTap at "+loc.x+" / "+loc.y);
 	    	                if( self.hookOnLongTap ) self.hookOnLongTap(loc);
 	                	} else {
 		                	self.isTap = true;
+	    		    		cc.log("42words, _touchListener: hookOnTap at "+loc.x+" / "+loc.y);
 		                	if( self.hookOnTap ) self.hookOnTap(loc);
 	                	}
 	                } else {

@@ -8,6 +8,7 @@
  * 
  * */
 
+$42.MURBIKS_LAYER_TAG = 103;
 $42.SPEECH_BUBBLE_WIDTH = 600;
 $42.SPEECH_BUBBLE_HEIGHT = 450;
 $42.SPEECH_BUBBLE_COLOR = cc.color(0,0,70);
@@ -65,21 +66,7 @@ var MURBIKS_MODULE = function(layer) {
 		    		insertWordIfNotIn("ENTE",4,13);
 	    			$42.maxWordValue = 4;
 
-	    			showMostafaAndButton(2.0, function() {
-		    			stopTileProgram();
-		    			hideSpeechBubble();
-		    			moveMostafaAndButton(2.0, [
-	              			cc.p(500,180),
-	           	            cc.p(350,500),
-	           	            cc.p(800,1000)
-	           		    ]);
-		    			moveHandTo(0.8 , cc.p(-300,-300));
-		    			cb();
-		    			animCnt = null;
-		    			fingerIsPressed = false;
-		    			ml._touchListener.onTouchesEnded(undefined, undefined, fingerPos);
-		    			fingerPos = null;
-		    		});		    		
+	    			showMostafaAndButton(2.0, function() { endProgram(cb) } );		    		
 		    	}
 		    },{
 		    	time: 2.5,
@@ -100,24 +87,24 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 8.5,
 		    	anim: function() {
-		            pressFingerTo(0.6 , cc.p(290,650));		    		
+		            pressFingerTo(0.643 , cc.p(290,650));		    		
 		    	}
 		    },{
 		    	time: 9.5,
 		    	anim: function() {
-		    		moveHandTo(0.6 , cc.p(270,520));		    		
+		    		moveHandTo(0.5 , cc.p(270,420));		    		
 		    	}
 		    },{
 		    	time: 10.0,
 		    	anim: function() {
-		    		pressFingerTo(0.5 , cc.p(280,670));		    		
+		    		pressFingerTo(0.643 , cc.p(280,670));		    		
 		    	}
 		    },{
 		    	time: 11.0,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
-		    		tilePos.y -= 40;
+		    		tilePos.y -= 20;
 		    		
 		    		moveHandTo(0.8 , tilePos);		    		
 		    	}
@@ -133,8 +120,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 13.3,
 		    	anim: function() {
-		    		var tilePos = getTilePosition(),
-		    			handPos = getHandPosition();
+		    		var handPos = getHandPosition();
 		    		
 		    		handPos.x = handPos.x < 320? 530 : 110;
 		    		
@@ -143,7 +129,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 14.8,
 		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(200,300));		    		
+		    		pressFingerTo(1.0 , cc.p(192,300));		    		
 		    	}
 		    },{
 		    	time: 15.9,
@@ -164,29 +150,29 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 19.5,
 		    	anim: function() {
-		            pressFingerTo(0.4 , cc.p(290,650));		    		
+		            pressFingerTo(0.643 , cc.p(290,650));		    		
 		    	}
 		    },{
-		    	time: 20.0,
+		    	time: 20.2,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
-		    		tilePos.y -= 40;
+		    		tilePos.y -= 20;
 		    		
-		    		moveHandTo(0.8 , tilePos);		    		
+		    		moveHandTo(1.1 , tilePos);		    		
 		    	}
 		    },{
-		    	time: 20.8,
+		    	time: 21.4,
 		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(240,400));		    		
+		    		pressFingerTo(1.0 , cc.p(224,400));		    		
 		    	}
 		    },{
-		    	time: 21.9,
+		    	time: 22.4,
 		    	anim: function() {
 		    		moveHandTo(0.8 , cc.p(-200,0));		    		
 		    	}
 		    },{
-		    	time: 22.0,
+		    	time: 22.5,
 		    	anim: function() {
 		            showSpeechBubble(6.0 , $42.t.mostafa_basic03 , mostafa.getPosition());		    		
 		    	}
@@ -199,24 +185,24 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 25.0,
 		    	anim: function() {
-		            pressFingerTo(0.4 , cc.p(290,650));		    		
+		            pressFingerTo(0.643 , cc.p(290,650));		    		
 		    	}
 		    },{
-		    	time: 25.5,
+		    	time: 25.7,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
-		    		tilePos.y -= 40;
+		    		tilePos.y -= 20;
 		    		
-		    		moveHandTo(0.8 , tilePos);		    		
+		    		moveHandTo(1.1 , tilePos);		    		
 		    	}
 		    },{
-		    	time: 26.3,
+		    	time: 26.8,
 		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(380,400));		    		
+		    		pressFingerTo(1.0 , cc.p(384,400));		    		
 		    	}
 		    },{
-		    	time: 27.4,
+		    	time: 27.9,
 		    	anim: function() {
 		    		moveHandTo(0.8 , cc.p(-200,0));		    		
 		    	}
@@ -290,21 +276,7 @@ var MURBIKS_MODULE = function(layer) {
 	    			mostafa.setPosition(cc.p(800,1000));
 	    			blueButton.setPosition(cc.p(800,895));
 
-	    			showMostafaAndButton(3.0, function() {
-		    			stopTileProgram();
-		    			hideSpeechBubble();
-		    			moveMostafaAndButton(2.0, [
-	              			cc.p(500,180),
-	           	            cc.p(350,500),
-	           	            cc.p(800,1000)
-	           		    ]);
-		    			moveHandTo(1.1 , cc.p(-300,-300));
-		    			cb();
-		    			fingerIsPressed = false;
-		    			ml._touchListener.onTouchesEnded(undefined, undefined, fingerPos);
-		    			fingerPos = null;
-		    			animCnt = null;
-		    		});		    		
+	    			showMostafaAndButton(3.0, function() { endProgram(cb) } );		    		
 		    	}
 			},{
 		    	time: 3.0,
@@ -350,7 +322,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 10.1,
 		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(140,400));		    		
+		    		pressFingerTo(1.0 , cc.p(128,400));		    		
 		    	}
 		    },{
 		    	time: 11.2,
@@ -391,10 +363,10 @@ var MURBIKS_MODULE = function(layer) {
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,2);
 		    		
-		    		pressFingerTo(0.2 , boxPos);		    		
+		    		pressFingerTo(0.3 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 19.0,
+		    	time: 19.2,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,2);
 		    		
@@ -415,10 +387,11 @@ var MURBIKS_MODULE = function(layer) {
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,2);
 		    		
-		    		pressFingerTo(0.2 , boxPos);		    		
+		    		cc.log("42words, selecting_deleting: pressFingerTo to "+boxPos.x+" / "+boxPos.y);
+		    		pressFingerTo(0.3 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 22.0,
+		    	time: 22.2,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,2);
 		    		
@@ -437,7 +410,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 26.1,
 		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(280,400));		    		
+		    		pressFingerTo(1.0 , cc.p(288,400));		    		
 		    	}
 		    },{
 		    	time: 27.2,
@@ -547,7 +520,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 52.4,
 		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(550,100));		    		
+		    		pressFingerTo(1.0 , cc.p(544,100));		    		
 		    	}
 		    },{
 		    	time: 53.5,
@@ -645,15 +618,29 @@ var MURBIKS_MODULE = function(layer) {
 	 * Service programs
 	 */
 	
+	var endProgram = function(cb) {
+		stopTileProgram();
+		hideSpeechBubble();
+		moveMostafaAndButton(2.0, [
+  			cc.p(500,180),
+	            cc.p(350,500),
+	            cc.p(800,1000)
+		    ]);
+		moveHandTo(0.8 , cc.p(-300,-300));
+		fingerIsPressed = false;
+		if( fingerPos ) {
+			ml._touchListener.onTouchesEnded(undefined, undefined, fingerPos);
+			fingerPos = null;
+		}
+		cb();
+		animCnt = null;
+	};
+	
 	var showMostafaAndButton = function(time, cb) {
 		
 		// menu functions
-		var clickOnSkip = function() {
-			cb();
-		};
-		
     	var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
-			menuText = cc.MenuItemFont.create(" ", clickOnSkip , mul),
+			menuText = cc.MenuItemFont.create(" ", cb , mul),
 			menuBox = cc.Menu.create(menuText),
 			bezierMostafa = [
 			    cc.p(0,0),
@@ -665,8 +652,6 @@ var MURBIKS_MODULE = function(layer) {
 	            cc.p(200,415),
 	            cc.p(500,75)
 			];
-		menuBox.retain();
-		menuText.retain();
 		animAction.retain();
 		menuBox.x = 125;
 		menuBox.y = 35;		
@@ -867,10 +852,9 @@ var MURBIKS_MODULE = function(layer) {
 	            cc.p(pos.x - fo.x,pos.y - fo.y)
             ] : null;
 		
-		if( !mul.getChildByTag($42.HAND_TAG) ) mul.addChild(hand, 5, $42.HAND_TAG);
-		
 		// stop everything, we have new orders ...
 		hand.stopAllActions();
+		fingerIsPressed = false;
     	for( var i=0 ; i<contactRings.length ; i++ ) {
     		contactRings[i].setScale(0);
     		contactRings[i].stopAllActions();
@@ -975,8 +959,6 @@ var MURBIKS_MODULE = function(layer) {
 		// Create layer for tutorial
 		mul = new cc.Layer();
 		mul.retain();
-		mul.update = update;
-		mul.scheduleUpdate();
 		
 		// Load sprite frames to frame cache, add texture node
         cc.spriteFrameCache.addSpriteFrames(res.murbiks_plist);
@@ -1021,11 +1003,13 @@ var MURBIKS_MODULE = function(layer) {
 		// load hand, finger and contact
 		hand = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("hand"),cc.rect(0,0,364,640));
 		hand.setRotation($42.HAND_ROTATION);
+		hand.setPosition(cc.p(-300,-300));
 		hand.retain();
 		finger = cc.Node.create();
 		finger.setPosition(260,620);
 		finger.retain();
 		hand.addChild(finger,-1,$42.FINGER_TAG);
+		mul.addChild(hand, 5, $42.HAND_TAG);
 		
 		for( var i=0 ; i<3 ; i++ ) {
 			contactRings[i] = cc.DrawNode.create();
@@ -1035,6 +1019,9 @@ var MURBIKS_MODULE = function(layer) {
 			finger.addChild(contactRings[i]);
 			contactRings[i].retain();
 		}
+		
+		mul.update = update;
+		mul.scheduleUpdate();
 	};
 	
 	var exitAnimation = function() {
@@ -1042,6 +1029,7 @@ var MURBIKS_MODULE = function(layer) {
 		// Create layer for tutorial
 		mul.release();
 		mul.unscheduleUpdate();
+		ml.getParent().removeChild(mul);
 	};
 	
  
@@ -1065,20 +1053,21 @@ var MURBIKS_MODULE = function(layer) {
 	ml.hookStartProgram = function(program, stopEvents) {
 		cc.assert(typeof programs[program] === "function" , "42words, startProgramm: Invalid program number.");
 		
-		ml.getParent().addChild(mul,3);
-
 		lg = $42.languagePack;
+
+		var scene = ml.getParent();
+		if( !scene.getChildByTag($42.MURBIKS_LAYER_TAG )) scene.addChild(mul,3,$42.MURBIKS_LAYER_TAG);
 
 		// No touch events
 		if( stopEvents ) ml.stopListeners();
+		
 		programs[program](function() {
 			// resume touch events
 			var ls = cc.sys.localStorage;
 			$42.tutorialsDone = program + 1;
 			ls.setItem("tutorialsDone",$42.tutorialsDone); 
-			
-			if( stopEvents ) ml.initListeners();
 
+			if( stopEvents ) ml.initListeners();
 		});
 	};
 	
@@ -1112,6 +1101,7 @@ var MURBIKS_MODULE = function(layer) {
     		if( !fingerPos ) {
     			fingerPos = pos;
 
+	    		cc.log("42words, update ("+timer+"): onTouchesBegan to "+fingerPos.x+" / "+fingerPos.y);
     			ml._touchListener.onTouchesBegan(undefined, undefined, fingerPos);
     		} else {
     			fingerPos = pos;
@@ -1120,6 +1110,7 @@ var MURBIKS_MODULE = function(layer) {
     		}
     	} else {
     		if( fingerPos ) {
+	    		cc.log("42words, update ("+timer+"): onTouchesEnded to "+fingerPos.x+" / "+fingerPos.y);
     			ml._touchListener.onTouchesEnded(undefined, undefined, fingerPos);
     			fingerPos = null;
     		}

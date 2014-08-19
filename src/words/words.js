@@ -92,7 +92,7 @@ var _42_MODULE = function(_42Layer) {
 				var box = ml.boxes[i][j];				
 				if(!box) continue;
 				
-				var oldPrefix = box.words && box.words[0].word.substring(0,3);
+				var oldPrefix = box.words && box.words[0] && box.words[0].word.substring(0,3) || null;
 				box.words = null;
 				checkForPrefixes({row:i,col:j}, function(brc, words) {
 					//ml.wordCandidates = ml.wordCandidates.concat(words);
@@ -870,7 +870,7 @@ var _42_MODULE = function(_42Layer) {
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
 		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
-		else if( ml.hookStartProgram ) ml.hookStartProgram( 0 , false );
+		else if( ml.hookStartProgram ) ml.hookStartProgram( 1 , false );
 
 		// points array
 		ml.pointsToAdd = [];
