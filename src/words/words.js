@@ -247,16 +247,12 @@ var _42_MODULE = function(_42Layer) {
 				sw.sprites[col].retain();
 				batch.addChild(sw.sprites[col],5);
 				sw.sprites[col].setPosition(cc.p($42.BOXES_X_OFFSET + i * $42.BS + $42.MARKER_X_OFFSET, 
-						   						 $42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.MARKER_Y_OFFSET));
-			}	
-			if( sw.sprites[col] ) {
-				var pos = sw.sprites[col].getPosition(),
-					row = Math.round(pos.y-$42.BOXES_Y_OFFSET-$42.MARKER_Y_OFFSET)/$42.BS;
-				if( row != sw.brc.row ) {
+						   						 $42.BOXES_Y_OFFSET + row * $42.BS + $42.MARKER_Y_OFFSET));
+				if( row !== sw.brc.row ) {
 					var rows = row - sw.brc.row;
-					sw.sprites[col].runAction(cc.moveBy($42.MOVE_SPEED*rows, cc.p(0,-$42.BS*rows)));			
+					sw.sprites[col].runAction(cc.moveBy($42.MOVE_SPEED*rows, cc.p(0,-$42.BS*rows)));					
 				}
-			}
+			}	
 		}
 		
 		sw.missingLetters = missingLetters;
