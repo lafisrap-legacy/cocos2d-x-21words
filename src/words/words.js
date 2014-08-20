@@ -874,7 +874,7 @@ var _42_MODULE = function(_42Layer) {
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
 		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
-		else if( ml.hookStartProgram ) ml.hookStartProgram( 1 , false );
+		else if( ml.hookStartProgram ) ml.hookStartProgram( 10 , false );
 
 		// points array
 		ml.pointsToAdd = [];
@@ -1255,75 +1255,77 @@ var _42_MODULE = function(_42Layer) {
 		
 	};
 	
-	var loadLanguagePack = function( pack ) {
-		
-		cc.log("42words, loadLanguagePack: STARTING LOADING ...");
-		var filename = i18n_language_packs[pack];
-		cc.loader.loadJson("res/i18n/"+filename, function(err, json) {
-			if( !err ) {
-				cc.log("42words, loadLanguagePack: ... LOADED LANGUAGE PACK, GOING ON ...");
-				var lg = $42.languagePack = json;
-				$42.t = lg.apptext;
-				
-				cc.loader.loadJson("res/words/"+lg.wordlist+".words.json", function(err, json) {
-					if( !err ) {
-						cc.log("42words, loadLanguagePack: ... LOADED WORDS, GOING ON ...");
-						$42.words = json;
-
-						cc.loader.loadJson("res/words/"+lg.wordlist+".letters.json", function(err, json) {
-							if( !err ) {
-								cc.log("42words, loadLanguagePack: ... LOADED LETTERS!");
-								var lv = $42.letterValues = json,
-									l = $42.LETTERS;
-								// get the most common
-								var max=0;
-								for( letter in lv ) {
-									max=Math.max(max,lv[letter]);
-								}
-
-								$42.letterOccurences = [];
-								for( var i=0 ; i<l.length ; i++ ) {
-									var occ = lv[l[i]] && parseInt(1/lv[l[i]]*max);
-									$42.letterOccurences[i] = occ || 0; 
-								}
-							} else {
-								throw err;
-							}
-						});
-						
-						cc.loader.loadJson("res/words/"+lg.wordlist+".prefixes.json", function(err, json) {
-							if( !err ) {
-								cc.log("42words, loadLanguagePack: ... LOADED PREFIX VALUES!");
-								$42.prefixValues = json;
-							} else {
-								throw err;
-							}
-						});
-						
-						// check if word file is compatible
-						for( var prefix in json ) {
-							var words = json[prefix];
-							cc.assert(words && words[0].word, "42words, json loader: Prefix "+prefix+" has no words.");
-							for( var j=0 ; j<words.length ; j++ ) {
-								cc.assert(words[j].word.length >=4 && words[j].word.length <= $42.BOXES_PER_ROW, 
-										"42words, json loader: Word '"+words[j].word+"' has wrong length.");	
-							}
-						}
-					} else {
-						throw err;
-					}
-				});
-			} else {
-				throw err;
-			}
-		});
-	};
-	
-	// read json file with words
-	if( !$42.languagePack ) {
-		loadLanguagePack(0);
-	}
-	
 	// call tutorial module if available
 	if( typeof MURBIKS_MODULE === 'function' ) MURBIKS_MODULE(ml);
+};
+
+$42.loadLanguagePack = function( pack ) {
+	
+	cc.log("42words, loadLanguagePack: STARTING LOADING ...");
+	var filename = i18n_language_packs[pack];
+	cc.loader.loadJson("res/i18n/"+filename, function(err, json) {
+		if( !err ) {
+			cc.log("42words, loadLanguagePack: ... LOADED LANGUAGE PACK, GOING ON ...");
+			var lg = $42.languagePack = json;
+			$42.t = lg.apptext;
+			
+			cc.loader.loadJson("res/words/"+lg.wordlist+".words.json", function(err, json) {
+				if( !err ) {
+					cc.log("42words, loadLanguagePack: ... LOADED WORDS, GOING ON ...");
+					$42.words = json;
+
+					cc.loader.loadJson("res/words/"+lg.wordlist+".letters.json", function(err, json) {
+						if( !err ) {
+							cc.log("42words, loadLanguagePack: ... LOADED LETTERS!");
+							var lv = $42.letterValues = json,
+								l = $42.LETTERS;
+							// get the most common
+							var max=0;
+							for( letter in lv ) {
+								max=Math.max(max,lv[letter]);
+							}
+
+							$42.letterOccurences = [];
+							for( var i=0 ; i<l.length ; i++ ) {
+								var occ = lv[l[i]] && parseInt(1/lv[l[i]]*max);
+								$42.letterOccurences[i] = occ || 0; 
+							}
+						} else {
+							throw err;
+						}
+					});
+					
+					cc.loader.loadJson("res/words/"+lg.wordlist+".prefixes.json", function(err, json) {
+						if( !err ) {
+							cc.log("42words, loadLanguagePack: ... LOADED PREFIX VALUES!");
+							$42.prefixValues = json;
+						} else {
+							throw err;
+						}
+					});
+					
+					// check if word file is compatible
+					for( var prefix in json ) {
+						var words = json[prefix];
+						cc.assert(words && words[0].word, "42words, json loader: Prefix "+prefix+" has no words.");
+						for( var j=0 ; j<words.length ; j++ ) {
+							cc.assert(words[j].word.length >=4 && words[j].word.length <= $42.BOXES_PER_ROW, 
+									"42words, json loader: Word '"+words[j].word+"' has wrong length.");	
+						}
+					}
+				} else {
+					throw err;
+				}
+			});
+		} else {
+			throw err;
+		}
+	});
+};
+
+
+// read json file with words
+if( !$42.languagePack ) {
+	$42.loadLanguagePack(0);
 }
+

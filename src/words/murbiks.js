@@ -364,10 +364,10 @@ var MURBIKS_MODULE = function(layer) {
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,2);
 		    		
-		    		pressFingerTo(0.3 , boxPos);		    		
+		    		pressFingerTo(0.6 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 19.2,
+		    	time: 19.6,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,2);
 		    		
@@ -388,7 +388,6 @@ var MURBIKS_MODULE = function(layer) {
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,2);
 		    		
-		    		cc.log("42words, selecting_deleting: pressFingerTo to "+boxPos.x+" / "+boxPos.y);
 		    		pressFingerTo(0.3 , boxPos);		    		
 		    	}
 		    },{

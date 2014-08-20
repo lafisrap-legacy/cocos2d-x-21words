@@ -928,22 +928,32 @@ var _42GameLayer = cc.Layer.extend({
     			delete self.tiles[tile];
 
     			if( ret == "gameover" ) {
-    				var menuItems = [{
-    					label: $42.t.reached_top_continue, 
-    					cb: function(sender) {
-    			        	var gameLayer = this.getParent().getChildByTag($42.TAG_GAME_LAYER);
-    				        gameLayer.resume();
-    				        gameLayer.scheduleUpdate();
 
-    			            this.getParent().removeChild(this);
-    			        }
-    				},{
+    				var menuItems = [];
+        			if( !this.lastGameOverTime || this.lastGameOverTime < new Date().getTime() - 1000 ) {
+        				
+        				menuItems.push({
+        					label: $42.t.reached_top_continue, 
+        					cb: function(sender) {
+        			        	var gameLayer = this.getParent().getChildByTag($42.TAG_GAME_LAYER);
+        				        gameLayer.resume();
+        				        gameLayer.scheduleUpdate();
+
+        			            this.getParent().removeChild(this);
+        			            
+        	        			self.lastGameOverTime = new Date().getTime();
+        			        }
+        				});
+        			} 
+        			
+        			menuItems.push({
     					label: $42.t.reached_top_end_game, 
     					cb: function(sender) {
     						if( self.hookEndGame ) self.hookEndGame();
     			        	cc.director.runScene(new _42Scene());
     			        }
-    				}];
+    				});
+        			
     	            this.getParent().addChild(
     	            	new _42MenuLayer("",menuItems),
     	            	2);
