@@ -1,19 +1,11 @@
 /*
- * BUGS
- * 
+
  * Tile placement
  * 
  */ 
 
 
 var _42_GLOBALS = { 
-	t : { 
-			"reached_top_continue" : "WEITER SPIELEN",
-			"reached_top_end_game"	: "SPIEL BEENDEN"
-	},
-	TITLE_WORDS: "WORTE",
-	TITLE_START_GAME: "SPIEL STARTEN",
-	TITLE_END_GAME: "BEENDEN",
 	TITLE_MENU_COLOR: cc.color(0,40,0,255),
 	TAG_SPRITE_MANAGER : 1,
 	TAG_GAME_LAYER : 3,
@@ -1037,7 +1029,7 @@ var _42TitleLayer = cc.Layer.extend({
 		};
 		
 		var titleBg = addImage("42background", cc.p(size.width/2, size.height/2)),
-			title42 = addImage("42", cc.p(size.width/2, size.height*3/4));
+			title42 = addImage("42", cc.p(size.width/2, 830));
 		
 		var word = $42.TITLE_WORDS,
 			letters = [];
@@ -1096,13 +1088,13 @@ var _42TitleLayer = cc.Layer.extend({
             menu.runAction(cc.EaseSineOut.create(cc.fadeOut(2)));
         });
         		
-        var item2 = addMenu($42.TITLE_END_GAME, 36 , function() {
+        var item2 = addMenu($42.maxWordValue? $42.TITLE_SCORE+": "+$42.maxWordValue : " ", 36 , function() {
         	// still has to be filled
         });
 
         var menu = cc.Menu.create.apply(this, [item1, item2] );
         menu.x = size.width/2;
-        menu.y = 350;
+        menu.y = 300;
         menu.setOpacity(0);
         self.addChild(menu, 1);       
         menu.alignItemsVerticallyWithPadding(70);

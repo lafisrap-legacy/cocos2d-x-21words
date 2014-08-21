@@ -271,7 +271,7 @@ var MURBIKS_MODULE = function(layer) {
 		    	time: 0,
 		    	anim: function() {
 		    		insertWordIfNotIn("RATTE",5,12);
-	    			$42.maxWordValue = 5;
+	    			//$42.maxWordValue = 5;
 	    			
 	    			// tmp:
 	    			mostafa.setPosition(cc.p(800,1000));
