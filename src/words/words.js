@@ -4,6 +4,8 @@
  * 
  * + FEHLER
  * 
+ * FEHLER AM ENDE -- MENU WIRD NICHT GEÖFFNET
+ * 
  * + GAMEPLAY
  * 
  * + WORTSCHATZ
@@ -36,7 +38,7 @@
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
 $42.LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","1","3"],
 $42.LETTERS =      ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","1","3"],
-$42.LEVEL_SCORE = [0,   500,  1000,  1500,  2000,  3000,  4000,  5000,  6500,  8000, 10000,
+$42.LEVEL_SCORE = [ undefined, undefined, undefined, undefined,  500,  1000,  2000,  4000,  6000,  8000, 10000,
                       12000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000,
                       70000, 80000, 90000,100000,110000,120000,130000,140000,150000,160000,
                      170000,180000,190000,200000,220000,240000,260000,280000,300000,350000,
@@ -59,6 +61,7 @@ $42.SCORE_WORD_MULTIPLYER = 7;
 $42.SCORE_COLOR_DIMM = cc.color(160,120,55);
 $42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);
 $42.POINTS_TO_ADD_CYCLES = 3;
+$42.POINTS_TO_ADD_BLOW_UP = -1;
 $42.LEVELS_TO_BLOW_CYCLES = 30;
 $42.PLUS1_BUTTON_X = 130;
 $42.PLUS1_BUTTON_Y = 1200;
@@ -294,41 +297,23 @@ var _42_MODULE = function(_42Layer) {
 								value: value
 							};
 						$42.wordTreasure.push(w);
-						if( !ml.wordTreasureBestWord || ml.wordTreasureBestWord.value < w.value ) {
-							ml.wordTreasureBestWord = w;
+						if( !$42.wordTreasureBestWord || $42.wordTreasureBestWord.value < w.value ) {
+							$42.wordTreasureBestWord = w;
 							
-							$42.maxWordValue++;
+							if( ml.totalPoints >= $42.LEVEL_SCORE[w.value] ) {
 
-							drawScoreBar(true);
-							
-							if( $42.maxWordValue <= 42 ) {
-								ml.levelsToBlow.push({ level: null, value: $42.maxWordValue});
+								if( $42.maxWordValue <= 42 ) {
+									$42.maxWordValue++;
+									ml.levelsToBlow.push({ level: null, value: $42.maxWordValue});
+								} else if( !$42.youWonTheGame ) {
+									youWonTheGame();
+								}
+								
+								drawScoreBar(true);
 							} else {
-								// YOU WON THE GAME!
-								blowLevelAndWordValue({win:true}, function() {
-				    				var menuItems = [{
-				    					label: $42.t.won_continue, 
-				    					cb: function(sender) {
-				    				        ml.resume();
-				    				        ml.scheduleUpdate();
-
-				    			            this.getParent().removeChild(this);
-				    			        }
-				    				},{
-				    					label: $42.t.won_end_game, 
-				    					cb: function(sender) {
-				    						if( self.hookEndGame ) self.hookEndGame();
-				    			        	cc.director.runScene(new _42Scene());
-				    			        }
-				    				}];
-				    	            ml.getParent().addChild(
-				    	            	new _42MenuLayer("Du hast gewonnen!",menuItems),
-				    	            	2);
-				        	        ml.pause();
-				        	        ml.unscheduleUpdate();
-								});
+								// show that there are not enough points after all points are counted 
+								ml.pointsToAdd.push( $42.POINTS_TO_ADD_BLOW_UP ); 
 							}
-
 						}
 						ml.unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
@@ -355,6 +340,32 @@ var _42_MODULE = function(_42Layer) {
 		return false;
 	};
 	
+	var youWonTheGame = function() {
+		
+		blowLevelAndWordValue({win:true}, function() {
+			var menuItems = [{
+				label: $42.t.won_continue, 
+				cb: function(sender) {
+			        ml.resume();
+			        ml.scheduleUpdate();
+
+		            this.getParent().removeChild(this);
+		        }
+			},{
+				label: $42.t.won_end_game, 
+				cb: function(sender) {
+					if( self.hookEndGame ) self.hookEndGame();
+		        	cc.director.runScene(new _42Scene());
+		        }
+			}];
+            ml.getParent().addChild(
+            	new _42MenuLayer("Du hast gewonnen!",menuItems),
+            	2);
+	        ml.pause();
+	        ml.unscheduleUpdate();
+		});		
+	};
+	
 	var blowLevelAndWordValue = function(levelAndValue,cb) {
 		
 		var text = [];
@@ -366,6 +377,11 @@ var _42_MODULE = function(_42Layer) {
 		if( levelAndValue.win ) {
 			var t = $42.t.new_level_win;
 			for( var i=0 ; i<t.length ; i++ ) text = text.concat([{t:t.substr(i,1),scale:11,color:cc.color(200+(55/t.length*i),200+(55/t.length*i),30)}])
+		}
+		
+		if( levelAndValue.info ) {
+			var lines = levelAndValue.info;
+			for( var i=0 ; i<lines.length ; i++ ) text = text.concat([{t:lines[i],scale:2,color:cc.color(0,0,128)}]);			
 		}
 		
 		for( var i=0 ; i<text.length ; i++ ) {
@@ -743,11 +759,18 @@ var _42_MODULE = function(_42Layer) {
 	}
 	
 	var drawScoreBar = function(newSprite) {
-		var sb = ml.scoreBar;
+		var sb = ml.scoreBar,
+			wt = $42.wordTreasure,
+			bw = $42.wordTreasureBestWord,
+			mw = $42.maxWordValue,
+			ls = $42.LEVEL_SCORE[mw] || $42.LEVEL_SCORE[4];
+		
 		if( !sb ) {
 			
 		    // draw score bar
-		    var sb = ml.scoreBar = new cc.LayerColor(cc.color(128,0,0,0),ml.size.width,$42.BOXES_Y_OFFSET);
+		    var sb = ml.scoreBar = new cc.LayerColor(cc.color(128,0,0,0),ml.size.width,$42.BOXES_Y_OFFSET),
+				len = bw? bw.word.length : 0;
+
 		    sb.setPosition(0,0);
 		    sb.setOpacity(0);
 			sb.retain();
@@ -755,6 +778,7 @@ var _42_MODULE = function(_42Layer) {
 			
 			// draw total points
 			ml.score = drawText(ml.totalPoints.toString(),cc.p(110,40),56,$42.SCORE_COLOR_BRIGHT,sb);
+			ml.nextScore = drawText("^ "+ls.toString(),cc.p(105,80),24,$42.SCORE_COLOR_DIMM,sb);
 			
 			// draw clipping rect
 	        var clipper = cc.ClippingNode.create();
@@ -780,17 +804,12 @@ var _42_MODULE = function(_42Layer) {
 			rl.retain();
 			clipper.addChild(rl, 5);
 			
-			// prepare values for display
-			var wt = $42.wordTreasure,
-				bw = ml.wordTreasureBestWord,
-				len = bw? bw.word.length : 0;
-
 			// draw the word value and the word value label
 			sb.currentLevelLabel = drawText(bw? $42.t.score_bar_wordvalue : "",cc.p(380,82),24,$42.SCORE_COLOR_DIMM,rl);		
 			sb.currentLevel = drawText(bw? bw.value : "",cc.p(394,45),72,$42.SCORE_COLOR_BRIGHT,rl);		
 
 			// draw the word sprite and the number of letters
-			sb.wordIconText = drawText($42.t.score_bar_no_word,cc.p(185,75),36,$42.SCORE_COLOR_BRIGHT,rl);		
+			sb.wordIconText = drawText($42.t.score_bar_no_word+(mw?" ("+$42.t.score_bar_max+" "+mw+")":""),cc.p(185,75),24,$42.SCORE_COLOR_BRIGHT,rl);		
 			sb.wordIconSprite = drawWordSprite("",cc.p(185,35),sb.wordIconSprite,0.47,rl);							
 
 			// draw highscore into clipper
@@ -801,10 +820,8 @@ var _42_MODULE = function(_42Layer) {
 			ml.bestWordValue = drawText($42.t.score_bar_mvw,cc.p(300,171),24,$42.SCORE_COLOR_DIMM,rl);
 			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.38,rl);							
 		} else {
-			var wt = $42.wordTreasure,
-				bw = ml.wordTreasureBestWord;
-
 			ml.score.setString(ml.totalPoints.toString());
+			ml.nextScore.setString("^ "+ls.toString());
 
 			ml.highscore.setString($42.maxPoints.toString());
 			sb.currentLevelLabel.setString(bw? $42.t.score_bar_wordvalue : "");		
@@ -828,7 +845,7 @@ var _42_MODULE = function(_42Layer) {
 						}
 					}
 				}
-				sb.wordIconText.setString(max?max:$42.t.score_bar_no_word);
+				sb.wordIconText.setString((max?max:$42.t.score_bar_no_word)+(mw?" ("+$42.t.score_bar_max+" "+mw+")":""));
 				sb.wordIconSprite = drawWordSprite(word,cc.p(185,35),sb.wordIconSprite,0.47,sb);
 				ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.37,rl);
 //				sb.wordIconSprite = drawWordSprite("CYPHERPUNK",cc.p(185,35),sb.wordIconSprite,0.47,sb);
@@ -903,8 +920,8 @@ var _42_MODULE = function(_42Layer) {
 		ml.dontAutoSelectWord = false;
 		
 		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
-		ml.wordTreasureBestWord = wt[bw] || null;
-		$42.maxWordValue = ml.wordTreasureBestWord? ml.wordTreasureBestWord.value + 1 : 4;
+		$42.wordTreasureBestWord = wt[bw] || null;
+		$42.maxWordValue = $42.wordTreasureBestWord? $42.wordTreasureBestWord.value : 4;
 		cc.log("Set $42.maxWordValue to "+$42.maxWordValue);
 		
 		// remove all words that are already in the treasure
@@ -937,7 +954,7 @@ var _42_MODULE = function(_42Layer) {
         ml.addChild(ml.plus1Button,10);
 
         var item = cc.MenuItemImage.create(cc.spriteFrameCache.getSpriteFrame("plus3"), cc.spriteFrameCache.getSpriteFrame("plus3highlit"), function() {
-        	if( ml.wordTreasureBestWord && ml.totalPoints >= $42.PLUS3_BUTTON_COST ) {
+        	if( $42.wordTreasureBestWord && ml.totalPoints >= $42.PLUS3_BUTTON_COST ) {
             	for( var i=0 ; i<10 ; i++ ) ml.pointsToAdd.push(-$42.PLUS3_BUTTON_COST/10);
             	ml.add1and3s.push("3");        		
         	}
@@ -1186,9 +1203,21 @@ var _42_MODULE = function(_42Layer) {
 		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);
 		
 		if( !ml.pointsToAddCnt && ml.pointsToAdd && ml.pointsToAdd.length ) {
+			var bw = $42.wordTreasureBestWord;
+
 			ml.pointsToAddCnt = $42.POINTS_TO_ADD_CYCLES;
-			ml.totalPoints += parseInt(ml.pointsToAdd.splice(0,1));
-			cc.log("Set ml.totalPoints to "+ml.totalPoints+".");
+
+			var pta = ml.pointsToAdd.splice(0,1)[0];
+			if( pta === $42.POINTS_TO_ADD_BLOW_UP ) {
+				if( ml.totalPoints < $42.LEVEL_SCORE[bw.value] ) {
+					var text = $42.t.new_level_next.slice();
+					cc.assert(text.length === 3,"42Words, _42Layer.hookUpdate: I need 3 words for t.new_level_next");
+					text[2] += " "+$42.LEVEL_SCORE[bw.value];
+					ml.levelsToBlow.push({ info: text });					
+				}
+			} else {
+				ml.totalPoints += parseInt(pta);				
+			}
 			
 			moveRollingLayer(1,3);
 
@@ -1196,7 +1225,20 @@ var _42_MODULE = function(_42Layer) {
 			$42.maxPoints = Math.max(ml.totalPoints , $42.maxPoints);
 
 			drawScoreBar();
-
+			
+			// next word value if 
+			if( bw && ml.totalPoints >= $42.LEVEL_SCORE[bw.value] && bw.value === $42.maxWordValue ) {
+				if( $42.maxWordValue < 42 ) {
+					$42.maxWordValue++;
+					ml.levelsToBlow.push({ level: null, value: $42.maxWordValue});
+					setSelections();
+					drawScoreBar(true);
+				} else if( !$42.youWonTheGame ) {
+					$42.youWonTheGame = true;
+					youWonTheGame();
+				}
+			}
+			
 			// tutorial 2 starts >= 1000
 			if( ml.totalPoints >= 1000 && ml.hookStartProgram && $42.tutorialsDone < 2 ) {
 				$42.tutorialsDone = 2;
@@ -1204,14 +1246,14 @@ var _42_MODULE = function(_42Layer) {
 			}
 			
 			// show plus 3 button if score is high enough 
-			if( !ml.plus3ButtonVisible && ml.wordTreasureBestWord && 
-					(ml.wordTreasureBestWord.value >= 40 ||
-					ml.totalPoints >= $42.LEVEL_SCORE[ml.wordTreasureBestWord.value+2])
+			if( !ml.plus3ButtonVisible && $42.wordTreasureBestWord && 
+					($42.wordTreasureBestWord.value >= 40 ||
+					ml.totalPoints >= $42.LEVEL_SCORE[bw.value+2])
 			) {
 				ml.plus3ButtonVisible = true;
 				ml.plus3Button.runAction(cc.EaseSineIn.create(cc.moveBy(0.75,cc.p(0, -100))));
-			} else if( ml.plus3ButtonVisible && ml.wordTreasureBestWord &&  
-					 ml.totalPoints <= $42.LEVEL_SCORE[ml.wordTreasureBestWord.value+2]
+			} else if( ml.plus3ButtonVisible && $42.wordTreasureBestWord &&  
+					 ml.totalPoints <= $42.LEVEL_SCORE[$42.wordTreasureBestWord.value+2]
 			) {
 				ml.plus3ButtonVisible = false;
 				ml.plus3Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0, 100))));					
@@ -1308,7 +1350,7 @@ if( !$42.languagePack ) {
 	$42.loadLanguagePack(0);
 	$42.TITLE_WORDS = "WORTE";
 	$42.TITLE_START_GAME = "SPIEL STARTEN";
-	$42.TITLE_SCORE = "WORTWERT";
+	$42.TITLE_SCORE = "Wortwert";
 	// ENGLISH
 //	$42.loadLanguagePack(1);
 //	$42.TITLE_WORDS = "WORTE";

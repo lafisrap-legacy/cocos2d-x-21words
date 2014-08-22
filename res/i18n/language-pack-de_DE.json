@@ -2,33 +2,65 @@
     "name": "deutsch",
     "wordlist": "derewo57000.txt",
     "apptext": {
+    	"title_words":			"WORTE",
+    	"title_start_game":		"SPIEL STARTEN",
+		"title_score":			"Wortwert",
         "reached_top_continue": "WEITER SPIELEN",
         "reached_top_end_game": "SPIEL BEENDEN",
-        "take_word_yes": "JA",
-        "take_word_no": "NEIN",
-        "take_word_question": "Willst du das Wort nehmen?",
-        "take_word_wordvalue": "Wortwert",
-        "score_bar_highscore": "Highscore",
-        "score_bar_treasure": "Wort-Schatz",
-        "score_bar_mvw": "Wertvollstes Wort",
-        "score_bar_level": "Level",
-        "score_bar_wordvalue": "Wortwert",
-        "score_bar_no_word": "Kein Wort",
-        "new_level_level": "Level",
-        "new_level_value": "Wortwert",
-        "murbiks_skip_tutorial": "Überspringen"
+        "won_continue": 		"WEITER SPIELEN",
+        "won_end_game": 		"SPIEL BEENDEN",
+        "take_word_yes": 		"JA",
+        "take_word_no": 		"NEIN",
+        "take_word_question": 	"Willst du das Wort nehmen?",
+        "take_word_wordvalue": 	"Wortwert",
+        "score_bar_highscore": 	"Highscore",
+        "score_bar_treasure": 	"Wort-Schatz",
+        "score_bar_mvw": 		"Wertvollstes Wort",
+        "score_bar_wordvalue": 	"Wortwert",
+        "score_bar_no_word": 	"Kein Wort",
+        "score_bar_max": 		"max:",        
+        "new_level_level": 		"Level",
+        "new_level_value": 		"Wortwert",
+        "new_level_win": 		"GEWONNEN!",
+        "new_level_next":		["Nächster","Wortwert","bei"],
+        "murbiks_tutorial": 	"Tutorial",
+        "murbiks_skip_tutorial": "Überspringen",
+    	"mostafa_hi" 		: "Hi!\nIch bin Mostafa.",
+    	"mostafa_basic01"	: "Hier bei 42-Worte kannst du Bausteine drehen, bewegen und fallen lassen. Wie bei Tetris.",
+    	"mostafa_basic02" 	: "Es geht darum, Worte mit mindestens 4 Buchstaben zu bilden",
+    	"mostafa_basic03"	: "Ein Wortanfang wird farbig markiert. Dann kannst du ihn vervollständigen.",
+    	"mostafa_basic04"	: "Zunächst kannst du nur Worte bilden, die einen Wortwert von 4 haben.",
+    	"mostafa_basic05"	: "Ein gefundenes Wort kannst du wählen oder ablehnen.",
+    	"mostafa_basic06"	: "Viel Spaß!",
+    	"mostafa_advanced01": "BOUMMM!",
+    	"mostafa_advanced02": "Du kannst Wortanfänge mit einem Klick wählen und abwählen.",
+    	"mostafa_advanced03": "Wenn an einer Stelle mehrere Buchstaben möglich sind, erscheint solch ein Fragezeichen.",
+    	"mostafa_advanced04": "Mit einem Klick kannst du den aktuellen Buchstaben auswählen.",
+    	"mostafa_advanced05": "Siehst du das T, das dem Wort RATTE noch fehlt? Es muss eine Zeile tiefer.",
+    	"mostafa_advanced06": "Das geht so ...",
+    	"mostafa_advanced07": "Ich lösche die Zeile. Die gelb markierte Buchstaben bleiben erhalten.",
+    	"mostafa_advanced08": "Und so kann das T in die Lücke fallen.",
+    	"mostafa_advanced09": "Tschüüüüssss ...",
+    	"mostafa_advanced10": "Ach ja, das noch:\nDer höchste Wortwert ist 42."   	
     },
     "tiles": {
     	"turning_moving_falling_choosing": [
-		    { "tile": 0, "letters": "NENT" },
-		    { "tile": 2, "letters": "ESTN" }
-		]
-    },
-    "mostafa": {
-    	"hi" 		: "Hi! Ich bin Mostafa. Ich zeige dir, wie 42 Worte funktioniert.",
-    	"dukannst01": "Bausteine drehen, bewegen und fallen lassen. Wie bei Tetris.",
-    	"dukannst02": "42 Worte erkennt Wortanfänge und färbt sie ein.",
-    	"dukannst03": "Versuche Worte mit mindestens 4 Buchstaben zu finden.",
-    	"dukannst04": "Ein gefundenes Wort kannst du wählen oder ablehnen."
+		    { "tile": 0, "letters": "TROW" },
+		    { "tile": 3, "letters": "TNNE" },
+		    { "tile": 1, "letters": "NSET" }
+		],
+		"selecting_deleting": [
+		    { "tile": 0, "letters": "CYPH" },
+		    { "tile": 0, "letters": "RATR" },
+		    { "tile": 3, "letters": "GETP" },
+		    { "tile": 0, "letters": "RNEK" },
+		    { "tile": 2, "letters": "ENTE" },
+		    { "tile": 2, "letters": "DUCK" }
+		],
+		"test": [
+		    { "tile": 0, "letters": "CYPH" },
+		    { "tile": 0, "letters": "ERPU" },
+		    { "tile": 3, "letters": "RNEK" }
+		] 
     }
 }

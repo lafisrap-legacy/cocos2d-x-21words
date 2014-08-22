@@ -4,6 +4,8 @@
     "apptext": {
         "reached_top_continue": "MÄNGI EDASI",
         "reached_top_end_game": "LÕPETA MÄNG",
+        "won_continue": 		"WEITER SPIELEN",
+        "won_end_game": 		"SPIEL BEENDEN",
         "take_word_yes": "JAH",
         "take_word_no": "EI",
         "take_word_question": "Kas tahad seda sõna võtta?",
@@ -16,5 +18,25 @@
         "score_bar_no_word": "Sõnu pole",
         "new_level_level": "Aste",
         "new_level_value": "Sõnaväärtus"
+        "new_level_win": 		"GEWONNEN!",
+        "murbiks_tutorial": 	"Tutorial",
+        "murbiks_skip_tutorial": "Überspringen",
+    	"mostafa_hi" 		: "Hi!\nIch bin Mostafa.",
+    	"mostafa_basic01"	: "Hier bei 42-Worte kannst du Bausteine drehen, bewegen und fallen lassen. Wie bei Tetris.",
+    	"mostafa_basic02" 	: "Es geht darum, Worte mit mindestens 4 Buchstaben zu bilden",
+    	"mostafa_basic03"	: "Ein Wortanfang wird farbig markiert. Dann kannst du ihn vervollständigen.",
+    	"mostafa_basic04"	: "Zunächst kannst du nur Worte bilden, die einen Wortwert von 4 haben.",
+    	"mostafa_basic05"	: "Ein gefundenes Wort kannst du wählen oder ablehnen.",
+    	"mostafa_basic06"	: "Viel Spaß!",
+    	"mostafa_advanced01": "BOUMMM!",
+    	"mostafa_advanced02": "Du kannst Wortanfänge mit einem Klick wählen und abwählen.",
+    	"mostafa_advanced03": "Wenn an einer Stelle mehrere Buchstaben möglich sind, erscheint solch ein Fragezeichen.",
+    	"mostafa_advanced04": "Mit einem Klick kannst du den aktuellen Buchstaben auswählen.",
+    	"mostafa_advanced05": "Siehst du das T, das dem Wort RATTE noch fehlt? Es muss eine Zeile tiefer.",
+    	"mostafa_advanced06": "Das geht so ...",
+    	"mostafa_advanced07": "Ich lösche die Zeile. Die gelb markierte Buchstaben bleiben erhalten.",
+    	"mostafa_advanced08": "Und so kann das T in die Lücke fallen.",
+    	"mostafa_advanced09": "Tschüüüüssss ...",
+    	"mostafa_advanced10": "Ach ja, das noch:\nDer höchste Wortwert ist 42."
     }
 }

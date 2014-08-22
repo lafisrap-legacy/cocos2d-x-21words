@@ -1088,7 +1088,7 @@ var _42TitleLayer = cc.Layer.extend({
             menu.runAction(cc.EaseSineOut.create(cc.fadeOut(2)));
         });
         		
-        var item2 = addMenu($42.maxWordValue? $42.TITLE_SCORE+": "+$42.maxWordValue : " ", 36 , function() {
+        var item2 = addMenu($42.wordTreasureBestWord? $42.TITLE_SCORE+": "+$42.wordTreasureBestWord.value : " ", 36 , function() {
         	// still has to be filled
         });
 
