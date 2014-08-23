@@ -1,6 +1,6 @@
 /*
 
- * Tile placement
+  * Tile placement
  * 
  */ 
 
@@ -116,9 +116,6 @@ var _42GameLayer = cc.Layer.extend({
 		else {
 			// ... or load default
 	        cc.spriteFrameCache.addSpriteFrames(res.tiles_plist);
-	        var tilesTexture = cc.textureCache.addImage(res.tiles_png),
-	        	tilesImages  = cc.SpriteBatchNode.create(tilesTexture,200);
-			this.addChild(tilesImages, 10, $42.TAG_SPRITE_MANAGER);			
 		}
 	},
 	
@@ -386,12 +383,11 @@ var _42GameLayer = cc.Layer.extend({
 		}
 		else {
 			// create sprite for tile and set is size 0, we only use its position and rotation
-			var tileSprite = cc.Sprite.create(res.tiles_png,cc.rect(0,0,0,0)),
-				batch = this.getChildByTag($42.TAG_SPRITE_MANAGER);
+			var tileSprite = cc.Sprite.create(res.tiles_png,cc.rect(0,0,0,0));
 			
 			tileSprite.retain();
 	        tileSprite.setPosition(p);
-	        batch.addChild(tileSprite);
+	        self.addChild(tileSprite);
 
 	        // add single boxes with letters to the tile
 	        for( var i=0 ; i<tileBoxes.length ; i++) {
@@ -695,8 +691,7 @@ var _42GameLayer = cc.Layer.extend({
     	 * Tile gets fixed on the ground
     	 */
     	var fixTile = function fixTile(t, lp) {
-    		var batch = self.getChildByTag($42.TAG_SPRITE_MANAGER),
-    			b = t.rotatedBoxes,
+    		var b = t.rotatedBoxes,
     			newBrcs = [],
     			ret = "ok";
     		
@@ -712,7 +707,7 @@ var _42GameLayer = cc.Layer.extend({
 				}
     		}
     		
-    		// fix single boxes of batch sprite
+    		// fix single boxes of tile
     		if( ret !== "gameover" ) {
         		for( var i=0 ; i<b.length ; i++) {
             		// create a new sprite from the old child sprite
@@ -725,7 +720,7 @@ var _42GameLayer = cc.Layer.extend({
     				newBrcs.push(brc);
         			
         			newSprite.setPosition($42.BOXES_X_OFFSET + brc.col*$42.BS + $42.BS/2 , $42.BOXES_Y_OFFSET + brc.row*$42.BS + $42.BS/2);
-        	        batch.addChild(newSprite);
+        	        self.addChild(newSprite);
 
             		self.boxes[brc.row][brc.col] = {
             			sprite: newSprite,
@@ -741,7 +736,7 @@ var _42GameLayer = cc.Layer.extend({
         		if( self.hookTileFixedAfterRowsDeleted ) self.hookTileFixedAfterRowsDeleted();
     		}
 
-    		batch.removeChild(t.sprite);
+    		self.removeChild(t.sprite);
        		delete t;
        		
     		return ret;
@@ -805,15 +800,13 @@ var _42GameLayer = cc.Layer.extend({
     	
     	self.deleteRow = function(row, deleteAnyway) {
 
-        	var batch = self.getChildByTag($42.TAG_SPRITE_MANAGER);
-
         	// delete row ... 
         	for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
 		    	if( deleteAnyway || !self.hookDeleteBox || self.hookDeleteBox({row:row,col:i}) ) {
 		    		
 	        		// destroy sprite and box  
 		    		if( self.boxes[row][i] ) {
-		            	batch.removeChild(self.boxes[row][i].sprite);
+		            	self.removeChild(self.boxes[row][i].sprite);
 		            	self.boxes[row][i].sprite = null;
 				    	self.boxes[row][i] = null;		    			    				    			
 		    		}

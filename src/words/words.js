@@ -166,8 +166,7 @@ var _42_MODULE = function(_42Layer) {
 	
 	// update selected word
 	var updateSelectedWord = function(options) {
-		var sw = ml.selectedWord,
-		batch = ml.getChildByTag($42.TAG_SPRITE_MANAGER);
+		var sw = ml.selectedWord;
 		
 		if( !sw || ml.wordIsBeingSelected ) return false;
 		
@@ -184,7 +183,7 @@ var _42_MODULE = function(_42Layer) {
 			sw.startMarker.retain();			
 			sw.startMarker.setPosition(cc.p($42.BOXES_X_OFFSET + sw.brc.col * $42.BS + $42.START_MARKER_X_OFFSET,
 											$42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.START_MARKER_Y_OFFSET));
-			batch.addChild(sw.startMarker,5);
+			ml.addChild(sw.startMarker,2);
 		}
 		var pos = sw.startMarker.getPosition(),
 			row = Math.round(pos.y-$42.BOXES_Y_OFFSET-$42.START_MARKER_Y_OFFSET)/$42.BS;
@@ -216,7 +215,7 @@ var _42_MODULE = function(_42Layer) {
 		for( var i=sw.brc.col ; i<$42.BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
 			// remove old sprite
-			if( sw.sprites[col] ) batch.removeChild( sw.sprites[col] );
+			if( sw.sprites[col] ) ml.removeChild( sw.sprites[col] );
 			sw.sprites[col] = null;
 			for( var j=curWords.length-1,hits=0 ; j>=0 ; j-- ) {
 				// look if the letter in the box matches the letter in the word 
@@ -248,7 +247,7 @@ var _42_MODULE = function(_42Layer) {
 			
 			if( hits > 0 ) {
 				sw.sprites[col].retain();
-				batch.addChild(sw.sprites[col],5);
+				ml.addChild(sw.sprites[col],5);
 				sw.sprites[col].setPosition(cc.p($42.BOXES_X_OFFSET + i * $42.BS + $42.MARKER_X_OFFSET, 
 						   						 $42.BOXES_Y_OFFSET + row * $42.BS + $42.MARKER_Y_OFFSET));
 				if( row !== sw.brc.row ) {
@@ -422,8 +421,7 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	var showFullWordAndAsk = function( brc , word , rowsDeleted , cb ) {
-		var batch = ml.getChildByTag($42.TAG_SPRITE_MANAGER),
-			width = word.length * $42.BS,
+		var width = word.length * $42.BS,
 			height = $42.BS,
 			x = $42.BOXES_X_OFFSET + brc.col * $42.BS + width/2,
 			y = $42.BOXES_Y_OFFSET + brc.row * $42.BS + height/2;
@@ -438,7 +436,7 @@ var _42_MODULE = function(_42Layer) {
 		rect.height = height + $42.WORD_FRAME_WIDTH * 2;
 		wordFrameSprite.setTextureRect(rect);
 		wordFrameSprite.setPosition(x,y);
-		batch.addChild(wordFrameSprite,15);
+		ml.addChild(wordFrameSprite,15);
 		
 		// add sprites of word
 		for( var i=0 ; i<word.length ; i++) {
@@ -490,7 +488,7 @@ var _42_MODULE = function(_42Layer) {
 					        sprite.removeAllChildren(true);
 					        ml.getParent().removeChild(sprite);
 					        wordFrameSprite.removeAllChildren(true);
-					        batch.removeChild(wordFrameSprite);	  
+					        ml.removeChild(wordFrameSprite);	  
 					        
 					        cb( takeWord );					        
 	   					},
@@ -593,9 +591,8 @@ var _42_MODULE = function(_42Layer) {
 			ml.boxes[sw.brc.row][sw.brc.col].markers = sw.markers;
 			
 			// delete old sprites
-			var batch = ml.getChildByTag($42.TAG_SPRITE_MANAGER);
-			if( sw.startMarker ) batch.removeChild( sw.startMarker );
-			for( var i=0 ; i<sw.sprites.length ; i++ ) if( sw.sprites[i]  ) batch.removeChild( sw.sprites[i] );
+			if( sw.startMarker ) ml.removeChild( sw.startMarker );
+			for( var i=0 ; i<sw.sprites.length ; i++ ) if( sw.sprites[i]  ) ml.removeChild( sw.sprites[i] );
 		}
 			
 		// define a new one
@@ -893,9 +890,6 @@ var _42_MODULE = function(_42Layer) {
 	 */
 	_42Layer.hookLoadImages = function() {
 		cc.spriteFrameCache.addSpriteFrames(res.letters_plist);
-	    var lettersTexture = cc.textureCache.addImage(res.letters_png),
-	    	lettersImages  = cc.SpriteBatchNode.create(lettersTexture,200);
-	    _42Layer.addChild(lettersImages, 2, $42.TAG_SPRITE_MANAGER);
 	};
 	
 	_42Layer.hookStartGame = function() {
@@ -999,12 +993,11 @@ var _42_MODULE = function(_42Layer) {
 	 */
 	_42Layer.hookSetTileImages = function(tileBoxes, newTile, p, userData) {
 
-		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
-			batch = this.getChildByTag($42.TAG_SPRITE_MANAGER);
+		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0));
 				
 		tileSprite.retain();
 		tileSprite.setPosition(p);
-		batch.addChild(tileSprite);
+		ml.addChild(tileSprite,2);
 
 		if( nextTile === null && tileBoxes.length === 3 ) {
 			cc.assert($42.maxWordValue >= 4 && $42.maxWordValue <= 42 && $42.prefixValues[$42.maxWordValue], "42 Words, _42Layer.hookSetTileImages: Wrong $42.maxWordValue or no prefixes.")
@@ -1239,8 +1232,8 @@ var _42_MODULE = function(_42Layer) {
 				}
 			}
 			
-			// tutorial 2 starts >= 1000
-			if( ml.totalPoints >= 1000 && ml.hookStartProgram && $42.tutorialsDone < 2 ) {
+			// tutorial 2 starts >= 1500
+			if( ml.totalPoints >= 1500 && !ml.wordIsBeingSelected && ml.hookStartProgram && $42.tutorialsDone < 2 ) {
 				$42.tutorialsDone = 2;
 				ml.hookStartProgram( 1 , true );	
 			}
