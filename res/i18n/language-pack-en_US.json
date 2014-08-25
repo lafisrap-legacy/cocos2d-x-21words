@@ -1,20 +1,75 @@
 {
     "name": "english",
-    "wordlist": "derewo100000.txt",
+    "wordlist": "wordnet_data_42000.txt",
     "apptext": {
+    	"title_words":			"WORDS",
+    	"title_start_game":		"START GAME",
+		"title_score":			"Word Value",
         "reached_top_continue": "CONTINUE",
         "reached_top_end_game": "END GAME",
-        "take_word_yes": "YES",
-        "take_word_no": "NO",
-        "take_word_question": "Take the word?",
-        "take_word_wordvalue": "Word value",
-        "score_bar_highscore": "Highscore",
-        "score_bar_treasure": "Word treasure",
-        "score_bar_mvw": "Most Valuable Word",
-        "score_bar_level": "Level",
-        "score_bar_wordvalue": "Word value",
-        "score_bar_no_word": "No word",
-        "new_level_level": "Level",
-        "new_level_value": "Wortwert"
+        "won_continue": 		"CONTINUE",
+        "won_end_game": 		"END GAME",
+        "take_word_yes": 		"YES",
+        "take_word_no": 		"NO",
+        "take_word_question": 	"Take the word?",
+        "take_word_wordvalue": 	"Word Value",
+        "score_bar_highscore": 	"Highscore",
+        "score_bar_treasure": 	"Word Treasure",
+        "score_bar_mvw": 		"Most Valuable Word",
+        "score_bar_wordvalue": 	"Word Value",
+        "score_bar_no_word": 	"No word",
+        "score_bar_max": 		"max:",        
+        "new_level_level": 		"Level",
+        "new_level_value": 		"Word Value",
+        "new_level_win": 		"YOU WON!",
+        "new_level_next":		["Next","word value","at"],
+        "murbiks_tutorial": 	"Tutorial",
+        "murbiks_skip_tutorial": "Skip",
+    	"mostafa_hi" 		: "Hi!\nI am Mostafa.",
+    	"mostafa_basic01"	: "Here with 42 Words you can turn tiles, move and drop them. Like with Tetris.",
+    	"mostafa_basic02" 	: "Try to build words with at least four letters.",
+    	"mostafa_basic03"	: "If a beginning of a word is found it is colored. Then you can complete it.",
+    	"mostafa_basic04"	: "First you can build word with a word value of four, four common letters.",
+    	"mostafa_basic05"	: "A completed word you can choose or reject.",
+    	"mostafa_basic06"	: "Have fun!",
+    	"mostafa_advanced01": "BOUMMM!",
+    	"mostafa_advanced02": "You can select and deselect words.",
+    	"mostafa_advanced03": "If more than one letter fits at a certain position, you'll see such a question mark.",
+    	"mostafa_advanced04": "With a tap you can select the current letter.",
+    	"mostafa_advanced05": "See the I, that is missing in the word TRAIN? It has to go down one line.",
+    	"mostafa_advanced06": "You can make it like that ...",
+    	"mostafa_advanced07": "I delete the line. All yellow marked boxes remain.",
+    	"mostafa_advanced08": "This way the I can fall down.",
+    	"mostafa_advanced09": "See you ........",
+    	"mostafa_advanced10": "By the way:\nThe highest word value is 42."   	
+    },
+    "tiles": {
+    	"turning_moving_falling_choosing": [
+		    { "tile": 0, "letters": "KNUP" },
+		    { "tile": 3, "letters": "ONRI" },
+		    { "tile": 1, "letters": "NSNT" }
+		],
+		"selecting_deleting": [
+		    { "tile": 0, "letters": "CYPH" },
+		    { "tile": 0, "letters": "TRAE" },
+		    { "tile": 3, "letters": "GNIP" },
+		    { "tile": 0, "letters": "ENRK" },
+		    { "tile": 2, "letters": "ENTE" },
+		    { "tile": 2, "letters": "DUCK" }
+		],
+		"test": [
+		    { "tile": 0, "letters": "CYPH" },
+		    { "tile": 0, "letters": "ERPU" },
+		    { "tile": 3, "letters": "RNEK" }
+		] 
+    },
+    "tiles_needed": {
+    	"turning_moving_falling_choosing": [
+		    { "word" : "IRON", "value" : 4 }
+		],
+		"selecting_deleting": [
+		    { "word" : "TRAIN", "value" : 5 },
+		    { "word" : "TRAIT", "value" : 5 }
+		]
     }
 }

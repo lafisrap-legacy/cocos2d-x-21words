@@ -62,5 +62,15 @@
 		    { "tile": 0, "letters": "ERPU" },
 		    { "tile": 3, "letters": "RNEK" }
 		] 
+    },
+    "tiles_needed": {
+    	"turning_moving_falling_choosing": [
+		    { "word" : "ENTE", "value" : 4 }
+		],
+		"selecting_deleting": [
+		    { "word" : "RATTE", "value" : 5 },
+		    { "word" : "RATEN", "value" : 5 }
+		]
     }
+    
 }

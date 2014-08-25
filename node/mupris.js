@@ -26,44 +26,78 @@ if (process.argv.length < 3) {
 // Define data we need
 
 var letterValues = {
-		"A":1,
-		"B":3,
-		"C":4,
-		"D":1,
-		"E":1,
-		"F":4,
-		"G":2,
-		"H":2,
-		"I":1,
-		"J":6,
-		"K":4,
-		"L":2,
-		"M":3,
-		"N":1,
-		"O":2,
-		"P":4,
-		"Q":10,
-		"R":1,
-		"S":1,
-		"T":1,
-		"U":1,
-		"V":6,
-		"W":3,
-		"X":8,
-		"Y":10,
-		"Z":3,
-		"Ä":6,
-		"Ö":8,
-		"Ü":6	
+	"A":1,
+	"B":4,
+	"C":4,
+	"D":4,
+	"E":1,
+	"F":4,
+	"G":2,
+	"H":2,
+	"I":1,
+	"J":8,
+	"K":4,
+	"L":2,
+	"M":4,
+	"N":1,
+	"O":3,
+	"P":5,
+	"Q":16,
+	"R":1,
+	"S":1,
+	"T":1,
+	"U":3,
+	"V":7,
+	"W":6,
+	"X":10,
+	"Y":7,
+	"Z":5,
+	"Ä":6,
+	"Ö":8,
+	"Ü":6	
 };
 
 var letterCounts = {};
+for( i=0,l="ABCDEFGHIJKLMNOPQURSTUVWXYZÄÖÜ" ; i<l.length ; i++ ) letterCounts[l[i]] = 0;
 
 //Read the file and print its contents.
 var filename = process.argv[2];
-var sLetter = argv["l"] && argv["l"].toUpperCase() || null;
-var highValues = argv["h"] || null;
+var hvReg = /^(\d+)-(\d+)$/,
+	hvCnt = 0,
+	hv = argv["h"] || null,
+	lgCnt = 0;
+	lg = argv["l"] || null,
+	wv = argv["w"] || null;
+	
+if( wv ) {
+	wv = wv.toUpperCase();
+	for( var i=0, value =0 ; i<wv.length ; i++ ) {
+		value += letterValues[wv[i]];
+	} 
+	
+	console.log("Word value of "+wv+" is "+value+".");
+	return;
+}
 
+var match = hvReg.exec(hv);
+
+if( match ) {
+	hvLow = parseInt(match[1]);
+	hvHigh = parseInt(match[2]);
+} else {
+	hvLow = hvHigh = parseInt(hv);
+}
+
+var match = hvReg.exec(lg);
+
+if( match ) {
+	lgLow = parseInt(match[1]);
+	lgHigh = parseInt(match[2]);
+} else {
+	lgLow = lgHigh = parseInt(lg);
+}
+
+	
 fs.readFile(filename, 'utf8', function(err, data) {
 	if (err) throw err;
 	// get words into an array and sort them
@@ -77,8 +111,7 @@ fs.readFile(filename, 'utf8', function(err, data) {
 	console.log("Processing "+allWords.length+" words ...");
 	for( var i=0 ; i<allWords.length ; i++ ) {
 		// make all uppercase
-		var match;
-		match = entry.exec(allWords[i]);
+		var match = entry.exec(allWords[i]);
 		if( !match ) continue;
 
 		var word = match[1].toUpperCase();
@@ -100,8 +133,14 @@ fs.readFile(filename, 'utf8', function(err, data) {
 		min = Math.min(min,wordValue);
 		
 		// fullfill options
-		if(highValues && wordValue>=highValues) console.log("High value word: "+word+", with "+wordValue+" points.");
-		if(sLetter && word.indexOf(sLetter) != -1) console.log("Word with "+sLetter+": "+word+". Word value: "+wordValue+" points.");
+		if(hv && wordValue>=hvLow && wordValue<=hvHigh) {
+			console.log("High value word: "+word+", with "+wordValue+" points.");
+			hvCnt++;
+		}
+		if(lg && word.length>=lgLow && word.length<=lgHigh) {
+			console.log("Found '"+word+"', with length "+word.length+".");
+			lgCnt++;
+		}
 		if( isNaN(wordValue) ) console.log("Undefined letter in word: "+word); 
 
 		// prepare word entry
@@ -125,6 +164,9 @@ fs.readFile(filename, 'utf8', function(err, data) {
 			}
 		}
 	}
+	
+	if( hv ) console.log(hvCnt + " words between "+hvLow+" and "+hvHigh+" value.");
+	if( lg ) console.log(lgCnt + " words between "+lgLow+" and "+lgHigh+" length.");
 
 	fs.writeFile(filename+'.words.json', JSON.stringify(muprisWords), function (err) {
 		  if (err) throw err;

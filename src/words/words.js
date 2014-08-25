@@ -796,7 +796,7 @@ var _42_MODULE = function(_42Layer) {
 	        clipper.stencil = stencil;
 	        sb.addChild(clipper);
 
-			var rl = ml.rollingLayer = new cc.Layer();
+			var rl = $42.rollingLayer = new cc.Layer();
 			rl.setPosition(0,0);
 			rl.retain();
 			clipper.addChild(rl, 5);
@@ -861,15 +861,15 @@ var _42_MODULE = function(_42Layer) {
 			}
 		
 			ml.layerIsRolling = true;
-			ml.rollingLayer.runAction(
+			$42.rollingLayer.runAction(
 				cc.EaseSineOut.create(
 					cc.moveTo(1,cc.p(0,-ml.rollingLayerStage*$42.BOXES_Y_OFFSET))
 				)
 			);
 			if( ml.rollingLayerDelay ) {
-				ml.rollingLayer.stopAction(ml.rollingLayerDelay);
+				$42.rollingLayer.stopAction(ml.rollingLayerDelay);
 			}
-			ml.rollingLayerDelay = ml.rollingLayer.runAction(
+			ml.rollingLayerDelay = $42.rollingLayer.runAction(
 				cc.sequence( 
 					cc.delayTime(delay || 1),
 					cc.callFunc(function() {
@@ -916,7 +916,6 @@ var _42_MODULE = function(_42Layer) {
 		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
 		$42.wordTreasureBestWord = wt[bw] || null;
 		$42.maxWordValue = $42.wordTreasureBestWord? $42.wordTreasureBestWord.value : 4;
-		cc.log("Set $42.maxWordValue to "+$42.maxWordValue);
 		
 		// remove all words that are already in the treasure
 		for( var i=0 ; i<wt.length ; i++) {
@@ -1340,15 +1339,15 @@ $42.loadLanguagePack = function( pack ) {
 // read json file with words
 if( !$42.languagePack ) {
 	// GERMAN
-	$42.loadLanguagePack(0);
-	$42.TITLE_WORDS = "WORTE";
-	$42.TITLE_START_GAME = "SPIEL STARTEN";
-	$42.TITLE_SCORE = "Wortwert";
-	// ENGLISH
-//	$42.loadLanguagePack(1);
+//	$42.loadLanguagePack(0);
 //	$42.TITLE_WORDS = "WORTE";
 //	$42.TITLE_START_GAME = "SPIEL STARTEN";
-//	$42.TITLE_SCORE = "WORTWERT";
+//	$42.TITLE_SCORE = "Wortwert";
+	// ENGLISH
+	$42.loadLanguagePack(1);
+	$42.TITLE_WORDS = "WORDS";
+	$42.TITLE_START_GAME = "START GAME";
+	$42.TITLE_SCORE = "WORD VALUE";
 	// ESTONIAN
 //	$42.loadLanguagePack(2);
 //	$42.TITLE_WORDS = "WORTE";

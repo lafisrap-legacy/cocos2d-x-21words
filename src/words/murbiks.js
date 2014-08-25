@@ -66,7 +66,8 @@ var MURBIKS_MODULE = function(layer) {
 		animPrograms = [{
 		    	time: 0,
 		    	anim: function() {
-		    		insertWordIfNotIn("ENTE",4,13);
+		    		var words = lg.tiles_needed.turning_moving_falling_choosing;
+		    		for( var i=0 ; i<words.length ; i++ ) insertWordIfNotIn(words[i].word , words[i].value);
 	    			$42.maxWordValue = 4;
 
 	    			showMostafaAndButton(2.0);		    		
@@ -270,10 +271,9 @@ var MURBIKS_MODULE = function(layer) {
 		animPrograms = [{
 		    	time: 0,
 		    	anim: function() {
-		    		insertWordIfNotIn("RATTE",5,12);
-	    			//$42.maxWordValue = 5;
+		    		var words = lg.tiles_needed.selecting_deleting;
+		    		for( var i=0 ; i<words.length ; i++ ) insertWordIfNotIn(words[i].word , words[i].value);
 	    			
-	    			// tmp:
 	    			mostafa.setPosition(cc.p(800,1000));
 	    			blueButton.setPosition(cc.p(800,895));
 
@@ -824,7 +824,7 @@ var MURBIKS_MODULE = function(layer) {
 		// delete word from full word list
 		var words = $42.words[prefix];
 		for( var i=0 ; i<words.length && words[i].word !== word ; i++ );
-		if( i === words.length ) words.push({"word":word,"value":value,"frequency":freq});
+		if( i === words.length ) words.push({"word":word,"value":value,"frequency":freq || 0});
 	};
 	
 	var getFingerOffset = function() {

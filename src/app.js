@@ -82,7 +82,7 @@ var _42GameLayer = cc.Layer.extend({
 		this.initListeners();
 		
 		setTimeout(function() {
-		    self.scheduleUpdate();	
+		    self.scheduleUpdate();
 		    if( self.hookStartGame ) self.hookStartGame();
 		},3000);
     },
@@ -295,7 +295,7 @@ var _42GameLayer = cc.Layer.extend({
 		 * KEYBOARD EVENTS
 		 */ 
        	
-	    if( false || 'keyboard' in cc.sys.capabilities ) {
+	    if( 'keyboard' in cc.sys.capabilities ) {
 	        this._keyboardListener = cc.EventListener.create({
 	            event: cc.EventListener.KEYBOARD,
 	            onKeyPressed:function(key, event) {
@@ -362,8 +362,8 @@ var _42GameLayer = cc.Layer.extend({
     },
     
     stopListeners: function() {
-        cc.eventManager.removeListener(this._touchListener);
-        cc.eventManager.removeListener(this._keyboardListener);
+        if( this._touchListener ) cc.eventManager.removeListener(this._touchListener);
+        if( this._keyboardListener ) cc.eventManager.removeListener(this._keyboardListener);
     },
 
 	buildTile: function(p) {

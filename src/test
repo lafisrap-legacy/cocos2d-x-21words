@@ -1,0 +1,5 @@
+cocos2d: jsb: ERROR: File /Applications/MAMP/htdocs/42words/frameworks/js-bindings/bindings/auto/jsb_cocos2dx_auto.cpp: Line: 1198, Function: js_cocos2dx_EventDispatcher_removeEventListener
+cocos2d: js_cocos2dx_EventDispatcher_removeEventListener : Error processing arguments
+cocos2d: JS: /Users/michael/Library/Application Support/iPhone Simulator/7.1/Applications/741C5B02-C1E3-43B1-A73B-AB6468909F2F/42words.app/src/app.js:366:Error: js_cocos2dx_EventDispatcher_removeEventListener : Error processing arguments
+
+cocos2d: JS: /Users/michael/Library/Application Support/iPhone Simulator/7.1/Applications/741C5B02-C1E3-43B1-A73B-AB6468909F2F/42words.app/src/words/words.js:864:TypeError: ml.rollingLayer is undefined
