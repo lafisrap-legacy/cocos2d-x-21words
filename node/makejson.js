@@ -121,6 +121,39 @@ letterValues.estonian = {
 		"3":8
 	};
 
+letterValues.swedish = {
+		"A":1,
+		"B":4,
+		"C":8,
+		"D":1,
+		"E":1,
+		"F":4,
+		"G":2,
+		"H":6,
+		"I":1,
+		"J":8,
+		"K":2,
+		"L":1,
+		"M":3,
+		"N":1,
+		"O":2,
+		"P":4,
+		"Q":12,
+		"R":1,
+		"S":1,
+		"T":1,
+		"U":4,
+		"V":5,
+		"W":12,
+		"X":10,
+		"Y":7,
+		"Z":12,
+		"Ä":4,
+		"Ö":5,
+		"Å":7,
+		"1":7,
+		"3":8
+	};
 
 var letterCounts = {};
 for( i=0,l="ABCDEFGHIJKLMNOPQURSTUVWXYZÄÖÜÕ" ; i<l.length ; i++ ) letterCounts[l[i]] = 0;
@@ -195,7 +228,8 @@ fs.readFile(filename, 'utf8', function(err, data) {
 	var max = 0; min = 1000, wordCount = 0, prefixCount = 0;
 	var entry = src=="german"? /^([^èéêóâôíç\s]+)\s(\S+)$/ :
 				src=="estonian"? /^(\S+)\s+([^èéêóâôíç\s]+)\s*$/: 
-				src=="english"? /^\d{8} \d\d \w \d\d ([^_èéêóâôíç\-'.\(\/\d\s]+)\s/ : null;
+				src=="english"? /^\d{8} \d\d \w \d\d ([^_èéêóâôíç\-'.\(\/\d\s]+)\s/ : 
+				src=="swedish"? /^([^èéêóâôíç\s]+)$/ : null;
 	
 	console.log("Processing "+allWords.length+" words ...");
 	for( var i=0 ; i<(test? 20 : allWords.length) ; i++ ) {

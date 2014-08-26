@@ -75,6 +75,7 @@ var g_resources = [
 var i18n_language_packs = [
  	"language-pack-de_DE.json",
     "language-pack-en_US.json",
-    "language-pack-ee_EE.json"
+    "language-pack-ee_EE.json",
+    "language-pack-se_SE.json"
 ];
            	         

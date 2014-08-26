@@ -36,8 +36,8 @@
  */
 
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
-$42.LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","1","3"],
-$42.LETTERS =      ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","1","3"],
+$42.LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao","1","3"],
+$42.LETTERS =      ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","Å" ,"1","3"],
 $42.LEVEL_SCORE = [ undefined, undefined, undefined, undefined,  500,  1000,  2000,  4000,  6000,  8000, 10000,
                       12000, 15000, 20000, 25000, 30000, 35000, 40000, 50000, 60000, 70000,
                       80000, 90000,100000,110000,125000,140000,155000,170000,185000,200000,
@@ -1344,14 +1344,19 @@ if( !$42.languagePack ) {
 //	$42.TITLE_START_GAME = "SPIEL STARTEN";
 //	$42.TITLE_SCORE = "Wortwert";
 	// ENGLISH
-	$42.loadLanguagePack(1);
-	$42.TITLE_WORDS = "WORDS";
-	$42.TITLE_START_GAME = "START GAME";
-	$42.TITLE_SCORE = "WORD VALUE";
+//	$42.loadLanguagePack(1);
+//	$42.TITLE_WORDS = "WORDS";
+//	$42.TITLE_START_GAME = "START GAME";
+//	$42.TITLE_SCORE = "WORD VALUE";
 	// ESTONIAN
 //	$42.loadLanguagePack(2);
 //	$42.TITLE_WORDS = "WORTE";
 //	$42.TITLE_START_GAME = "SPIEL STARTEN";
 //	$42.TITLE_SCORE = "WORTWERT";
+	// SWEDISH
+	$42.loadLanguagePack(3);
+	$42.TITLE_WORDS = "ORDEN";
+	$42.TITLE_START_GAME = "START LEK";
+	$42.TITLE_SCORE = "ORD VÄRDE";
 }
 
