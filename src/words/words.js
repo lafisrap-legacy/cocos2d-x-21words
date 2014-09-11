@@ -51,7 +51,7 @@ $42.START_MARKER_X_OFFSET = -18;
 $42.START_MARKER_Y_OFFSET = $42.BS/2;
 $42.MARKER_X_OFFSET = $42.BS/2;
 $42.MARKER_Y_OFFSET = -25;
-$42.UNSELECTED_BOX_OPACITY = 128;
+$42.UNSELECTED_BOX_OPACITY = 100;
 $42.NEEDED_LETTERS_PROBABILITY = 0.5;
 $42.MAX_LETTERS_BLOWN = 20;
 $42.WORD_FRAME_WIDTH = 8;
@@ -72,6 +72,7 @@ $42.PLUS3_BUTTON_X = 490;
 $42.PLUS3_BUTTON_Y = 1200;
 $42.PLUS3_BUTTON_COST = 10000;
 $42.PLUS3_BUTTON_OPACITY = 170;
+
 
 var _42_MODULE = function(_42Layer) {
 
@@ -180,7 +181,8 @@ var _42_MODULE = function(_42Layer) {
 		
 		if( !sw.startMarker ) {
 			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2"),cc.rect(0,0,$42.BS,$42.BS));
-			sw.startMarker.retain();			
+			sw.startMarker.retain();
+	        /* retain */ tmpRetain[sw.startMarker.__instanceId] = { name: "words: sw.startMarker", line: 186 };	
 			sw.startMarker.setPosition(cc.p($42.BOXES_X_OFFSET + sw.brc.col * $42.BS + $42.START_MARKER_X_OFFSET,
 											$42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.START_MARKER_Y_OFFSET));
 			ml.addChild(sw.startMarker,2);
@@ -215,7 +217,12 @@ var _42_MODULE = function(_42Layer) {
 		for( var i=sw.brc.col ; i<$42.BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
 			// remove old sprite
-			if( sw.sprites[col] ) ml.removeChild( sw.sprites[col] );
+			if( sw.sprites[col] ) {
+				sw.sprites[col].release();
+				delete tmpRetain[sw.sprites[col].__instanceId];
+				cc.log("Selection sprite deleted:" + sw.sprites[col].__instanceId);
+				ml.removeChild( sw.sprites[col] );
+			}
 			sw.sprites[col] = null;
 			for( var j=curWords.length-1,hits=0 ; j>=0 ; j-- ) {
 				// look if the letter in the box matches the letter in the word 
@@ -247,6 +254,8 @@ var _42_MODULE = function(_42Layer) {
 			
 			if( hits > 0 ) {
 				sw.sprites[col].retain();
+		        /* retain */ tmpRetain[sw.sprites[col].__instanceId] = { name: "words: sw.sprites["+col+"]", line: 252 };	
+				cc.log("Selection sprite added: "+ sw.sprites[col].__instanceId);
 				ml.addChild(sw.sprites[col],5);
 				sw.sprites[col].setPosition(cc.p($42.BOXES_X_OFFSET + i * $42.BS + $42.MARKER_X_OFFSET, 
 						   						 $42.BOXES_Y_OFFSET + row * $42.BS + $42.MARKER_Y_OFFSET));
@@ -348,12 +357,14 @@ var _42_MODULE = function(_42Layer) {
 			        ml.resume();
 			        ml.scheduleUpdate();
 
+			        /* must be tested */ this.exitMenu();
 		            this.getParent().removeChild(this);
 		        }
 			},{
 				label: $42.t.won_end_game, 
 				cb: function(sender) {
 					if( self.hookEndGame ) self.hookEndGame();
+					/* must be tested */ ml.endGame();
 		        	cc.director.runScene(new _42Scene());
 		        }
 			}];
@@ -475,9 +486,7 @@ var _42_MODULE = function(_42Layer) {
 				cc.callFunc(function() {
 					
 					// play sound
-					cc.log("42words, Depricated: wordlandEffectId.");
-					if( ml.wordlandEffectId ) cc.audioEngine.stopEffect(ml.wordlandEffectId);
-					ml.wordlandEffectId = cc.audioEngine.playEffect(res.pling_mp3);
+					cc.audioEngine.playEffect(res.pling_mp3);
 
 	   				var sprite = null,
 	   					resume = function(menuLayer,takeWord) {
@@ -591,8 +600,19 @@ var _42_MODULE = function(_42Layer) {
 			ml.boxes[sw.brc.row][sw.brc.col].markers = sw.markers;
 			
 			// delete old sprites
-			if( sw.startMarker ) ml.removeChild( sw.startMarker );
-			for( var i=0 ; i<sw.sprites.length ; i++ ) if( sw.sprites[i]  ) ml.removeChild( sw.sprites[i] );
+			if( sw.startMarker ) {
+				sw.startMarker.release();
+				delete tmpRetain[sw.startMarker.__instanceId];
+
+				ml.removeChild( sw.startMarker );				
+			}
+			for( var i=0 ; i<sw.sprites.length ; i++ ) if( sw.sprites[i]  ) {
+				sw.sprites[i].release();
+				delete tmpRetain[sw.sprites[i].__instanceId];
+				cc.log("Selection sprite deleted:" + sw.sprites[i].__instanceId);
+				ml.removeChild( sw.sprites[i] );
+				sw.sprites[i] = null;
+			}
 		}
 			
 		// define a new one
@@ -995,6 +1015,7 @@ var _42_MODULE = function(_42Layer) {
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0));
 				
 		tileSprite.retain();
+        tmpRetain[tileSprite.__instanceId] = { name: "words: tileSprite", line: 997 };
 		tileSprite.setPosition(p);
 		ml.addChild(tileSprite,2);
 
@@ -1035,10 +1056,9 @@ var _42_MODULE = function(_42Layer) {
     		cc.assert(sprite, "42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
     		if( !sprite ) cc.log(sprite, "42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
     		sprite.retain();
+	        tmpRetain[sprite.__instanceId] = { name: "words: sprite", line: 1038 };
         	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
         	userData[i] = $42.LETTERS[val];
-        	
-        	cc.log("42words, hookSetTileImages: Creating new tile letter "+userData[i]+" on position "+i);
         	
 	        tileSprite.addChild(sprite);
         }
@@ -1339,10 +1359,10 @@ $42.loadLanguagePack = function( pack ) {
 // read json file with words
 if( !$42.languagePack ) {
 	// GERMAN
-//	$42.loadLanguagePack(0);
-//	$42.TITLE_WORDS = "WORTE";
-//	$42.TITLE_START_GAME = "SPIEL STARTEN";
-//	$42.TITLE_SCORE = "Wortwert";
+	$42.loadLanguagePack(0);
+	$42.TITLE_WORDS = "WORTE";
+	$42.TITLE_START_GAME = "SPIEL STARTEN";
+	$42.TITLE_SCORE = "Wortwert";
 	// ENGLISH
 //	$42.loadLanguagePack(1);
 //	$42.TITLE_WORDS = "WORDS";
@@ -1354,9 +1374,9 @@ if( !$42.languagePack ) {
 //	$42.TITLE_START_GAME = "SPIEL STARTEN";
 //	$42.TITLE_SCORE = "WORTWERT";
 	// SWEDISH
-	$42.loadLanguagePack(3);
-	$42.TITLE_WORDS = "ORDEN";
-	$42.TITLE_START_GAME = "START LEK";
-	$42.TITLE_SCORE = "ORD VÄRDE";
+//	$42.loadLanguagePack(3);
+//	$42.TITLE_WORDS = "ORDEN";
+//	$42.TITLE_START_GAME = "START";
+//	$42.TITLE_SCORE = "ORD VÄRDE";
 }
 

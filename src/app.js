@@ -1,19 +1,33 @@
 /*
 
-  * Tile placement
+ * set TOUCH_THRESHOLD to higher value when low real resolution
+ * 
+ * 	KEY_LEFT_CODE : 37, for MAC
+ *	KEY_UP_CODE : 38,
+ *	KEY_RIGHT_CODE : 39,
+ *	KEY_DOWN_CODE : 40,
  * 
  */ 
 
+var tmpRetain = [];
 
 var _42_GLOBALS = { 
+	TITLE_WORDS : "TETRIS",
+	TITLE_START_GAME : "SPIEL STARTEN",
+	TITLE_SCORE : " ",
 	TITLE_MENU_COLOR: cc.color(0,40,0,255),
 	TAG_SPRITE_MANAGER : 1,
 	TAG_GAME_LAYER : 3,
 	TAG_TITLE_LAYER : 4,
-	BS : 64, // pixel
-	BOXES_PER_COL : 22,
-	GAME_OVER_COL : 16,
-	BOXES_PER_ROW : 10,
+	TAG_BACKGROUND_SPRITE : 101,
+	TAG_MENU_QUESTION : 102,
+	TAG_MENU_MENU : 103,
+	TAG_TITLE_BACKGROUND : 104,
+	TAG_TITLE_42 : 105,
+	BS : 64, 			// box size in pixel
+	BOXES_PER_COL : 22,	// lines of playground
+	GAME_OVER_ROW : 16,	// game over row
+	BOXES_PER_ROW : 10,	// cols in playgound
 	BOXES_X_OFFSET : 0,
 	BOXES_Y_OFFSET : 96,
 	SNAP_SPEED : 10.0, // pixel per 1/60
@@ -62,7 +76,11 @@ var _42GameLayer = cc.Layer.extend({
     ctor:function () {
         this._super();
 
-        var size = this.size = cc.director.getWinSize();
+        var size = this.size = cc.director.getWinSize(),
+        	res = cc.director.getOpenGLView().getFrameSize();
+        
+        $42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD * size.height / res.height;
+        cc.log();
         
         if( typeof _42_MODULE !== 'undefined' ) _42_MODULE(this);
 
@@ -94,6 +112,13 @@ var _42GameLayer = cc.Layer.extend({
 	    this.unscheduleUpdate();	    	
     },
     
+    endGame: function() {
+    	this.endAnimation();
+    	
+    	// delete all boxes
+		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) this.deleteRow(i,true);
+    },
+    
 	startAnimation: function() {
 		
         var size = this.size;
@@ -105,8 +130,16 @@ var _42GameLayer = cc.Layer.extend({
             scale: 1,
             rotation: 0
         });
-        this.addChild(background, 0);
+        this.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
         background.retain();
+        /* retain */ tmpRetain[background.__instanceId] = { name: "background", line: 123 };
+	},
+	
+	endAnimation: function() {
+		var background = this.getChildByTag($42.TAG_BACKGROUND_SPRITE);
+		if( background ) background.release();
+		
+		delete tmpRetain[background.__instanceId];
 	},
 	
 	loadImages: function() {
@@ -130,22 +163,10 @@ var _42GameLayer = cc.Layer.extend({
 		    }		    	
 	    }
 
-	    // draw grid
+	    // draw score bar background
 	    this.drawNode = cc.DrawNode.create();
         this.addChild(this.drawNode,1);
         this.drawNode.clear();
- /*       for( var i=0 ; i<=$42.BOXES_PER_ROW ; i++ ) {
-            this.drawNode.drawSegment(cc.p($42.BOXES_X_OFFSET+i*$42.BS,$42.BOXES_Y_OFFSET), 
-            						  cc.p($42.BOXES_X_OFFSET+i*$42.BS,$42.BOXES_Y_OFFSET+$42.BOXES_PER_COL*$42.BS),
-            						  1,
-            						  cc.color(255,100,100,60));         	
-        }
-        for( var i=0 ; i<=$42.BOXES_PER_COL ; i++ ) {
-            this.drawNode.drawSegment(cc.p($42.BOXES_X_OFFSET,$42.BOXES_Y_OFFSET+i*$42.BS), 
-            						  cc.p($42.BOXES_X_OFFSET+$42.BOXES_PER_ROW*$42.BS,$42.BOXES_Y_OFFSET+i*$42.BS),
-            						  1,
-            						  cc.color(255,100,100,30));         	
-        }*/
         this.drawNode.drawPoly([cc.p(0,0),cc.p(size.width,0),cc.p(size.width,$42.BOXES_Y_OFFSET ),cc.p(0,$42.BOXES_Y_OFFSET )],
         						new cc.Color(0,0,0,255), 
         						1, 
@@ -156,10 +177,6 @@ var _42GameLayer = cc.Layer.extend({
     initListeners: function() {
        	var self = this;
 	
-	/*
-	 * TOUCH EVENTS
-	 */ 
-       	
        	if( true || 'touches' in cc.sys.capabilities ) { // touches work on mac but return false
 	    	this._touchListener = cc.EventListener.create({
 	            event: cc.EventListener.TOUCH_ALL_AT_ONCE,
@@ -207,7 +224,7 @@ var _42GameLayer = cc.Layer.extend({
 	            	};
 	                
 	                // check for left
-	                if( loc.x < start.x - $42.TOUCH_THRESHOLD) {
+	                if( loc.x < start.x - $42.TOUCH_SWIPE_THRESHOLD) {
 	                	// if direction changed while swiping left, set new base point
 	                	if( loc.x > self.touchLastPoint.x ) {
 	                		start = self.touchStartPoint = {
@@ -221,7 +238,7 @@ var _42GameLayer = cc.Layer.extend({
 	                }
 	                
 	                // check for right
-	                if( loc.x > start.x + $42.TOUCH_THRESHOLD ) {
+	                if( loc.x > start.x + $42.TOUCH_SWIPE_THRESHOLD ) {
 	                	// if direction changed while swiping right, set new base point
 	                	if( loc.x < self.touchLastPoint.x ) {
 	                		self.touchStartPoint = {
@@ -235,7 +252,7 @@ var _42GameLayer = cc.Layer.extend({
 	                }
 	
 	                // check for down
-	                if( loc.y < start.y - $42.TOUCH_THRESHOLD * 3 ) {
+	                if( loc.y < start.y - $42.TOUCH_SWIPE_THRESHOLD * 3 ) {
 	                	// if direction changed while swiping down, set new base point
 	                	if( loc.y > self.touchLastPoint.y ) {
 	                		self.touchStartPoint = {
@@ -249,7 +266,7 @@ var _42GameLayer = cc.Layer.extend({
 	                }
 	
 	                // check for up
-	                if( loc.y > start.y + $42.TOUCH_THRESHOLD ) {
+	                if( loc.y > start.y + $42.TOUCH_SWIPE_THRESHOLD ) {
                     	self.isSwipeUp = true;                		
 	                }
 	                
@@ -386,6 +403,7 @@ var _42GameLayer = cc.Layer.extend({
 			var tileSprite = cc.Sprite.create(res.tiles_png,cc.rect(0,0,0,0));
 			
 			tileSprite.retain();
+			/* retain */ tmpRetain[tileSprite.__instanceId] = { name: "tileSprite", line: 397 };
 	        tileSprite.setPosition(p);
 	        self.addChild(tileSprite);
 
@@ -396,6 +414,7 @@ var _42GameLayer = cc.Layer.extend({
 	    		sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
 
 	    		sprite.retain();
+	    		/* retain */ tmpRetain[sprite.__instanceId] = { name: "sprite", line: 408 };
 	        	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
 		        tileSprite.addChild(sprite);
 	        }			
@@ -417,10 +436,7 @@ var _42GameLayer = cc.Layer.extend({
 		rt = this.rotateBoxes(this.tiles[this.tiles.length-1]);
 		
 		// play sound
-		if( self.newtileEffectId ) cc.audioEngine.stopEffect(self.newtileEffectId);
-		self.newtileEffectId = cc.audioEngine.playEffect(res.plopp_mp3);
-		
-		//tileSprite.children[0].runAction(cc.tintTo(1,0,0,0));
+		cc.audioEngine.playEffect(res.plopp_mp3);
 	},
 	
 	getRandomValue: function(occs, sum) {
@@ -501,7 +517,7 @@ var _42GameLayer = cc.Layer.extend({
     		for( var i=0 ; i<b.length ; i++ ) {
     			var bx = lp.x + b[i].x,		// x pos of box
     				by = lp.y + b[i].y,		// y pos of box
-    				brc1 = getRowCol(b[i], { x: lp.x + $42.BS/2 - 5, y: lp.y}),
+    				brc1 = getRowCol(b[i], { x: lp.x + $42.BS/2 - 5, y: lp.y}),  // 5 is 
 					brc2 = getRowCol(b[i], { x: lp.x - $42.BS/2 + 5, y: lp.y});
     			if( by - $42.BS/2 <= $42.BOXES_Y_OFFSET ||    // bottom reached? 
     				(brc1.row < $42.BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
@@ -510,10 +526,7 @@ var _42GameLayer = cc.Layer.extend({
     				lp.y = Math.round((lp.y - $42.BOXES_Y_OFFSET)/($42.BS/2))*($42.BS/2) + $42.BOXES_Y_OFFSET;
     				
     				// fix tile
-    				if( !t.isDragged && !t.isRotating ) {
-    					
-    					return fixTile(t, lp);
-    				}
+    				if( !t.isDragged && !t.isRotating ) return fixTile(t, lp);
     			}
     		}
 
@@ -631,8 +644,7 @@ var _42GameLayer = cc.Layer.extend({
 				}
 				
 				// play sound
-				if( self.rotateEffectId ) cc.audioEngine.stopEffect(self.rotateEffectId);
-				self.rotateEffectId = cc.audioEngine.playEffect(res.klack_mp3);
+				cc.audioEngine.playEffect(res.klack_mp3);
 
 				t.sprite.runAction(cc.sequence( 
 						cc.rotateTo($42.MOVE_SPEED*2,t.rotation),
@@ -698,7 +710,7 @@ var _42GameLayer = cc.Layer.extend({
     		// check if a tile is too high
     		for( var i=0 ; i<b.length ; i++ ) {
 				var brc = getRowCol(b[i], lp);
-				if( brc.row >= $42.GAME_OVER_COL ) {
+				if( brc.row >= $42.GAME_OVER_ROW ) {
 					ret = "gameover";
 				}
 				if( brc.row < 0 || self.boxes[brc.row][brc.col] != null ) {
@@ -715,6 +727,8 @@ var _42GameLayer = cc.Layer.extend({
         				newSprite = cc.Sprite.create(sprite.getTexture(), sprite.getTextureRect());
 
         			newSprite.retain();
+        			/* retain */ tmpRetain[newSprite.__instanceId] = { name: "newSprite", line: 722 };
+        			
         			// Insert into boxes array
     				var brc = getRowCol(b[i], lp);
     				newBrcs.push(brc);
@@ -759,8 +773,7 @@ var _42GameLayer = cc.Layer.extend({
     		// move rows above deleted rows down
     		if( rowsDeleted.length ) {
     			// play sound
-    			if( self.rowEffectId ) cc.audioEngine.stopEffect(self.rowEffectId);
-    			self.rowEffectId = cc.audioEngine.playEffect(res.ritsch_mp3);
+    			cc.audioEngine.playEffect(res.ritsch_mp3);
 
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
     				// don't delete a box when it wasn't actually deleted (though it's row was)  
@@ -806,6 +819,9 @@ var _42GameLayer = cc.Layer.extend({
 		    		
 	        		// destroy sprite and box  
 		    		if( self.boxes[row][i] ) {
+		    			self.boxes[row][i].sprite.release();
+	    				delete tmpRetain[self.boxes[row][i].sprite.__instanceId];
+	    				
 		            	self.removeChild(self.boxes[row][i].sprite);
 		            	self.boxes[row][i].sprite = null;
 				    	self.boxes[row][i] = null;		    			    				    			
@@ -909,7 +925,16 @@ var _42GameLayer = cc.Layer.extend({
     		
     		var ret;
     		if( ret = checkForBottom(t, lp) ) {
-    			// tile landed ...
+    			// tile landed, release and delete it ...
+    			
+    			var t = self.tiles[tile].sprite,
+    				ch = t.getChildren();
+    			t.release();
+				delete tmpRetain[t.__instanceId];
+    			for(var i=0 ; i<ch.length; i++) {
+    				ch[i].release();
+    				delete tmpRetain[ch[i].__instanceId];
+    			}
     			delete self.tiles[tile];
 
     			if( ret == "gameover" ) {
@@ -920,10 +945,12 @@ var _42GameLayer = cc.Layer.extend({
         				menuItems.push({
         					label: $42.t.reached_top_continue, 
         					cb: function(sender) {
-        			        	var gameLayer = this.getParent().getChildByTag($42.TAG_GAME_LAYER);
-        				        gameLayer.resume();
-        				        gameLayer.scheduleUpdate();
+        			        	//var gameLayer = this.getParent().getChildByTag($42.TAG_GAME_LAYER);
+        						// XXX 
+        				        self.resume();
+        				        self.scheduleUpdate();
 
+        				        this.exitMenu();
         			            this.getParent().removeChild(this);
         			            
         	        			self.lastGameOverTime = new Date().getTime();
@@ -935,6 +962,8 @@ var _42GameLayer = cc.Layer.extend({
     					label: $42.t.reached_top_end_game, 
     					cb: function(sender) {
     						if( self.hookEndGame ) self.hookEndGame();
+    						
+    						self.endGame();
     			        	cc.director.runScene(new _42Scene());
     			        }
     				});
@@ -981,7 +1010,8 @@ var _42MenuLayer = cc.LayerColor.extend({
 	
 		q.setPosition(x,y);
 		q.retain();
-		this.addChild(q, 1);
+        /* retain */ tmpRetain[q.__instanceId] = { name: "question", line: 1010 };
+		this.addChild(q, 1, $42.TAG_MENU_QUESTION);
         
         // Show menu items
         for( var i=0 ; i<menuItems.length ; i++ ) {
@@ -992,14 +1022,26 @@ var _42MenuLayer = cc.LayerColor.extend({
         var menu = cc.Menu.create.apply(this, items);
         menu.x = size.width/2;
         menu.y = size.height/2;
-        this.addChild(menu, 1);       
+        this.addChild(menu, 1, $42.TAG_MENU_MENU);       
 
         menu.alignItemsVerticallyWithPadding(40);
-	}
+	},
+    
+    exitMenu: function() {
+    	
+		var q = this.getChildByTag($42.TAG_MENU_QUESTION),
+			m = this.getChildByTag($42.TAG_MENU_MENU);
+		if( q ) q.release();
+		if( m ) m.release();
+		delete tmpRetain[q.__instanceId];
+		delete tmpRetain[m.__instanceId];
+    }
 });
 
 var _42TitleLayer = cc.Layer.extend({
     
+	letters: [],
+	
     ctor:function () {
         this._super();
 
@@ -1008,7 +1050,7 @@ var _42TitleLayer = cc.Layer.extend({
 
 		cc.spriteFrameCache.addSpriteFrames(res.title_plist);
 
-		var addImage = function(image, pos) {
+		var addImage = function(image, pos, tag) {
 			var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(image));
 			sprite.attr({
 	            scale: 1,
@@ -1017,18 +1059,18 @@ var _42TitleLayer = cc.Layer.extend({
 	        });
 			sprite.setPosition(pos);
 			sprite.retain();
-	        self.addChild(sprite, 0);	
+	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "title sprite", line: 1057 };
+	        self.addChild(sprite, 0, tag);
 	        return sprite;
 		};
 		
-		var titleBg = addImage("42background", cc.p(size.width/2, size.height/2)),
-			title42 = addImage("42", cc.p(size.width/2, 830));
+		var titleBg = addImage("42background", cc.p(size.width/2, size.height/2), $42.TAG_TITLE_BACKGROUND),
+			title42 = addImage("42", cc.p(size.width/2, 830), $42.TAG_TITLE_42);
 		
-		var word = $42.TITLE_WORDS,
-			letters = [];
+		var word = $42.TITLE_WORDS;
 		
 		for( var i=0 ; i<word.length ; i++ ) {
-			letters[i] = addImage(word.substr(i,1).toLowerCase()+"_", cc.p(140+90*i, 632));
+			self.letters[i] = addImage(word.substr(i,1).toLowerCase()+"_", cc.p(140+90*i, 632));
 		}
 
 		titleBg.runAction(cc.fadeIn(3));
@@ -1045,7 +1087,7 @@ var _42TitleLayer = cc.Layer.extend({
 			)
 		);
 		for( var i=0 ; i<word.length ; i++ ) {
-			letters[i].runAction(
+			self.letters[i].runAction(
 				cc.sequence(
 					cc.delayTime(2+i/4),
 					cc.fadeIn(2)
@@ -1058,7 +1100,6 @@ var _42TitleLayer = cc.Layer.extend({
 	        var item = cc.MenuItemFont.create(name, cb, self);
 	        item.setFontName("Arial");        	
 	        item.setFontSize(fontSize);  
-	        item.setOpacity(0);  
 	        item.setColor($42.TITLE_MENU_COLOR);
 	        
 	        return item;
@@ -1068,13 +1109,14 @@ var _42TitleLayer = cc.Layer.extend({
         	self.getParent().addChild(new _42GameLayer(), 1, $42.TAG_GAME_LAYER);
         	titleBg.stopAllActions();
     		titleBg.runAction(cc.sequence(cc.EaseSineOut.create(cc.fadeOut(3)),cc.callFunc(function() {
+    			self.exitTitle();
 				self.getParent().removeChild(self);
 			})));
         	title42.stopAllActions();
     		title42.runAction(cc.EaseSineOut.create(cc.spawn(cc.fadeOut(3))));
     		for( var i=0 ; i<word.length ; i++ ) {
-    			letters[i].stopAllActions();
-    			letters[i].runAction(cc.sequence(cc.delayTime(i/4),cc.fadeOut(3-word.length*0.25)));
+    			self.letters[i].stopAllActions();
+    			self.letters[i].runAction(cc.sequence(cc.delayTime(i/4),cc.fadeOut(3-word.length*0.25)));
     		}
         	menu.stopAllActions();
         	menu.setEnabled(false);
@@ -1082,7 +1124,7 @@ var _42TitleLayer = cc.Layer.extend({
         });
         		
         var item2 = addMenu($42.wordTreasureBestWord? $42.TITLE_SCORE+": "+$42.wordTreasureBestWord.value : " ", 36 , function() {
-        	// still has to be filled
+        	// has to be filled
         });
 
         var menu = cc.Menu.create.apply(this, [item1, item2] );
@@ -1094,7 +1136,25 @@ var _42TitleLayer = cc.Layer.extend({
         menu.runAction(cc.EaseSineIn.create(cc.fadeIn(4)));
         
         return true;
+    },
+    
+    exitTitle: function() {
+    	
+    	// release title graphics
+		var background = this.getChildByTag($42.TAG_TITLE_BACKGROUND),
+			_42 = this.getChildByTag($42.TAG_TITLE_42);
+		if( background ) background.release();
+		if( _42 ) _42.release();
+		delete tmpRetain[background.__instanceId];
+		delete tmpRetain[_42.__instanceId];
+    	
+    	// release letters
+    	for( var i=0 ; i<this.letters.length ; i++ ) {
+			this.letters[i].release();
+			delete tmpRetain[this.letters[i].__instanceId];
+    	}
     }
+
 });
 
 
