@@ -116,7 +116,7 @@ var _42GameLayer = cc.Layer.extend({
     	this.endAnimation();
     	
     	// delete all boxes
-		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) this.deleteRow(i,true);
+		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) this.deleteRow(i,true);		
     },
     
 	startAnimation: function() {
@@ -727,7 +727,7 @@ var _42GameLayer = cc.Layer.extend({
         				newSprite = cc.Sprite.create(sprite.getTexture(), sprite.getTextureRect());
 
         			newSprite.retain();
-        			/* retain */ tmpRetain[newSprite.__instanceId] = { name: "newSprite", line: 722 };
+        			/* retain */ tmpRetain[newSprite.__instanceId] = { name: "box sprite", line: 722 };
         			
         			// Insert into boxes array
     				var brc = getRowCol(b[i], lp);
@@ -945,8 +945,6 @@ var _42GameLayer = cc.Layer.extend({
         				menuItems.push({
         					label: $42.t.reached_top_continue, 
         					cb: function(sender) {
-        			        	//var gameLayer = this.getParent().getChildByTag($42.TAG_GAME_LAYER);
-        						// XXX 
         				        self.resume();
         				        self.scheduleUpdate();
 
@@ -964,6 +962,8 @@ var _42GameLayer = cc.Layer.extend({
     						if( self.hookEndGame ) self.hookEndGame();
     						
     						self.endGame();
+    				        this.exitMenu();
+    			            this.getParent().removeChild(this);
     			        	cc.director.runScene(new _42Scene());
     			        }
     				});
@@ -1009,9 +1009,7 @@ var _42MenuLayer = cc.LayerColor.extend({
 	    	y = size.height/2 + menuItems.length * 96;
 	
 		q.setPosition(x,y);
-		q.retain();
-        /* retain */ tmpRetain[q.__instanceId] = { name: "question", line: 1010 };
-		this.addChild(q, 1, $42.TAG_MENU_QUESTION);
+		this.addChild(q, 1);
         
         // Show menu items
         for( var i=0 ; i<menuItems.length ; i++ ) {
@@ -1029,12 +1027,6 @@ var _42MenuLayer = cc.LayerColor.extend({
     
     exitMenu: function() {
     	
-		var q = this.getChildByTag($42.TAG_MENU_QUESTION),
-			m = this.getChildByTag($42.TAG_MENU_MENU);
-		if( q ) q.release();
-		if( m ) m.release();
-		delete tmpRetain[q.__instanceId];
-		delete tmpRetain[m.__instanceId];
     }
 });
 

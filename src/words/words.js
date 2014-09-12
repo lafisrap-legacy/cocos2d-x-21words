@@ -443,6 +443,7 @@ var _42_MODULE = function(_42Layer) {
 		var	wordFrameSprite = cc.Sprite.create(wordFrameFrame),
 			rect = wordFrameSprite.getTextureRect();
 		wordFrameSprite.retain();
+        /* retain */ tmpRetain[wordFrameSprite.__instanceId] = { name: "words: wordFrameSprite", line: 446 };	
 		rect.width = width + $42.WORD_FRAME_WIDTH * 2;
 		rect.height = height + $42.WORD_FRAME_WIDTH * 2;
 		wordFrameSprite.setTextureRect(rect);
@@ -457,6 +458,7 @@ var _42_MODULE = function(_42Layer) {
 				sprite = cc.Sprite.create(orgSprite.getTexture(),orgSprite.getTextureRect());
 			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
 			sprite.retain();
+	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "words: sprite "+i, line: 461 };	
 			wordFrameSprite.addChild( sprite );
 		}
 		
@@ -492,6 +494,25 @@ var _42_MODULE = function(_42Layer) {
 	   					resume = function(menuLayer,takeWord) {
 					        ml.resume();
 					        ml.scheduleUpdate();
+					        
+					        // release sprites, first of animated word ...
+					        var s = wordFrameSprite.getChildren();
+					        for( var i=0 ; i<s.length ; i++ ) {
+						        s[i].release();
+								delete tmpRetain[s[i].__instanceId];					        	
+					        }
+					        wordFrameSprite.release();
+							delete tmpRetain[wordFrameSprite.__instanceId];
+							// ... then of its duplication 
+							s = sprite.getChildren();
+					        for( var i=0 ; i<s.length ; i++ ) {
+						        s[i].release();
+								delete tmpRetain[s[i].__instanceId];					        	
+					        }
+					        sprite.release();
+							delete tmpRetain[sprite.__instanceId];
+
+							// remove sprites and layer
 					        var temp1 = ml.getParent();
 				            var temp2 = ml.getParent().removeChild(menuLayer);
 					        sprite.removeAllChildren(true);
@@ -524,11 +545,13 @@ var _42_MODULE = function(_42Layer) {
     				for( var i=0 ; i<children.length ; i++ ) {
     					childSprites[i] = cc.Sprite.create(children[i].getTexture(),children[i].getTextureRect());
     					childSprites[i].retain();
+    			        /* retain */ tmpRetain[childSprites[i].__instanceId] = { name: "words: childSprites["+i+"] ", line: 548 };	
     					childSprites[i].setPosition(children[i].getPosition());
         				sprite.addChild(childSprites[i],2);    					
     				}
     				sprite.setPosition(this.getPosition());
     				sprite.retain();
+			        /* retain */ tmpRetain[sprite.__instanceId] = { name: "words: sprite", line: 554 };	
     				sprite.setScale(0.95,0.95);
     				ml.getParent().addChild(sprite,2);
     				
@@ -539,12 +562,14 @@ var _42_MODULE = function(_42Layer) {
         				sum += $42.letterValues[word[i]];
         				value.setPosition(pos.x , pos.y + $42.BS + 10);
         				value.retain();
+    			        /* retain */ tmpRetain[value.__instanceId] = { name: "words: value "+i, line: 565 };	
         				value.setColor(cc.color(200,160,0));
         				sprite.addChild(value, 5);	    					
     				}
     				var value = cc.LabelTTF.create($42.t.take_word_wordvalue+": "+sum, "Arial", 48);
 					value.setPosition(sprite.getTextureRect().width/2 , pos.y + $42.BS * 2 + 10);
 					value.retain();
+			        /* retain */ tmpRetain[value.__instanceId] = { name: "words: value ", line: 572 };	
 					value.setColor(cc.color(200,160,0));
 					sprite.addChild(value, 5);	    					
 
@@ -657,6 +682,7 @@ var _42_MODULE = function(_42Layer) {
 			word.setPosition(x,y);
 	        word.setRotation(angle+90);
 	        word.retain();
+	        /* retain */ tmpRetain[word.__instanceId] = { name: "words", line: 684 };	
 	        angle = (angle+79)%360;
 	        ml.addChild(word, 5);
 	        var x2 = Math.random()>0.5? -400 : ml.size.width + 400,
@@ -698,6 +724,9 @@ var _42_MODULE = function(_42Layer) {
 	        word.runAction(fadeAction);
 	        word.runAction(rotateAction);
 	        word.runAction(cc.sequence(bezierAction,cc.callFunc(function(){
+				this.release();
+				delete tmpRetain[this.__instanceId];
+
 	        	ml.removeChild(this);
 	        },word)));
 		}
@@ -709,6 +738,7 @@ var _42_MODULE = function(_42Layer) {
 	
 		coin.setPosition(pos.x,pos.y);
 	    coin.retain();
+        /* retain */ tmpRetain[coin.__instanceId] = { name: "coin", line: 741 };	
 	    coin.setColor(big? cc.color(40,0,0) : cc.color(0,0,0));
 	    ml.addChild(coin, 5);
 	    coin.runAction(
@@ -721,6 +751,8 @@ var _42_MODULE = function(_42Layer) {
 			    	)
 			    ),
 			    cc.callFunc(function() {
+					this.release();
+					delete tmpRetain[this.__instanceId];
 			    	ml.removeChild(this);
 			    },coin)
 			)
@@ -734,6 +766,7 @@ var _42_MODULE = function(_42Layer) {
 		var label = cc.LabelBMFont.create( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT, cc.p(0, 0) );
 		label.setPosition(pos);
 		label.retain();
+        /* retain */ tmpRetain[label.__instanceId] = { name: "label "+text, line: 769 };	
 		label.setColor(color);
 		parent.addChild(label, 5);	
 		
@@ -747,6 +780,7 @@ var _42_MODULE = function(_42Layer) {
 				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
 				rect = wordFrameSprite.getTextureRect();
 			wordFrameSprite.retain();
+	        /* retain */ tmpRetain[wordFrameSprite.__instanceId] = { name: "wordFrameSprite "+word, line: 782 };	
 			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
 			rect.height = word.length? $42.BS + $42.WORD_FRAME_WIDTH * 2 : 8;
 			wordFrameSprite.setTextureRect(rect);
@@ -759,6 +793,13 @@ var _42_MODULE = function(_42Layer) {
 			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
 			rect.height = word.length? $42.BS + $42.WORD_FRAME_WIDTH * 2 : 8;
 			wordFrameSprite.setTextureRect(rect);
+
+			// release and remove old letters
+			var ch = wordFrameSprite.getChildren();
+			for( var i=0; i<ch.length ; i++ ) {
+				ch[i].release();
+				delete tmpRetain[ch[i].__instanceId];
+			}
 			wordFrameSprite.removeAllChildren(true);
 		}
 		// add sprites of word
@@ -769,6 +810,7 @@ var _42_MODULE = function(_42Layer) {
 				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
 			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
 			sprite.retain();
+	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "wordFrameSprite sprite "+word[i], line: 805 };	
 			wordFrameSprite.addChild( sprite );
 		}		
 		
@@ -791,6 +833,7 @@ var _42_MODULE = function(_42Layer) {
 		    sb.setPosition(0,0);
 		    sb.setOpacity(0);
 			sb.retain();
+	        /* retain */ tmpRetain[sb.__instanceId] = { name: "scorebar", line: 835 };	
 			ml.addChild(sb, 5);
 			
 			// draw total points
@@ -819,6 +862,7 @@ var _42_MODULE = function(_42Layer) {
 			var rl = $42.rollingLayer = new cc.Layer();
 			rl.setPosition(0,0);
 			rl.retain();
+	        /* retain */ tmpRetain[rl.__instanceId] = { name: "rolling layer", line: 865 };	
 			clipper.addChild(rl, 5);
 			
 			// draw the word value and the word value label
@@ -964,6 +1008,7 @@ var _42_MODULE = function(_42Layer) {
         ml.plus1Button.x = $42.PLUS1_BUTTON_X;
         ml.plus1Button.y = $42.PLUS1_BUTTON_Y;
         ml.plus1Button.retain();
+        /* retain */ tmpRetain[ml.plus1Button.__instanceId] = { name: "plus1Button", line: 1010 };	
         ml.addChild(ml.plus1Button,10);
 
         var item = cc.MenuItemImage.create(cc.spriteFrameCache.getSpriteFrame("plus3"), cc.spriteFrameCache.getSpriteFrame("plus3highlit"), function() {
@@ -977,12 +1022,44 @@ var _42_MODULE = function(_42Layer) {
         ml.plus3Button.x = $42.PLUS3_BUTTON_X;
         ml.plus3Button.y = $42.PLUS3_BUTTON_Y;
         ml.plus3Button.retain();
+        /* retain */ tmpRetain[ml.plus3Button.__instanceId] = { name: "plus3Button", line: 1025 };	
         ml.addChild(ml.plus3Button,10);
 		
 		drawScoreBar();
 	};
 	
 	_42Layer.hookEndGame = function() {
+		// deselect word
+		this.unselectWord();
+
+		// delete scorebar
+		var releaseChildren = function(sprite) {
+			if( sprite ) {
+				var ch = sprite.getChildren();
+				for( var i=0 ; i<ch.length ; i++ ) {
+					ch[i].release();
+					delete tmpRetain[ch[i].__instanceId];
+				}			
+			}			
+		};
+		
+		var sb = this.scoreBar,
+			rl = $42.rollingLayer;
+		releaseChildren( ml.bestWordSprite );
+		releaseChildren( sb.wordIconSprite );
+		releaseChildren( rl );
+		releaseChildren( sb );
+		rl.release();
+		delete tmpRetain[rl.__instanceId];
+		sb.release();
+		delete tmpRetain[sb.__instanceId];			
+		sb.removeAllChildren(true);
+		
+		// release plus1 and plus3
+		ml.plus1Button.release();
+		delete tmpRetain[ml.plus1Button.__instanceId];
+		ml.plus3Button.release();
+		delete tmpRetain[ml.plus3Button.__instanceId];
 	};
 
 	/*
