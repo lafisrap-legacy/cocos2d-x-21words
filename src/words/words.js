@@ -51,7 +51,7 @@ $42.START_MARKER_X_OFFSET = -18;
 $42.START_MARKER_Y_OFFSET = $42.BS/2;
 $42.MARKER_X_OFFSET = $42.BS/2;
 $42.MARKER_Y_OFFSET = -25;
-$42.UNSELECTED_BOX_OPACITY = 100;
+$42.UNSELECTED_BOX_OPACITY = 150;
 $42.NEEDED_LETTERS_PROBABILITY = 0.5;
 $42.MAX_LETTERS_BLOWN = 20;
 $42.WORD_FRAME_WIDTH = 8;
@@ -220,7 +220,6 @@ var _42_MODULE = function(_42Layer) {
 			if( sw.sprites[col] ) {
 				sw.sprites[col].release();
 				delete tmpRetain[sw.sprites[col].__instanceId];
-				cc.log("Selection sprite deleted:" + sw.sprites[col].__instanceId);
 				ml.removeChild( sw.sprites[col] );
 			}
 			sw.sprites[col] = null;
@@ -255,7 +254,6 @@ var _42_MODULE = function(_42Layer) {
 			if( hits > 0 ) {
 				sw.sprites[col].retain();
 		        /* retain */ tmpRetain[sw.sprites[col].__instanceId] = { name: "words: sw.sprites["+col+"]", line: 252 };	
-				cc.log("Selection sprite added: "+ sw.sprites[col].__instanceId);
 				ml.addChild(sw.sprites[col],5);
 				sw.sprites[col].setPosition(cc.p($42.BOXES_X_OFFSET + i * $42.BS + $42.MARKER_X_OFFSET, 
 						   						 $42.BOXES_Y_OFFSET + row * $42.BS + $42.MARKER_Y_OFFSET));
@@ -634,7 +632,6 @@ var _42_MODULE = function(_42Layer) {
 			for( var i=0 ; i<sw.sprites.length ; i++ ) if( sw.sprites[i]  ) {
 				sw.sprites[i].release();
 				delete tmpRetain[sw.sprites[i].__instanceId];
-				cc.log("Selection sprite deleted:" + sw.sprites[i].__instanceId);
 				ml.removeChild( sw.sprites[i] );
 				sw.sprites[i] = null;
 			}
@@ -761,26 +758,30 @@ var _42_MODULE = function(_42Layer) {
 	    ml.pointsToAdd.push(value);	    
 	};
 	
-	var drawText = function(text,pos,size,color,parent) {
+	var drawText = function(text,pos,size,color,parent,retain) {
 		
 		var label = cc.LabelBMFont.create( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT, cc.p(0, 0) );
 		label.setPosition(pos);
-		label.retain();
-        /* retain */ tmpRetain[label.__instanceId] = { name: "label "+text, line: 769 };	
+		if( retain ) {
+			label.retain();
+	        /* retain */ tmpRetain[label.__instanceId] = { name: "label "+text, line: 769 };
+		}
 		label.setColor(color);
 		parent.addChild(label, 5);	
 		
 		return label;
 	};
 	
-	var drawWordSprite = function(word,pos,wordSprite,scale,parent) {
+	var drawWordSprite = function(word,pos,wordSprite,scale,parent,retain) {
 		// create yellow frame sprite
 		if( !wordSprite ) {
 			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe"),
 				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
 				rect = wordFrameSprite.getTextureRect();
-			wordFrameSprite.retain();
-	        /* retain */ tmpRetain[wordFrameSprite.__instanceId] = { name: "wordFrameSprite "+word, line: 782 };	
+			if( retain ) {
+				wordFrameSprite.retain();
+		        /* retain */ tmpRetain[wordFrameSprite.__instanceId] = { name: "wordFrameSprite "+word, line: 782 };	
+			}
 			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
 			rect.height = word.length? $42.BS + $42.WORD_FRAME_WIDTH * 2 : 8;
 			wordFrameSprite.setTextureRect(rect);
@@ -809,8 +810,10 @@ var _42_MODULE = function(_42Layer) {
 				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file),
 				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
 			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
-			sprite.retain();
-	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "wordFrameSprite sprite "+word[i], line: 805 };	
+			if( retain ) {
+				sprite.retain();
+		        /* retain */ tmpRetain[sprite.__instanceId] = { name: "wordFrameSprite sprite "+word[i], line: 805 };	
+			}
 			wordFrameSprite.addChild( sprite );
 		}		
 		
@@ -837,8 +840,8 @@ var _42_MODULE = function(_42Layer) {
 			ml.addChild(sb, 5);
 			
 			// draw total points
-			ml.score = drawText(ml.totalPoints.toString(),cc.p(110,40),56,$42.SCORE_COLOR_BRIGHT,sb);
-			ml.nextScore = drawText("^ "+ls.toString(),cc.p(105,80),24,$42.SCORE_COLOR_DIMM,sb);
+			ml.score = drawText(ml.totalPoints.toString(),cc.p(110,40),56,$42.SCORE_COLOR_BRIGHT,sb,true);
+			ml.nextScore = drawText("^ "+ls.toString(),cc.p(105,80),24,$42.SCORE_COLOR_DIMM,sb,true);
 			
 			// draw clipping rect
 	        var clipper = cc.ClippingNode.create();
@@ -866,20 +869,20 @@ var _42_MODULE = function(_42Layer) {
 			clipper.addChild(rl, 5);
 			
 			// draw the word value and the word value label
-			sb.currentLevelLabel = drawText(bw? $42.t.score_bar_wordvalue : "",cc.p(380,82),24,$42.SCORE_COLOR_DIMM,rl);		
-			sb.currentLevel = drawText(bw? bw.value : "",cc.p(394,45),72,$42.SCORE_COLOR_BRIGHT,rl);		
+			sb.currentLevelLabel = drawText(bw? $42.t.score_bar_wordvalue : "",cc.p(380,82),24,$42.SCORE_COLOR_DIMM,rl,true);		
+			sb.currentLevel = drawText(bw? bw.value : "",cc.p(394,45),72,$42.SCORE_COLOR_BRIGHT,rl,true);		
 
 			// draw the word sprite and the number of letters
-			sb.wordIconText = drawText($42.t.score_bar_no_word+(mw?" ("+$42.t.score_bar_max+" "+mw+")":""),cc.p(185,75),24,$42.SCORE_COLOR_BRIGHT,rl);		
-			sb.wordIconSprite = drawWordSprite("",cc.p(185,35),sb.wordIconSprite,0.47,rl);							
+			sb.wordIconText = drawText($42.t.score_bar_no_word+(mw?" ("+$42.t.score_bar_max+" "+mw+")":""),cc.p(185,75),24,$42.SCORE_COLOR_BRIGHT,rl,true);		
+			sb.wordIconSprite = drawWordSprite("",cc.p(185,35),sb.wordIconSprite,0.47,rl,true);							
 
 			// draw highscore into clipper
-			drawText($42.t.score_bar_highscore,cc.p(100,171),24,$42.SCORE_COLOR_DIMM,rl);			
-			ml.highscore = drawText($42.maxPoints.toString(),cc.p(100,130),36,$42.SCORE_COLOR_BRIGHT,rl);	
+			drawText($42.t.score_bar_highscore,cc.p(100,171),24,$42.SCORE_COLOR_DIMM,rl,false);			
+			ml.highscore = drawText($42.maxPoints.toString(),cc.p(100,130),36,$42.SCORE_COLOR_BRIGHT,rl,true);	
 			
 			// draw most valuable word
-			ml.bestWordValue = drawText($42.t.score_bar_mvw,cc.p(300,171),24,$42.SCORE_COLOR_DIMM,rl);
-			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.38,rl);							
+			ml.bestWordValue = drawText($42.t.score_bar_mvw,cc.p(300,171),24,$42.SCORE_COLOR_DIMM,rl,true);
+			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.38,rl,true);							
 		} else {
 			ml.score.setString(ml.totalPoints.toString());
 			ml.nextScore.setString("^ "+ls.toString());
@@ -907,10 +910,10 @@ var _42_MODULE = function(_42Layer) {
 					}
 				}
 				sb.wordIconText.setString((max?max:$42.t.score_bar_no_word)+(mw?" ("+$42.t.score_bar_max+" "+mw+")":""));
-				sb.wordIconSprite = drawWordSprite(word,cc.p(185,35),sb.wordIconSprite,0.47,sb);
-				ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.37,rl);
-//				sb.wordIconSprite = drawWordSprite("CYPHERPUNK",cc.p(185,35),sb.wordIconSprite,0.47,sb);
-//				ml.bestWordSprite = drawWordSprite("CYPHERPUNK",cc.p(300,130),ml.bestWordSprite,0.37,rl);
+				sb.wordIconSprite = drawWordSprite(word,cc.p(185,35),sb.wordIconSprite,0.47,sb,true);
+				ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,130),ml.bestWordSprite,0.37,rl,true);
+//				sb.wordIconSprite = drawWordSprite("CYPHERPUNK",cc.p(185,35),sb.wordIconSprite,0.47,sb,true);
+//				ml.bestWordSprite = drawWordSprite("CYPHERPUNK",cc.p(300,130),ml.bestWordSprite,0.37,rl,true);
 			}
 		}
 	};
@@ -1040,19 +1043,30 @@ var _42_MODULE = function(_42Layer) {
 					ch[i].release();
 					delete tmpRetain[ch[i].__instanceId];
 				}			
-			}			
+			}
+		};
+		
+		var releaseSprite = function(sprite) {
+			sprite.release();
+			delete tmpRetain[sprite.__instanceId];
 		};
 		
 		var sb = this.scoreBar,
 			rl = $42.rollingLayer;
 		releaseChildren( ml.bestWordSprite );
 		releaseChildren( sb.wordIconSprite );
-		releaseChildren( rl );
-		releaseChildren( sb );
-		rl.release();
-		delete tmpRetain[rl.__instanceId];
-		sb.release();
-		delete tmpRetain[sb.__instanceId];			
+		releaseSprite( ml.bestWordSprite );
+		releaseSprite( sb.wordIconSprite );
+		releaseSprite(ml.score);
+		releaseSprite(ml.nextScore);
+		releaseSprite(sb.currentLevelLabel);
+		releaseSprite(sb.currentLevel);
+		releaseSprite(sb.wordIconText);
+		releaseSprite(ml.highscore);
+		releaseSprite(ml.bestWordValue);
+		releaseSprite(rl);
+		releaseSprite(sb);
+		
 		sb.removeAllChildren(true);
 		
 		// release plus1 and plus3
