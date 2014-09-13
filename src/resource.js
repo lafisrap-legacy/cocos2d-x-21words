@@ -30,6 +30,9 @@ var res = {
     murbiks_single_png : "res/images/murbiks/mostafa_fly01.png",
     murbiks_png : "res/images/murbiks/murbiks.png",
     murbiks_plist : 'res/images/murbiks/murbiks.plist',
+    
+    // particles
+    particle_lavaflow: "res/particles/LavaFlow.plist"
 };
 
 var g_resources = [
@@ -69,7 +72,10 @@ var g_resources = [
     // murbiks, tutorial
     res.murbiks_single_png,
     res.murbiks_png,
-    res.murbiks_plist
+    res.murbiks_plist,
+    
+    // particles
+    res.particle_lavaflow
 ];
 
 var i18n_language_packs = [

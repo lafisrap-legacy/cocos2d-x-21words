@@ -969,8 +969,9 @@ var _42_MODULE = function(_42Layer) {
 		$42.maxPoints = ls.getItem("maxPoints") || 0;
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
-		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
-		else if( ml.hookStartProgram ) ml.hookStartProgram( 10 , false );
+		ml.hookStartProgram( 6 , false );
+//		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
+//		else if( ml.hookStartProgram ) ml.hookStartProgram( 10 , false );
 
 		// points array
 		ml.pointsToAdd = [];
@@ -982,7 +983,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
 		$42.wordTreasureBestWord = wt[bw] || null;
-		$42.maxWordValue = $42.wordTreasureBestWord? $42.wordTreasureBestWord.value : 4;
+		$42.maxWordValue = $42.wordTreasureBestWord? $42.wordTreasureBestWord.value : 5;
 		
 		// remove all words that are already in the treasure
 		for( var i=0 ; i<wt.length ; i++) {

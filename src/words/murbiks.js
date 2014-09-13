@@ -611,6 +611,30 @@ var MURBIKS_MODULE = function(layer) {
 	var test = function(cb) {
 		startTileProgram(lg.tiles.test);
 	};
+
+	var test1 = function(cb) {
+		startTileProgram(lg.tiles.test1);
+	};
+	
+	var test2 = function(cb) {
+		startTileProgram(lg.tiles.test2);
+	};
+	
+	var test3 = function(cb) {
+		startTileProgram(lg.tiles.test3);
+	};
+	
+	var test4 = function(cb) {
+		startTileProgram(lg.tiles.test4);
+	};
+	
+	var test5 = function(cb) {
+		startTileProgram(lg.tiles.test5);
+	};
+	
+	var test6 = function(cb) {
+		startTileProgram(lg.tiles.test6);
+	};
 	
 	
 	/* 
@@ -1051,12 +1075,12 @@ var MURBIKS_MODULE = function(layer) {
 	var programs = [
         turning_moving_falling_choosing,		// 0
         selecting_deleting,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
+        test1,
+        test2,
+        test3,
+        test4,
+        test5,
+        test6,
         undefined,
         undefined,
         test

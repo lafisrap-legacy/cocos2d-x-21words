@@ -504,7 +504,7 @@ var _42GameLayer = cc.Layer.extend({
     		return {
     			col: Math.round((lp.x + box.x - $42.BOXES_X_OFFSET - $42.BS/2) / $42.BS),
     			row: Math.round((lp.y + box.y - $42.BOXES_Y_OFFSET - $42.BS) / $42.BS),
-    		}
+    		};
     	};
     	
     	/*
@@ -824,10 +824,33 @@ var _42GameLayer = cc.Layer.extend({
 	    				
 		            	self.removeChild(self.boxes[row][i].sprite);
 		            	self.boxes[row][i].sprite = null;
-				    	self.boxes[row][i] = null;		    			    				    			
+				    	self.boxes[row][i] = null;		
+				    	
+			            // particle emitter
+			            var emitter = new cc.ParticleSystem( res.particle_lavaflow );
+			            emitter.x = $42.BOXES_Y_OFFSET + i * $42.BS - $42.BS/2;
+			            emitter.y = $42.BOXES_Y_OFFSET + row * $42.BS + $42.BS/2;
+			            emitter.retain();
+			            emitter.setAngle(Math.random()*360);
+			            self.addChild(emitter);
+			            
+			            emitter.runAction(
+			            	cc.sequence(
+			            		cc.delayTime(0.15 + Math.random()*0.05),
+			            		cc.callFunc(function() {
+			            			this.stopSystem();
+			            		},emitter),
+			            		cc.delayTime(3.0),
+			            		cc.callFunc(function() {
+			            			this.release();
+			            			self.removeChild(this);
+			            		},emitter)
+			            	)
+			            );
+
 		    		}
 		    	}
-    		}        	
+    		}           	
     	};
 
     	// call hook
@@ -1126,7 +1149,7 @@ var _42TitleLayer = cc.Layer.extend({
         self.addChild(menu, 1);       
         menu.alignItemsVerticallyWithPadding(70);
         menu.runAction(cc.EaseSineIn.create(cc.fadeIn(4)));
-        
+                
         return true;
     },
     
