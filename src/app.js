@@ -30,6 +30,7 @@ var _42_GLOBALS = {
 	BOXES_PER_ROW : 10,	// cols in playgound
 	BOXES_X_OFFSET : 0,
 	BOXES_Y_OFFSET : 96,
+	INITIAL_TILE_ROTATION: 0,
 	SNAP_SPEED : 10.0, // pixel per 1/60
 	LONG_TAP_TIME : 300, // milliseconds
 	FALLING_SPEED : 0.33, // pixel per 1/60
@@ -42,11 +43,11 @@ var _42_GLOBALS = {
 	TILE_BOXES : [
 	    [{x:-1.5*64,y: 0.0*64},{x:-0.5*64,y: 0.0*64},{x: 0.5*64,y: 0.0*64},{x: 1.5*64,y: 0.0*64}],
 		[{x:-0.5*64,y:-0.5*64},{x:-0.5*64,y: 0.5*64},{x: 0.5*64,y:-0.5*64},{x: 0.5*64,y: 0.5*64}],
-		[{x:-1.0*64,y: 0.5*64},{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64},{x: 1.0*64,y: 0.5*64}],
-		[{x:-1.0*64,y: 0.5*64},{x: 1.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64},{x: 1.0*64,y: 0.5*64}],
+		[{x:-1.0*64,y:-0.5*64},{x:-1.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
+		[{x:-1.0*64,y:-0.5*64},{x: 1.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
 		[{x:-1.0*64,y: 0.5*64},{x: 0.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
 		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64},{x: 1.0*64,y: 0.5*64}],
-		[{x:-1.0*64,y: 0.5*64},{x: 0.0*64,y: 0.5*64},{x: 1.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64}],
+		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64}],
   		[{x:0,y:0}],
 	    [{x:-1.0*64,y: 0.0*64},{x: 0.0*64,y: 0.0*64},{x: 1.0*64,y: 0.0*64}],
 	],
@@ -416,6 +417,7 @@ var _42GameLayer = cc.Layer.extend({
 	    		sprite.retain();
 	    		/* retain */ tmpRetain[sprite.__instanceId] = { name: "sprite", line: 408 };
 	        	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
+	        	sprite.setRotation(-$42.INITIAL_TILE_ROTATION);
 		        tileSprite.addChild(sprite);
 	        }			
 		}
@@ -424,7 +426,7 @@ var _42GameLayer = cc.Layer.extend({
         this.tiles.push({
         	boxes: tileBoxes,
         	sprite: tileSprite,
-        	rotation: 0,
+        	rotation: $42.INITIAL_TILE_ROTATION,
         	direction: 0,  // 0, -1, 1 
         	isRotating : false,
         	action: null,
@@ -432,7 +434,7 @@ var _42GameLayer = cc.Layer.extend({
         	userData: userData
         });
         
-        tileSprite.setRotation(0);
+        tileSprite.setRotation($42.INITIAL_TILE_ROTATION);
 		rt = this.rotateBoxes(this.tiles[this.tiles.length-1]);
 		
 		// play sound
@@ -1149,7 +1151,7 @@ var _42TitleLayer = cc.Layer.extend({
         self.addChild(menu, 1);       
         menu.alignItemsVerticallyWithPadding(70);
         menu.runAction(cc.EaseSineIn.create(cc.fadeIn(4)));
-                
+        
         return true;
     },
     

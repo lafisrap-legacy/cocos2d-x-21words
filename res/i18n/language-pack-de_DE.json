@@ -33,7 +33,7 @@
     	"mostafa_basic05"	: "Ein gefundenes Wort kannst du wählen oder ablehnen.",
     	"mostafa_basic06"	: "Viel Spaß!",
     	"mostafa_advanced01": "BOUMMM!",
-    	"mostafa_advanced02": "Du kannst Wortanfänge mit einem Klick wählen und abwählen.",
+    	"mostafa_advanced02": "Du kannst Wortanfänge mit einem kurzen Klick wählen und mit einem langen Klick abwählen.",
     	"mostafa_advanced03": "Wenn an einer Stelle mehrere Buchstaben möglich sind, erscheint solch ein Fragezeichen.",
     	"mostafa_advanced04": "Mit einem Klick kannst du den aktuellen Buchstaben auswählen.",
     	"mostafa_advanced05": "Siehst du das T, das dem Wort RATTE noch fehlt? Es muss eine Zeile tiefer.",
@@ -46,21 +46,82 @@
     "tiles": {
     	"turning_moving_falling_choosing": [
 		    { "tile": 0, "letters": "TROW" },
-		    { "tile": 3, "letters": "TNNE" },
-		    { "tile": 1, "letters": "NSET" }
+		    { "tile": 3, "letters": "ENNT" },
+		    { "tile": 1, "letters": "NSET" },
+		   	{ "tile": 2, "letters": "NEAS" },
+		    { "tile": 0, "letters": "ERST" },
+		    { "tile": 6, "letters": "EIER" },
+		    { "tile": 0, "letters": "RRAN" },
+		    { "tile": 3, "letters": "TIEE" },
+		    { "tile": 4, "letters": "RRTN" },
+		    { "tile": 0, "letters": "TIRR" },
+		    { "tile": 5, "letters": "EESA" },
+		    { "tile": 2, "letters": "AANN" },
+		    { "tile": 0, "letters": "TSAA" },		    
+		    { "tile": 1, "letters": "AISR" },
+		    { "tile": 1, "letters": "SISE" },		    
+		    { "tile": 3, "letters": "STAA" },
+		    { "tile": 0, "letters": "RRTS" }	
 		],
 		"selecting_deleting": [
 		    { "tile": 0, "letters": "CYPH" },
 		    { "tile": 0, "letters": "RATR" },
-		    { "tile": 3, "letters": "GETP" },
+		    { "tile": 2, "letters": "GETP" },
 		    { "tile": 0, "letters": "RNEK" },
-		    { "tile": 2, "letters": "ENTE" },
-		    { "tile": 2, "letters": "DUCK" }
+		    { "tile": 1, "letters": "ENTE" },
+		    { "tile": 1, "letters": "DUCK" }
+		    { "tile": 0, "letters": "STEI" }
 		],
 		"test": [
 		    { "tile": 0, "letters": "CYPH" },
 		    { "tile": 0, "letters": "ERPU" },
 		    { "tile": 3, "letters": "RNEK" }
+		],
+		"test1": [
+		    { "tile": 2, "letters": "NEAS" },
+		    { "tile": 0, "letters": "ERST" },
+		    { "tile": 6, "letters": "EIER" },
+		    { "tile": 0, "letters": "RRAN" },
+		    { "tile": 3, "letters": "TIEE" },
+		    { "tile": 4, "letters": "RRTN" },
+		    { "tile": 0, "letters": "IRIA" },
+		    { "tile": 5, "letters": "SSET" },
+		    { "tile": 2, "letters": "AANN" },
+		    { "tile": 0, "letters": "TSAA" },		    
+		    { "tile": 1, "letters": "AISR" },
+		    { "tile": 1, "letters": "SISE" },		    
+		    { "tile": 3, "letters": "STAA" },
+		    { "tile": 0, "letters": "RRTS" }		    
+		],
+		"test2": [
+		    { "tile": 0, "letters": "ATES" },
+		    { "tile": 0, "letters": "TSBC" }
+		],
+		"test3": [
+		    { "tile": 0, "letters": "ATES" },
+		    { "tile": 0, "letters": "ABCD" },
+		    { "tile": 0, "letters": "EFGH" },
+		    { "tile": 0, "letters": "TSBC" }
+		],
+		"test4": [
+		    { "tile": 0, "letters": "ATES" },
+		    { "tile": 0, "letters": "SBCD" },
+		    { "tile": 0, "letters": "EFGH" },
+		    { "tile": 0, "letters": "TSBC" }
+		],
+		"test5": [
+		    { "tile": 0, "letters": "TESA" },
+		    { "tile": 0, "letters": "ASET" },
+		    { "tile": 0, "letters": "ABCD" },
+		    { "tile": 0, "letters": "EFGH" },
+		    { "tile": 0, "letters": "FHIJ" }
+		],
+		"test6": [
+		    { "tile": 0, "letters": "TESA" },
+		    { "tile": 0, "letters": "ASET" },
+		    { "tile": 0, "letters": "SBCD" },
+		    { "tile": 0, "letters": "EFGH" },
+		    { "tile": 0, "letters": "FHIJ" }
 		] 
     },
     "tiles_needed": {

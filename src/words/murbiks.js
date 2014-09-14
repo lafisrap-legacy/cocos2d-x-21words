@@ -146,17 +146,6 @@ var MURBIKS_MODULE = function(layer) {
 		            showSpeechBubble(6.0 , $42.t.mostafa_basic02 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 17.5,
-		    	anim: function() {
-		    		jumpHandTo(cc.p(0,0));
-		    		moveHandTo(2.0 , cc.p(280,500), cc.p(280,300));		    		
-		    	}
-		    },{
-		    	time: 19.5,
-		    	anim: function() {
-		            pressFingerTo(0.643 , cc.p(290,650));		    		
-		    	}
-		    },{
 		    	time: 20.2,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
@@ -255,6 +244,25 @@ var MURBIKS_MODULE = function(layer) {
         	            cc.p(800,1000)
         		    ]);		
 		    	}
+		    },{
+		    	time: 49.2,
+		    	anim: function() {
+		    		mostafaFlyingToMiddle(6.0, [
+					    cc.p(0,0),
+			            cc.p(200,520),
+			            cc.p(320,320)
+				    ],[
+						cc.p(320,320),
+			            cc.p(200,415),
+			            cc.p(1000,300)
+					] )	
+		    	}
+		    },{
+		    	time: 51.2,
+		    	anim: function() {
+		    		ml.unselectWord();
+		    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);
+		    	}		    	
 		    }
 		];
 	};
@@ -277,7 +285,11 @@ var MURBIKS_MODULE = function(layer) {
 	    			mostafa.setPosition(cc.p(800,1000));
 	    			blueButton.setPosition(cc.p(800,895));
 
-	    			showMostafaAndButton(3.0);		    		
+	    			showMostafaAndButton(3.0);		
+	    			
+	    			ml.unselectWord();
+//	    			setSelections();
+	    			ml.dontAutoSelectWord = true;
 		    	}
 			},{
 		    	time: 3.0,
@@ -323,6 +335,8 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 10.1,
 		    	anim: function() {
+	    			ml.dontAutoSelectWord = false;
+
 		    		pressFingerTo(1.0 , cc.p(128,400));		    		
 		    	}
 		    },{
@@ -403,27 +417,37 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 25.0,
 		    	anim: function() {
+		    		moveHandTo(0.5 , cc.p(270,420));		    		
+		    	}
+		    },{
+		    	time: 25.5,
+		    	anim: function() {
+		    		pressFingerTo(0.643 , cc.p(280,670));		    		
+		    	}
+		    },{
+		    	time: 27.0,
+		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
 		    		moveHandTo(1.1 , tilePos);		    		
 		    	}
 		    },{
-		    	time: 26.1,
+		    	time: 28.1,
 		    	anim: function() {
 		    		pressFingerTo(1.0 , cc.p(288,400));		    		
 		    	}
 		    },{
-		    	time: 27.2,
+		    	time: 29.2,
 		    	anim: function() {
 		    		moveHandTo(1.1 , cc.p(-200,0));	
 		    	}
 		    },{
-		    	time: 27.3,
+		    	time: 29.3,
 		    	anim: function() {
 		            showSpeechBubble(7.0 , $42.t.mostafa_advanced03 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 28.5,
+		    	time: 30.5,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,4);
 		    		
@@ -432,12 +456,12 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.5 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 34.3,
+		    	time: 36.3,
 		    	anim: function() {
 		            showSpeechBubble(7.0 , $42.t.mostafa_advanced04 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 35.5,
+		    	time: 37.5,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,5);
 
@@ -446,7 +470,7 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.5 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 36.5,
+		    	time: 38.5,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,5);
 		    		
@@ -455,7 +479,7 @@ var MURBIKS_MODULE = function(layer) {
 		    		pressFingerTo(0.2 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 37.0,
+		    	time: 39.0,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,5);
 		    		
@@ -465,39 +489,39 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.5 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 40.0,
+		    	time: 42.0,
 		    	anim: function() {
 		    		moveHandTo(0.4 , cc.p(320,300));		    		
 		    	}
 		    },{
-		    	time: 40.4,
+		    	time: 42.4,
 		    	anim: function() {
 		    		pressFingerTo(0.2 , cc.p(320,500));		    		
 		    	}
 		    },{
-		    	time: 41.0,
+		    	time: 43.0,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
 		    		moveHandTo(0.5 , tilePos);		    		
 		    	}
 		    },{
-		    	time: 41.5,
+		    	time: 43.5,
 		    	anim: function() {
 		    		pressFingerTo(1.0 , cc.p(0,100));		    		
 		    	}
 		    },{
-		    	time: 42.6,
+		    	time: 44.6,
 		    	anim: function() {
 		    		moveHandTo(1.1 , cc.p(-200,0));	
 		    	}
 		    },{
-		    	time: 43.3,
+		    	time: 45.3,
 		    	anim: function() {
 		            showSpeechBubble(7.0 , $42.t.mostafa_advanced05 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 43.4,
+		    	time: 45.4,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(2,3);
 
@@ -505,12 +529,12 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.5 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 50.3,
+		    	time: 52.3,
 		    	anim: function() {
 		            showSpeechBubble(4.0 , $42.t.mostafa_advanced06 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 51.3,
+		    	time: 53.3,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
@@ -518,22 +542,22 @@ var MURBIKS_MODULE = function(layer) {
 		    		hand.runAction(cc.rotateTo(2.5,$42.HAND_ROTATION));
 		    	}
 		    },{
-		    	time: 52.4,
+		    	time: 54.4,
 		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(544,100));		    		
+		    		pressFingerTo(1.0 , cc.p(576,100));		    		
 		    	}
 		    },{
-		    	time: 53.5,
+		    	time: 55.5,
 		    	anim: function() {
 		    		moveHandTo(1.1 , cc.p(-200,0));	
 		    	}
 		    },{
-		    	time: 54.0,
+		    	time: 56.0,
 		    	anim: function() {
 		            showSpeechBubble(6.0 , $42.t.mostafa_advanced07 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 55.0,
+		    	time: 57.0,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
@@ -541,44 +565,44 @@ var MURBIKS_MODULE = function(layer) {
 		    		hand.runAction(cc.rotateTo(1.7,105));
 		    	}
 		    },{
-		    	time: 56.8,
+		    	time: 58.8,
 		    	anim: function() {
-		    		pressFingerTo(10.0 , cc.p(480,300));		    		
+		    		pressFingerTo(10.0 , cc.p(448,300));		    		
 		    	}
 		    },{
-		    	time: 60.0,
+		    	time: 62.0,
 		    	anim: function() {
 		            showSpeechBubble(6.0 , $42.t.mostafa_advanced08 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 66.9,
+		    	time: 68.9,
 		    	anim: function() {
 		    		moveHandTo(2.5 , cc.p(-200,0));
 		    		hand.runAction(cc.rotateTo(2.5,$42.HAND_ROTATION));
 		    	}
 		    },{
-		    	time: 71.0,
+		    	time: 73.0,
 		    	anim: function() {
 		    		moveHandTo(0.8 , cc.p(340,640));		    		
 		    	}
 		    },{
-		    	time: 72.1,
+		    	time: 74.1,
 		    	anim: function() {
 		    		pressFingerTo(0.4 , cc.p(340,640));
 		    		hookResumeAskForWord(hookResumeMenuLayer , true);
 		    	}
 		    },{
-		    	time: 72.6,
+		    	time: 74.6,
 		    	anim: function() {
 		    		moveHandTo(0.8 , cc.p(-200,0));		    		
 		    	}
 		    },{
-		    	time: 74.2,
+		    	time: 76.2,
 		    	anim: function() {
 		            showSpeechBubble(4.0 , $42.t.mostafa_advanced09 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 75.3,
+		    	time: 77.3,
 		    	anim: function() {
 		    		moveMostafaAndButton(3.0, [
            			    cc.p(500,180),
@@ -587,7 +611,7 @@ var MURBIKS_MODULE = function(layer) {
         		    ]);		
 		    	}
 		    },{
-		    	time: 80.7,
+		    	time: 82.7,
 		    	anim: function() {
 		    		mostafaFlyingToMiddle(6.0, [
 					    cc.p(0,0),
@@ -600,7 +624,7 @@ var MURBIKS_MODULE = function(layer) {
 					] )	
 		    	}
 		    },{
-		    	time: 82.7,
+		    	time: 84.7,
 		    	anim: function() {
 		            showSpeechBubble(6.0 , $42.t.mostafa_advanced10 , mostafa.getPosition());		    		
 		    	}

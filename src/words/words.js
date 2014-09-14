@@ -969,8 +969,9 @@ var _42_MODULE = function(_42Layer) {
 		$42.maxPoints = ls.getItem("maxPoints") || 0;
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
-		ml.hookStartProgram( 6 , false );
-//		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
+//		ml.hookStartProgram( 2 , false );
+//		ml.hookStartProgram( 0 , true );
+		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
 //		else if( ml.hookStartProgram ) ml.hookStartProgram( 10 , false );
 
 		// points array
@@ -1150,6 +1151,7 @@ var _42_MODULE = function(_42Layer) {
     		sprite.retain();
 	        tmpRetain[sprite.__instanceId] = { name: "words: sprite", line: 1038 };
         	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
+        	sprite.setRotation(-$42.INITIAL_TILE_ROTATION);
         	userData[i] = $42.LETTERS[val];
         	
 	        tileSprite.addChild(sprite);
@@ -1245,7 +1247,7 @@ var _42_MODULE = function(_42Layer) {
 		} 
 		
 		// check if selected word is hit
-		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y - $42.BS && tapPos.y <= swPos.y + $42.BS ) {
+		if( sw && tapPos.x >= swPos.x && tapPos.y >= swPos.y - $42.BS/3 && tapPos.y <= swPos.y + $42.BS ) {
 			var col = Math.floor((tapPos.x - swPos.x)/$42.BS),
 				marker = sw.markers[col];
 			if( marker === $42.MARKER_OPT || marker === $42.MARKER_SEL ) {
@@ -1343,8 +1345,8 @@ var _42_MODULE = function(_42Layer) {
 				}
 			}
 			
-			// tutorial 2 starts >= 1500
-			if( ml.totalPoints >= 1500 && !ml.wordIsBeingSelected && ml.hookStartProgram && $42.tutorialsDone < 2 ) {
+			// tutorial 2 starts >= 750
+			if( ml.totalPoints >= 750 && !ml.wordIsBeingSelected && ml.hookStartProgram && $42.tutorialsDone < 2 ) {
 				$42.tutorialsDone = 2;
 				ml.hookStartProgram( 1 , true );	
 			}

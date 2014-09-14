@@ -10,7 +10,7 @@
         "won_continue": 		"WEITER SPIELEN",
         "won_end_game": 		"SPIEL BEENDEN",
         "take_word_yes": 		"JA",
-        "take_word_no": 		"NEIN",
+        "take_word_no": 		"NEJ",
         "take_word_question": 	"Willst du das Wort nehmen?",
         "take_word_wordvalue": 	"Wortwert",
         "score_bar_highscore": 	"Highscore",
@@ -46,13 +46,13 @@
     "tiles": {
     	"turning_moving_falling_choosing": [
 		    { "tile": 0, "letters": "TROW" },
-		    { "tile": 3, "letters": "TNNE" },
-		    { "tile": 1, "letters": "NSET" }
+		    { "tile": 3, "letters": "ENTS" },
+		    { "tile": 1, "letters": "ESNT" }
 		],
 		"selecting_deleting": [
 		    { "tile": 0, "letters": "CYPH" },
-		    { "tile": 0, "letters": "RATR" },
-		    { "tile": 3, "letters": "GETP" },
+		    { "tile": 0, "letters": "TITR" },
+		    { "tile": 3, "letters": "GNAP" },
 		    { "tile": 0, "letters": "RNEK" },
 		    { "tile": 2, "letters": "ENTE" },
 		    { "tile": 2, "letters": "DUCK" }
