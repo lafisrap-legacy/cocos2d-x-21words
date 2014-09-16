@@ -51,7 +51,7 @@ $42.START_MARKER_X_OFFSET = -18;
 $42.START_MARKER_Y_OFFSET = $42.BS/2;
 $42.MARKER_X_OFFSET = $42.BS/2;
 $42.MARKER_Y_OFFSET = -25;
-$42.UNSELECTED_BOX_OPACITY = 150;
+$42.UNSELECTED_BOX_OPACITY = 100;
 $42.NEEDED_LETTERS_PROBABILITY = 0.5;
 $42.MAX_LETTERS_BLOWN = 20;
 $42.WORD_FRAME_WIDTH = 8;
@@ -209,7 +209,7 @@ var _42_MODULE = function(_42Layer) {
 			}
 		}
 		// if no words are found with currently selected markers, than the last fitting word was removed
-		// so delete all selected markers and start with all words anew
+		// so all selected markers and start with all words anew
 		if( curWords.length === 0 ) {
 			curWords = sw.words.slice();
 			for( var i=3 ; i<sw.markers.length ; i++ ) if( sw.markers[i] === $42.MARKER_SEL || sw.markers[i] === $42.MARKER_SET ) sw.markers[i] = null;
@@ -609,7 +609,7 @@ var _42_MODULE = function(_42Layer) {
 		var x = $42.BOXES_X_OFFSET + nsw.brc.col*$42.BS + 1.5*$42.BS,
 			y = $42.BOXES_Y_OFFSET + nsw.brc.row*$42.BS + 1.5*$42.BS;
 		
-		blowWords(cc.p(x,y),nsw.words);
+//		blowWords(cc.p(x,y),nsw.words);
 		
 		cc.log("42words, selectBestWord: Calling updateSelectedWord()");
 		updateSelectedWord();
@@ -984,7 +984,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
 		$42.wordTreasureBestWord = wt[bw] || null;
-		$42.maxWordValue = $42.wordTreasureBestWord? $42.wordTreasureBestWord.value : 5;
+		$42.maxWordValue = 20; $42.wordTreasureBestWord? $42.wordTreasureBestWord.value : 4;
 		
 		// remove all words that are already in the treasure
 		for( var i=0 ; i<wt.length ; i++) {
@@ -1192,7 +1192,8 @@ var _42_MODULE = function(_42Layer) {
 
 	_42Layer.hookDeleteBox = function(brc) {
 		var sw = ml.selectedWord,
-			box = ml.boxes[brc.row][brc.col];
+			box = ml.boxes[brc.row][brc.col],
+			s = ml.selections;
 
 		var lb = ml.lastBrcs,
 			newBox = false;
@@ -1217,6 +1218,12 @@ var _42_MODULE = function(_42Layer) {
 		if( box && (box.userData === "1" || box.userData === "3") ) {
 			ml.add1and3s.push(box.userData);
 		}
+		
+		// check if selection is deleted
+		for( var i=0 ; i<s.length ; i++ ) if( s[i].brc.row === brc.row && s[i].brc.col === brc.col ) break;			
+
+		if( i<s.length )
+			blowWords(cc.p($42.BOXES_X_OFFSET + (brc.col+1.5)*$42.BS, $42.BOXES_Y_OFFSET + (brc.row+0.5)*$42.BS),box.words);
 		
 		return true;
 	};
@@ -1262,7 +1269,7 @@ var _42_MODULE = function(_42Layer) {
 				cc.log("42words, hookOnTap: calling updateSelectedWord()");
 				updateSelectedWord();
 			} else {
-				blowWords(tapPos,ml.boxes[sw.brc.row][sw.brc.col].words);
+//				blowWords(tapPos,ml.boxes[sw.brc.row][sw.brc.col].words);
 			}
 		} else if( tapPos.y < $42.BOXES_Y_OFFSET ) {
 			moveRollingLayer(undefined,3);
@@ -1281,7 +1288,7 @@ var _42_MODULE = function(_42Layer) {
 					var x = $42.BOXES_X_OFFSET + s.brc.col*$42.BS + 1.5*$42.BS,
 					y = $42.BOXES_Y_OFFSET + s.brc.row*$42.BS + 1.5*$42.BS;
 				
-					blowWords(cc.p(x,y),s.words);
+//					blowWords(cc.p(x,y),s.words);
 				}
 			}
 		}
