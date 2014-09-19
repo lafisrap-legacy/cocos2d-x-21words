@@ -27,6 +27,8 @@ if (process.argv.length < 3) {
 
 var letterValues = {};
 
+// max 32 letters each!
+
 letterValues.german = {
 	"A":1,
 	"B":4,
@@ -216,7 +218,20 @@ if( match ) {
 	lgLow = lgHigh = parseInt(lg);
 }
 
-	
+// calculate letter order
+var letterOrder = [],
+	lvs = letterValues[src];
+for( var i in lvs ) letterOrder.push({letter:i,value:lvs[i]});
+letterOrder.sort(function(a,b) { return a.value - b.value });
+for( var i=0 ; i<letterOrder.length ; i++ ) {
+	letterOrder[i] = letterOrder[i].letter;
+	lvs[letterOrder[i]] = {
+		value:lvs[letterOrder[i]],
+		order:i
+	}; 
+}
+
+// read file and interpret it ...
 fs.readFile(filename, 'utf8', function(err, data) {
 	if (err) throw err;
 	// get words into an array and sort them
@@ -262,7 +277,7 @@ fs.readFile(filename, 'utf8', function(err, data) {
 		// compute word value
 		var wordValue = 0;
 		for( var j=0 ; j<word.length ; j++ ) {
-			wordValue += letterValues[src][word[j]];
+			wordValue += letterValues[src][word[j]].value;
 			if( isNaN(wordValue) ) {
 				console.log("Undefined letter in word: "+word+", letter: '"+word[j]+"'"); 
 				break;
@@ -281,6 +296,11 @@ fs.readFile(filename, 'utf8', function(err, data) {
 			else prefixValues[wordValue].splice(Math.floor(Math.random()*prefixValues[wordValue].length),0,prefix);
 		}
 		
+		// set letter profile (a bit for each letter used) ... (3774191835 & 4294967295) >>> 0
+		var letterProfile = 0;
+		for( var j=0 ; j<word.length ; j++ )
+			letterProfile |= 1 << letterOrder.indexOf(word[j]) >>> 0;
+		
 		max = Math.max(max,wordValue);
 		min = Math.min(min,wordValue);
 		
@@ -288,7 +308,7 @@ fs.readFile(filename, 'utf8', function(err, data) {
 		var wordEntry = {
 			word: word,
 			value: wordValue,
-			frequency: freq
+			profile: letterProfile
 		}
 		if( verbose ) console.log("Found word '"+wordEntry.word+"' with a value of "+wordEntry.value);
 		

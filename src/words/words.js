@@ -2,9 +2,16 @@
  * 
  * NEXT STEPS:
  * 
+ * Select next letter, if there is one left
+ * After JA-Wort add next letter, select a new one 
+ * Refactor scorebar
+ * 	show next letter, letters that can be used, number of collected words
+ * remove unused variables
+ * 	points, etc.
+ * remove blowup of points
+ * 
  * + FEHLER
  * 
- * FEHLER AM ENDE -- MENU WIRD NICHT GEÖFFNET
  * 
  * + GAMEPLAY
  * 
@@ -12,26 +19,13 @@
  * - show wortschatz
  * 
  * + INTERNATIONALIZATION
- * - english words
- * - multilingual programs
  * 
  * + IPHONE
  * 
  * 
  * + STABILIZATION
- * - load images and words before game start ...
- * - retain ...
  * 
  * 
- * + SPHINX-MODE
- * Diamonds:
- * 
- * White:
- * Blue:
- * Red:
- * Purple:
- * Pink:
- * Green:
  * 
  */
 
@@ -52,8 +46,8 @@ $42.START_MARKER_Y_OFFSET = $42.BS/2;
 $42.MARKER_X_OFFSET = $42.BS/2;
 $42.MARKER_Y_OFFSET = -25;
 $42.UNSELECTED_BOX_OPACITY = 100;
-$42.NEEDED_LETTERS_PROBABILITY = 0.5;
-$42.MAX_LETTERS_BLOWN = 20;
+$42.NEEDED_LETTERS_PROBABILITY = 0.15; // additional probability that a needed letter will be selected
+$42.MAX_LETTERS_BLOWN = 10;
 $42.WORD_FRAME_WIDTH = 8;
 $42.WORD_FRAME_MOVE_TIME = 0.8;
 $42.SCORE_ROW_MULTIPLYER = 0.25;
@@ -63,6 +57,8 @@ $42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);
 $42.POINTS_TO_ADD_CYCLES = 3;
 $42.POINTS_TO_ADD_BLOW_UP = -1;
 $42.LEVELS_TO_BLOW_CYCLES = 30;
+$42.NEXT_PROFILE_LETTERS = 5;
+$42.NEXT_PROFILE_LETTER_CNT = 3;
 $42.PLUS1_BUTTON_X = 130;
 $42.PLUS1_BUTTON_Y = 1200;
 $42.PLUS1_BUTTON_COST = 1000;
@@ -99,13 +95,13 @@ var _42_MODULE = function(_42Layer) {
 				var oldPrefix = box.words && box.words[0] && box.words[0].word.substring(0,3) || null;
 				box.words = null;
 				checkForPrefixes({row:i,col:j}, function(brc, words) {
-					//ml.wordCandidates = ml.wordCandidates.concat(words);
 					box.words = words;
 					// don't show selections in the row of the selected word
 					if( sw && sw.brc.row === i ) return;
 					
 					var newPrefix = words[0].word.substring(0,3);
 
+					// let a newly found sprite blink 
 					for( var k=0 ; k<3 ; k++ ) {
 						var box1 = ml.boxes[brc.row][brc.col+k];
 						if( box1.sprite ) box1.sprite.setOpacity(255);
@@ -113,6 +109,8 @@ var _42_MODULE = function(_42Layer) {
 							box1.sprite.runAction(cc.blink(0.5,3));
 						}
 					}
+					
+					// fill the selection	
 					s.push({
 						brc: brc,
 						width: $42.BS * 3,
@@ -148,13 +146,15 @@ var _42_MODULE = function(_42Layer) {
 			words.push({
 				word: $42.words[prefix][i].word,
 				value: $42.words[prefix][i].value,
+				profile: $42.words[prefix][i].profile,
 			});
 		}
 
 		if( !(ml.boxes[brc.row][brc.col] && ml.boxes[brc.row][brc.col].words) && words.length && cb ) {
 
 			for( var i=words.length-1 ; i>=0 ; i-- ) {
-				if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || words[i].value > $42.maxWordValue ) {
+//				if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || words[i].value > $42.maxWordValue ) {
+				if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || $42.wordProfile < ($42.wordProfile | words[i].profile) ) {
 					words.splice(i,1);
 				}
 			}
@@ -291,7 +291,7 @@ var _42_MODULE = function(_42Layer) {
 						var row = sw.brc.row;
 						for( var j=0, value=0 ; j<word.length ; j++ ) {
 							// calculate points and let them fly ...
-							var v = $42.letterValues[word[j]],
+							var v = $42.letterValues[word[j]].value,
 								points = parseInt(v * $42.maxWordValue * $42.SCORE_WORD_MULTIPLYER * ((sw.brc.row*$42.SCORE_ROW_MULTIPLYER)+1));
 							value += v;
 							addPoints(points, cc.p($42.BOXES_X_OFFSET + (sw.brc.col+j) * $42.BS + $42.BS/2, $42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.BS), true);							
@@ -321,13 +321,17 @@ var _42_MODULE = function(_42Layer) {
 								ml.pointsToAdd.push( $42.POINTS_TO_ADD_BLOW_UP ); 
 							}
 						}
+
 						ml.unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
+
+						// add new profile letter
+						setNextProfileLetter();
 						
 						cc.log("42words, updateSelectedWord, takeWord = true: setSelection()");
 						setSelections();
 						drawScoreBar(true);
-
+						
 						ls.setItem("wordTreasure" , JSON.stringify($42.wordTreasure));
 					} else {
 						ml.checkForAndRemoveCompleteRows();
@@ -555,9 +559,9 @@ var _42_MODULE = function(_42Layer) {
     				
     				// display value of word
     				for( var i=0,sum=0 ; i<word.length ; i++ ) {
-        				var value = cc.LabelTTF.create($42.letterValues[word[i]], "Arial", 32),
+        				var value = cc.LabelTTF.create($42.letterValues[word[i]].value, "Arial", 32),
         					pos = childSprites[i].getPosition();
-        				sum += $42.letterValues[word[i]];
+        				sum += $42.letterValues[word[i]].value;
         				value.setPosition(pos.x , pos.y + $42.BS + 10);
         				value.retain();
     			        /* retain */ tmpRetain[value.__instanceId] = { name: "words: value "+i, line: 565 };	
@@ -948,6 +952,50 @@ var _42_MODULE = function(_42Layer) {
 			
 		}
 	}
+	
+	var getNextProfileLetters = function() {
+		
+		var i=0,
+			next = [],
+			tmp = "";
+		
+		for( var letter in $42.letterOrder ) {
+			if( $42.wordProfile < ($42.wordProfile | 1<<i) ) {
+				next.push({letter:$42.letterOrder[letter],order:i});
+				tmp += $42.letterOrder[letter]+",";
+				if( next.length === $42.NEXT_PROFILE_LETTERS ) break;
+			}
+			i++;
+		}
+
+		$42.nextProfileLetters = next;
+		cc.log("42words, getNextProfileLetters: "+tmp);
+	};
+	
+	var setNextProfileLetter = function() {
+		var npl = $42.nextProfileLetters,
+			pl = npl[npl.length-1];
+		
+		$42.wordProfile |= (1<<pl.order);	
+		$42.wordProfileLetters.push($42.letterOrder[pl.order]);
+		cc.log("42words, setNextProfileLetter: New letter: "+$42.letterOrder[pl.order]);
+		
+		getNextProfileLetters();
+		
+		return pl.letter;
+	};
+	
+	var getNextProfileCandidate = function() {
+		if( ml.nextProfileLetterCnt === undefined ) ml.nextProfileLetterCnt = 0; 
+		
+		if( ++ml.nextProfileLetterCnt === $42.NEXT_PROFILE_LETTER_CNT ) {
+			ml.nextProfileLetterCnt = 0;
+
+			var npl = $42.nextProfileLetters;
+			if( npl.length > 1 ) npl.splice(npl.length-1,1);
+			cc.log("42words, getNextProfileCandidate: New next letter: "+npl[npl.length-1].letter);			
+		}
+	};
 		
 	/*
 	 * hookLoadImages
@@ -972,7 +1020,7 @@ var _42_MODULE = function(_42Layer) {
 //		ml.hookStartProgram( 2 , false );
 //		ml.hookStartProgram( 0 , true );
 		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
-//		else if( ml.hookStartProgram ) ml.hookStartProgram( 10 , false );
+//		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
 
 		// points array
 		ml.pointsToAdd = [];
@@ -984,7 +1032,13 @@ var _42_MODULE = function(_42Layer) {
 		
 		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
 		$42.wordTreasureBestWord = wt[bw] || null;
-		$42.maxWordValue = 20; $42.wordTreasureBestWord? $42.wordTreasureBestWord.value : 4;
+//		$42.maxWordValue = $42.wordTreasureBestWord? $42.wordTreasureBestWord.value : 4;
+
+		// prepare for which letters can be used (word profile), and what letters will be next
+		$42.wordProfile = (1<<0) + (1<<1) + (1<<2) + (1<<3) + (1<<4) + (1<<5) + (1<<6); // start profile with first 7 letters
+		$42.wordProfileLetters = [];
+		for( var i=0 ; i<7 ; i++ ) $42.wordProfileLetters.push($42.letterOrder[i]);
+		getNextProfileLetters();
 		
 		// remove all words that are already in the treasure
 		for( var i=0 ; i<wt.length ; i++) {
@@ -1112,14 +1166,15 @@ var _42_MODULE = function(_42Layer) {
 		tileSprite.setPosition(p);
 		ml.addChild(tileSprite,2);
 
-		if( nextTile === null && tileBoxes.length === 3 ) {
-			cc.assert($42.maxWordValue >= 4 && $42.maxWordValue <= 42 && $42.prefixValues[$42.maxWordValue], "42 Words, _42Layer.hookSetTileImages: Wrong $42.maxWordValue or no prefixes.")
-			var prefs = $42.prefixValues[$42.maxWordValue];
-			nextTile = {
-				"tile": 8, 
-				"letters": prefs[Math.floor(Math.random()*prefs.length)]
-			}
-		} 
+		// is to be replaced for cypherpunk mode
+//		if( nextTile === null && tileBoxes.length === 3 ) {
+//			cc.assert($42.maxWordValue >= 4 && $42.maxWordValue <= 42 && $42.prefixValues[$42.maxWordValue], "42 Words, _42Layer.hookSetTileImages: Wrong $42.maxWordValue or no prefixes.")
+//			var prefs = $42.prefixValues[$42.maxWordValue];
+//			nextTile = {
+//				"tile": 8, 
+//				"letters": prefs[Math.floor(Math.random()*prefs.length)]
+//			}
+//		} 
 		
         // add single boxes with letters to the tile
         for( var i=0 ; i<tileBoxes.length ; i++) {
@@ -1130,16 +1185,21 @@ var _42_MODULE = function(_42Layer) {
         	} else {
 	         	var len = sw && sw.missingLetters && sw.missingLetters.length || 0,
          			prob = len <= 3? $42.NEEDED_LETTERS_PROBABILITY / (5-len) : $42.NEEDED_LETTERS_PROBABILITY; 
-        		for( var j=0 ; j<5 ; j++ ) {
+        		while( true ) {
 	         		val = (Math.random()>prob || !sw || !len)?  
 	         					Math.floor(this.getRandomValue($42.letterOccurences)):
 	        					$42.LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]);        			
 	         					
-	        	    for( k=0 ; k<i ; k++ ) 
-	        	    	if( userData[k] === $42.LETTERS[val] ) 
-	        	    		break;
-	        	    if( k < i ) continue;
-	         		if( $42.letterValues[$42.LETTERS[val]] <= $42.maxWordValue - 3 ) break;
+//	         		// no double letters			
+//	        	    for( k=0 ; k<i ; k++ ) 
+//	        	    	if( userData[k] === $42.LETTERS[val] ) 
+//	        	    		break;
+//	        	    if( k < i ) continue;
+//	         		if( $42.letterValues[$42.LETTERS[val]].value <= $42.maxWordValue - 3 ) break;
+	         					
+	         		if( $42.wordProfileLetters.indexOf($42.LETTERS[val]) > -1 ) break;	
+	         		
+	         		cc.log("42words, hookSetTileImages: Got a not allowed letter: "+$42.LETTERS[val]+" for box "+i+". Skipping it ...");
         		}
         	}
        					
@@ -1147,7 +1207,7 @@ var _42_MODULE = function(_42Layer) {
     			sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
     		
     		cc.assert(sprite, "42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
-    		if( !sprite ) cc.log(sprite, "42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
+    		if( !sprite ) cc.log("42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
     		sprite.retain();
 	        tmpRetain[sprite.__instanceId] = { name: "words: sprite", line: 1038 };
         	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
@@ -1211,7 +1271,7 @@ var _42_MODULE = function(_42Layer) {
 		) return false;
 
 		// Score
-		var value = box && parseInt(($42.letterValues[box.userData] || 0) * ((brc.row*$42.SCORE_ROW_MULTIPLYER) + 1));
+		var value = box && parseInt(($42.letterValues[box.userData].value || 0) * ((brc.row*$42.SCORE_ROW_MULTIPLYER) + 1));
 		if( value ) addPoints(value * 2, cc.p($42.BOXES_X_OFFSET + brc.col * $42.BS + $42.BS/2, $42.BOXES_Y_OFFSET + brc.row * $42.BS + $42.BS));
 		
 		// 1 and 3 tiles
@@ -1241,6 +1301,9 @@ var _42_MODULE = function(_42Layer) {
 		setSelections();
 		updateSelectedWord({ rowsDeleted: rowsDeleted});			
 
+		// switch to next profile letter candidate
+		getNextProfileCandidate();
+		
 		drawScoreBar(true);
 	};
 	
@@ -1266,7 +1329,6 @@ var _42_MODULE = function(_42Layer) {
 					sw.markers[col] = $42.MARKER_OPT;					
 					ml.boxes[sw.brc.row][sw.brc.col+col].sprite.setOpacity($42.UNSELECTED_BOX_OPACITY);	
 				}
-				cc.log("42words, hookOnTap: calling updateSelectedWord()");
 				updateSelectedWord();
 			} else {
 //				blowWords(tapPos,ml.boxes[sw.brc.row][sw.brc.col].words);
@@ -1280,9 +1342,7 @@ var _42_MODULE = function(_42Layer) {
 				if( s && tapPos.x >= s.pos.x && tapPos.x <= s.pos.x+s.width && tapPos.y >= s.pos.y && tapPos.y <= s.pos.y+s.height ) {
 					moveSelectedWord(s.brc);
 					ml.dontAutoSelectWord = false;
-					cc.log("42words, hookOnTap, selections: setSelection()");
 					setSelections();
-					cc.log("42words, hookOnTap, selections: Calling updateSelectedWord()");
 					updateSelectedWord();
 					
 					var x = $42.BOXES_X_OFFSET + s.brc.col*$42.BS + 1.5*$42.BS,
@@ -1415,13 +1475,18 @@ $42.loadLanguagePack = function( pack ) {
 							// get the most common
 							var max=0;
 							for( letter in lv ) {
-								max=Math.max(max,lv[letter]);
+								max=Math.max(max,lv[letter].value);
 							}
 
 							$42.letterOccurences = [];
+							$42.letterOrder = [];
 							for( var i=0 ; i<l.length ; i++ ) {
-								var occ = lv[l[i]] && parseInt(1/lv[l[i]]*max);
+								cc.log("42words, loadLanguagePack: letter: "+l[i]+" ...");
+								var occ = lv[l[i]] && parseInt(1/lv[l[i]].value*max),
+									order = lv[l[i]] && lv[l[i]].order;
+								cc.log("42words, loadLanguagePack: ... order: "+order);
 								$42.letterOccurences[i] = occ || 0; 
+								if( order !== undefined ) $42.letterOrder[order] = l[i];
 							}
 						} else {
 							throw err;
