@@ -2,8 +2,6 @@
  * 
  * NEXT STEPS:
  * 
- * remove unused variables
- * 	points, etc.
  * remove blowup of points
  * 
  * + FEHLER
@@ -43,7 +41,7 @@ $42.MARKER_X_OFFSET = $42.BS/2;
 $42.MARKER_Y_OFFSET = -25;
 $42.UNSELECTED_BOX_OPACITY = 100;
 $42.NEEDED_LETTERS_PROBABILITY = 0.15; // additional probability that a needed letter will be selected
-$42.MAX_LETTERS_BLOWN = 5;
+$42.MAX_LETTERS_BLOWN = 7;
 $42.WORD_FRAME_WIDTH = 4;
 $42.WORD_FRAME_MOVE_TIME = 0.8;
 $42.SCORE_ROW_MULTIPLYER = 0.25;
@@ -659,18 +657,16 @@ var _42_MODULE = function(_42Layer) {
 	
 	var blowWords = function(pos, words) {
 
-		var angle = Math.random() * 360,
-			offset = (words.length < $42.MAX_LETTERS_BLOWN)? 0:
-				Math.floor(Math.random()*words.length);
+		var angle = Math.random() * 360;
 		for( var i=0 ; i<Math.min(words.length,$42.MAX_LETTERS_BLOWN) ; i++ ) {
-			var word = cc.LabelTTF.create(words[(i+offset)%words.length].word, "Arial", 38),
+			var word = cc.LabelTTF.create(words[i].word, "Arial", 38),
 	        	x = pos.x + Math.sin(cc.degreesToRadians(angle))*100,
 	        	y = pos.y + Math.cos(cc.degreesToRadians(angle))*100;
 			
 			word.setPosition(x,y);
 	        word.setRotation(angle+90);
 	        word.retain();
-	        /* retain */ tmpRetain[word.__instanceId] = { name: "words", line: 684 };	
+	        /* retain */ tmpRetain[word.__instanceId] = { name: "words", line: 669 };	
 	        angle = (angle+79)%360;
 	        ml.addChild(word, 5);
 	        var x2 = Math.random()>0.5? -400 : ml.size.width + 400,
