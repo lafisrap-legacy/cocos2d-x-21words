@@ -2,7 +2,6 @@
  * 
  * NEXT STEPS:
  * 
- * modify hookEndGame
  * remove unused variables
  * 	points, etc.
  * remove blowup of points
@@ -44,7 +43,7 @@ $42.MARKER_X_OFFSET = $42.BS/2;
 $42.MARKER_Y_OFFSET = -25;
 $42.UNSELECTED_BOX_OPACITY = 100;
 $42.NEEDED_LETTERS_PROBABILITY = 0.15; // additional probability that a needed letter will be selected
-$42.MAX_LETTERS_BLOWN = 10;
+$42.MAX_LETTERS_BLOWN = 5;
 $42.WORD_FRAME_WIDTH = 4;
 $42.WORD_FRAME_MOVE_TIME = 0.8;
 $42.SCORE_ROW_MULTIPLYER = 0.25;
@@ -603,8 +602,6 @@ var _42_MODULE = function(_42Layer) {
 		var x = $42.BOXES_X_OFFSET + nsw.brc.col*$42.BS + 1.5*$42.BS,
 			y = $42.BOXES_Y_OFFSET + nsw.brc.row*$42.BS + 1.5*$42.BS;
 		
-//		blowWords(cc.p(x,y),nsw.words);
-		
 		cc.log("42words, selectBestWord: Calling updateSelectedWord()");
 		updateSelectedWord();
 		
@@ -767,7 +764,8 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	var drawWordSprite = function(word,pos,wordSprite,scale,parent,retain) {
-		// create yellow frame sprite
+		cc.assert(word !== undefined,"42words, drawWordSprite: No word to draw as a sprite.")
+		
 		if( !wordSprite ) {
 			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe"),
 				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
@@ -819,22 +817,22 @@ var _42_MODULE = function(_42Layer) {
 		var wpl = $42.wordProfileLetters,
 			dpl = $42.displayedProfileLetters,
 			dplm = $42.displayedProfileLettersMini,
-			boxes = options.boxesPerRow * options.boxesPerCol - 1;
+			boxes = options.boxesPerRow * options.boxesPerCol;
 		
 		for( var i=0 ; i<dpl.length ; i++ ) {
 			var children = dpl[i].getChildren();
 			children[0].release();			
 			children[1].release();			
+			dpl[i].release();
 			delete tmpRetain[children[0].__instanceId];
 			delete tmpRetain[children[1].__instanceId];
+			delete tmpRetain[dpl[i].__instanceId];
 			if( i==0 && wpl.length - dplm.length > boxes ) {
 				cc.assert(dpl.length === boxes, "42words, drawLetterBoxes: Cannot take out box when display is not full.")
 				dplm.push(dpl[0]);
 				dpl[0].removeChild(children[1]);
 				continue;
 			}
-			dpl[i].release();
-			delete tmpRetain[dpl[i].__instanceId];
 			options.parent.removeChild(dpl[i]);
 		}
 		dpl = [];
@@ -846,11 +844,12 @@ var _42_MODULE = function(_42Layer) {
 				letterFrameSprite = cc.Sprite.create(letterFrameFrame),
 				rect = letterFrameSprite.getTextureRect();
 			letterFrameSprite.retain();
-	        /* retain */ tmpRetain[letterFrameSprite.__instanceId] = { name: "letterFrameSprite "+letter, line: 782 };	
+			if( letter === undefined ) debugger;
+	        /* retain */ tmpRetain[letterFrameSprite.__instanceId] = { name: "letterFrameSprite (i="+i+": "+wpl[i+Math.max(0,wpl.length-boxes)]+")", line: 850 };	
 			rect.width  = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
 			rect.height = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
 			letterFrameSprite.setTextureRect(rect);
-			letterFrameSprite.setPosition(options.pos.x + ((i%options.boxesPerRow>>>0)*($42.BS+options.padding*5))*options.scale,
+			letterFrameSprite.setPosition(options.pos.x + ((i%options.boxesPerRow>>>0)*($42.BS+options.padding*4))*options.scale,
 										  options.pos.y - ((i/options.boxesPerRow>>>0)*($42.BS+options.padding))*options.scale);
 			options.parent.addChild(letterFrameSprite,4);
 			dpl.push(letterFrameSprite);
@@ -865,7 +864,7 @@ var _42_MODULE = function(_42Layer) {
 			sprite.setPosition(pos);
 			sprite.setScale(options.scale);
 			sprite.retain();
-	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "letterFrameSprite sprite "+letter, line: 805 };	
+	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "letterFrameSprite sprite "+letter, line: 870 };	
 			letterFrameSprite.addChild( sprite );
 			
 			// draw value
@@ -913,17 +912,13 @@ var _42_MODULE = function(_42Layer) {
 	        /* retain */ tmpRetain[sb.__instanceId] = { name: "scorebar", line: 835 };	
 			ml.addChild(sb, 5);
 			
-			// draw total words (left side, stable)
-			ml.score_words_label = drawText($42.t.scorebar_words[1] , cc.p(50,15) , 24 , $42.SCORE_COLOR_DIMM , sb , true);
-			ml.score_words = drawText(wt.length.toString(),cc.p(50,55) , 72 , $42.SCORE_COLOR_BRIGHT , sb , true);
-			
 			// draw clipping rect with stencil and rolling layer
 	        var clipper = cc.ClippingNode.create();
-	        clipper.width = 540;
+	        clipper.width = 640;
 		    clipper.height = $42.BOXES_Y_OFFSET;
 	        clipper.anchorX = 0.5;
 	        clipper.anchorY = 0.5;
-	        clipper.x = 370;
+	        clipper.x = 320;
 	        clipper.y = $42.BOXES_Y_OFFSET / 2;
 	        // stencil
 	        var stencil = cc.DrawNode.create(),
@@ -947,43 +942,49 @@ var _42_MODULE = function(_42Layer) {
 
 			drawLetterBoxes({
 				pos : cc.p(
-					tv<100? 40 : 20,
-					wpl.length>6*2-1? 56 : 68
+					20,
+					wpl.length>8*2? 56 : 68
 				),
 				scale : 0.45,
 				padding : 16,
-				boxesPerRow: 6,
+				boxesPerRow: 4,
 				boxesPerCol: 2,
 				parent : rl
 			});
 			
-			drawText($42.t.scorebar_points , cc.p(468,15) , 24 , $42.SCORE_COLOR_DIMM , rl , false);
-			ml.score_points = drawText(tv.toString(), cc.p(468,55) , tv>=1000?56:72 , $42.SCORE_COLOR_BRIGHT , rl , true);
+			// draw points, right, front side
+			ml.score_words_mini = drawText("(0 "+$42.t.scorebar_words[1]+")", cc.p(553,15) , 24 , $42.SCORE_COLOR_BRIGHT , rl , true);
+			ml.score_points = drawText(tv.toString(), cc.p(553,60) , tv>=1000?56:72 , $42.SCORE_COLOR_BRIGHT , rl , true);
 
+			// draw total words, left, back side
+			ml.score_words_label = drawText($42.t.scorebar_words[1] , cc.p(50,111) , 24 , $42.SCORE_COLOR_DIMM , rl , true);
+			ml.score_words = drawText(wt.length.toString(),cc.p(50,151) , 72 , $42.SCORE_COLOR_BRIGHT , rl , true);
+			
 			// draw highscore into clipper
-			drawText($42.t.score_bar_highscore,cc.p(468,111),24,$42.SCORE_COLOR_DIMM,rl,false);			
-			ml.highscore = drawText($42.maxPoints.toString(),cc.p(468,151),$42.maxPoints>=1000?56:72,$42.SCORE_COLOR_BRIGHT,rl,true);	
+			drawText($42.t.scorebar_highscore,cc.p(553,111),24,$42.SCORE_COLOR_DIMM,rl,false);			
+			ml.highscore = drawText($42.maxPoints.toString(),cc.p(553,151),$42.maxPoints>=1000?56:72,$42.SCORE_COLOR_BRIGHT,rl,true);	
 			
 			// draw most valuable word
-			ml.bestWordValue = drawText($42.t.score_bar_mvw,cc.p(200,117),24,$42.SCORE_COLOR_BRIGHT,rl,true);
-			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(200,157),ml.bestWordSprite,0.60,rl,true);							
+			ml.bestWordValue = drawText($42.t.scorebar_mvw,cc.p(300,111),24,$42.SCORE_COLOR_BRIGHT,rl,true);
+			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);							
 		} else {
 			ml.score_words_label.setString($42.t.scorebar_words[wt.length===1?0:1]);
 			ml.score_words.setString(wt.length);
 			ml.score_points.setString(tv.toString());
+			ml.score_words_mini.setString("("+wt.length+" "+$42.t.scorebar_words[wt.length===1?0:1]+")");
 
 			ml.highscore.setString($42.maxPoints.toString());
-			ml.bestWordValue.setString($42.t.score_bar_mvw+ (bw?": "+bw.value:""));
-			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(200,157),ml.bestWordSprite,0.60,rl,true);
+			ml.bestWordValue.setString($42.t.scorebar_mvw+ (bw?": "+bw.value:""));
+			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);
 
 			drawLetterBoxes({
 				pos : cc.p(
-					tv<100? 40 : 20,
-					wpl.length>6*2-1? 56 : 68
+					20,
+					wpl.length>8*2? 56 : 68
 				),
 				scale : 0.45,
 				padding : 16,
-				boxesPerRow: 6,
+				boxesPerRow: 4,
 				boxesPerCol: 2,
 				parent : rl
 			});
@@ -1179,21 +1180,23 @@ var _42_MODULE = function(_42Layer) {
 		};
 		
 		var sb = this.scoreBar,
-			rl = $42.rollingLayer;
+			rl = $42.rollingLayer,
+			dpl = $42.displayedProfileLetters;
 		releaseChildren( ml.bestWordSprite );
-		releaseChildren( sb.wordIconSprite );
 		releaseSprite( ml.bestWordSprite );
-		releaseSprite( sb.wordIconSprite );
-		releaseSprite(ml.score);
-		releaseSprite(ml.nextScore);
-		releaseSprite(sb.currentLevelLabel);
-		releaseSprite(sb.currentLevel);
-		releaseSprite(sb.wordIconText);
+		for( var i=0 ; i<dpl.length ; i++ ) {
+			releaseChildren( dpl[i] );
+			releaseSprite( dpl[i] );
+		}
 		releaseSprite(ml.highscore);
 		releaseSprite(ml.bestWordValue);
+		releaseSprite(ml.score_words_mini);
+		releaseSprite(ml.score_points);
+		releaseSprite(ml.score_words_label);
+		releaseSprite(ml.score_words);
 		releaseSprite(rl);
 		releaseSprite(sb);
-		
+
 		sb.removeAllChildren(true);
 		
 		// release plus1 and plus3
@@ -1261,13 +1264,12 @@ var _42_MODULE = function(_42Layer) {
 	         					Math.floor(this.getRandomValue($42.letterOccurences)):
 	        					$42.LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]);        			
 	         					
-//	         		// no double letters			
-//	        	    for( k=0 ; k<i ; k++ ) 
-//	        	    	if( userData[k] === $42.LETTERS[val] ) 
-//	        	    		break;
-//	        	    if( k < i ) continue;
-//	         		if( $42.letterValues[$42.LETTERS[val]].value <= $42.maxWordValue - 3 ) break;
-	         					
+	         		// no double letters			
+	        	    for( k=0,double=0 ; k<i ; k++ ) 
+	        	    	if( userData[k] === $42.LETTERS[val] ) double++;
+	        	    if( double > 1 ) continue;
+	        	    
+	         		if( $42.letterValues[$42.LETTERS[val]].value <= $42.maxWordValue - 3 ) break;		
 	         		if( $42.wordProfileLetters.indexOf($42.LETTERS[val]) > -1 ) break;	
 	         		
 	         		cc.log("42words, hookSetTileImages: Got a not allowed letter: "+$42.LETTERS[val]+" for box "+i+". Skipping it ...");
