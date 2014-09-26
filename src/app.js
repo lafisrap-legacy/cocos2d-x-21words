@@ -25,6 +25,7 @@ var _42_GLOBALS = {
 	TAG_TITLE_BACKGROUND : 104,
 	TAG_TITLE_4 : 105,
 	TAG_TITLE_2 : 106,
+	TAG_TITLE_WORD : 107,
 	BS : 64, 			// box size in pixel
 	BOXES_PER_COL : 22,	// lines of playground
 	GAME_OVER_ROW : 16,	// game over row
@@ -1066,45 +1067,66 @@ var _42TitleLayer = cc.Layer.extend({
 
 		cc.spriteFrameCache.addSpriteFrames(res.title_plist);
 
-		var addImage = function(image, pos, tag, parent) {
-			var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(image));
-			sprite.setPosition(pos);
-			sprite.setOpacity(0);
+		var addImage = function(options) {
+			var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(options.image));
+			sprite.setPosition(options.pos || cc.p(size.width/2,size.height/2));
+			sprite.setOpacity(options.opacity !== undefined? options.opacity : 255);
+			sprite.setScale(options.scale || 1);
 			sprite.retain();
-	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "title sprite", line: 1057 };
-	        (parent || self).addChild(sprite, 0, tag);
+	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "title sprite "+options.tag, line: 1057 };
+	        (options.parent || self).addChild(sprite, 0, options.tag);
 	        return sprite;
 		};
 		
 		var titleWord = $42.TITLE_WORDS,
 		letters = [];
 	
+		// get a grid for the whole background (for special effects)
 		var titleGrid = new cc.NodeGrid();
-		self.addChild(titleGrid,0);
-		var titleBg = addImage("42background", cc.p(size.width/2, size.height/2), $42.TAG_TITLE_BACKGROUND, titleGrid);
-		var title4 = addImage("4", cc.p(size.width/2-70, 750), $42.TAG_TITLE_4);
-		var title2 = addImage("2", cc.p(size.width/2+70, 750), $42.TAG_TITLE_2);
-		var word = cc.Node.create();
-		var oldW = 0, pos = [];
+		titleGrid.retain();
+        /* retain */ tmpRetain[titleGrid.__instanceId] = { name: "title grid", line: 1085 };
+		self.addChild(titleGrid,0,$42.TAG_TITLE_BACKGROUND);
+		
+		var titleBg = addImage({
+			image: "42background", 
+			opacity: 0,
+			parent: titleGrid 
+		});
+		
+		var title4 = addImage({
+			image: "4", 
+			pos:	cc.p(size.width/2-25, 1200), 
+			scale:	0.5,
+			tag:	$42.TAG_TITLE_4
+		});
+		
+		var title2 = addImage({
+			image: "2", 
+			pos: 	cc.p(size.width/2+25, 1200), 
+			scale:	0.5,
+			tag: 	$42.TAG_TITLE_2
+		});
+		
+		// Create title word with letters (record their positions)
+		var word = cc.Node.create(),
+			oldW = 0, 
+			pos = [];
+		word.setPosition(cc.p(size.width/2, size.height/2));
+		word.retain();
+        /* retain */ tmpRetain[word.__instanceId] = { name: "title word sprite", line: 1105 };
+		self.addChild(word,0,$42.TAG_TITLE_WORD);
 		for( var i=0 ; i<titleWord.length ; i++ ) {
-			letters[i] = addImage(titleWord.substr(i,1).toLowerCase()+"_", cc.p(0, 0),undefined,word);
+			letters[i] = addImage({
+				image: titleWord.substr(i,1).toLowerCase()+"_",
+				pos: cc.p(i<titleWord.length/2? -400:400,0),
+				parent: word
+			});
 			var w = letters[i].width;
 			pos[i] = (i && pos[i-1]) + w/2 + oldW/2+ $42.TITLE_WORDS_OFFSETS[i];
 			oldW = w;
 		}
-
-		for( var i=0 ; i<letters.length/2 ; i++ ) {
-			letters[i].setPosition(-400,0);
-		}
-		for( ; i<letters.length ; i++ ) {
-			letters[i].setPosition(400,0);
-		}
-
-		word.setPosition(cc.p(size.width/2, size.height/2));
-		word.retain();
-        /* retain */ tmpRetain[word.__instanceId] = { name: "title word sprite", line: 1105 };
-		self.addChild(word,0);
 		
+		// fade in background
 		titleBg.runAction(
 			cc.EaseSineOut.create(
 				cc.spawn(
@@ -1112,10 +1134,15 @@ var _42TitleLayer = cc.Layer.extend({
 				)
 			)
 		);
+		// shake it ...
+		titleGrid.runAction(
+			cc.sequence(
+				cc.delayTime(3.4),
+				cc.liquid( 0.4, cc.size(16,12), 1, 7)
+			)
+		);
 		
-		title4.setScale(0.50,0.50);
-		title4.setOpacity(255);
-		title4.setPosition(cc.p(size.width/2-25, 1200));
+		// animate 4 and 2
 		title4.runAction(
 			cc.sequence(
 				cc.delayTime(1.4),
@@ -1132,9 +1159,6 @@ var _42TitleLayer = cc.Layer.extend({
 			)
 		);
 		
-		title2.setScale(0.50,0.50);
-		title2.setOpacity(255);
-		title2.setPosition(cc.p(size.width/2+25, 1200));
 		title2.runAction(
 			cc.sequence(
 				cc.delayTime(1.3),
@@ -1149,7 +1173,8 @@ var _42TitleLayer = cc.Layer.extend({
 				)
 			)
 		);
-		
+
+		// move letters in from left and right
 		var delays = [0.39,0.26,0.13,0.39,0.52];
 		for( var i=0 ; i<letters.length ; i++ ) {
 			letters[i].runAction(
@@ -1187,12 +1212,12 @@ var _42TitleLayer = cc.Layer.extend({
 							cc.moveBy(3.0,cc.p(1280,0))
 						),
 						cc.callFunc(function() {
+			    			self.exitTitle(); // release sprites
 							// copy title sprites to game layer
 							var ml = self.getParent().getChildByTag($42.TAG_GAME_LAYER);
 							self.removeChild(title4); ml.addChild(title4);
 							self.removeChild(title2); ml.addChild(title2);
 							self.removeChild(word); ml.addChild(word);
-			    			self.exitTitle();
 							self.getParent().removeChild(self);
 						})
 	    			),
@@ -1200,13 +1225,11 @@ var _42TitleLayer = cc.Layer.extend({
 	    		)
     		);
     		
-    		title4.stopAllActions();
     		title4.runAction(
 				cc.EaseSineIn.create(
 					cc.fadeTo(2,20)
 				)
 			);
-    		title2.stopAllActions();
     		title2.runAction(
 				cc.EaseSineIn.create(
 					cc.fadeTo(2,20)
@@ -1214,7 +1237,6 @@ var _42TitleLayer = cc.Layer.extend({
 			);
     		
     		for( var i=0 ; i<letters.length ; i++ ) {
-        		letters[i].stopAllActions();
     			letters[i].runAction(
     				cc.EaseSineIn.create(
     					cc.fadeTo(2,20)    			
@@ -1245,11 +1267,32 @@ var _42TitleLayer = cc.Layer.extend({
     exitTitle: function() {
     	
     	// release title graphics
-//		var background = this.getChildByTag($42.TAG_TITLE_BACKGROUND);
-//		if( background ) background.release();
-//		delete tmpRetain[background.__instanceId];
-    }
+ 		var node = this.getChildByTag($42.TAG_TITLE_BACKGROUND);
+		if( node ) node.release();
+		delete tmpRetain[node.__instanceId];
+		
+		node = node.getChildren()[0];
+		if( node ) node.release();
+		delete tmpRetain[node.__instanceId];
 
+ 		node = this.getChildByTag($42.TAG_TITLE_4);
+		if( node ) node.release();
+		delete tmpRetain[node.__instanceId];
+
+ 		node = this.getChildByTag($42.TAG_TITLE_2);
+		if( node ) node.release();
+		delete tmpRetain[node.__instanceId];
+
+ 		node = this.getChildByTag($42.TAG_TITLE_WORD);
+		if( node ) node.release();
+		delete tmpRetain[node.__instanceId];
+
+		var nodes = node.getChildren();
+		for( var i=0 ; i<nodes.length ; i++ ) {
+			if( nodes[i] ) nodes[i].release();
+			delete tmpRetain[nodes[i].__instanceId];			
+		}
+    }
 });
 
 
