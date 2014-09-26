@@ -23,7 +23,8 @@ var _42_GLOBALS = {
 	TAG_MENU_QUESTION : 102,
 	TAG_MENU_MENU : 103,
 	TAG_TITLE_BACKGROUND : 104,
-	TAG_TITLE_42 : 105,
+	TAG_TITLE_4 : 105,
+	TAG_TITLE_2 : 106,
 	BS : 64, 			// box size in pixel
 	BOXES_PER_COL : 22,	// lines of playground
 	GAME_OVER_ROW : 16,	// game over row
@@ -103,7 +104,7 @@ var _42GameLayer = cc.Layer.extend({
 		setTimeout(function() {
 		    self.scheduleUpdate();
 		    if( self.hookStartGame ) self.hookStartGame();
-		},3000);
+		},2500);
     },
     
     onExit: function() {
@@ -1065,49 +1066,103 @@ var _42TitleLayer = cc.Layer.extend({
 
 		cc.spriteFrameCache.addSpriteFrames(res.title_plist);
 
-		var addImage = function(image, pos, tag) {
+		var addImage = function(image, pos, tag, parent) {
 			var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(image));
-			sprite.attr({
-	            scale: 1,
-	            rotation: 0,
-	            opacity: 0
-	        });
 			sprite.setPosition(pos);
+			sprite.setOpacity(0);
 			sprite.retain();
 	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "title sprite", line: 1057 };
-	        self.addChild(sprite, 0, tag);
+	        (parent || self).addChild(sprite, 0, tag);
 	        return sprite;
 		};
 		
-		var titleBg = addImage("42background", cc.p(size.width/2, size.height/2), $42.TAG_TITLE_BACKGROUND),
-			title42 = addImage("42", cc.p(size.width/2, 830), $42.TAG_TITLE_42);
-		
-		var word = $42.TITLE_WORDS;
-		
-		for( var i=0 ; i<word.length ; i++ ) {
-			self.letters[i] = addImage(word.substr(i,1).toLowerCase()+"_", cc.p(140+90*i, 632));
+		var titleWord = $42.TITLE_WORDS,
+		letters = [];
+	
+		var titleGrid = new cc.NodeGrid();
+		self.addChild(titleGrid,0);
+		var titleBg = addImage("42background", cc.p(size.width/2, size.height/2), $42.TAG_TITLE_BACKGROUND, titleGrid);
+		var title4 = addImage("4", cc.p(size.width/2-70, 750), $42.TAG_TITLE_4);
+		var title2 = addImage("2", cc.p(size.width/2+70, 750), $42.TAG_TITLE_2);
+		var word = cc.Node.create();
+		var oldW = 0, pos = [];
+		for( var i=0 ; i<titleWord.length ; i++ ) {
+			letters[i] = addImage(titleWord.substr(i,1).toLowerCase()+"_", cc.p(0, 0),undefined,word);
+			var w = letters[i].width;
+			pos[i] = (i && pos[i-1]) + w/2 + oldW/2+ $42.TITLE_WORDS_OFFSETS[i];
+			oldW = w;
 		}
 
-		titleBg.runAction(cc.fadeIn(3));
-		title42.setScale(10,10);
-		title42.runAction(
+		for( var i=0 ; i<letters.length/2 ; i++ ) {
+			letters[i].setPosition(-400,0);
+		}
+		for( ; i<letters.length ; i++ ) {
+			letters[i].setPosition(400,0);
+		}
+
+		word.setPosition(cc.p(size.width/2, size.height/2));
+		word.retain();
+        /* retain */ tmpRetain[word.__instanceId] = { name: "title word sprite", line: 1105 };
+		self.addChild(word,0);
+		
+		titleBg.runAction(
+			cc.EaseSineOut.create(
+				cc.spawn(
+					cc.fadeIn(1.9)
+				)
+			)
+		);
+		
+		title4.setScale(0.50,0.50);
+		title4.setOpacity(255);
+		title4.setPosition(cc.p(size.width/2-25, 1200));
+		title4.runAction(
 			cc.sequence(
-				cc.EaseSineIn.create(
+				cc.delayTime(1.4),
+				cc.EaseElasticOut.create(
+					cc.moveTo(1.8,cc.p(size.width/2-25, 700))
+				),
+				cc.delayTime(0.2),
+				cc.EaseSineOut.create(
 					cc.spawn(
-						cc.fadeIn(2.5),
-						cc.rotateBy(2.5,360),
-						cc.scaleTo(2.5,1.3,1.3)
+						cc.scaleTo(0.3,1.3,1.3),
+						cc.moveTo(0.3,cc.p(size.width/2-70, 750))
 					)
 				)
 			)
 		);
-		for( var i=0 ; i<word.length ; i++ ) {
-			self.letters[i].runAction(
-				cc.sequence(
-					cc.delayTime(2+i/4),
-					cc.fadeIn(2)
+		
+		title2.setScale(0.50,0.50);
+		title2.setOpacity(255);
+		title2.setPosition(cc.p(size.width/2+25, 1200));
+		title2.runAction(
+			cc.sequence(
+				cc.delayTime(1.3),
+				cc.EaseElasticOut.create(
+					cc.moveTo(2,cc.p(size.width/2+25, 700))
+				),
+				cc.EaseSineOut.create(
+					cc.spawn(
+						cc.scaleTo(0.3,1.3,1.3),
+						cc.moveTo(0.3,cc.p(size.width/2+70, 750))
+					)
 				)
-			);
+			)
+		);
+		
+		var delays = [0.39,0.26,0.13,0.39,0.52];
+		for( var i=0 ; i<letters.length ; i++ ) {
+			letters[i].runAction(
+				cc.sequence(
+					cc.delayTime(delays[i]),
+					cc.EaseSineOut.create(
+						cc.spawn(
+							cc.fadeIn(2.9),
+							cc.moveTo(0.9,cc.p(pos[i]-(pos[letters.length-1]+w/2)/2,0))
+						)
+					)
+				)
+			);			
 		}
 		
         // Show menu items
@@ -1121,21 +1176,55 @@ var _42TitleLayer = cc.Layer.extend({
 		}
 		
         var item1 = addMenu($42.TITLE_START_GAME, 52, function() {
+        	// start game layer
         	self.getParent().addChild(new _42GameLayer(), 1, $42.TAG_GAME_LAYER);
+        	
         	titleBg.stopAllActions();
-    		titleBg.runAction(cc.sequence(cc.EaseSineOut.create(cc.fadeOut(3)),cc.callFunc(function() {
-    			self.exitTitle();
-				self.getParent().removeChild(self);
-			})));
-        	title42.stopAllActions();
-    		title42.runAction(cc.EaseSineOut.create(cc.spawn(cc.fadeOut(3))));
-    		for( var i=0 ; i<word.length ; i++ ) {
-    			self.letters[i].stopAllActions();
-    			self.letters[i].runAction(cc.sequence(cc.delayTime(i/4),cc.fadeOut(3-word.length*0.25)));
+    		titleGrid.runAction(
+    			cc.spawn(
+	    			cc.sequence(
+						cc.EaseSineIn.create(
+							cc.moveBy(3.0,cc.p(1280,0))
+						),
+						cc.callFunc(function() {
+							// copy title sprites to game layer
+							var ml = self.getParent().getChildByTag($42.TAG_GAME_LAYER);
+							self.removeChild(title4); ml.addChild(title4);
+							self.removeChild(title2); ml.addChild(title2);
+							self.removeChild(word); ml.addChild(word);
+			    			self.exitTitle();
+							self.getParent().removeChild(self);
+						})
+	    			),
+	    			cc.waves3D(5, cc.size(15,10), 5, 25 )
+	    		)
+    		);
+    		
+    		title4.stopAllActions();
+    		title4.runAction(
+				cc.EaseSineIn.create(
+					cc.fadeTo(2,20)
+				)
+			);
+    		title2.stopAllActions();
+    		title2.runAction(
+				cc.EaseSineIn.create(
+					cc.fadeTo(2,20)
+				)
+			);
+    		
+    		for( var i=0 ; i<letters.length ; i++ ) {
+        		letters[i].stopAllActions();
+    			letters[i].runAction(
+    				cc.EaseSineIn.create(
+    					cc.fadeTo(2,20)    			
+    				)
+    			);			
     		}
+    		
         	menu.stopAllActions();
         	menu.setEnabled(false);
-            menu.runAction(cc.EaseSineOut.create(cc.fadeOut(2)));
+            menu.runAction(cc.EaseSineOut.create(cc.fadeOut(0.3)));
         });
         		
         var item2 = addMenu($42.wordTreasureBestWord? $42.TITLE_SCORE+": "+$42.wordTreasureBestWord.value : " ", 36 , function() {
@@ -1144,7 +1233,7 @@ var _42TitleLayer = cc.Layer.extend({
 
         var menu = cc.Menu.create.apply(this, [item1, item2] );
         menu.x = size.width/2;
-        menu.y = 300;
+        menu.y = 180;
         menu.setOpacity(0);
         self.addChild(menu, 1);       
         menu.alignItemsVerticallyWithPadding(70);
@@ -1156,18 +1245,9 @@ var _42TitleLayer = cc.Layer.extend({
     exitTitle: function() {
     	
     	// release title graphics
-		var background = this.getChildByTag($42.TAG_TITLE_BACKGROUND),
-			_42 = this.getChildByTag($42.TAG_TITLE_42);
-		if( background ) background.release();
-		if( _42 ) _42.release();
-		delete tmpRetain[background.__instanceId];
-		delete tmpRetain[_42.__instanceId];
-    	
-    	// release letters
-    	for( var i=0 ; i<this.letters.length ; i++ ) {
-			this.letters[i].release();
-			delete tmpRetain[this.letters[i].__instanceId];
-    	}
+//		var background = this.getChildByTag($42.TAG_TITLE_BACKGROUND);
+//		if( background ) background.release();
+//		delete tmpRetain[background.__instanceId];
     }
 
 });

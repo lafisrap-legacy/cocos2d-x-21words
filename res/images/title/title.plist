@@ -4,103 +4,52 @@
 <dict>
 	<key>frames</key>
 	<dict>
-		<key>d_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{0, 0}, {90, 90}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{2, 2}, {86, 86}}</string>
-			<key>sourceSize</key>
-			<string>{90, 90}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>o_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{90, 0}, {90, 90}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{2, 2}, {86, 86}}</string>
-			<key>sourceSize</key>
-			<string>{90, 90}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>r_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{180, 0}, {90, 90}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{2, 2}, {86, 86}}</string>
-			<key>sourceSize</key>
-			<string>{90, 90}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>s_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{270, 0}, {90, 90}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{2, 2}, {86, 86}}</string>
-			<key>sourceSize</key>
-			<string>{90, 90}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>w_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{360, 0}, {90, 90}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{2, 2}, {86, 86}}</string>
-			<key>sourceSize</key>
-			<string>{90, 90}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
 		<key>42background</key>
 		<dict>
 			<key>frame</key>
-			<string>{{450, 0}, {648, 1152}}</string>
+			<string>{{0, 0}, {640, 1152}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
 			<false/>
 			<key>sourceColorRect</key>
-			<string>{{0, 0}, {648, 1152}}</string>
+			<string>{{0, 0}, {640, 1152}}</string>
 			<key>sourceSize</key>
-			<string>{648, 1152}</string>
+			<string>{640, 1152}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>2</key>
+		<dict>
+			<key>frame</key>
+			<string>{{640, 0}, {93, 164}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 0}, {93, 164}}</string>
+			<key>sourceSize</key>
+			<string>{93, 164}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>4</key>
+		<dict>
+			<key>frame</key>
+			<string>{{733, 0}, {84, 170}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 0}, {84, 170}}</string>
+			<key>sourceSize</key>
+			<string>{84, 170}</string>
 			<key>aliases</key>
 			<array>
 
@@ -109,15 +58,49 @@
 		<key>e_</key>
 		<dict>
 			<key>frame</key>
-			<string>{{1098, 0}, {90, 90}}</string>
+			<string>{{817, 0}, {45, 90}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
 			<false/>
 			<key>sourceColorRect</key>
-			<string>{{2, 2}, {86, 86}}</string>
+			<string>{{0, 0}, {45, 90}}</string>
 			<key>sourceSize</key>
-			<string>{90, 90}</string>
+			<string>{45, 90}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>o_</key>
+		<dict>
+			<key>frame</key>
+			<string>{{862, 0}, {88, 95}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 0}, {88, 95}}</string>
+			<key>sourceSize</key>
+			<string>{88, 95}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>r_</key>
+		<dict>
+			<key>frame</key>
+			<string>{{950, 0}, {59, 91}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 0}, {59, 91}}</string>
+			<key>sourceSize</key>
+			<string>{59, 91}</string>
 			<key>aliases</key>
 			<array>
 
@@ -126,32 +109,32 @@
 		<key>t_</key>
 		<dict>
 			<key>frame</key>
-			<string>{{1188, 0}, {90, 90}}</string>
+			<string>{{1009, 0}, {68, 90}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
 			<false/>
 			<key>sourceColorRect</key>
-			<string>{{2, 2}, {86, 86}}</string>
+			<string>{{0, 0}, {68, 90}}</string>
 			<key>sourceSize</key>
-			<string>{90, 90}</string>
+			<string>{68, 90}</string>
 			<key>aliases</key>
 			<array>
 
 			</array>
 		</dict>
-		<key>42</key>
+		<key>w_</key>
 		<dict>
 			<key>frame</key>
-			<string>{{1278, 0}, {200, 169}}</string>
+			<string>{{1077, 0}, {98, 89}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
 			<false/>
 			<key>sourceColorRect</key>
-			<string>{{0, 0}, {200, 169}}</string>
+			<string>{{0, 0}, {98, 89}}</string>
 			<key>sourceSize</key>
-			<string>{200, 169}</string>
+			<string>{98, 89}</string>
 			<key>aliases</key>
 			<array>
 

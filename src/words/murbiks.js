@@ -113,6 +113,11 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.8 , tilePos);		    		
 		    	}
 		    },{
+		    	time: 11.5,
+		    	anim: function() {
+		            showSpeechBubble(5.5 , $42.t.mostafa_basic01a , mostafa.getPosition());		    		
+		    	}
+		    },{
 		    	time: 11.8,
 		    	anim: function() {
 		    		var handPos = getHandPosition();
@@ -141,7 +146,7 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.6 , cc.p(-100,0));		    		
 		    	}
 		    },{
-		    	time: 16.0,
+		    	time: 17.0,
 		    	anim: function() {
 		            showSpeechBubble(6.0 , $42.t.mostafa_basic02 , mostafa.getPosition());		    		
 		    	}
@@ -165,23 +170,23 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.8 , cc.p(-200,0));		    		
 		    	}
 		    },{
-		    	time: 22.5,
+		    	time: 23.1,
 		    	anim: function() {
 		            showSpeechBubble(6.0 , $42.t.mostafa_basic03 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 23.0,
+		    	time: 23.2,
 		    	anim: function() {
 		    		jumpHandTo(cc.p(0,0));
 		    		moveHandTo(2.0 , cc.p(280,500), cc.p(280,300));	
 		    	}
 		    },{
-		    	time: 25.0,
+		    	time: 25.2,
 		    	anim: function() {
 		            pressFingerTo(0.643 , cc.p(290,650));		    		
 		    	}
 		    },{
-		    	time: 25.7,
+		    	time: 25.9,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
@@ -190,12 +195,12 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(1.1 , tilePos);		    		
 		    	}
 		    },{
-		    	time: 26.8,
+		    	time: 27.0,
 		    	anim: function() {
 		    		pressFingerTo(1.0 , cc.p(384,400));		    		
 		    	}
 		    },{
-		    	time: 27.9,
+		    	time: 28.1,
 		    	anim: function() {
 		    		moveHandTo(0.8 , cc.p(-200,0));		    		
 		    	}
@@ -207,7 +212,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 31.0,
 		    	anim: function() {
-		    		moveHandTo(2.2 , cc.p(170,970) , cc.p(300,500));		    		
+		    		moveHandTo(2.2 , cc.p(80,60) , cc.p(150,200));		    		
 		    	}
 		    },{
 		    	time: 38.0,
