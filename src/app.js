@@ -1138,7 +1138,7 @@ var _42TitleLayer = cc.Layer.extend({
 		titleGrid.runAction(
 			cc.sequence(
 				cc.delayTime(3.4),
-				cc.liquid( 0.4, cc.size(16,12), 1, 7)
+				cc.liquid( 0.4, cc.size(16,12), 1, 2)
 			)
 		);
 		
