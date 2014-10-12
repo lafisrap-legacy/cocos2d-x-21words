@@ -136,6 +136,21 @@ var _42GameLayer = cc.Layer.extend({
         this.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
         background.retain();
         /* retain */ tmpRetain[background.__instanceId] = { name: "background", line: 123 };
+        
+        // tmp Errormessage layer
+        var logMsg = cc.Node.create();
+        
+        $42.msg1 = cc.LabelTTF.create("TEST1", "Arial", 24),
+        $42.msg2 = cc.LabelTTF.create("TEST2", "Arial", 24);
+        
+        $42.msg1.setPosition(0,0);
+        $42.msg2.setPosition(0,-20);
+		logMsg.setPosition(size.width/2,size.height-50);
+
+		logMsg.addChild($42.msg1, 1);        	
+		logMsg.addChild($42.msg2, 1);        	
+        this.addChild(logMsg, 100);
+        
 	},
 	
 	endAnimation: function() {
@@ -498,6 +513,9 @@ var _42GameLayer = cc.Layer.extend({
     	
     	var self = this,
 			size = this.size;
+    	
+    	// tmp log
+    	$42.msg1.setString("Nodes: "+this.getChildren().length);
 
     	/*
     	 * get current row / col of a box
@@ -704,7 +722,7 @@ var _42GameLayer = cc.Layer.extend({
     	/*
     	 * Tile gets fixed on the ground
     	 */
-    	var fixTile = function fixTile(t, lp) {
+    	var fixTile = function fixTileFn(t, lp) {
     		var b = t.rotatedBoxes,
     			newBrcs = [],
     			ret = "ok";
@@ -717,7 +735,7 @@ var _42GameLayer = cc.Layer.extend({
 				}
 				if( brc.row < 0 || self.boxes[brc.row][brc.col] != null ) {
 					// if a box is occupied already, move tile one up 
-					return fixTile(t, {x:lp.x,y:lp.y+$42.BS});
+					return fixTileFn(t, {x:lp.x,y:lp.y+$42.BS});
 				}
     		}
     		
@@ -753,7 +771,7 @@ var _42GameLayer = cc.Layer.extend({
     		}
 
     		self.removeChild(t.sprite);
-       		delete t;
+//       		delete t;
        		
     		return ret;
     	};
@@ -1022,19 +1040,22 @@ var _42MenuLayer = cc.LayerColor.extend({
         return true;
     },
 
-	initMenu: function(question, menuItems) {
+	initMenu: function(questions, menuItems) {
 		
         var size = this.size,
         	self = this,
         	items = [];
 
         // Show question
-		var q = cc.LabelTTF.create(question, "Arial", 36),
+        if( typeof questions === "string") questions = [questions];
+        for( var i=0 ; i<questions.length ; i++ ) {
+    		var q = cc.LabelTTF.create(questions[i], "Arial", 36),
 	    	x = size.width/2,
-	    	y = size.height/2 + menuItems.length * 96;
+	    	y = size.height/2 + menuItems.length * 96 + (questions.length-i-1) * 64;
 	
-		q.setPosition(x,y);
-		this.addChild(q, 1);
+			q.setPosition(x,y);
+			this.addChild(q, 1);        	
+        }
         
         // Show menu items
         for( var i=0 ; i<menuItems.length ; i++ ) {
@@ -1248,14 +1269,20 @@ var _42TitleLayer = cc.Layer.extend({
         	menu.setEnabled(false);
             menu.runAction(cc.EaseSineOut.create(cc.fadeOut(0.3)));
         });
-        		
-        var item2 = addMenu($42.wordTreasureBestWord? $42.TITLE_SCORE+": "+$42.wordTreasureBestWord.value : " ", 36 , function() {
+
+        var ls = cc.sys.localStorage;
+        $42.wordTreasureWords = ls.getItem("wordTreasureWords") || 0;
+        $42.maxPoints = ls.getItem("maxPoints") || 0;
+        var item2 = addMenu($42.maxPoints? $42.TITLE_SCORE+": "+$42.maxPoints : " ", 36 , function() {
+        	// has to be filled
+        });
+        var item3 = addMenu($42.wordTreasureWords? $42.TITLE_TREASURE+": "+$42.wordTreasureWords : " ", 36 , function() {
         	// has to be filled
         });
 
-        var menu = cc.Menu.create.apply(this, [item1, item2] );
+        var menu = cc.Menu.create.apply(this, [item1, item2, item3] );
         menu.x = size.width/2;
-        menu.y = 180;
+        menu.y = 200;
         menu.setOpacity(0);
         self.addChild(menu, 1);       
         menu.alignItemsVerticallyWithPadding(70);
@@ -1275,7 +1302,7 @@ var _42TitleLayer = cc.Layer.extend({
 		if( node ) node.release();
 		delete tmpRetain[node.__instanceId];
 
- 		node = this.getChildByTag($42.TAG_TITLE_4);
+/* 		node = this.getChildByTag($42.TAG_TITLE_4);
 		if( node ) node.release();
 		delete tmpRetain[node.__instanceId];
 
@@ -1285,7 +1312,7 @@ var _42TitleLayer = cc.Layer.extend({
 
  		node = this.getChildByTag($42.TAG_TITLE_WORD);
 		if( node ) node.release();
-		delete tmpRetain[node.__instanceId];
+		delete tmpRetain[node.__instanceId];*/
 
 		var nodes = node.getChildren();
 		for( var i=0 ; i<nodes.length ; i++ ) {

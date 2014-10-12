@@ -37,7 +37,7 @@ $42.MARKER_X_OFFSET = $42.BS/2;
 $42.MARKER_Y_OFFSET = -25;
 $42.UNSELECTED_BOX_OPACITY = 100;
 $42.NEEDED_LETTERS_PROBABILITY = 0.15; // additional probability that a needed letter will be selected
-$42.MAX_LETTERS_BLOWN = 7;
+$42.MAX_WORDS_BLOWN = 3;
 $42.WORD_FRAME_WIDTH = 4;
 $42.WORD_FRAME_MOVE_TIME = 0.8;
 $42.SCORE_ROW_MULTIPLYER = 0.25;
@@ -314,10 +314,15 @@ var _42_MODULE = function(_42Layer) {
 								value: value * wordMul
 							};
 						$42.wordTreasure.push(w);
+						$42.wordTreasureWords++;
+						ls.setItem("wordTreasureWords",$42.wordTreasureWords);
 						$42.wordTreasureValue += w.value;
+						
+						var wtl = $42.wordTreasure.length;
 						if( $42.wordTreasureValue > $42.maxPoints ) {
 							$42.maxPoints = $42.wordTreasureValue;
 							moveRollingLayer(1,$42.SCOREBAR_ROLLING_LAYER_DELAY);
+							
 							var highlight = "maxPoints";
 							ls.setItem("maxPoints",$42.maxPoints);
 						}
@@ -325,21 +330,18 @@ var _42_MODULE = function(_42Layer) {
 							$42.wordTreasureBestWord = w;
 							moveRollingLayer(1,$42.SCOREBAR_ROLLING_LAYER_DELAY);
 							var highlight = "bestWord";
+							if( wtl >= 7 ) setNextProfileLetter();
 						} 
+						if( $42.wordTreasure.length >= 42 ) youWonTheGame();
 
 						ml.unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
 
-						// add new profile letters > 7
-						switch( $42.wordTreasure.length ) {
-						case 21: case 22: case 23: case 24: case 25: case 26: case 27:
+						// add new profile letters and multipliers
+						if( !(wtl%3) && wtl >= 9 ) {
 							setNextProfileLetter();
-						case 7: case 9: case 11: case 13: case 15: case 16: case 17: case 18: case 19: case 20:
-							setNextProfileLetter();
-							break;
+							if( wtl >= 21 ) setNextMultiplier();
 						}
-
-						if( $42.wordTreasure.length >= 28 ) setNextMultiplier();
 						
 						cc.log("42words, updateSelectedWord, takeWord = true: setSelection()");
 						setSelections();
@@ -362,17 +364,8 @@ var _42_MODULE = function(_42Layer) {
 	
 	var youWonTheGame = function() {
 		
-		blowLevelAndWordValue({win:true}, function() {
+		blowLevelAndWordValue({allwords:true}, function() {
 			var menuItems = [{
-				label: $42.t.won_continue, 
-				cb: function(sender) {
-			        ml.resume();
-			        ml.scheduleUpdate();
-
-			        /* must be tested */ this.exitMenu();
-		            this.getParent().removeChild(this);
-		        }
-			},{
 				label: $42.t.won_end_game, 
 				cb: function(sender) {
 					if( self.hookEndGame ) self.hookEndGame();
@@ -381,36 +374,44 @@ var _42_MODULE = function(_42Layer) {
 		        }
 			}];
             ml.getParent().addChild(
-            	new _42MenuLayer("Du hast gewonnen!",menuItems),
-            	2);
+            	new _42MenuLayer([
+            	    $42.t.won_congrats,
+            	    $42.t.won_word_value+": "+$42.wordTreasureValue+($42.wordTreasureValue === $42.maxPoints?" ("+$42.t.won_highscore+")":""),
+            	    $42.t.won_word_treasure+": "+$42.wordTreasureWords,
+            	    $42.t.won_time+": "+(ml.timeCounter/3600>>>0)+":"+(ml.timeCounter/60>>>0)%60+" "+$42.t.won_minutes
+            	],menuItems),
+            	1);
 	        ml.pause();
 	        ml.unscheduleUpdate();
 		});		
 	};
 	
-	var blowLevelAndWordValue = function(levelAndValue,cb) {
+	var blowLevelAndWordValue = function(blow,cb) {
 		
 		var text = [];
 		
-		if( levelAndValue.level ) text = [{t:$42.t.new_level_level,scale:5,color:cc.color(0,128,0)} , 
-		                        {t:levelAndValue.level,scale:10,color:cc.color(0,160,0)}];
-		if( levelAndValue.value ) text = text.concat([{t:$42.t.new_level_value,scale:5,color:cc.color(128,128,0)} , 
-		                                        {t:levelAndValue.value,scale:10,color:cc.color(128,128,0)}]);
-		if( levelAndValue.win ) {
-			var t = $42.t.new_level_win;
-			for( var i=0 ; i<t.length ; i++ ) text = text.concat([{t:t.substr(i,1),scale:11,color:cc.color(200+(55/t.length*i),200+(55/t.length*i),30)}])
+//		if( levelAndValue.level ) text = [{t:$42.t.new_level_level,scale:5,color:cc.color(0,128,0)} , 
+//		                        {t:levelAndValue.level,scale:10,color:cc.color(0,160,0)}];
+//		if( levelAndValue.value ) text = text.concat([{t:$42.t.new_level_value,scale:5,color:cc.color(128,128,0)} , 
+//		                                        {t:levelAndValue.value,scale:10,color:cc.color(128,128,0)}]);
+		if( blow.allwords ) {
+			var wt = $42.wordTreasure;
+			for( var i=0 ; i<wt.length ; i++ ) 
+				text = text.concat([{t:wt[i].word , scale:3 , color:cc.color(160+i*2,160+i*2,30)}])
 		}
 		
-		if( levelAndValue.info ) {
-			var lines = levelAndValue.info;
+		if( blow.info ) {
+			var lines = blow.info;
 			for( var i=0 ; i<lines.length ; i++ ) text = text.concat([{t:lines[i],scale:2,color:cc.color(0,0,128)}]);			
 		}
 		
 		for( var i=0 ; i<text.length ; i++ ) {
 			var label = cc.LabelTTF.create(text[i].t, "res/fonts/American Typewriter.ttf", 160);
 			label.setPosition(ml.size.width/2,ml.size.height/2);
-			label.setScale(0.1,0.1);
+			label.setScale(0,0);
 			label.setColor(text[i].color);
+			label.retain();
+	        /* retain */ tmpRetain[label.__instanceId] = { name: "blow up word", line: 416 };	
 			ml.addChild(label, 5);
 			label.i = i;
 			label.runAction(
@@ -421,6 +422,8 @@ var _42_MODULE = function(_42Layer) {
 						cc.fadeTo(2,0)
 					),
 					cc.callFunc(function() {
+				        this.release();
+						delete tmpRetain[this.__instanceId];					        							
 						ml.removeChild(this);
 						if( cb && this.i === text.length-1 ) cb();
 					}, label)
@@ -745,7 +748,7 @@ var _42_MODULE = function(_42Layer) {
 	var blowWords = function(pos, words) {
 
 		var angle = Math.random() * 360;
-		for( var i=0 ; i<Math.min(words.length,$42.MAX_LETTERS_BLOWN) ; i++ ) {
+		for( var i=0 ; i<Math.min(words.length,$42.MAX_WORDS_BLOWN) ; i++ ) {
 			var word = cc.LabelTTF.create(words[i].word, "Arial", 38),
 	        	x = pos.x + Math.sin(cc.degreesToRadians(angle))*100,
 	        	y = pos.y + Math.cos(cc.degreesToRadians(angle))*100;
@@ -1245,7 +1248,6 @@ var _42_MODULE = function(_42Layer) {
         	wt = $42.wordTreasure = [];
         
         $42.wordTreasureValue = 0;
-        $42.maxPoints = ls.getItem("maxPoints") || 0;
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
 //		ml.hookStartProgram( 2 , false );
@@ -1260,6 +1262,7 @@ var _42_MODULE = function(_42Layer) {
 		ml.nextMultiplier = 0;
 		ml.multipliers = [];
 		ml.dontAutoSelectWord = false;
+		ml.timeCounter = 0;
 		
 		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
 		$42.wordTreasureBestWord = wt[bw] || null;
@@ -1580,6 +1583,8 @@ var _42_MODULE = function(_42Layer) {
 	
 	_42Layer.hookUpdate = function(dt) {
 		
+		ml.timeCounter++;
+		
 		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);
 					
 		if( !ml.layerIsRolling && ml.rollingLayerStage != 0 ) moveRollingLayer(0);
@@ -1604,15 +1609,15 @@ var _42_MODULE = function(_42Layer) {
 			ml.plus3Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0, 100))));					
 		}*/
 		
-		if( !ml.levelsToBlowCnt && ml.levelsToBlow && ml.levelsToBlow.length ) {
-			ml.levelsToBlowCnt = $42.LEVELS_TO_BLOW_CYCLES;
-			
-			blowLevelAndWordValue(ml.levelsToBlow.splice(0,1)[0]);
-			
-		} else if( ml.levelsToBlowCnt ) {
-			ml.levelsToBlowCnt--;
-		} else {
-		}
+//		if( !ml.levelsToBlowCnt && ml.levelsToBlow && ml.levelsToBlow.length ) {
+//			ml.levelsToBlowCnt = $42.LEVELS_TO_BLOW_CYCLES;
+//			
+//			blowLevelAndWordValue(ml.levelsToBlow.splice(0,1)[0]);
+//			
+//		} else if( ml.levelsToBlowCnt ) {
+//			ml.levelsToBlowCnt--;
+//		} else {
+//		}
 	};
 	
 	// call tutorial module if available
@@ -1696,7 +1701,8 @@ if( !$42.languagePack ) {
 	$42.TITLE_WORDS = "WORTE";
 	$42.TITLE_WORDS_OFFSETS = [0,0,10,0,10];	
 	$42.TITLE_START_GAME = "SPIEL STARTEN";
-	$42.TITLE_SCORE = "Wortwert";
+	$42.TITLE_SCORE = "Bestwert";
+	$42.TITLE_TREASURE = "Wortschatz";
 	// ENGLISH
 //	$42.loadLanguagePack(1);
 //	$42.TITLE_WORDS = "WORDS";
