@@ -1273,19 +1273,23 @@ var _42TitleLayer = cc.Layer.extend({
         var ls = cc.sys.localStorage;
         $42.wordTreasureWords = ls.getItem("wordTreasureWords") || 0;
         $42.maxPoints = ls.getItem("maxPoints") || 0;
+        $42.bestTime = ls.getItem("bestTime") || null;
         var item2 = addMenu($42.maxPoints? $42.TITLE_SCORE+": "+$42.maxPoints : " ", 36 , function() {
-        	// has to be filled
+        	// can be filled
         });
         var item3 = addMenu($42.wordTreasureWords? $42.TITLE_TREASURE+": "+$42.wordTreasureWords : " ", 36 , function() {
-        	// has to be filled
+        	// can be filled
+        });
+        var item4 = addMenu($42.bestTime? $42.TITLE_BEST_TIME+": "+($42.bestTime/3600>>>0)+":"+("0"+($42.bestTime/60>>>0)%60).substr(-2,2) : " ", 36 , function() {
+        	// can be filled
         });
 
-        var menu = cc.Menu.create.apply(this, [item1, item2, item3] );
+        var menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
         menu.x = size.width/2;
         menu.y = 200;
         menu.setOpacity(0);
         self.addChild(menu, 1);       
-        menu.alignItemsVerticallyWithPadding(70);
+        menu.alignItemsVerticallyWithPadding(30);
         menu.runAction(cc.EaseSineIn.create(cc.fadeIn(4)));
         
         return true;

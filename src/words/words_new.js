@@ -338,8 +338,8 @@ var _42_MODULE = function(_42Layer) {
 						ml.checkForAndRemoveCompleteRows(row);
 
 						// add new profile letters and multipliers
-						if( !(wtl%3) ) {
-							if( wtl >=  9 ) setNextProfileLetter();
+						if( !(wtl%3) && wtl >= 9 ) {
+							setNextProfileLetter();
 							if( wtl >= 21 ) setNextMultiplier();
 						}
 						
@@ -365,10 +365,7 @@ var _42_MODULE = function(_42Layer) {
 	var youWonTheGame = function() {
 		
 		var self = this;
-	       
-        ml.pause();
-        ml.unscheduleUpdate();
-
+		
 		blowLevelAndWordValue({allwords:true}, function() {
 			var menuItems = [{
 				label: $42.t.won_end_game, 
@@ -383,12 +380,11 @@ var _42_MODULE = function(_42Layer) {
             	    $42.t.won_congrats,
             	    $42.t.won_word_value+": "+$42.wordTreasureValue+($42.wordTreasureValue === $42.maxPoints?" ("+$42.t.won_highscore+")":""),
             	    $42.t.won_word_treasure+": "+$42.wordTreasureWords,
-            	    $42.t.won_time+": "+(ml.timeCounter/3600>>>0)+":"+("0"+(ml.timeCounter/60>>>0)%60).substr(-2,2)+" "+$42.t.won_minutes
-            	],menuItems), 1
-            );
-			var ls = cc.sys.localStorage;
-            $42.bestTime = ml.timeCounter;
-            ls.setItem("bestTime",$42.bestTime);
+            	    $42.t.won_time+": "+(ml.timeCounter/3600>>>0)+":"+(ml.timeCounter/60>>>0)%60+" "+$42.t.won_minutes
+            	],menuItems),
+            	1);
+	        ml.pause();
+	        ml.unscheduleUpdate();
 		});		
 	};
 	
@@ -402,8 +398,8 @@ var _42_MODULE = function(_42Layer) {
 //		                                        {t:levelAndValue.value,scale:10,color:cc.color(128,128,0)}]);
 		if( blow.allwords ) {
 			var wt = $42.wordTreasure;
-			for( var i=0 ; i<42 /*wt.length*/ ; i++ ) 
-				text = text.concat([{t:(i+1)+" "+wt[0].word , scale:3 , color : cc.color(160 - ((i*7)%80), 0 + ((i*4)%40) , 0 + ((i*9)%100))}]);
+			for( var i=0 ; i<wt.length ; i++ ) 
+				text = text.concat([{t:(i+1)+" "+wt[i].word , scale:3 , color : cc.color(160 - ((i*7)%80), 0 + ((i*4)%40) , 0 + ((i*9)%100))}]);
 		}
 		
 		if( blow.info ) {
@@ -420,7 +416,7 @@ var _42_MODULE = function(_42Layer) {
 	        /* retain */ tmpRetain[label.__instanceId] = { name: "blow up word", line: 416 };	
 			ml.addChild(label, 5);
 			label.i = i;
-			label.setRotation(8.57*i*2);
+			label.setRotation(8.57*i*3);
 			label.runAction(
 				cc.sequence(
 					cc.delayTime(i * 0.44),
@@ -1709,9 +1705,8 @@ if( !$42.languagePack ) {
 	$42.TITLE_WORDS = "WORTE";
 	$42.TITLE_WORDS_OFFSETS = [0,0,10,0,10];	
 	$42.TITLE_START_GAME = "SPIEL STARTEN";
-	$42.TITLE_SCORE = "Höchste Punktzahl";
+	$42.TITLE_SCORE = "Bestwert";
 	$42.TITLE_TREASURE = "Wortschatz";
-	$42.TITLE_BEST_TIME = "Bestzeit";
 	// ENGLISH
 //	$42.loadLanguagePack(1);
 //	$42.TITLE_WORDS = "WORDS";
