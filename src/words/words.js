@@ -36,7 +36,8 @@ $42.START_MARKER_Y_OFFSET = $42.BS/2;
 $42.MARKER_X_OFFSET = $42.BS/2;
 $42.MARKER_Y_OFFSET = -25;
 $42.UNSELECTED_BOX_OPACITY = 100;
-$42.NEEDED_LETTERS_PROBABILITY = 0.15; // additional probability that a needed letter will be selected
+$42.NEEDED_LETTERS_PROBABILITY = 0.15; // additional probability that a needed
+										// letter will be selected
 $42.MAX_WORDS_BLOWN = 3;
 $42.WORD_FRAME_WIDTH = 4;
 $42.WORD_FRAME_MOVE_TIME = 0.8;
@@ -65,6 +66,7 @@ $42.SCOREBAR_LETTERS_PADDING = 16;
 $42.SCOREBAR_LETTERS_SCALE = 0.45;
 $42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;
 $42.MAX_MULTIPLIERS = 5;
+$42.MAX_PLAYING_TIME = 1;
 
 $42.MULTIPLIER = [[2,"letter"],[3,"letter"],[2,"word"],[5,"letter"],[10,"letter"],[3,"word"],[20,"letter"]];
 
@@ -99,7 +101,7 @@ var _42_MODULE = function(_42Layer) {
 					
 					var newPrefix = words[0].word.substring(0,3);
 
-					// let a newly found sprite blink 
+					// let a newly found sprite blink
 					for( var k=0 ; k<3 ; k++ ) {
 						var box1 = ml.boxes[brc.row][brc.col+k];
 						if( box1.sprite ) box1.sprite.setOpacity(255);
@@ -108,7 +110,7 @@ var _42_MODULE = function(_42Layer) {
 						}
 					}
 					
-					// fill the selection	
+					// fill the selection
 					s.push({
 						brc: brc,
 						width: $42.BS * 3,
@@ -151,7 +153,8 @@ var _42_MODULE = function(_42Layer) {
 		if( !(ml.boxes[brc.row][brc.col] && ml.boxes[brc.row][brc.col].words) && words.length && cb ) {
 
 			for( var i=words.length-1 ; i>=0 ; i-- ) {
-//				if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || words[i].value > $42.maxWordValue ) {
+// if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || words[i].value >
+// $42.maxWordValue ) {
 				if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || $42.wordProfile < ($42.wordProfile | words[i].profile) ) {
 					words.splice(i,1);
 				}
@@ -192,20 +195,23 @@ var _42_MODULE = function(_42Layer) {
 		}
 
 		// Mark letters
-		// First look for all words that are still possible, looking at the markers set
+		// First look for all words that are still possible, looking at the
+		// markers set
 		var curWords = sw.words.slice(),
 			missingLetters = "";
 		for( var i=sw.brc.col ; i<$42.BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
 			if( sw.markers[col] === $42.MARKER_SEL ) {
 				var letter = ml.boxes[sw.brc.row][i].userData;
-				// take out all words that don't match the letters where markers are set
+				// take out all words that don't match the letters where markers
+				// are set
 				for( var j=curWords.length-1 ; j>=0 ; j-- ) {
 					if( curWords[j].word[col] != letter ) curWords.splice(j,1);
 				}
 			}
 		}
-		// if no words are found with currently selected markers, than the last fitting word was removed
+		// if no words are found with currently selected markers, than the last
+		// fitting word was removed
 		// so all selected markers and start with all words anew
 		if( curWords.length === 0 ) {
 			curWords = sw.words.slice();
@@ -221,7 +227,7 @@ var _42_MODULE = function(_42Layer) {
 			}
 			sw.sprites[col] = null;
 			for( var j=curWords.length-1,hits=0 ; j>=0 ; j-- ) {
-				// look if the letter in the box matches the letter in the word 
+				// look if the letter in the box matches the letter in the word
 				if(ml.boxes[sw.brc.row][i] && curWords[j].word[col] === ml.boxes[sw.brc.row][i].userData ) hits++;
 				else if( curWords[j].word[col] ) missingLetters += curWords[j].word[col];
 			}
@@ -239,7 +245,8 @@ var _42_MODULE = function(_42Layer) {
 				// letter in box matches with no word
 				sw.markers[col] = null;
 			} else {
-				// letter in box matches with some words, draw marker option sprite
+				// letter in box matches with some words, draw marker option
+				// sprite
 				sw.markers[col] = $42.MARKER_OPT;
 				sw.sprites[col] = cc.Sprite.create(optMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));					
 				ml.boxes[sw.brc.row][i].sprite.setOpacity($42.UNSELECTED_BOX_OPACITY);	
@@ -396,13 +403,15 @@ var _42_MODULE = function(_42Layer) {
 		
 		var text = [];
 		
-//		if( levelAndValue.level ) text = [{t:$42.t.new_level_level,scale:5,color:cc.color(0,128,0)} , 
-//		                        {t:levelAndValue.level,scale:10,color:cc.color(0,160,0)}];
-//		if( levelAndValue.value ) text = text.concat([{t:$42.t.new_level_value,scale:5,color:cc.color(128,128,0)} , 
-//		                                        {t:levelAndValue.value,scale:10,color:cc.color(128,128,0)}]);
+// if( levelAndValue.level ) text =
+// [{t:$42.t.new_level_level,scale:5,color:cc.color(0,128,0)} ,
+// {t:levelAndValue.level,scale:10,color:cc.color(0,160,0)}];
+// if( levelAndValue.value ) text =
+// text.concat([{t:$42.t.new_level_value,scale:5,color:cc.color(128,128,0)} ,
+// {t:levelAndValue.value,scale:10,color:cc.color(128,128,0)}]);
 		if( blow.allwords ) {
 			var wt = $42.wordTreasure;
-			for( var i=0 ; i<42 /*wt.length*/ ; i++ ) 
+			for( var i=0 ; i<42 /* wt.length */ ; i++ ) 
 				text = text.concat([{t:(i+1)+" "+wt[0].word , scale:3 , color : cc.color(160 - ((i*7)%80), 0 + ((i*4)%40) , 0 + ((i*9)%100))}]);
 		}
 		
@@ -560,9 +569,9 @@ var _42_MODULE = function(_42Layer) {
 	    						var self = this;
 					            menuLayer.removeAllChildren();
 	    						
-//	    						showWordTreasure(word, sprite, function() {
+// showWordTreasure(word, sprite, function() {
 		    						resume(self,true);	    							
-//	    						});
+// });
 	    			        }
 	    				},{
 	    					label: $42.t.take_word_no, 
@@ -623,7 +632,8 @@ var _42_MODULE = function(_42Layer) {
 					value.setColor(cc.color(200,160,0));
 					sprite.addChild(value, 5);	
 					
-					// release and remove word sprite that is not visible any more
+					// release and remove word sprite that is not visible any
+					// more
 			        var s = wordFrameSprite.getChildren();
 			        for( var i=0 ; i<s.length ; i++ ) {
 				        s[i].release();
@@ -661,7 +671,7 @@ var _42_MODULE = function(_42Layer) {
 					cc.fadeTo(1.3,0)
 				),
 				cc.callFunc(function() {
-					//cb();
+					// cb();
 				})
 			)
 		);
@@ -724,7 +734,8 @@ var _42_MODULE = function(_42Layer) {
 			
 		// define a new one
 		if( brc ) {
-			//var words = $42.words[ml.boxes[brc.row][brc.col].words[0].word.substr(0,3)];
+			// var words =
+			// $42.words[ml.boxes[brc.row][brc.col].words[0].word.substr(0,3)];
 			var box = ml.boxes[brc.row][brc.col],
 				words = box.words,
 				markers = box.markers;
@@ -1000,7 +1011,7 @@ var _42_MODULE = function(_42Layer) {
 	        stencil.drawPoly(rectangle, white, 1, white);
 	        clipper.stencil = stencil;
 	        sb.addChild(clipper);
-	        // rolling layer 
+	        // rolling layer
 			rl = $42.rollingLayer = new cc.Layer();
 			rl.setPosition(0,0);
 			rl.retain();
@@ -1258,8 +1269,8 @@ var _42_MODULE = function(_42Layer) {
         $42.wordTreasureValue = 0;
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
-//		ml.hookStartProgram( 2 , false );
-//		ml.hookStartProgram( 0 , true );
+// ml.hookStartProgram( 2 , false );
+// ml.hookStartProgram( 0 , true );
 		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
 		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
 
@@ -1271,13 +1282,21 @@ var _42_MODULE = function(_42Layer) {
 		ml.multipliers = [];
 		ml.dontAutoSelectWord = false;
 		ml.timeCounter = 0;
+		ml.nextTimeoutWarning = 0;
 		
 		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
 		$42.wordTreasureBestWord = wt[bw] || null;
-//		$42.maxWordValue = $42.wordTreasureBestWord? $42.wordTreasureBestWord.value : 4;
+// $42.maxWordValue = $42.wordTreasureBestWord? $42.wordTreasureBestWord.value :
+// 4;
 
-		// prepare for which letters can be used (word profile), and what letters will be next
-		$42.wordProfile = (1<<0) + (1<<1) + (1<<2) + (1<<3) + (1<<4) + (1<<5) + (1<<6); // start profile with first 7 letters
+		// prepare for which letters can be used (word profile), and what
+		// letters will be next
+		$42.wordProfile = (1<<0) + (1<<1) + (1<<2) + (1<<3) + (1<<4) + (1<<5) + (1<<6); // start
+																						// profile
+																						// with
+																						// first
+																						// 7
+																						// letters
 		$42.wordProfileLetters = [];
 		$42.displayedProfileLetters = [];
 		$42.displayedProfileLettersMini = [];
@@ -1377,7 +1396,7 @@ var _42_MODULE = function(_42Layer) {
 	 * 
 	 * Called before building a tile to choose a tile
 	 * 
-	 * Param: none 
+	 * Param: none
 	 * 
 	 */
 	_42Layer.hookSetTile = function() {
@@ -1394,7 +1413,7 @@ var _42_MODULE = function(_42Layer) {
 	 * 
 	 * Called while building a tile to set the images of the tile boxes
 	 * 
-	 * Param: tileBoxes: metrics of the boxes 
+	 * Param: tileBoxes: metrics of the boxes
 	 * 
 	 */
 	_42Layer.hookSetTileImages = function(tileBoxes, newTile, p, userData) {
@@ -1407,14 +1426,16 @@ var _42_MODULE = function(_42Layer) {
 		ml.addChild(tileSprite,2);
 
 		// is to be replaced for cypherpunk mode
-//		if( nextTile === null && tileBoxes.length === 3 ) {
-//			cc.assert($42.maxWordValue >= 4 && $42.maxWordValue <= 42 && $42.prefixValues[$42.maxWordValue], "42 Words, _42Layer.hookSetTileImages: Wrong $42.maxWordValue or no prefixes.")
-//			var prefs = $42.prefixValues[$42.maxWordValue];
-//			nextTile = {
-//				"tile": 8, 
-//				"letters": prefs[Math.floor(Math.random()*prefs.length)]
-//			}
-//		} 
+// if( nextTile === null && tileBoxes.length === 3 ) {
+// cc.assert($42.maxWordValue >= 4 && $42.maxWordValue <= 42 &&
+// $42.prefixValues[$42.maxWordValue], "42 Words, _42Layer.hookSetTileImages:
+// Wrong $42.maxWordValue or no prefixes.")
+// var prefs = $42.prefixValues[$42.maxWordValue];
+// nextTile = {
+// "tile": 8,
+// "letters": prefs[Math.floor(Math.random()*prefs.length)]
+// }
+// }
 		
         // add single boxes with letters to the tile
         for( var i=0 ; i<tileBoxes.length ; i++) {
@@ -1430,7 +1451,7 @@ var _42_MODULE = function(_42Layer) {
 	         					Math.floor(this.getRandomValue($42.letterOccurences)):
 	        					$42.LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]);        			
 	         					
-	         		// no double letters			
+	         		// no double letters
 	        	    for( k=0,double=0 ; k<i ; k++ ) 
 	        	    	if( userData[k] === $42.LETTERS[val] ) double++;
 	        	    if( double > 1 ) continue;
@@ -1591,7 +1612,36 @@ var _42_MODULE = function(_42Layer) {
 	
 	_42Layer.hookUpdate = function(dt) {
 		
-		ml.timeCounter++;
+		var minutes = ++ml.timeCounter / 3600,
+			warning = $42.t.timeout_warning[ml.nextTimeoutWarning];
+		
+		if( warning && minutes > $42.MAX_PLAYING_TIME - warning.time ) {
+			blowLevelAndWordValue({info:[warning.text]});
+			ml.nextTimeoutWarning++;
+		}
+		
+		if( !ml.timeIsUp && minutes > $42.MAX_PLAYING_TIME ) {
+			ml.timeIsUp = true;
+	        ml.pause();
+	        ml.unscheduleUpdate();
+			blowLevelAndWordValue({info:$42.t.timeout_text}, function() {
+				var menuItems = [{
+					label: $42.t.won_end_game, 
+					cb: function(sender) {
+						if( self.hookEndGame ) self.hookEndGame();
+						/* must be tested */ ml.endGame();
+			        	cc.director.runScene(new _42Scene());
+			        }
+				}];
+	            ml.getParent().addChild(
+	            	new _42MenuLayer([
+	            	    $42.t.timeout_message,
+	            	    $42.t.won_word_value+": "+$42.wordTreasureValue+($42.wordTreasureValue === $42.maxPoints?" ("+$42.t.won_highscore+")":""),
+	            	    $42.t.won_word_treasure+": "+$42.wordTreasureWords
+	            	],menuItems), 1
+	            );
+			});
+		}
 		
 		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);
 					
@@ -1603,29 +1653,27 @@ var _42_MODULE = function(_42Layer) {
 			ml.hookStartProgram( 1 , true );	
 		}
 		
-/*		// show plus 3 button if score is high enough 
-		if( !ml.plus3ButtonVisible && $42.wordTreasureBestWord && 
-				($42.wordTreasureBestWord.value >= 40 ||
-				ml.totalPoints >= $42.LEVEL_SCORE[bw.value+2])
-		) {
-			ml.plus3ButtonVisible = true;
-			ml.plus3Button.runAction(cc.EaseSineIn.create(cc.moveBy(0.75,cc.p(0, -100))));
-		} else if( ml.plus3ButtonVisible && $42.wordTreasureBestWord &&  
-				 ml.totalPoints <= $42.LEVEL_SCORE[$42.wordTreasureBestWord.value+2]
-		) {
-			ml.plus3ButtonVisible = false;
-			ml.plus3Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0, 100))));					
-		}*/
+/*
+ * // show plus 3 button if score is high enough if( !ml.plus3ButtonVisible &&
+ * $42.wordTreasureBestWord && ($42.wordTreasureBestWord.value >= 40 ||
+ * ml.totalPoints >= $42.LEVEL_SCORE[bw.value+2]) ) { ml.plus3ButtonVisible =
+ * true; ml.plus3Button.runAction(cc.EaseSineIn.create(cc.moveBy(0.75,cc.p(0,
+ * -100)))); } else if( ml.plus3ButtonVisible && $42.wordTreasureBestWord &&
+ * ml.totalPoints <= $42.LEVEL_SCORE[$42.wordTreasureBestWord.value+2] ) {
+ * ml.plus3ButtonVisible = false;
+ * ml.plus3Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0,
+ * 100)))); }
+ */
 		
-//		if( !ml.levelsToBlowCnt && ml.levelsToBlow && ml.levelsToBlow.length ) {
-//			ml.levelsToBlowCnt = $42.LEVELS_TO_BLOW_CYCLES;
+// if( !ml.levelsToBlowCnt && ml.levelsToBlow && ml.levelsToBlow.length ) {
+// ml.levelsToBlowCnt = $42.LEVELS_TO_BLOW_CYCLES;
 //			
-//			blowLevelAndWordValue(ml.levelsToBlow.splice(0,1)[0]);
+// blowLevelAndWordValue(ml.levelsToBlow.splice(0,1)[0]);
 //			
-//		} else if( ml.levelsToBlowCnt ) {
-//			ml.levelsToBlowCnt--;
-//		} else {
-//		}
+// } else if( ml.levelsToBlowCnt ) {
+// ml.levelsToBlowCnt--;
+// } else {
+// }
 	};
 	
 	// call tutorial module if available
@@ -1713,18 +1761,18 @@ if( !$42.languagePack ) {
 	$42.TITLE_TREASURE = "Wortschatz";
 	$42.TITLE_BEST_TIME = "Bestzeit";
 	// ENGLISH
-//	$42.loadLanguagePack(1);
-//	$42.TITLE_WORDS = "WORDS";
-//	$42.TITLE_START_GAME = "START GAME";
-//	$42.TITLE_SCORE = "WORD VALUE";
+// $42.loadLanguagePack(1);
+// $42.TITLE_WORDS = "WORDS";
+// $42.TITLE_START_GAME = "START GAME";
+// $42.TITLE_SCORE = "WORD VALUE";
 	// ESTONIAN
-//	$42.loadLanguagePack(2);
-//	$42.TITLE_WORDS = "WORTE";
-//	$42.TITLE_START_GAME = "SPIEL STARTEN";
-//	$42.TITLE_SCORE = "WORTWERT";
+// $42.loadLanguagePack(2);
+// $42.TITLE_WORDS = "WORTE";
+// $42.TITLE_START_GAME = "SPIEL STARTEN";
+// $42.TITLE_SCORE = "WORTWERT";
 	// SWEDISH
-//	$42.loadLanguagePack(3);
-//	$42.TITLE_WORDS = "ORDEN";
-//	$42.TITLE_START_GAME = "START";
-//	$42.TITLE_SCORE = "ORD VÄRDE";
+// $42.loadLanguagePack(3);
+// $42.TITLE_WORDS = "ORDEN";
+// $42.TITLE_START_GAME = "START";
+// $42.TITLE_SCORE = "ORD VÄRDE";
 }
