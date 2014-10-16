@@ -66,7 +66,7 @@ $42.SCOREBAR_LETTERS_PADDING = 16;
 $42.SCOREBAR_LETTERS_SCALE = 0.45;
 $42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;
 $42.MAX_MULTIPLIERS = 5;
-$42.MAX_PLAYING_TIME = 1;
+$42.MAX_PLAYING_TIME = 45;
 
 $42.MULTIPLIER = [[2,"letter"],[3,"letter"],[2,"word"],[5,"letter"],[10,"letter"],[3,"word"],[20,"letter"]];
 
