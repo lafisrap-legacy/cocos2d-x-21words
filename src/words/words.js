@@ -68,7 +68,7 @@ $42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;
 $42.MAX_MULTIPLIERS = 5;
 $42.MAX_PLAYING_TIME = 45;
 
-$42.MULTIPLIER = [[2,"letter"],[3,"letter"],[2,"word"],[5,"letter"],[10,"letter"],[3,"word"],[20,"letter"]];
+$42.MULTIPLIER = [[2,"letter"],[3,"letter"],[2,"word"],[5,"letter"],[8,"letter"],[3,"word"],[10,"letter"]];
 
 var _42_MODULE = function(_42Layer) {
 
@@ -147,15 +147,16 @@ var _42_MODULE = function(_42Layer) {
 				word: $42.words[prefix][i].word,
 				value: $42.words[prefix][i].value,
 				profile: $42.words[prefix][i].profile,
+				deleted: $42.words[prefix][i].deleted
 			});
 		}
 
 		if( !(ml.boxes[brc.row][brc.col] && ml.boxes[brc.row][brc.col].words) && words.length && cb ) {
 
 			for( var i=words.length-1 ; i>=0 ; i-- ) {
-// if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || words[i].value >
-// $42.maxWordValue ) {
-				if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || $42.wordProfile < ($42.wordProfile | words[i].profile) ) {
+				if( brc.col + words[i].word.length > $42.BOXES_PER_ROW || 
+					words[i].deleted ||
+					$42.wordProfile < ($42.wordProfile | words[i].profile) ) {
 					words.splice(i,1);
 				}
 			}
@@ -455,8 +456,7 @@ var _42_MODULE = function(_42Layer) {
 		var words = $42.words[prefix];
 		for( var i=0 ; i<words.length ; i++ ) {
 			if( words[i].word === word ) {
-				words.splice(i,1);
-				if( !words.length ) delete $42.words[word.substr(0,3)];
+				words[i].deleted = true;
 				return true;
 			}
 		}
@@ -1304,20 +1304,11 @@ var _42_MODULE = function(_42Layer) {
 		getNextProfileLetters();
 		
 		// remove all words that are already in the treasure
-		for( var i=0 ; i<wt.length ; i++) {
-			var prefix = wt[i].word.substr(0,3);
-				words = $42.words[prefix];
-			for( var j=words? words.length-1 : 0 ; words && j>=0 ; j-- ) {
-				if( words[j].word === wt[i].word ) {
-					words.splice(j,1);
-					if( words.length === 0 ) {
-						delete $42.words[prefix];
-					}
-					break;
-				}				
-			}
+		for( var prefix in $42.words ) {
+			var words = $42.words[prefix];
+			for( var j=0 ; j<words.length ; j++ ) $42.words[prefix][j].deleted = false;
 		}
-		
+				
 		// draw two plus buttons
         var item = cc.MenuItemImage.create(cc.spriteFrameCache.getSpriteFrame("plus1"), cc.spriteFrameCache.getSpriteFrame("plus1highlit"), function() {
             	ml.add1and3s.push("1");        		
@@ -1360,6 +1351,7 @@ var _42_MODULE = function(_42Layer) {
 		};
 		
 		var releaseSprite = function(sprite) {
+			if( !sprite ) debugger;
 			sprite.release();
 			delete tmpRetain[sprite.__instanceId];
 		};
@@ -1682,22 +1674,18 @@ var _42_MODULE = function(_42Layer) {
 
 $42.loadLanguagePack = function( pack ) {
 	
-	cc.log("42words, loadLanguagePack: STARTING LOADING ...");
 	var filename = i18n_language_packs[pack];
 	cc.loader.loadJson("res/i18n/"+filename, function(err, json) {
 		if( !err ) {
-			cc.log("42words, loadLanguagePack: ... LOADED LANGUAGE PACK, GOING ON ...");
 			var lg = $42.languagePack = json;
 			$42.t = lg.apptext;
 			
 			cc.loader.loadJson("res/words/"+lg.wordlist+".words.json", function(err, json) {
 				if( !err ) {
-					cc.log("42words, loadLanguagePack: ... LOADED WORDS, GOING ON ...");
 					$42.words = json;
 
 					cc.loader.loadJson("res/words/"+lg.wordlist+".letters.json", function(err, json) {
 						if( !err ) {
-							cc.log("42words, loadLanguagePack: ... LOADED LETTERS!");
 							var lv = $42.letterValues = json,
 								l = $42.LETTERS;
 							// get the most common
@@ -1709,10 +1697,8 @@ $42.loadLanguagePack = function( pack ) {
 							$42.letterOccurences = [];
 							$42.letterOrder = [];
 							for( var i=0 ; i<l.length ; i++ ) {
-								cc.log("42words, loadLanguagePack: letter: "+l[i]+" ...");
 								var occ = lv[l[i]] && parseInt(1/lv[l[i]].value*max),
 									order = lv[l[i]] && lv[l[i]].order;
-								cc.log("42words, loadLanguagePack: ... order: "+order);
 								$42.letterOccurences[i] = occ || 0; 
 								if( order !== undefined ) $42.letterOrder[order] = l[i];
 							}
@@ -1723,7 +1709,6 @@ $42.loadLanguagePack = function( pack ) {
 					
 					cc.loader.loadJson("res/words/"+lg.wordlist+".prefixes.json", function(err, json) {
 						if( !err ) {
-							cc.log("42words, loadLanguagePack: ... LOADED PREFIX VALUES!");
 							$42.prefixValues = json;
 						} else {
 							throw err;
