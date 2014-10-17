@@ -2,7 +2,6 @@
  * 
  * NEXT STEPS:
  * 
- * Zweifacher/dreifacher Wortwert, zweifacher,zweifacher,dreifacher,fünffacher,zehnfacher Buchstabenwert
  * Tutorial, Tiles order
  * 
  * 
@@ -12,7 +11,6 @@
  * + GAMEPLAY
  * 
  * + WORTSCHATZ
- * - show wortschatz
  * 
  * + INTERNATIONALIZATION
  * 
@@ -26,8 +24,8 @@
  */
 
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
-$42.LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao","1","3"];
-$42.LETTERS =      ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","Å" ,"1","3"];
+$42.LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao"];
+$42.LETTERS =      ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","Å"];
 $42.MARKER_SET = 1;
 $42.MARKER_OPT = 2;
 $42.MARKER_SEL = 3;
@@ -41,8 +39,6 @@ $42.NEEDED_LETTERS_PROBABILITY = 0.15; // additional probability that a needed
 $42.MAX_WORDS_BLOWN = 3;
 $42.WORD_FRAME_WIDTH = 4;
 $42.WORD_FRAME_MOVE_TIME = 0.8;
-$42.SCORE_ROW_MULTIPLYER = 0.25;
-$42.SCORE_WORD_MULTIPLYER = 7;
 $42.SCORE_COLOR_DIMM = cc.color(160,120,55);
 $42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);
 $42.SCORE_COLOR_WHITE = cc.color(255,255,255);
@@ -338,7 +334,7 @@ var _42_MODULE = function(_42Layer) {
 							$42.wordTreasureBestWord = w;
 							moveRollingLayer(1,$42.SCOREBAR_ROLLING_LAYER_DELAY);
 							var highlight = "bestWord";
-							if( wtl >= 7 ) setNextProfileLetter();
+							if( wtl >= 1 ) setNextProfileLetter();
 						} 
 						if( $42.wordTreasure.length >= 42 ) youWonTheGame();
 
@@ -1141,8 +1137,9 @@ var _42_MODULE = function(_42Layer) {
 			cc.log("42words, setNextProfileLetter: New letter: "+$42.letterOrder[pl.order]);
 			if( !$42.newWordProfileLetter ) $42.newWordProfileLetter = 0; 
 			$42.newWordProfileLetter++;
-			
 			getNextProfileLetters();
+
+			ml.lettersForNextTile.push(pl.letter);
 		}
 	};
 	
@@ -1276,6 +1273,7 @@ var _42_MODULE = function(_42Layer) {
 
 		ml.levelsToBlow = [];
 		ml.add1and3s = [];
+		ml.lettersForNextTile = [];
 		ml.totalPoints = 0;
 		ml.rollingLayerStage = 0;
 		ml.nextMultiplier = 0;
@@ -1417,23 +1415,14 @@ var _42_MODULE = function(_42Layer) {
 		tileSprite.setPosition(p);
 		ml.addChild(tileSprite,2);
 
-		// is to be replaced for cypherpunk mode
-// if( nextTile === null && tileBoxes.length === 3 ) {
-// cc.assert($42.maxWordValue >= 4 && $42.maxWordValue <= 42 &&
-// $42.prefixValues[$42.maxWordValue], "42 Words, _42Layer.hookSetTileImages:
-// Wrong $42.maxWordValue or no prefixes.")
-// var prefs = $42.prefixValues[$42.maxWordValue];
-// nextTile = {
-// "tile": 8,
-// "letters": prefs[Math.floor(Math.random()*prefs.length)]
-// }
-// }
-		
         // add single boxes with letters to the tile
         for( var i=0 ; i<tileBoxes.length ; i++) {
         	
-        	var sw = ml.selectedWord;
-        	if( nextTile !== null ) {
+        	var sw = ml.selectedWord,
+        		lnt = ml.lettersForNextTile;
+        	if( lnt && lnt.length > 0 ) {
+        		var val = $42.LETTERS.indexOf(lnt.splice(0,1)[0]);
+        	} else if( nextTile !== null ) {
         		var val = $42.LETTERS.indexOf(nextTile.letters[i]);
         	} else {
 	         	var len = sw && sw.missingLetters && sw.missingLetters.length || 0,
@@ -1443,7 +1432,7 @@ var _42_MODULE = function(_42Layer) {
 	         					Math.floor(this.getRandomValue($42.letterOccurences)):
 	        					$42.LETTERS.indexOf(sw.missingLetters[Math.floor(Math.random()*sw.missingLetters.length)]);        			
 	         					
-	         		// no double letters
+	         		// no triple letters
 	        	    for( k=0,double=0 ; k<i ; k++ ) 
 	        	    	if( userData[k] === $42.LETTERS[val] ) double++;
 	        	    if( double > 1 ) continue;
