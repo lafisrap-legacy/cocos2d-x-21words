@@ -1275,7 +1275,7 @@ var _42TitleLayer = cc.Layer.extend({
         $42.maxPoints = ls.getItem("maxPoints") || 0;
         $42.bestTime = ls.getItem("bestTime") || null;
         var item2 = addMenu($42.maxPoints? $42.TITLE_SCORE+": "+$42.maxPoints : " ", 36 , function() {
-        	// can be filled
+        	cc.director.runScene(new _42Scene());
         });
         var item3 = addMenu($42.wordTreasureWords? $42.TITLE_TREASURE+": "+$42.wordTreasureWords : " ", 36 , function() {
         	// can be filled

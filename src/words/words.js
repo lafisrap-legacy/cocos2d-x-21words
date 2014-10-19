@@ -36,7 +36,7 @@ $42.MARKER_Y_OFFSET = -25;
 $42.UNSELECTED_BOX_OPACITY = 100;
 $42.NEEDED_LETTERS_PROBABILITY = 0.15; // additional probability that a needed
 										// letter will be selected
-$42.MAX_WORDS_BLOWN = 3;
+$42.MAX_WORDS_BLOWN = 2;
 $42.WORD_FRAME_WIDTH = 4;
 $42.WORD_FRAME_MOVE_TIME = 0.8;
 $42.SCORE_COLOR_DIMM = cc.color(160,120,55);
@@ -334,7 +334,7 @@ var _42_MODULE = function(_42Layer) {
 							$42.wordTreasureBestWord = w;
 							moveRollingLayer(1,$42.SCOREBAR_ROLLING_LAYER_DELAY);
 							var highlight = "bestWord";
-							if( wtl >= 1 ) setNextProfileLetter();
+							if( wtl >= 7 ) setNextProfileLetter();
 						} 
 						if( $42.wordTreasure.length >= 42 ) youWonTheGame();
 
@@ -1040,7 +1040,13 @@ var _42_MODULE = function(_42Layer) {
 			
 			// draw most valuable word
 			ml.bestWordValue = drawText($42.t.scorebar_mvw,cc.p(300,111),24,$42.SCORE_COLOR_BRIGHT,rl,true);
-			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);							
+			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);	
+			
+			// draw remaining time
+			ml.score_time_left = drawText("no time",cc.p(553,135) , 72 , $42.SCORE_COLOR_BRIGHT , ml , true);
+			ml.score_time_left.setColor(cc.color(0,0,0));
+			ml.score_time_left.setOpacity(40);
+
 		} else {
 			ml.score_words_label.setString($42.t.scorebar_words[wt.length===1?0:1]);
 			ml.score_words.setString(wt.length);
@@ -1487,6 +1493,9 @@ var _42_MODULE = function(_42Layer) {
 
 		var ls = cc.sys.localStorage;
 		
+		if( ml.boxes[0][8] ) ml.score_time_left.runAction(cc.fadeTo(1,80)); 
+		else ml.score_time_left.runAction(cc.fadeTo(1,40)); 
+		
 		updateMultipliers();
 	}
 
@@ -1594,7 +1603,12 @@ var _42_MODULE = function(_42Layer) {
 	_42Layer.hookUpdate = function(dt) {
 		
 		var minutes = ++ml.timeCounter / 3600,
-			warning = $42.t.timeout_warning[ml.nextTimeoutWarning];
+			warning = $42.t.timeout_warning[ml.nextTimeoutWarning],
+			m = $42.MAX_PLAYING_TIME - (ml.timeCounter/3600>>>0),
+			s = 60 - (ml.timeCounter/60>>>0)%60;
+		
+		// display time
+		ml.score_time_left.setString(m? m.toString(): s.toString());
 		
 		if( warning && minutes > $42.MAX_PLAYING_TIME - warning.time ) {
 			blowLevelAndWordValue({info:[warning.text]});

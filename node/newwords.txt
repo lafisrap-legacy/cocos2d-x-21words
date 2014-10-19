@@ -1,0 +1,838 @@
+2064 
+Die Geschichte 
+der Cypherpunks
+
+SZENE 1: Das Spiele-Labor
+[Im Jahr 2064. Sonnendurchflutetes, hügeliges Gelände einer Schule. Viele einzelne in Charakter, Farben und Formen völlig unterschiedliche Häuser aus Holz, Stein und Lehm. Umgeben von Bäumen, Tieren, einem Bach.]
+
+Lasse schlenderte fröhlich auf das Spiele-Labor zu, das in der Mitte des Schulgeländes stand, wo der Bach sich zweigte und auf beiden Seiten um das Haus herum floss. Es gab keine Brücke. Um hereinzukommen, musste man über den Bach springen und Lasse suchte sich dafür eine Stelle aus, wo er es gerade so schaffte. Vor dem Haus drückte er seinen Türöffner in der Hosentasche und die Tür sprang mit einem leisen Klick auf. Es war neun Uhr, eine halbe Stunde vor Beginn des dritten Spieltags. Er liebte die TRON-Wochen, ein riesiges Computerspielturnier, bei dem Tausende von Spielern aus vielen Ländern in einer künstlich geschaffenen Computerwelt mit- und gegeneinander um die Weltherrschaft spielten. Und die Welt war nicht frei erfunden, sie war ein ziemlich originalgetreuer Nachbau des Internets des Jahres 2017, eine grandiose Simulation mit unendlich vielen realistischen Details aus dieser Zeit.
+Ein Ziel war es, Missionen zu erfüllen, die einem zugeteilt wurden: Computer  zu erobern, sie unter Kontrolle zu bekommen und zu verteidigen, zum Beispiel in Banken, in Firmen oder auch bei irgendjemanden zu Hause, der etwas Interessantes machte. Man konnte auch Satelliten, Schiffe oder Flugzeuge übernehmen, Agenten und Hacker enttarnen. Eine sehr beliebte aber auch schwierige Mission war es, Julian Assange zu jagen. Am meisten Punkte gab es, wenn man an geheime Dokumente kam, vor allem wenn sie von Geheimdiensten, Regierungen oder großen Unternehmen kamen.
+Lasse hatte unbedingt Julian Assange spielen wollen, aber das wollten wohl zu viele andere auch und so war er ein weniger bekannter Hacker geworden, mit der Mission Satelliten oder fliegende Kampfroboter in einem Kriegsgebiet zu übernehmen. Man musste dafür einiges über Computersysteme wissen, aber auch die politische Lage von damals kennen und wie die Menschen dachten und fühlten. Damals herrschte Krieg im Internet und auch sonst in der Welt. Auch in Regierungen und in Unternehmen, und oft auch in Schulen und Familien. Es war eine völlig andere Welt.
+Lasse: „Hej, Moin!“ , er haute im Vorbeigehen mit der Hand auf Sigurs Schulter, der gebannt vor seinem Computer saß und ab und zu etwas tippte. Dann ließ er sich in seinen Stuhl fallen.
+Sigur war sein Flügelmann beim Spiel, sein Partner in der aktuellen Mission. Er war auch sein Freund, wenn auch nicht der beste. Er machte zu oft sein eigenes Ding, meinte Lasse, hatte zu genaue Vorstellungen, wie die Dinge zu sein hatten. Das hatte er ihm auch schon gesagt. Aber als Flügelmann war Sigur eine tolle Sache, weil er mit seinen 14 Jahren wirklich viel konnte. Er hatte im Spiel schon jede Menge Computer in Banken und Ölfirmen übernommen, einmal ein ganzes Passagierflugzeug, das aber dann abgestürzt war. Sogar in Militärcomputern war er schon unterwegs gewesen. 
+Lasse: „Was geht, Sig?“ 
+Sigur reagierte nicht und tippte weiter. Lasse lugte zu ihn herüber: 
+„Ah! Du bist an der Firewall. Was ist das Problem?“
+Nach einiger Zeit sagte Sigur ohne vom Bildschirm wegzuschauen: 
+„Ich weiß nicht. Nur so ein Gefühl. Irgendetwas stimmt nicht.“ 
+Die Firewall war das Programm auf jedem Computer, das ungebetene Besucher aus dem Internet abhalten sollte, eine Art von Filter. Jeder Informationsaustausch mit dem Internet geht in beide Richtungen: raus und rein. Und auf dem Weg rein kann alles Mögliche mit hineinkommen, was Hacker oder Programmierer zu den normalen Daten hinzugefügt haben, was sich dann im Computer festsetzen und für Verwirrung sorgen kann, oder Schlimmeres. So etwas soll die Firewall herausfinden und unschädlich machen. Und wenn sich etwas festgesetzt hat, auch dafür sorgen, dass es keine Daten wieder rausschicken konnte.
+Sigur drehte sich zu Lasse um: „Es waren ein paar Angriffe von einem Yllil-Computer, aber eigentlich nichts besonders. Er hat versucht, irgendwo hineinzukommen, aber die Firewall hat alles geblockt. Trotzdem komisch ...“
+Lasse: „Yllil? Das klingt Arabisch. – Bei uns stehen heute aber die Chinesen auf dem Plan!“ Lasse grinste. „Ich habe super Logdateien von einem Angriff auf einen chinesischen Satelliten gefunden, der fast geklappt hätte. Da finden wir bestimmt was drin. Logdateien waren Computerdateien, wo man alles nachlesen konnte, was auf einem Computer passiert war, warum etwas schief gegangen war, wie etwas klappt hatte und so weiter. 
+Lasse: „Noch einen Kakao vorher? Heute holen wir das Ding runter!“
+Sigur: „Nicht runter! Übernehmen, Daten kopieren, beobachten, unerkannt bleiben, so lange wie möglich. Das ist unsere Mission.“
+Lasse: „Ja, ist gut … Ich weiß. Die Mission. Aber schade. Ich würde so gerne wissen, was TRON macht, wenn wir den Satelliten tatsächlich abstürzen lassen würden. Mindestens politische Verwicklungen, eine Krise oder so, Vertuschungsversuche, ein Meer von Lügen, Veschwörungstheorien. Und dann jede Menge neue Missionen, uns zu schnappen.“
+Sigur schaute ihn an und hielt den Atem an: „Ruhig, ruhig! Wir wollen das Spiel gewinnen, nicht in fünf Minuten rausfliegen.“
+
+
+SZENE 2: Marianne 
+[Im Jahr 2019. Großer Rathausplatz mit Springbrunnen. Menschen. Verkehrs- und Stadtlärm.]
+
+Vor einer halben Stunde war Marianne wieder einmal aus dem Deutsch-Unterricht geflogen. Diesmal hatte sie sich ein Brot geschmiert, und auf die Frage des Lehrers, warum sie das nicht zu Hause machen würde, spitz geantwortet, dass das das Interessanteste wäre, was sie gerade tun könnte. „Spannender als Faust?“, hatte er mit einem Schuss Falschheit gewitzelt und sie war geplatzt: „Ich sitze hier seit fast zwei Stunden rum und muss mir anhören, was Leute in den letzten 200 Jahren über Faust und Mephisto gefurzt haben. Was soll ich damit? Hat das mit irgendetwas im Leben zu tun? Hat das mit irgendwas etwas zu tun?“ Wahrscheinlich war ihm das „gefurzt“ zu viel gewesen und so musste sie raus. Immerhin hatte er selbst ein Buch über Faust geschrieben und konnte es durchaus persönlich nehmen.
+Jetzt saß sie oben auf der großen Treppe rechts neben dem Eingang des Rathauses Neu-Kölln in einer schattige Ecke. Es war ein heißer Tag, um die 28 Grad, und sie trug jetzt ein kurzes, luftiges Kleid, das sie sich auf einem Sprung nach Hause angezogen hatte. Darin fühlte sich wie irgendein anderes Mädchen in ihrem Alter. Sie mochte solche Kleider eigentlich nicht, aber jetzt erfüllte es seinen Zweck: Sie wollte nicht auffallen. Sie zog einen neuen Laptop aus ihrem Stoffbeutel. Das heißt, ganz so neu war er gar nicht mehr. Aber er war unbenutzt und vor allem: noch ohne die Überwachungschips, die die Computerfirmen seit einiger Zeit in die Computer einbauten und mit denen Geheimdienste jeden Computer über das Internet fernsteuern konnten. Ein Freund von ihr hatte zehn der Computer in seiner Firma entdeckt. Niemand dort schien davon zu wissen, sie waren in der Lagerliste nicht aufgeführt, und so hatte er sie einfach mitgenommen. Was für ein Geschenk in Zeiten, wo die Seriennummer jedes Computers von der Produktion bis zur Müllhalde verfolgt und zusammen mit den E-Mail-Adressen, Telefonnummern, Aufenthaltsorten und Fotos der jeweiligen Besitzer abgespeichert wurde.
+Sie steckte einen Speicherstick mit der Aufschrift „Tails 2.3“ in einen Slot am Computer und drückte den Anschaltknopf. Tails war ein Programm, oder besser gesagt ein Betriebssystem, das dafür sorgte, dass niemand herausfinden konnte, wer den Computer, auf dem es lief, gerade nutzte. Und auch wer ihn benutzt hatte. Im Internet wusste niemand, wer man war und wenn man den Stick wieder abzog, dann blieben keine Spuren von dem, was man gemacht hatte. Manche Menschen vertrauten sogar mit ihren Leben darauf, dass das funktionierte. Und mit Tails konnte man alles machen, was man anonym machen wollte: E-Mails schicken, chatten, im Internet surfen oder auch einfach nur Texte schreiben.
+Marianne interessierte das alles jetzt nicht. Sie hatte etwas anderes vor. Und deswegen zitterten ihre Knie leicht. Auf dem Heimweg von der Schule hatte sie sich dazu entschlossen, nicht noch einmal einen Tag zu warten. Sie öffnete mit einem Doppelklick die Konsole von Tails. Die Konsole war ein Programm, in das man einfach nur Befehle eintippen konnte und vom Computer Antworten als Text auf dem Bildschirm zurück bekam. Mehr nicht. Aber das hatte es in sich. Alle Hacker, die sie kannte, arbeiteten fast ausschließlich mit diesem Programm. Es gab Befehle für alles, was man machen wollte. Man konnte damit zum Beispiel in Computer auf der anderen Seite der Erde eindringen, dort Dateien aufstöbern, wiederum auf andere Computer kopieren, seine Spuren verwischen, von dort zum nächsten Computer springen und so weiter. Mit der Konsole ging alles viel schneller und genauer als mit den anderen Programmen. Und das war jetzt wichtig: schnell sein. Genau sein. 
+
+SZENE 3: TRON-Attacke
+[2064: Im Spiele-Labor, großer, runder Raum, mit Pflanzen, vielen gemalten Fantasy-Bildern an der Wand und einem Podest mit Getränken und alle Arten von Früchten und Nüssen. Vier große Computer-Bildschirmscheiben in der Mitte des Raumes, die über einem Tisch zu schweben scheinen. Vor jeweils zwei Bildschirmen liegt eine Tastatur.]
+
+„9:30 Uhr! Es geht los.“ rief Lasse. Beide saßen gespannt vor ihren Monitoren und schauten auf die Aktivitätsanzeige. Sigur nickte entschlossen mit dem Kopf. 
+Lasse: „Ok. Alles ruhig. Dann wollen wir mal loslegen ...“ 
+Er stieß einen Schrei aus. 
+Lasse: „SHIT! Sig, mach die Firewall zu, wir bekommen gerade einen massiven Angriff, quantum parallel.“
+Sigur hackte mit seiner rechten Hand schnell vier, fünfmal auf seine Tastatur und fixierte dabei mit seinen Augen den Bildschirm. 
+Sigur: „Done! Ist zu! Wer war das?“ 
+Lasse zuckt mit den Schultern. „Keine Ahnung.“
+Sigur: „WAAAASSSSS???!!!“
+Lasse: „Was??“
+Sigur: „Shit! … Shit!“
+Lasse: „Sag schon.“ 
+Lasse stürmte zum Rechner von Sigur: 
+Lasse: „Was ist los?“
+Sigur: „Die Firewall ist wieder auf! Einfach so … Und ich bin … draußen, weg, kann nichts tun. Nicht mal tippen. Nichts.“
+Lasse: „Shit.“
+Sigur: „Fuck.“
+Lasse: „Zieh den Stecker!“
+Sigur: „Das dürfen wir nicht. Gegen die Regeln.“
+Lasse: „Scheiß drauf. … Ok. Gut, gut. Dann eben nicht.“ 
+Sigur schmiss die Tastatur weg, stand auf und haute ein paar Mal mit der Faust gegen die Wand.
+„Was war das?“, fragte Lasse.
+„WER war das?“, fragte Sigur immer noch mit dem Gesicht zur Wand.
+Klack! Sie drehten sich beide gleichzeitig zur Tür, wo Lilly mit einem breiten Grinsen hineinlugte: „Hi, hi! Zu langsam, Jungs...“
+„Oh nein! Nicht. Bitte nicht … Nicht schon wieder ...“ 
+Lilly war Lasses kleine Schwester und vor zwei Monaten 12 Jahre alt geworden. Sie spielte TRON erst seit einem halben Jahr, aber hatte wirklich Talent dafür. Sie hatte beim ersten Spiel schon die Dokumente gefunden, die Edward Snowden vom größten amerikanischen Geheimdienst, NSA, mitgenommen hatte und die damals weltweit für Aufsehen gesorgt hatten. TRON hatte daraufhin sofort einige Missionen hinzufügt, um Lilly zu fangen und viele Spieler nahmen diese Missionen an. Aber sie hatte es geschafft, zu überleben und die Dokumente bis zum Spielende zu behalten.
+
+
+
+SZENE 4: Schwachstellen in Computern
+[2064: Kleine Hausküche des Spiele-Labors, alles in Holz und Marmor gehalten. Töpfe mit allen Arten von Kräutern.]
+
+Die beiden Jungs saßen am Küchentisch und hielten sich beide an einer große Tasse mit dickem Kakao fest. Lilly saß im Schneidersitz auf dem Tisch.
+„Das hast du vorbereitet.“, schnautze Lasse sie an. “Das ging zu schnell. Das war ein Programm, oder?“
+Lilly: „Klar! Da habe ich den ganzen Abend gestern dran geschrieben. Heute morgen habe nur einen Befehl eingegeben und butz ...“
+Sigur: „Aber wie ging das? Ich hatte alles dicht. Ich bin gestern und heute morgen noch einmal alles durchgegangen. Wo bist du durchgekommen.“
+Lilly: „Eine noch unbekannte Schwachstelle in eurer Firewall. Die hat ein großer amerikanischer Geheimdienst einbauen lassen und dafür viel Geld bezahlt. Sie funktioniert super. Ihr könnt euch das ja nach dem Spiel im Spiellog anschauen, da steht alles drin. Erst einmal gehe ich damit noch ein wenig auf Raubzug. Über diese Hintertüre kann man in viele Computer hereinkommen.“ 
+Sie grinste breit. Schwachstellen oder Hintertüren gab es in allen Computern und Programmen. Man konnte sie schließen, wenn man wusste wie. Wenn man sie erst einmal kannte. Über Schwachstellen konnte man Computer dazu bringen, alle möglichen Dinge zu tun, die die Programmierer und Computerverwalter nicht erlaubt hatten. Manchmal ganz verrückte Dinge, manchmal konnte man einen Computer aus der Ferne komplett übernehmen, als wäre es der eigene, und dann alles mit ihm machen, was man wollte. 
+„Das ist doch unfair!“, murrte Sigur. „Du kennst eine Hintertüre und sagst sie niemandem. Geheime Hintertüren sollte es im Spiel nicht geben, das ist doof. Wie soll man sich dagegen schützen? Ich habe mir echt viel Arbeit gemacht, es war kein Lücke mehr da.“ 
+Lasse: „Ich glaube, es ist gar nicht erlaubt, Schwachstellen für sich zu behalten. Das ist gegen die Spielregeln. Schwachstellen gehören der Allgemeinheit wie Wasser und Luft. Man muss sie sofort bekannt machen. Das ist ein Menschenrecht … habe ich in meinem Computerverwalterkurs gelernt“. Man kann sogar sein Arbeitsrecht verlieren, wenn man eine Schwachstelle nicht bekannt macht.
+Lilly: „Damals war es erlaubt, das geheim zu halten! Glaube ich zumindest. Mindestens waren es Gang und Gäbe. Ich habe eine E-Mail gelesen, wo jemand eine noch unbekannte Schwachstelle einem anderen zum Verkauf angeboten hat. Für wahnsinnig viel Geld. Und der andere hat gekauft.“
+„Blödsinn!“ Sigur schüttelte den Kopf. „Schwachstellen verkaufen?! Vielleicht wenn du die Mafia spielst, aber sonst nicht. Das wäre ja total korrupt. Super schlecht. Das ist so schlecht wie Leute krank machen und dann an der Medizin verdienen.“
+Lilly zog die Augenbrauen hoch. „Pfff. Hej, wacht auf. Die Welt damals war anders. Das haben alle gemacht damals. Regierungen, Unternehmen, Geheimdienste. Die haben ganze Schwachstellen-Arsenale aufgebaut, genauso wie Waffen-Arsenale. Sie haben sie gehortet. Massen.“
+Beide Jungs prusteten los. „Lilly, das ist jetzt wirklich Quatsch“, meinte Lasse ruhig, „wer hat dir das erzählt?“
+Lilly machte ein ernstes Gesicht: „Nee. Echt! Berge … Ich sag euch. Ich habe ...“ Sie stockte.
+Lasse: „Lilly, bleib auf dem Teppich.“
+„Du hast ...?“, fragte Sigur. „Was hast du?“ Er rutschte zu ihr herüber.
+Lilly schaute zu Boden.
+„Du hast noch mehr Schwachstellen gefunden?“, fragte sie Lasse.
+Lilly schaute hoch: „Pfffff. Jede Menge. Unglaubliche Sachen. Ihr könnt euch nicht vorstellen, was alles geht“, sie grinste. “Ich habe eine Datenbank bei der NSA gefunden: 'Zero Day Exploits', das sind alles Schwachstellen, die noch niemand kennt. Marie ist dort Agentin, sie hat mir dabei geholfen, da dran zu kommen. Sie selbst darf ja in der Datenbank alles nachschauen, aber sie darf nichts damit tun, was nicht zu ihrem Auftrag passt, und alles, was sie tut und sagt, wird aufgezeichnet, alles, jeder Tastendruck, jedes Gespräch, jeder Gesichtsausdruck. Sie nehmen echt alles auf! Bescheuert. Echt Scheiße, dort zu arbeiten. Aber konnte die Datenbank dort heraus bekommen! War nicht ganz einfach ... Und jetzt kann ich … Uuuuuhhhh“, sie schüttelte den Kopf, “… so viel machen … Hi. Hi. ... Ich weiß, dass das unfair ist, aber es ist ein Spiel. Da muss man auch verlieren können.“
+Sigur murrte: „Du arbeitest mit der NSA zusammen? Das sind Gegner. Das ist gemogelt. Und Marie gibt dir die Informationen, weil ihr auch normal befreundet seid“.
+„Überhaupt nicht. Ich habe zwei Hacker-Computer für sie geknackt, die sie für ihre Mission gebraucht hat. Sie hat die Mission dadurch fast fertig. Die beiden Hackermädels müssen nur noch ins Gefängnis, und mehr als 10 Jahre bekommen. Dann hat sie es geschafft. Das war der Deal. Das ist Frauenpower! Und nicht gemogelt! Man kann noch jede Menge andere Dinge machen, viel Psychozeugs: Du kannst erpressen, anwerben, bestechen, einschüchern, lügen. Ihr wisst schon, was das für eine Welt damals war? Ich meine, wie wollt ihr einen fliegenden Kampfroboter kriegen, ohne jemand bei der CIA zu haben, der tut, was ihr wollt? Kein Wunder, dass ihr noch keinen habt. Marie hat schon einen.“
+Lasse und Sigur schauten sich an. Sigur fasste sich an den Bauch: „Mir wird schlecht.“ Lasse kniff seine Lippen zusammen und schaute zu Lilly rüber: „Wie kriegt man jemand bei der CIA? Aus dem Kampfroboter-Verband?“, fragte Lasse. 
+„Ich weiß nicht wie Marie das gemacht hat. Aber du musst halt rauskriegen wie sie dort ticken. Ich meine, sie hat ja Zugriff auf alle Kommunikationsdaten: Sie schaut, was er so für E-Mails schreibt und bekommt, mit wem er telefoniert, wen er trifft, was er kauft, ob er Feinde hat, ein Verhältnis, von dem seine Frau nichts wissen darf, Schulden, und dann schaut sie, ob sie etwas findest, mit dem sie ihn erpressen kann. Sie hat anscheinend etwas gefunden. Oder vielleicht ist jemand auch einfach richtig unzufrieden in seinem Job. Dann kannst du ihn möglicherweise anwerben. Marie ist zum Beispiel unzufrieden, sie hat gerade einen Auftrag bekommen, den sie überhaupt nicht machen will. Aber sie muss. Und sie kann nicht einmal weggehen von dort. Du kannst es ja mal bei ihr versuchen... Du darfst dich dort aber wirklich nicht erwischen lassen. Da ist die Hölle los, wenn du auffliegst. Dann ist sofort der halbe Geheimdienst hinter dir her. Und zack hast du eine Rakete im Zimmer und siehst deine Ehrenmedaille auf den Bildschirm. Wie Lars letztes Mal.“
+Sigur: „Lars hat gemogelt. Deswegen ist er rausgeflogen. Erpressung und so gehört nicht zum Spiel. TRON nimmt einen aus dem Spiel, wenn man so etwas macht.“
+Lilly: „Tut es nicht. Marie kann jederzeit auf ihren Kampfroboter zugreifen und schauen, was der gerade macht. Und das geht nicht ohne Erpressung. Das gehört klar zum Spiel dazu. Das ist 'social engineering', soziale Technik.“
+Sigur schwieg.
+Lilly: Wenn du das nicht willst, kannst du ja Cypherpunks-Missionen spielen. Da geht es nicht darum, möglichst viele Computer zu übernehmen oder Hacker zu fangen, sondern darum, dass Dinge ans Licht kommen, dass es einen Ausgleich für Ungerechtigkeiten gibt und dass immer mehr Menschen der Unterdrückung entkommen können. Da musst du eher so denken, wie wir heute denken. Dann kannst du vielleicht herausfinden, wie die Cypherpunks den Krieg gewonnen haben. Ich habe mal überlegt, dass das auch spannend wäre. Wir wissen ja, dass sie gewonnen haben, also ist das in TRON auch so. Vielleicht ist das sogar der eigentliche Sinn des ganzen Spiels. Dass wir lernen können wie der Befreiungskampf war.“
+Lasse und Sigur schauten sich an. Lilly wollte ihnen gerade erzählen, was der eigentliche Sinn von TRON ist, dem Spiel, mit dem sie Hunderte Stunden verbracht hatten, alles angeschaut, ausprobiert, gelernt hatten, was ihnen über den Weg gelaufen war.
+Lasse: „Hej, Lilly. Ich spiele TRON jetzt seit drei Jahren und es geht am Ende darum, die Welt zu erobern, die Politik zu bestimmen, den Lauf der Geschichte zu ändern, aber nicht um die Befreiung des Internets. Ich wollte Julian Assange nicht spielen, um das Überwachungssystem von damals zu brechen, Geheimdienste abzuschaffen, Regierungen transparent zu machen, sondern weil er eine coole Umgebung hat, mit coolen Leuten und die halbe Welt hinter ihm her ist.“
+Lilly: „Und, hast du die Rolle bekommen?“
+Lasse: „Nein. Das weiß du.“
+Lilly: „Du kannst sie nicht bekommen, wenn du den Fragebogen am Anfang nicht so ausfüllst, dass es dir hauptsächlich um die Zukunft des Internets geht. Julian ist ein Cypherpunk. Wenn du nur Abenteuer willst, dann bekommst du ihn nicht.“
+Sigur fauchte dazwischen: „Woher weißt du das alles?“
+Lilly: „Ich habe Marianne Lasser gelesen: Die Geschichte der Cypherpunks, bevor ich überhaupt angefangen habe, TRON zu spielen. Sie schreibt über 2017 und danach, bis zum Kriegsende. Wie es damals war, wie sie Hacken gelernt hat und dann Cypherpunk geworden ist. Und sie schreibt, um was es wirklich ging, wie die Leute bei den Geheimdiensten dachten und bei den Unternehmen und wie die Hacker waren, weiße und graue und schwarze. Und dann habe ich gedacht, das probiere ich in TRON aus, was sie da schreibt. Und das stimmte alles im Spiel. Ganz genau. Edward Snowden. Das war genau so, wie Marianne Lasser darüber geschrieben hat. Und so habe ich zusammen mit Marie auch einen Speicherstick mit den Schwachstellen aus dem Hauptquartier der NSA herausschmuggeln können. Mit allen Schwachstellen darauf, die sie hatten.“
+Sigur: „Mit allen? – Wie viele sind das?“
+Lilly: „Ich weiß nicht. Es ist ein heilloses Durcheinander. Ich kann mir nicht vorstellen, dass sie damals eine Übersicht darüber hatten. Da haben viele Schnarchnasen und Langweiler gearbeitet, wie in allen großen Regierungsbehörden. Es sind bestimmt Tausende, vielleicht Zehntausende, und für alle Computer, die du dir nur denken kannst, auch für Satelliten. Und eine einzelne davon ist eben die Hintertür, über die ich gerade eben bei euch hineinspaziert bin.“
+Lasse: „Du kannst uns unsere Computer auch wiedergeben ...“
+Lilly: „Nee. Erstens hat die schon Marie und zweitens wäre das gemogelt. Für euch ist jetzt erst einmal Flucht dran.“
+
+SZENE 5: Einbruch in Amerika
+[2019: Am Rathausplatz.]
+
+Marianne zog einen vollgekritzelten Zettel aus ihrer Tasche. Auf ihm stand alles, was sie jetzt brauchte. Das letzte Mosaiksteinchen links unten war gestern erst dazugekommen. Zwei Worte. „karlibender“ und „LV7jolgS7brT5M“, Name und Passwort, und sie wusste, wo die passten. Der Weg dorthin war eine kleine Weltreise, aber würde nicht lange dauern. Sie startete die Reise, indem sie sich an einem Berliner Unirechner anmeldete, mit einem Konto, das schon lange niemand mehr nutzte. Von dort ging es weiter nach New York, ein Abstecher nach Brasilien und dann nach New Jersey an die Princeton Universität. Dort arbeitete Karl Bender und andere Wissenschaftler in einem Projekt zusammen mit amerikanischen Geheimdiensten. Es war ein Satellitenprogramm, natürlich streng geheim. Sogar der Projektname war geheim. Aber Marianne wusste davon.
+Karl Bender hatte ein Freundin, Corinne, und die war schon jahrelang Mariannes beste anonyme Freundin. Das heißt, sie hatten sich niemals in Wirklichkeit getroffen und keinen  Kontakt miteinander gehabt, von dem irgendjemand wissen konnte. Sie hatten sich geschützt durch Tails-Tarnkappen im Internet kennengelernt und beide über die Jahre streng darauf geachtet, dass sie sich immer nur unter solchen Tarnkappen begegneten. Sie erzählten sich sich voneinander, auch Persönliches. Danach konnten sie im Internet recherchieren und herausfinden, dass es wirklich stimmte, was die andere sagte. Und so hatten sie mit der Zeit immer mehr Vertrauen zueinander gefasst und angefangen, sich alles über einander zu erzählen. Es war einfach spannend, so etwas zu tun. Inzwischen kannten sie sich sich sehr, sehr gut.
+Corinne hatte ihr davon erzählt, dass bei Karl ein NSA-Mann zu Besuch war, um mit Karl einen Satellitenstart vorzubereiten. Und dabei ging fast alles schief. Um ein Haar hätten sie den Start abbrechen müssen, aber gemeinsam schafften sie es gerade noch, die Software fertig zu kriegen, buchstäblich in letzter Sekunde. Wohl in der Hektik hatte der NSA-Mann den Geheimschlüssel für seinen eigenen Computer bei der NSA auf Karls Rechner hinterlegt. Und dann dort vergessen. Ein Geheimdienst-Schlüssel! Karl hatte das einen Tag später aufgeregt Corinne erzählt. Eigentlich hätte er ihn löschen müssen, aber er hatte es nicht getan. Als Marianne davon erfahren hatte, begann sie sofort zu recherchieren. Ihr Bruder Paul war ein bekannter Cypherpunk. Sie hatte ihm oft über die Schulter geschaut, wenn er nachts im funkgesicherten Keller saß und in der Welt herumreiste, und sie hatte dabei vieles gelernt. Sie hatte daran gedacht, Paul um Hilfe zu bitten. Das würde es einfacher machen, aber sie hatte entschieden: Nein! Anonyme Beziehungen sind anonyme Beziehungen, Punkt. Dieser Schlüssel war für sie, für sie alleine.
+„k a r l i b e n d e r“ tippt sie hinter das Wort „login“ in die Konsole. „Passwort:“ antwortete der Computer. Jetzt wurde es zum ersten Mal spannend: „War das Passwort geändert worden?“
+„L V 7 j o l g S 7 b r T 5 M“ und dann die Enter-Taste.
+„karlibender@trt.princton.edu: ~$“, erschien auf dem Bildschirm.
+„JAH!“, rief sie und schaute sofort über den Rathausplatz. Niemand schien sie bemerkt zu haben. Sie war drin! Keine großartige Meldung. Nur die Befehlseingabe der Konsole, aber diesmal die vom Computer von Karl Bender an der Princeton Univerität. Ihre Finger huschten über die Tastatur. Wie automatisch suchte sie alle Logfiles zusammen, die sie finden konnte, alle Passwort- und alle Schlüsseldateien. Ihr Bruder tat das auch immer als erstes. In Logfiles verzeichet jeder Computer alles was auf ihm Bedeutungsvolles passiert. Sie schaute kurz, ob etwas vom Tag des Satellitenstarts dabei war und es war. Dann beendete sie die Verbindung mit Karls Computer, sie wollte nicht zu lange drin bleiben. Sie klickte auf „Identität wechseln“, um von Tails eine neue Tarnkappe zu bekommen. Und eine Drittelsekunde später war sie im Internet jemand völlig anderes. Nichts erinnerte mehr an die Tarnkappe, mit der sie gerade in Karls Computer war. Es war wie als hätte sie sich eben von einer großen, jungen ghanaischen Frau in einen alten Chinesen verwandelt. Sie atmete durch. Jetzt konnte sie in Ruhe die Dateien durchschauen, die sie erbeutet hatte.
+Den Schlüssel des NSA-Manns hatte sie schnell entdeckt. Er lag ganz offen bei den anderen Schlüsseln. Aber wo passte er? Auf welche Computer außerhalb der Universität hatten Karl und der NSA-Mann an dem Tag zugegriffen? Das war die Frage. Und nach einigem Stöbern hatte sie Spuren zu sieben Computern gefunden, davon waren vier bei anderen Universitäten. Drei waren also übrig. Ihre Adressen waren: 
+23.66.234.12
+23.66.177.120
+23.66.177.121
+Internet-Adressen von Computern bestanden aus mit Punkten getrennten Zahlen, oft aus vier Zahlen. Sie hatten meistens zusätzlich auch Namen, wie www.torproject.org oder www.google.com. Aber diese hier nicht. Und sie konnte auch nicht verfolgen, wohin Daten gingen, die sie an diese Adressen schickte. Auf dem Weg dorthin verschwanden sie in einer dunklen Internetwolke. Marianne hatte keine Ahnung, wo die Computer waren, was das für Computer waren. Sie dachte kurz nach und öffnete dann ein Chat-Programm.  Ihr Bruder war online und sie tippte die drei Adressen ein, mit drei Fragezeichen dahinter. Sonst nichts. Nach ein paar Sekunden war ihr Bruder verschwunden. Ohne zu antworten. 
+„Hmm“, dachte sie. „Wenn man ihn einmal braucht... Dann muss ich eben alleine weiter kommen.“ Sie begann im Internet nach Hinweisen zu suchen.
+„Pling“ klang es einige Minuten später aus dem Laptop. Ihr Bruder war wieder online.
+„BIST DU VERRÜCKT GEWORDEN?“, erschien auf Maries Bildschirm.
+Marie stutzte. Was ist jetzt los?
+Paul: „WECHSLE DEINE TAILS IDENTITÄT!“
+Marie klickte auf „Neue Identität“ und bekam von Tor eine neue Tarnkappe, jetzt war sie vielleicht  eine Näherin in einem Slum in Brasilien.
+Marianne: „Ok.“
+Paul: „DU KANNST NICHT EINFACH SOLCHE ADRESSEN SCHICKEN, OHNE ZU WISSEN AN WELCHEM COMPUTER ICH GERADE SITZE!“
+Woher sollte sie wissen, vor welchem Computer ihr Bruder gerade saß?!? Er war immer in Tails mit Tarnkappe unterwegs, ohne Ausnahme. Sie hatte ihm immer schreiben können, ohne zu überlegen wohin. Marianne verstand nicht.
+Paul: „WO HAST DU DIE ADRESSE HER?“
+Marianne platzte der Kragen: „Kannst du mal aufhören zu schreien???“
+Paul: „NEE. KANN ICH NICHT. WIR MÜSSEN SPRECHEN, SCHNELL, WO BIST DU?“
+Jetzt fühlte sie sich endgültig wie ein kleines Mädchen, bei ihrem Bruder, da wo sie das am Allerwenigsten erwartet hätte.
+Paul: „SAG JETZT!“
+„NIRGNDWO!!!!!!!!!!“, tippe sie in das Chatfenster und schloss es. Dann klappte sie den Laptop zu und schaute über den Platz.
+„'Die Adresse!' Er hat 'die Adresse' gesagt. Es ist nur eine von den dreien.“, dachte sie und schaute auf die Adressen. „Es muss die erste sein!“
+Je länger sie wartete, umso größer war die Wahrscheinlichkeit, dass sie nicht in den NSA-Computer hineinkommen würde. Corinne sagte zwar, dass sie mit Karl übers Wochenende fischen gehen würde und sie kein Smartphone und kein Handy dabei haben würden, aber es gab bei der Princeton-Universität auch andere, die eingreifen konnten, wenn ihnen etwas komisch vorkam. Sie klappte ihren Laptop auf und ging den selben Weg wie beim ersten Mal: Berlin – New York – Belo Horizonte – New Jersey, Princeton. Sie gab Name und Passwort ein. Wieder drin! Sie atmete kurz durch. 
+„Weiter!“, dachte sie und tippte
+ssh randw@23.66.234.12
+Ihr Herz klopfte. ssh, dass waren nur drei Buchstaben, aber ein Schlüssel, um Welten aufzuschließen. Damit konnte man von einem zum nächsten Computer springen. randw war anscheinend der Name des NSA-Manns, zumindest stand er so in den Logdateien. Sie drückte die Enter-Taste.
+
+*** NSA …. ***
+* WARNING: UNAUTHORIZED ACCESS CAN CAUSE …
+*   { Muss noch vervollständigt werden ...}
+*** ***
+Welcome, Randy!
+
+
+Sie konnte kaum atmen. Sie war drin. So leicht. Der Schlüssel hatte funktioniert. Wie im Trance kopierte sie sich alle Log-, Passwort- und Schlüsseldateien, dann versuchte sie so gut es geht ihre Spuren zu verwischen. Ihre Finger saußten wie wild über die Tastatur. Sie sagte immer, dass sie definitiv schneller tippen als denken konnte und das war hier der Fall. Dann loggte sich wieder aus und landete dadurch wieder auf Karls Rechner. Alles zusammen hatte nicht mehr als 30 Sekunden gedauert. Sie wusste nicht einmal, in welcher Stadt der Computer stand. Vielleicht war sie gerade in Fort Meade gewesen, wo das Hauptquartier der NSA stand. Sie hatte Schweiß an den Händen. Dann verwischte sie sorgfältig alle Spuren auf Karls Rechner, und zog den USB-Stick aus dem Computer. Alles, was sie gesammelt hatte war jetzt auf einem kleinen Stick. Sie umschloss ihn in ihrer Hand und lehnte sich zurück.
+„Hallo Mari“, sagte eine Stimme und ein junger Mann setzte sich neben sie.
+„Oskar!“, Marianne schaute ihn mehrmals an. „Was machst du hier?“
+Oskar war ein guter Freund ihres Bruders. Er war auch ein Cypherpunk. Auch unter direkter Überwachung von mindestens zwei Regierungsstellen. Vielleicht sogar von den Amerikanern.
+„Guter Platz“, meinte Oskar während er sich umschaute, „anonymes Internet und keine Überwachungskamera, wenn man sich an die Wand drückt.“
+Marianne: „Was machst du hier??? Scheiße! Mein Bruder hat dich geschickt?“
+Oskar nickte.
+Marianne: „Scheiße! Wer ich jetzt von meinem eigenen Bruder überwacht? Und … wie habt ihr rausgefunden wo ich bin?“
+Oskar: „Es ist alles ok. Wir haben nicht viel Zeit. Du musst jetzt zum „The Bird“ gehen. Setz dich dort an den freien Tisch im ersten Hinterraum und bestell zwei Hamburger. So etwa in 20 Minuten.“
+Marianne: „Einen Scheiß werde ich. Nur weil du das sagst? Und warum soll das tun?“
+Oskar: „Ich weiß es nicht.“
+Marianne schaute ihn staunend an. 
+Oskar: „Ich weiß nur, dass es um Leben und Tod geht!“
+Oskar schaute sie ernst an. In Marianne ließ nicht von seinen Augen ab. Sie kämpfte mit der Wut, die in ihr hochstieg, ihr Gesicht wurde rot.
+Oskar: „Geh jetzt … aber langsam. Und geh vorher noch irgendetwas einkaufen.“
+Marianne stand langsam auf und schritt die Stufen hinunter, ohne sich noch einmal umzudrehen.
+
+
+SZENE 6: Ein Überraschungspaket
+[2064: In der Hausküche.]
+
+„Pling“, sagte der Kommunikator von Lilly und kurz darauf, pling, pling, auch die der beiden Jungs. Einige Zeit nach Spielende bekamen alle Spieler die Ergebnisse des heutigen Tages mitgeteilt. Die Antworten machte TRON fast immer vollkommen automatisch. 
+Lasse: „Und? Was hast du, Lilly?“
+Lilly: „Erst ihr. Was habt ihr bekommen?“
+Sigur schaute finster und meinte: „Mission ist beendet und wir werden per Haftbefehl gesucht. Deine Marie ist ja super schnell.“
+Lilly: „Ja, spannend … neue Zeit ... Na dann: gefälschte Pässe, neue Laptops, neues Aussehen und ab geht's … Da könnt ihr jede Menge Punkte machen. Habt ihr ein paar Anlaufstellen, die die NSA nicht kennt? Kommt ihr an Computer, die man nicht auf euch zurückverfolgen kann?“
+Lasse ironisch: „Super, danke für die Tipps, Lilly! Und auch noch null Erfahrungspunkte heute. Null. Was hast du?“
+Lilly: „Eure Computer haben mir 20 Punkte gebracht und ich bin jetzt inoffizieller Mitarbeiter bei Marie. Und, wow, ein Überraschungspaket...“
+Überraschungspakete gab es manchmal für besondere Ereignisse, meistens dann, wenn Spieler eine Mission geschafft hatten. 
+Lasse: „Echt? Pack aus. Was ist drin?“
+Lilly: „Wow. Hej. Stark. Ein Bild von Marianne Lasser. Ja, klar, wegen der NSA-Internet-Schwachstellen. Wusstest ihr, dass sie es war, die die Schwachstellen in Wirklichkeit gehackt hat. Es war 2019. Da hat sie alle rausgeholt, alle auf einmal. So bin ich überhaupt erst auf die Idee gekommen, das zu machen. Sie hat ganz genau beschrieben, wie das ging. Vielleicht haben sie TRON dann genau so programmiert … Sicher haben sie das ... Klar, TRON ist realistisch. Ohh!!! Schaut, da steht hinten noch etwas drauf. Nee.“ 
+
+{Bild mit Zettel}
+
+Willst du mit mir einen Kakao trinken? 
+Dann rufe mich an.
+Marianne
+0x23FF 2345 4312 AA34
+{/Bild mit Zettel}
+Lilly: „JUUUHHHUUU!!! Wahnsinn. In echt. Marianne Lasser! Ich fasse es nicht.“
+Lilly war vom Tisch aufgesprungen und tanzte im Zimmer herum.
+Lasse: „Lebt die denn noch?“
+Sigur: „Wenn sie Kakao trinken kann, möglicherweise ...“
+
+SZENE 7: Wilhelm
+[1913: Ein Raum hinter der Bühne einer Festwiese. Man hört im Hintergrund eine riesige Menschenmenge.]
+
+Hilde lief aufgeregt hin und her und würdigte Wilhelm keines Blickes. 
+Hilde: „Es ist ein Wahnsinn!“ Sie zeigte mit beiden Armen Richtung Bühne. “Da draußen stehen 20000 Genossen, hungrig, müde vom Arbeiten, in Angst. Und du willst ...“
+Wilhelm schrie: „Will ich nicht! Ich will ihnen die Wahrheit sagen! Es geht nicht! Wir können es nicht schaffen!“
+Hilde: „Du willst dich aus dem Staub machen. Du willst uns im Stich lassen! Jetzt in dieser harten Zeit.“
+Wilhelm: „Nein, das will ich nicht! Aber die Kräfte, gegen die wir stehen, sind so stark, so rücksichtslos, so brutal, wenn es nach ihnen geht, werden wir bald überall in Europa Leichenberge haben!“ Er bedeckte sein Gesicht mit den Händen.“
+Hilde: „Dann kümmer dich drum! Wenn du ein paar von unserer Genossen in einer wilden Rauferei mit einer übermächtigen Horde von Monarchisten siehst und überall Blut, dann gehst du auch nicht weg und sagst: Es geht nicht!“
+Wilhelm: „Dann hole ich eine Sturmtruppe der Spartakisten. Das kann ich nicht selbst machen. Aber gegen die imperialistischen Mächte hilft keine Sturmtruppe. Sie haben das Geld, die Waffen, die Regierungen, die Unternehmen, die Presse und jetzt auch Geheimorganisationen, die für sie spionieren und morden.“
+Hilde: „Du bist die Sturmtruppe gegen die Imperialisten, und die Genossen da draußen haben dich gerufen.“
+Wilhelm faltete seine Arme vor der Brust und schloss die Augen. Von draußen hörte man „Wilhelm, Wilhelm“-Rufe lauter werden. Er atmete schwer.
+
+
+SZENE 8: Nur 30 Sekunden
+[2019 Hamburger Restaurant, laute Musik, laute Gespräche überall]
+
+Marianne biss in einen dicken Hamburger und schaute mit leicht zusammen gekniffenen Augen zu ihrem Bruder Paul, der neben ihr saß. Ihr Gesicht war immer noch puderrot.
+„Auf gar keinen Fall. Ich werde nichts löschen“, sagte Marianne mit halbvollem Mund und so leise, dass es ihr Bruder gerade noch hören konnte. “Es ist alles hier auf dem Stick. Nirgendwo sonst. Ich habe aufgepasst. Auf dem Computer aufgeräumt. Keiner kennt mich. Keiner kennt meine Quelle. Erklär mir, warum es gefährlich ist.“
+Ihr Bruder schaute sie eindringlich an: „Das ist TAO. Das sind die besten Hacker der NSA. Egal, was der Schlüssel und die Adresse dort auf dem Uni-Rechner zu suchen hatte, du musst alles löschen, was du von dort hast.“
+Marianne: „Du hast immer gesagt, dass bei der NSA nur Schnarchnasen arbeiten, Beamte, die sich meistens auch streiten und gegenseitig bespitzeln. Da sind keine Leute, die mit Hingabe und aus Überzeugung arbeiten.“
+Paul: „TAO ist eine Spezialgruppe. Das sind echte Hacker … Die kommen überall rein. Die haben eine Riesendatenbank mit allen Schwachstellen im Internet. Für jeden Computer ist da etwas dabei. Auch für deinen. Wenn die dich aufs Korn nehmen, dann kriegen sie dich auch. Vielleicht sind sie nicht immer mit vollem Herzen bei der Sache, aber die Werkzeuge, die sie haben, sind verheerend.“
+Marianne: „Und weil sie mich theoretisch kriegen können, lasse ich es sein. Huch, Gefahr! Seit wann lässt du dich einschüchtern? Du hast mir immer erklärt, dass das genau das ist, was sie erreichen wollen. Sie plustern sich auf, wollen unbesiegbar erscheinen, damit du deinen Schwanz einziehst. Ich war die ganze Zeit über in Tails, meine Quelle habe ich nur in Tails getroffen, der Computer war nagelneu. Sag mir: Wo ist das Risiko?“
+Paul stöhnte leicht. „Die setzen die Hölle in Bewegung, wenn du versuchen würdest, dich in den Computer einzuloggen, von dem du mir die Adresse geschickt hast. Die würden überall suchen, wer das gewesen sein könnte, ein ganzes Team darauf ansetzen, Fallen stellen, den Verkehr des Tor-Netzwerks  analysieren. Und irgendwie finden sie ...“
+„Ich war drin“, unterbrach Marianne. “Aber nur ganz kurz. Ich habe Logdateien und Passworte kopiert. Und ich habe aufgeräumt.“.
+Paul wurde bleich. 
+Marianne: „Es waren nur 30 Sekunden. Es war ein normaler Linux-Debian-Rechner.“
+Sie schaute Paul aufmuternd an.
+Marianne: „Es ist alles hier auf dem Stick.“ 
+Sie öffnete ihre Hand einen Spalt und Paul sah auf den Stick. Er vergrub seinen Kopf unter seinen Händen.
+Marianne: „Komm. Du warst letztes Jahr zig-mal in der BND-Datenbank. Und der deutsche Geheimdienst ist auch nicht so schlecht. Und da war ich die ganze Zeit dabei. Ich weiß, was ich tue. Ich habe aufgepasst.“
+Paul schaute sie ein wenig schüchtern an: „Ich will nach Hause. Kommst du mit?“
+
+
+SZENE 9: Endlich mal Action!
+[2019 In einem Büro des BND (deutscher Geheimdienst). Zwei Beamte sitzen sich an ihren abgenutzten Schreibtischen gegenüber. Einer hat ein Vesperpaket ausgepackt vor sich liegen, der andere mit Beinen auf dem Tisch eine Zeitung lesend.]
+
+Frederik: „Was ist denn da los?“ Er schob sein Vesperpaket zur Seite und tippte auf seiner Tastatur. „Unsere amerikanische Kollegen sticht wohl der Hafer. Boah. Endlich mal Action hier.“
+Heinz lugte über seine Zeitung: „Was?“
+Frederik: „Vier Day-Raids mit 12 Polizeiautos, deutschen Polizeiautos. Heute, hier in Berlin. Wenn das mal die Presse nicht mitbekommt ...“
+Heinz: „Jetzt gerade?“
+Frederik: „Jupp.“
+Heinz: „Na, immerhin melden sie das mal. Und wo?“
+Frederik: „Sagen sie nicht. Berlin. Wir sollen uns raushalten. Wahrscheinlich wollen sie wieder irgendwelche Aktivisten erschrecken. Nach dem Motto: Wir kommen mit deutschen Polizeiautos und nehmen dich mit, befragen dich und lassen dich wieder laufen. Warum? Weil wir das können. Und wenn du etwas erzählst, dann hast du irgendwann plötzlich einen Unfall. Einfach mal zeigen, wer der Stärkere ist.“
+Heinz nahm die Beine vom Tisch: „Na, dann werde ich mal dem Direktor schreiben, damit das kein Kuddelmuddel wird. Und dem Polizeipräsidium. Kollegen vom Verfassungsschutz, Landeskriminalamt. Und der Bundeskanzlerin.“ Er grinste. „Spaaaß. Wer muss das noch wissen? Haben wir die Autokennzeichen?“
+Frederik: „Jupp. Schicke ich dir rüber ...“
+
+SZENE 10: Auf dem Heimweg
+[2019 In Berlin-Mariendorf. Vorstadtsiedlung, einzelne Häuser mit Gärten dahinter.]
+
+Auf dem Nachhauseweg sprach Paul kein Wort. Er war in sich versunken. Marianne trottete neben ihm her.
+Marianne: „Wie habt ihr mich eigentlich gefunden?“
+Paul antwortete ohne aufzuschauen: „Über die Ü-Kamera-Datenbank von BND. Ich wusste ziemlich genau, wann du zu Hause los bist und was du an hattest und dann haben wir deinen Weg verfolgt.“
+Marianne: „Überwachungskameras? Scheiße. Ich dachte du bist ein Cypherpunk.“
+Paul drehte sich zu ihr: „Du hast keine Ahnung, um was es geht“, flüsterte er. „Wir waren vor drei Wochen auch drin in genau der NSA-Abteilung, wo der Rechner steht. Da muss gerade etwas ziemlich Spannendes passieren. Mit Satelliten oder so. Ich habe den Rechner gesehen, auf dem du warst, aber ich konnte nicht rein. Deswegen kannte ich die Adresse, die du mir geschickt hast. Aber wir sind wohl aufgeflogen. Ich bin sicher, wir sind aufgeflogen. Und jetzt sehr wahrscheinlich unter ständiger Bewachung. Es passieren seltsame Dinge in der letzten Zeit. Der einzige Rechner, dem ich noch vertraue, ist der hier in meinem Rucksack, den ich nur im Keller benutze.“
+Ein Polizeiwagen fuhr langsam an ihnen vorbei und hielt dann mitten auf der Straße. Zwei Polizisten und ein Mann in Anzug stiegen aus. Der Anzugmann zeigte Paul seinen Ausweis und fragte: „Paul Lasser?“. Paul nickte. „Dann kommen Sie bitte mit. Wir haben ein paar Fragen.“ Er warf ihm einen vertrauensvollen Blick zu. Einer der Polizisten hielt die hintere Türe auf. Paul war überrascht, er hatte damit gerechnet, dass er mit Polizei oder Geheimdienst in Kontakt kommen würde. Aber nicht so. Alles war freundlich und ruhig. Er warf Marianne noch einen kurzen Blick zu und stieg ein. Die Türen klappten zu und der Polizeiwagen fuhr davon.
+Wie angewurzelt stand Marianne eine Zeit lang auf der Stelle. „Die Nummer“, schoss es ihr durch den Kopf. „Wie war die Nummer?“ Sie hatte versucht, sie sich zu merken, war aber dann durch Pauls Blick abgelenkt worden. „B 4521 ... 2 oder 3“ Sie setzte sich an den Straßenrand. Was war jetzt wichtig. Was konnte sie tun? Sie versuchte zu denken. 
+„Wohin bringen sie ihn? Die naheliegendste Frage war ihr nicht eingefallen. Sie hätte einfach die Polizisten fragen können. Müssen! Nein, sie war einfach stehen geblieben und hatte nur geschaut.
+„Corinne! Ich muss mit ihr sprechen. Vielleicht ist sie online. Wedding, Rathaus.“ Marianne liebte die Rathäuser in Berlin, weil sie fast alle Freifunk-Internet hatten und alle irgendwo einen Platz ohne Videoüberwachung. Sie überlegte kurz, ob sie sich einen neuen Rechner holen sollte, aber entschied sich, direkt dorthin zu gehen. 
+
+SZENE 11: Verrat
+[2019 Rathaus-Hochhaus. Davor ein Platz, eine viel befahrene Straße.]
+
+Marianne saß im Schatten an eine Mauer vor dem Weddinger Rathaus gelehnt. 
+„Hi Cori“, tippte sie in ihr Chatprogramm und stoppte: „Shit, sie hat ja gar kein Handy dabei. Ich kann sie gar nicht erreichen.“ Sie lehnte sich zurück und dachte nach. Das Chatprogramm plingte, Corinne war da.
+Corinne: „Hi Mari. Schön, dich zu lesen. Ich hätte dich auch gleich versucht zu erreichen. Es ist so schlimm. Alles so schlimm!“
+Marianne: „Was ist?“
+Corinne: „Mist, ich kann nicht wirklich sagen, was vorhin passiert ist. Aber ich muss dir erzählen. Wir sind heute morgen von der Polizei angehalten worden, ich und Karli. Sie haben einfach so neben uns auf der Straße gehalten. Und sie haben Karli aufgefordert, ihnen zu folgen. Und er hat es getan! Er ist eingestiegen. Wir wollten gerade aufs Boot und ich stand einfach so daneben und habe zugeschaut. Jetzt weiß ich nicht einmal wo er ist. Sie haben mir nicht gesagt, wo sie ihn hinbringen.“
+Marianne fuhr ein Schauer den Rücken hinunter. 
+Nach einiger Zeit tippe sie: „Genauso ist es bei mir?“
+Corinne: „Wie? Genauso?“
+Marianne: „Sie haben Paul mitgenommen.“
+Corinne: „Deinen Bruder?“
+Marianne: „Sie haben angehalten und ihn gebeten zu folgen. Ich bin einfach so da gestanden, wie das Kaninchen vor der Schlage. Es war so absurd.“
+Corinne: „Wow.“ 
+Corinne: „Was hat das zu bedeuten?“
+Corinne: „Das ist kein Zufall.“
+Corinne: „Ich glaube, ich will es nicht wissen ...“
+Marianne: „Es war koordiniert. Von Amerika nach Berlin.“
+Corinne: „Aber wie? Paul und Karl kannten sich gar nicht, es gibt keine Berührungspunkte. Wie ist die Verbindung? Oder … oder hast du? … Hast du Paul von Karl und mir erzählt?“
+Marianne: „Nein, nein, nein. Paul weiß nichts über Karl und er weiß nichts über dich. Aber er hat mir gesagt, dass er vor ein paar Wochen in ein Computer-System bei der NSA eingedrungen ist. Und dabei wurde er wahrscheinlich erwischt.“
+Corinne: „Ok. Puhh. Aber das erklärt nicht, dass sie Karli verdächtigen. Es arbeiten ein Haufen Leute an dem Projekt. Ein Hacker aus Berlin kommt da hinein und dann wird Karli mitgenommen. Es muss irgendetwas geben, was Karli verdächtig macht. Ich meine, er hat absolut nichts gehackt seit er in dem Projekt dabei ist. Er meinte, das sei zu gefährlich, weil er ständig überwacht würde. Er hatte Angst. Er hat sich ja nicht einmal getraut, den NSA-Schlüssel von seinem Computer zu nehmen. Und jetzt nehmen sie ihn einfach so mit ...“
+Marianne: „Bevor das passiert ist, war mein Bruder sehr aufgeregt. Das ist total ungewöhnlich bei ihm. Ich glaube, das ist passiert nachdem ich ihm drei Internet-Adressen geschickt habe. Die Adressen hatte ich Karlis Computer gefunden. Ich habe sie nur geschickt, damit er sie prüft, und mir vielleicht einen Hinweis geben kann. Ich habe ihm nicht gesagt, woher sie sind. Ich habe meinem Bruder nichts sonst erzählt, ich wollte ihn nicht dabei haben, weil ich nichts über dich erzählen wollte.“
+Corinne: „Internet-Addressen von Karlis Computer?“
+Marianne: „Ja. Entschuldige. Ich weiß, es war gegen unsere Abmachung.“
+Corinne: „NSA-Adressen?“
+Marianne: „Wahrscheinlich.“
+Corinne schwieg für eine Weile.
+Corinne: „Wir hatten doch ausgemacht: Wir sagen anderen nichts voneinander. Karli wusste nichts von dir.“
+Marianne: „Ja, ich dachte …  ich wollte ...“
+Corinne: „Ich muss weg. Ich melde mich.“
+Corinne war offline und Marianne schaute auf  das Chatfenster, lange, ohne wirklich über etwas zu denken. Nach einer Weile sagte sie leise:
+„Shit, shit, shit, shit.“ Und fing an zu weinen.
+
+
+SZENE 12: Marianne Lasser
+[2064 Im Versammlungshaus der Schule. Draußen ein milder Abend, leichter Wind, die Sonne gerade untergegangen.]
+
+Marianne Lasser betrat die kleine Schulbühne mit leicht gebeugtem Gang aber schwungvoller Bewegung und setzte sich auf das große Sofa in der Mitte. Ihre Augen leuchteten. Sie schaute in die Runde der etwa Hundert klatschenden Kindern und Jugendlichen. Einige johlten. Rechts neben ihr saß Lasse in einem Sessel. Schick gemacht, mit blauer Anzugjacke. Er war bemüht vier oder fünf Jahre älter auszusehen als er war. Und das klappte einigermaßen. Lilly setzte sich neben ihn auf die Sessellehne und lächelte Marianne an. Die lächelte warm zurück. 
+
+Ein Lehrer betrat die Bühne und nahm das Mikrofon:
+
+„Willkommen, Marianne Lasser!“ Der Beifall wurde lauter. Er drehte seinen Kopf zu Marianne und wartete bis es ruhiger wurde: „Ich freue mich, dass du hier bist. Überhaupt, dass du noch auf der Erde bist. Es war ja nicht nur einmal ziemlich knapp. Wie lebt man 14 Jahre mit einem entfesselten Geheimdienst im Nacken, dem größten Geheimdienst der Welt, auf der Liste seiner Top-Ziele?
+
+Er wandte sich zu den Zuschauern: „Heute gibt es diesen Geheimdienst nicht mehr, gar keine Geheimdienste mehr. Daraus sind wunderbare Informationsdienste geworden, über die wir alles Mögliche darüber erfahren, wie Menschen in allen Ländern der Erde zusammen arbeiten, was sie zusammen entscheiden, was sie können und was sie brauchen. Manchmal verwenden sie sogar dabei Computerprogramme, die früher zur Menschenjagd und zur Kontrolle des Privatlebens aller Menschen auf dieser Erde verwendet wurden. Diese Menschenjagd und die Kontrolle von allem und jedem ist heute nicht mehr möglich und ihr lernt über die alten Geheimdienste nur noch im Geschichtsunterricht, das heißt im Wesentlichen durch TRON, weil dafür ist TRON ursprünglich gemacht worden: Euch den Befreiungskampf des Internets zu zeigen.“
+
+Lasse schaute zu Sigur, der in der ersten Reihe im Publikum saß, und dann beide zu Lilly. Die lächelte zurück und zwinkerte mit den Augen. 
+
+Der Lehrer setzte sich zu den Zuschauern hin an die Bühnenkante: „In dieser Welt damals, die so anders war wie unsere heute, war es normal, dass Menschen versuchten, über das Leben anderer Menschen zu bestimmen, sie zu überwachen und zu kontrollieren. Viele meinten, dass es nicht anders ginge, weil es so viele Verbrecher und schlechte Menschen gäbe. Staaten kontrollierten ihre Bürger, Armeen ihre Soldaten, Unternehmen ihre Mitarbeiter, und sogar die Lehrer ihre Schüler und die Eltern ihre Kinder: ob sie zur Schule gingen, ob sie das gelernt hatten, was sie lernen sollten und ob sie es besser oder schlechter machten als die anderen Schüler. Überall wurde dadurch ein Gegeneinander entfacht. 
+
+Und wenn jemand eine Idee hatte, wenn er von etwas begeistert war und das Gefühl hatte, genau das jetzt tun zu wollen, passierte es oft, dass dieses Gefühl von anderen Menschen nicht heilig gehalten wurde. Sondern es wurde oft verletzt oder zerstört. Manchmal ganz direkt durch Verbote, Erpressung und Zwang, und manchmal einfach durch Kritik, oder durch Vorschläge, in guter Absicht gesprochen. Die Menschen versuchten oft nicht herauszufinden, warum der andere das so tun wollte, wie er wollte. Sie meinten er müsse es so machen wie sie sich das vorstellen, sonst wäre es falsch.
+
+Und so gab es überall Streit, zwischen Ländern, Unternehmen, politischen Parteien, aber auch in Schulen, Familien, überall. Und mehr und mehr hielten die Menschen deswegen viele Dinge geheim. Entweder um dem Streit aus dem Weg zu gehen oder um einen Vorteil gegenüber dem anderen zu haben. Es wurden immer mehr Dinge geheimgehalten, die für andere Menschen wichtig waren, die sie hätten wissen müssen, manchmal Dinge, von denen Leben und Tod abhing, manchmal Dinge, die alle Menschen auf der Erde etwas angingen. Und es kam so weit, dass in der Welt die schlimmsten Dinge passierten konnten, und niemand bekam sie mit.
+
+Das war das Arbeitsfeld der Cypherpunks. Sie waren nicht nur Programmierer, die Verschlüsselungsprogramme schrieben und Hacker, die im Internet nach Schwachstellen suchten. Es ging ihnen um viel mehr. Es ging ihnen um eine neue Welt, eine neue Form des Zusammenlebens, es ging darum, einen Weg zu finden, dass alle Menschen leben können, wie sie sind, und sich nicht für irgendjemand anderen verbiegen müssen. Es ging um eine Welt, in der es immer weniger Angst und Zwang und Lügen gibt. 
+
+Und obwohl es lange Zeit überhaupt nicht so aussah, wurde der Weg gefunden. Viele Menschen hatten das damals für unmöglich gehalten, obwohl sie lieber in solch einer Welt gelebt hätten. Aber alles, was man will, ist möglich. Und so wurde auch dieser Weg gefunden. Und zwar vor allem von Kindern und Jugendlichen wie euch.“
+
+
+
+SZENE 13: Rede
+
+[1913, Wilhelm auf der Bühne, vor ihm eine Menschenmasse, alle Augen auf ihn gerichtet. Viele Fäuste in die Luft gestreckt. Bravo-Rufe.]
+
+Wilhelm: Genossen und Genossinnen! Wir steht vor einem Krieg. Vor einem großen Krieg, vielleicht vor dem allerersten Weltkrieg. Es ist die reale Gefahr da, dass die Völker Europas und in Übersee auf einander schlagen, ohne Erbarmen, mit der vollen Wucht ihrer Kraft und mit allem neuen Kriegsgerät, das in den letzten Jahren erfunden wurde. Wir werden gepanzerte Wagen auf den Schlachtfeldern sehen, Maschinengewehre und darüber werden Flugzeuge fliegen, die Bomben werfen. Das ist keine Utopie.
+
+Und dieser Krieg wird nicht etwa deswegen gekämpft werden, weil ein Volk seine Gebiete ausweiten will. Nicht deswegen, weil ein Volk ein anderes unterwerfen will, nein, es geht nicht um Herrschaft der Völker übereinander. Es geht um die Herrschaft des Geldes, wer kontrolliert das Kapital? Wir stehen zum ersten Mal in der Geschichte der  Menschheit davor, dass Imperialisten zusammen mit Kapitalisten gegen andere Imperialisten und Kapitalisten in die Schlacht ziehen, und darum kämpfen, wer das Kapital kontrolliert, wer Waren verkauft. Ja, so widersinnig und widerwärtig das für euch klingen mag, es geht um nichts anderes. Das Geld hat vor fast einem Jahrhundert die Macht übernommen. Und jetzt zieht es ins Schlachtfeld.
+
+Die Imperialisten und Kapitalisten werden natürlich nicht selbst kämpfen, genauso wie sie nicht selbst arbeiten. Sie lassen uns arbeiten. Und sie werden uns kämpfen und sterben lassen.
+
+Ich habe viel mit mir gerungen in letzter Zeit, ich habe mit vielen Menschen gesprochen, viele Zeitungen und Bücher gelesen. Ich finde und finde keinen Weg, wie man diese Imperialisten-Kapitalisten-Kampfmaschine aufhalten kann. Sie bewegt sich auf den Krieg zu, der vielleicht schon in diesem Jahr kommt, vielleicht im nächsten, aber nicht erst in fünf Jahren. Und heraufbeschworen haben alles das die deutschen Kapitalisten. Die deutschen Kapitalisten, denen ihr eure Arbeit gebt und die das Geld dafür einstreichen. Sie haben in den letzten Jahrzehnten alles getan, um ihre Waren und Produkte überall auf der Welt zu verkaufen. Und sie sind unersättlich. Sie wollen immer mehr und mehr und mehr und mehr. In diesem Jahr, 1913, just 1913, haben sie zum ersten Mal in der Geschichte mehr verkauft als die Kapitalisten der großen Weltmacht des britischen Empires. Dieses britische Empire hatte seit mehr als einem Jahrhundert die absolute Vorherrschaft in der Welt. Diese Vorherrschaft droht jetzt gegen Deutschland verloren zu gehen. Und sie werden alles tun, und ich sage: Alles tun!, damit das nicht geschieht.
+
+Beide Seiten sammeln zur Stunde ihre Verbündeten um sich. Die geheime Diplomatie läuft auf Hochtouren. Und es braucht nur noch einen Funken, der alles zum Explodieren bringt. Der Hass der Völker wird von der Presse geschürt. Sie ist in allen Ländern dabei, die Völker gegeneinander zu hetzen, sie in Angst zu versetzen, Feindbilder aufzubauen. Genossen ….... ich sehe keinen Weg!
+
+Vielleicht gibt es einen Weg. Vielleicht liegt ein Weg darin, dass wir zu unseren französischen Genossen gehen, zu unseren englischen und russischen Genossen und sie umarmen, mit ihnen feiern, uns mit ihnen verbrüdern und gemeinsam für unsere Sache kämpfen. Dafür, dass wir die Kriegsmaschine aufhalten und dafür dass wir unseren gerechten Anteil am Reichtum in der Welt bekommen. Wir müssen alle Brüder und Schwestern werden! Brüder und Schwestern schießen nicht aufeinander. Also müssen wir alle Brüder und Schwestern werden. Das ist mein Weg. Die Imperialistenmaschine ist stark, wie ein Felsbrocken der den Berg hinunterrollt. Ich weiß nicht, ob dieser Weg existiert, ich weiß nicht, ob wir sie aufhalten können, aber wir werden es versuchen. Zusammen! 
+
+
+
+
+SZENE 14: Die Cypherpunk-Akademie
+
+[2064 Bühne im Vesammlungshaus.]
+
+Der Lehrer sprach eindringlicher: „Marianne Lasser war 16 Jahre alt, als sie die NSA-Schwachstellen-Datenbank gehackt hat. Und das war ein Wendepunkt im Befreiungskampf des Internets. Das hat damals auf der ganzen Welt ein ziemliches Erbeben ausgelöst. Plötzlich konnten alle klar sehen, wie viele Hintertüren und Schlupflöcher es überall im Internet gab. Es war regelrecht durchlöchert, und jede Menge Leute, nicht nur die Geheimdienste, hatten vorher auf alle Computer zugreifen können, auf die sie zugreifen wollten. 
+
+Das Internet war für die junge Generation damals ein wirklicher Lebensraum geworden. Nicht wegzudenken aus ihrem Leben. Und als sie nachvollziehen konnten, was alles im Geheimen passierte, was getan wurde, um sie zu überwachen und nicht etwa Verbrecher oder Terroristen, als sie sahen wie ihr Internet zur einer Überwachungsmaschine für sie wurde, als sie die vielen Hintertüren selbst anschauen konnten, da machten sich viele von ihnen auf und wurden Cypherpunks.  
+
+Und das Bedeutende, was Lilly gelungen ist, weswegen wir hier alles sitzen, und uns auch Hundertertausende Schüler von überall auf der Welt zuschauen, das ist, diesen berühmten Hack nachzuspielen. Es war von Anfang an in TRON eingebaut und wartete darauf, dass ihn jemand finden würde. Lilly hat in gefunden und im ersten Anlauf gemeistert.“
+
+Gejohle im Publikum. Lilly lachte über das ganze Gesicht.
+
+Lehrer: „Und damit geht das TRON-Spiel in eine neue Phase. Und in der ändert sich einiges. Es gibt viel Neues, aber vor allem gibt es eine neue Regel im Spiel. Und die erklärt euch Lilly.“ Er winkte zu ihr herüber.
+
+„Ja …“, Lilly schaute ins Publikum. „Danke euch. Wie ist die neue Regel? Sie sagt, dass wir ab jetzt alle Missionen auch als Cypherpunk-Missionen spielen können, alle. Egal ob ihr Geheimdienstmitarbeiter seid oder Unternehmenschef, Politiker, Hacker, der amerikanische Präsident, egal. Das heißt, ihr könnt TRON zum Anfang einer Spielrunde oder auch irgendwann zwischendrin sagen, dass ihr jetzt Cypherpunk seid und dann bekommt ihr eure Punkte nicht mehr für Herrschaft, Geld und Kontrolle, sondern für Veröffentlichung von Geheimnissen, für Ungerechtigkeiten ausgleichen und für Bewusstsein schaffen, wie die Welt tatsächlich funktioniert.“
+
+Marianne: „Wie Edgar eben gesagt hat, es ging bei der Kultur der Cypherpunks bei weitem nicht nur um Verschlüsselung und offene, freie Software. Es ging um eine komplette Verwandlung der Kultur, des Umgangs der Menschen miteinander. Dafür war Verschlüsselung der allererste Schritt, zusammen damit offene Software zu haben und verteilte Dienste im Internet, dass man nicht auf eine große Firma angewiesen ist, wenn man etwas im Internet machen will. Ohne die diese Dinge hilft alles andere nicht. Ohne Verschlüsselung wären wir allen ausgeliefert, die Zugriff auf das Internet haben. Und unter den Menschen, die Zugriff hatte, waren früher eine Menge, die brutal ihre eigenen Interessen verfolgten, die bereit waren andere Menschen zu manipulieren, unter Druck zu setzen, anzulügen, nur um etwas verkaufen zu können oder um sie unter Kontrolle zu halten. Verschlüsselung ist der erste Schritt.
+
+Das sind die Dinge, um die es geht, wenn ihr Cypherpunk werden wollt. Und wenn ihr diese Dinge üben wollt, wenn ihr sie in der Tiefe kennen lernen wollt, gibt es noch etwas ganz Neues. Lasse?“
+
+Lasse: „Ja. Und das ist ein Ding! Ich bin sehr gespannt, was ihr dazu sagt. Ich habe mich darin schon ein wenig umgeschaut, es ist ziemlich groß, man kann eine Menge Dinge dort machen. Wirklich spannend. Es ist die neue … Cypherpunk-Akademie, eine Akademie, auf der ihr Cypherpunks werden könnt.“
+
+Das Publikum johlte auf.
+
+Lasse: „Das ist wie ein Spiel im Spiel, nicht einfach. Ihr müsst da viel zusammenarbeiten und kreativ werden. Auf jeden Fall geht es um die elf Grundgedanken des Befreiungskampfes, also Verschlüsselung, Überwindung der Unterdrückung, Überwindung des Gegeneinanders, Entfaltung der Initiative, ...“
+
+Lilly unterbrach: „Marianne, ich habe darüber in deinem Buch einiges gelesen. Kannst du die vielleicht kurz vorstellen. Das fände ich super.“
+
+Marianne: „Ja. Das mache ich gerne. Aber machen wir vorher eine kleine Pause. Das Buffet wartet schon ...“
+
+
+
+
+SZENE 15: Wir holen sie nicht!
+[2019 Büro beim BND]
+
+„Wir holen sie nicht. Basta!“ brüllte Frederik seinen Kollegen Heinz an.
+
+„Sie haben sich gleich danach getroffen. Sie muss etwas wissen“, antwortete Heinz etwas zornig, aber noch relativ ruhig.
+
+Frederik: „Vielleicht weiß sie etwas. Vielleicht ahnt sie auch nur etwas. Verstehen tut sie auf jeden Fall, was ihr Bruder macht. Sie war letztes Jahr beim Hackathon und hat da gezeigt, was sie kann … Vielleicht hat sie ihm sogar die Internet-Adresse gegeben. Wer weiß. Aber trotzdem: Wir holen sie nicht.“ Er schaute Heinz ernst an. “Das ist eine dienstliche Anweisung.“
+
+Heinz: „Wenn wir herausfinden wollen, was sie vor hatten ...“
+
+Frederik: „Schluss! Du verstehst es nicht. Es geht nicht nur darum, herauszufinden, was da lief. Das ist jetzt nebensächlich. Es geht um viel mehr. Das geht um eine Infektion, einen Tumor. Und den muss man behandeln, bevor er zu groß wird. Der muss raus und der soll dann auch nicht mehr wieder kommen. Das heißt es geht nicht nur darum, so viel herauszunehmen, wie nötig ist. Sondern die Stelle, wo der Tumor war auch noch veröden. Da soll nichts weiterwachsen. Nur dann haben wir eine Chance, dass das aufhört.“
+
+Heinz: „Hey, Frederik, langsam. Das sind Menschen, kein Krebsgeschwür.“
+
+Frederik: „Ja, ist ja nur ein Bild. Ich meine das nicht so hart. Aber was würde das Ganze bringen, wenn Fähnchen jetzt da weiter macht, wo ihr Bruder aufgehört hat. Das Talent hat sie. Auch Talent anonym zu bleiben. Ich habe schon einmal im Tor-Netzwerk nach ihr gesucht. Sie macht das sehr geschickt.“
+
+Heinz: „Fähnchen ist gut! Wo hast du den Namen her? Fähnchen ist die Schwester von Fahne. Nette Idee.“
+
+Frederik: „Und wir haben sie jetzt! Es fehlt nicht viel. Noch ein paar richtig schlechte Nachrichten, ein paar Aktionen in ihrem Umfeld und sie lässt das Hacken für alle Zeiten. Und alle um sie herum werden das sehen, sie werden  sie für paranoid oder für schizophren halten und irgendwann wird sie das auch wirklich sein. Dann ist wirklich Ruhe. Das ist mehr wert, als eine weitere Hackerin im Gefängnis, die vielleicht dort neue Pläne schmiedet. Oder wie Julian Assange … Besser ein Mensch macht eine schwierige Zeit durch, als dass alles in Brand gerät.“
+
+Heinz: „Komm mal, rüber“. Er zeigte auf seinen Bildschirm. „Guck, die Kollegen aus Fort Meade. Du glaubst es nicht. Fähnchen hatte gerade Chat-Kontakt … mit der Freundin von … Bär. Heiße Sache.“
+
+Frederik: „Wow. Wie ging das? Dann brauchen wir auch einen Namen für Bärs Freundin. Oder vielleicht auch nicht. Ich denke, die Amerikaner kümmern sich gut drum. Aber wirklich seltsam: Wie sind die beiden zusammen gekommen?“
+
+Heinz: „Bisher keine Spur davon. Wir könnten sie selbst fragen. Sollen wir sie nicht doch ...“
+
+Frederik: „Nein! Sie bleibt da, wo sie ist. Ich werde noch einmal die Tails-Aktivitäten im Internet durchsuchen lassen, auf Chat-Verbindungen zwischen New Jersey und Berlin. Vielleicht finden wir etwas.“
+
+
+
+SZENE 16: Alleine
+[2019 Marianne zu Hause, im Keller-Schlafraum ihres Bruders. Ein Bett ein Schreibtisch, zwei Schränke. Auf dem Tisch zwei große Computermonitor-Scheiben, zwei Tastaturen. In einem winzigen Nebenraum eine Toilette mit Waschbecken.]
+
+Seit drei Tagen hatte Marianne nichts von Corinne gehört. Drei lange Tage. Sie hatte fast die ganze Zeit in Pauls Keller verbracht. Corinnes Chat-Konto war  stumm geblieben. Vielleicht konnte sie es nicht mehr nutzen, vielleicht war es ihr zu gefährlich, vielleicht wollte einfach nicht mehr mit ihr reden. Es war ein Verrat ihrer Freundschaft, aber wie hätte sie wissen können, dass die Adressen so brisant waren. 
+
+Ihr Bruder hatte in der Zwischenzeit eine E-Mail an alle in der Familie geschrieben. Er sagte darin, dass es ihm gut ginge. Und sie war mit seinem persönlichen Schlüssel digital unterschrieben. Keiner in Mariannes Umfeld zweifelte an seiner Echtheit. Er schrieb, dass er für eine Weile verschwinden würde, in der Welt herumreisen, dass er Zeit bräuchte zum Nachdenken, Überdenken von allem, was er getan hatte. Und er wollte einfach so gehen, ohne großen Abschiedstrara, es war ihm alles zu viel gewesen. Einfach Abstand haben von allem Alten und vor allem vom Hacken. Es war ihm zu stressig geworden. 
+
+Und tatsächlich fehlten in seinem Zimmer ein Koffer und einige seiner Sachen. Er schrieb kein Wort von Polizei oder wer ihn auch immer in den Auto abgeholt hatte. Marianne hatte die E-Mail hundert Mal gelesen. Um irgendeinen Hinweis zu kriegen. Am Schluss hatte sie so sehr Bauchschmerzen gehabt, dass sie sie gelöscht hatte. Das hatte nicht ihr Bruder geschrieben! So viel war ihr klar. So einen Quatsch würde er nicht schreiben und auch nicht einfach so gehen. Sein Schlüssel hing neben der Garerobe, als ob er zu Hause wäre. Jemand anderes musste ihn wieder dort hingehängt haben, und auch die Sachen geholt. Ihr lief ein Schauer den Rücken hinunter. Sie kommen in die Wohungen. Ihr Bruder hatte ihr das gesagt. Aber es war etwas völlig anderes, wenn es tatsächlich passierte.
+
+Niemand glaubte ihr, nicht dass jemand den Schlüssel hingehängt und seine Sachen mitgenommen hatte und nicht das mit dem Auto, das am hellen Tag angehalten hatte. Alle Polizeistationen Berlins meinten, dass keines ihrer Autos zu der Zeit in der Straße war. Und das Auto mit dem Kennzeichen, das sich Marianne gemerkt hatte, war zur gleichen Zeit bei einem Feuerwehreinsatz in einem anderen Stadtteil. Am Schluss glaubten sie ihr nicht einmal, dass sie an dem Tag mit ihm zusammen nach Hause gelaufen war. Es war so gespenstig. In ihrem Kopf drehten sich Fragen wie: Was war mit Paul? Wo war er? Was hatten sie mit ihm gemacht? Was machten sie gerade mit ihm? War er noch am Leben? 
+
+Die Fragen machten Marianne Angst. Alle anderen, ihre Eltern und ihr Onkel, Nachbarn, machten sich überhaupt keine Sorgen. Sie waren sogar ein wenig sauer auf Paul, dass er einfach so gegangen war. Aber dass er jetzt vielleicht eine grauenhafte Zeit durchmachte? Marianne musste immer wieder weinen. Weinen war das Einzige, was sie gerade wieder losbrachte, wenn sie sich festgefahren hatte. Warum glaubte ihr niemand? Wie gut muss man jemanden kennen, dass man ihm auch in so etwas vertrauen kann? Ihr Bruder hätte ihr vertraut. Totsicher. Aber die eigenen Eltern nicht? Sie hatten eine Psychologin geholt, Marianne hatte mit ihr gesprochen, ganz in der Hoffnung, dass sie merkt, dass mit ihr alles in Ordnung war. Aber die hatte am Schluss gemeint, dass Marianne ein posttraumatisches Stresssyndrom wegen des Verlustes des Bruders hätte. Sie würde die Realität so verändern, dass es zu ihrem Bild von ihrem Bruder passte, anstatt das wirkliche Bild von ihrem Bruder anzunehmen. 
+
+Paul war weg. Das war schlimm. Aber schlimmer war doch, was jetzt mit Paul war. Und Corinne...
+
+„Pling“, sagte ihr Chatprogramm.
+
+„Hi Mari! Alles gut?“, erschien auf dem Bildschirm.
+
+„Corinne!“, rief Marianne und starrte gebannt auf ihren Laptop.
+
+
+
+SZENE 17: Eine Freundin?
+[2019 Im Keller-Schlafraum.]
+
+Marianne überlegte, was sie Corinne schreiben sollte, was sie schreiben konnte. War die Verbindung sicher? Von ihrer Seite aus, sehr wahrscheinlich, obwohl der Geheimdienst sicher buchstäblich draußen im Kabelverteiler saß. Zumindest für zehn, fünfzehn Minuten war sie sicher. Aber bei Corinne? Wie sicher war es bei ihr? Wusste sie, auf was sie schauen musste? 
+
+Corinne schrieb: „Hej Mari, ich war die letzten drei Tage abgetaucht. Entschuldige. Ich habe es nicht mehr ausgehalten. Ich habe das gebraucht. Ich habe immer noch keine Nachricht von Karli.“
+
+Marianne: „Nichts? Gar nichts?“
+
+Corinne: „Nein. Ich habe keine Polizeistation gefunden, die irgendetwas über ihn wusste. Ich habe die ganze Stadt abgesucht. Er ist einfach verschwunden. Aber das ist noch nicht einmal alles. Ich war bei ihm an der Uni und die sagen dort, dass er auf Geschäftsreise in Europa sei. Geheime Mission. Er war sehr dringend.”
+
+Marianne: „Was?!“
+
+Corinne: „Ein absoluter Humbug. Er hätte mir etwas gesagt. Er geht doch nicht nach Europa, ohne mir ein Wort zu sagen. Aber an der Uni haben sie mir angedeutet, dass es in unserer Beziehung ja kriseln würde. Und er vielleicht deshalb nichts erzählt hatte. Es ist echt schlecht hier. Niemand glaubt mir.”
+
+Marinne: „Shit. Wie können die NSA-Leute das machen? Wie können die alle dazu bringen, ihre Geschichte zu glauben? Kennst du dort wirklich niemanden gut genug, dass du ihn fragen kannst, was wirklich vor sich geht.
+
+Corinne: „Ich dachte, ich hätte jemanden. Aber es glauben wirklich alle die Geschichte von Karli auf Europareise. Und niemand, dass die NSA ihn mitgenommen hat. Und ich sehe aus, als wäre ich verrückt, oder so etwas.”
+
+Marinne: „Aber von einer Reise muss er ja irgendwann wiederkommen.“
+
+Corinne: „Vielleicht in einem Sarg?“
+
+Marinne: „In einem Sarg?“ Marianne schluckte.
+
+Corinne: „Du weiß nie, was sie alles machen, damit die Wahrheit nicht ans Licht kommt. Glaub mir, die tun alles, wenn sie sicher sind, dass es verborgen bleibt, wenn die Öffentlichkeit nichts davon mitbekommt. Die Wahrheit ist die gefährlichste Sache der Welt. Zumindest für sie ...
+
+„JAH!”, schrieb Marianne. “Das ist meine Hoffnung.“
+
+Corinne: „Was ist mit deinem Bruder? Und mit deinen Eltern?“
+
+Marianne: „Genau wie bei dir. Keiner glaubt mir. Sie glauben, dass er um die Welt reist, um sein Leben zu überdenken, um sich selbst zu finden. Sie sind sogar ein wenig eingeschnappt, dass er nicht einmal Auf Wiedersehn gesagt hat. Totale Scheiße. Es fühlt sich so mies an, wenn einen niemand ernst nimmt. Ich versuche alles, um ein wenig Logik in die Leute in meiner Umgebung zu bringen. Ich habe es versucht, ich habe damit aufgehört. Es hat keinen Zweck. Ich glaube, ich werde wirklich langsam verrückt.“
+
+Corinne: „Pass auf. Das darf nicht passieren. Wir kommen da durch. Zusammen. 
+
+Marianne: „;-)“
+
+Corinne: „Was ist eigentlich mit den Daten von Karlis Computer? Hast du damit etwas anfangen können? Hast du den NSA-Schlüssel gefunden?”
+
+Marianne lehnte sich zurück und atmete durch. Was war das jetzt? Sie hatte den USB-Stick mit den NSA Daten die ganze Zeit über nicht angefasst. Sie wusste nicht, was sie hatte oder nicht hatte. Es war für sie jetzt einfach nicht interessant. Ihr Bruder war weg, ihre Eltern manipuliert, der deutsche Geheimdienst hinter ihr her. Vielleicht auch ein amerikanischer. Ja, Gott, der USB-Stick. Sie griff in ihre Hosentasche und umfasste ihn. Was konnte sie jetzt sagen? Lügen ist keine Option. Niemals. Lügen, das macht die andere Seite. Es war, als würde Paul neben ihr stehen und ihr das ins Ohr flüstern.
+
+Corinne: „Es war schon ein bisschen aus dem heiteren Himmel. Plötzlich werden sie so wild. Schicken falsche Polizeiautos los und was sonst noch alles. Es muss doch etwas passiert sein, was das ausgelöst hat? Du hast etwas gemacht? Oder nicht?“
+
+Marinne legte ihr Gesicht in ihre Hände und dachte intensiv nach.
+
+Corinne: „Vielleicht geht es für Karl und Paul jetzt um ihr Leben. Deswegen will ich jetzt wirklich wissen, was Sache ist. Was hast du an diesem Tag gemacht, als die beiden geholt wurden?”
+
+Marianne: „Ich bin zuerst in Karlis Computer gegangen und habe mir dort alle Schlüssel und Logs und Passwort-Dateien geholt. Ich habe den NSA-Schlüssel gefunden, zusammen mit Adressen von drei Computern, wo er passen könnte. Die habe ich meinem Bruder geschickt. Das weißt du.”
+
+Corinne: „Und was hast du dann gemacht?“
+
+Mariannes Herz fing an zu klopfen. War das Corinne? War sie es wirklich? Sie fragte so anders als sonst. Es fühlte sich nicht an wie Corinne. Gut, sie war in einer anderen Lage als sonst. Was konnten sie wissen bei der NSA? Von meinem Ausflug auf den NSA-Computer wussten sie sicherlich. Es waren nur 30 Sekunden, aber das reicht. Vielleicht wussten sie nicht, dass ich es gewesen war. Ja, klar. Sonst wäre ich nicht mehr hier und frei. Vielleicht habe ich die Spuren auf Karls Rechner gut genug verwischt. Der NSA-Schlüssel war nicht mehr auf dem Computer. Vielleicht wussten sie nicht einmal von dem Schlüssel. Es gibt nur die Kopie davon auf meinem Stick. Vielleicht hat Corinne ihnen davon erzählt. Shit. Was jetzt tun? Paul hatte immer gesagt, es lohnt sich immer, weiterzumachen. Bei Geheimdiensten würden so viele Schnarchnasen und Langweiler arbeiteten. Ihre tatsächlichen Fähigkeiten würden weit überschätzt. Andererseits hatte er gerade an dem Tag auch furchtbar viel Angst vor ihnen gehabt. TAO. Sie bekam kein klaren Bild.
+
+Marianne: „Ich war auf dem NSA-Computer. Für eine kurze Zeit. Ich habe mich nur einmal umgeschaut, nichts Spezielles.
+
+Corinne: „Wow. Das war es. Dein Bruder stand unter Überwachung und dann kam ein Angriff aus Berlin, von Karlis Rechner aus. Ja, klar. Dann werden sie wild.”
+
+Marianne: “Ich war anonym dort. Ich hatte eine Tails-Tarnkappe.”
+
+Corinne: “Du weißt, dass die NSA als einziger Geheimdienst der Welt einzelne Leute aus Tails herausholen kann. Sie durchsuchen dafür für ein bestimmtes Ereignis fast das ganze Internet – in Minuten. Und dann können sie sagen, der Computer, über den gerade auf den NSA-Rechner zugegrffen wurde, der steht in Berlin.”
+
+Marianne: “Ja, ich weiß. Deswegen hat man ja manchmal nur 10-15 Minuten.”
+
+Corinne: “Hast du Logs von dem Besuch?”
+
+Marianne erschrak. Warum wollte Corinne jetzt über die Logs wissen. Das war nicht ihre Art und nicht ihre Sprache. 
+
+Marianne: „Ich fühle mich nicht danach, jetzt darüber zu reden. Ich habe die letzten Tag nicht an die Daten daran gedacht und habe es in der nächsten Zeit auch nicht vor.”
+
+Corinne: „Ich will es aber wissen. Ich will wissen, was Karli passiert ist. Verstehst du das?“
+
+Corinne: „Ich bin hier, alleine, ohne Freunde, ohne jemanden, mit dem ich reden kann. Die einzige Freundin, die ich habe, sagt mir, dass sie nicht mit mir sprechen will.“
+
+Marianne schaute gebannt auf das Chatfenster.
+
+Corinne: „Sag was! Ich habe ein Recht das zu erfahren. Du ...“
+
+Marianne klickte das Fenster weg und zog den Tails-Stick aus dem Computer.
+
+
+
+SZENE 18: Elf Grundgedanken
+[2064 Marianne auf einem Stuhl sitzend am vorderen Rand der Bühne.]
+
+Marianne : „De elf Grundgedanken haben uns geholfen, immer besser zu verstehen wie man sich aus der Umklammerung durch übermächtige Gegner lösen kann, wie man sich frei bewegen und kommunizieren kann, auch wenn es Leute gibt, die das verhindern wollen. Egal ob das riesige Geheimdienste, schwer bewaffnete Armeen oder große und reiche Unternehmen sind. Es gibt Dinge, die sind stärker als sie. Und die haben die Cypherpunks gesucht, sie haben uns dabei geholfen den Krieg vor jetzt über 30 Jahren zu beenden. 
+
+Ich werde die einzelnen Gedanken jetzt nur andeuten. In der Akademie könnt ihr sie genauer kennen lernen, da könnt ihr sie auch üben. Da könnt ihr vor allem euch eigene Gedanken machen und sie dazubringen, euren eigenen Worte verwenden. Das ist wichtig. Die Grundgedanken taugen nur, wenn man sie versteht. Und man versteht sie nur, wenn sie mit ganz eigenen Worten ausdrücken kann.
+
+Den ersten Gedanken habe ich euch schon gesagt: Verschlüsselung, freie und  offene Software, verteilte Computer. Das hat uns immer wieder unsere persönliche Freiheit gerettet. Vor 50 Jahren haben viele Menschen nicht verstanden, welche grundlegende Bedeutung diese drei Dinge haben, dass ohne sie gar nichts geht. Die meisten gaben sich damals mehr Mühe, Auto fahren zu lernen oder ein Musikinstrument, als verschlüsseln zu lernen und freie Software zu verwenden oder zu machen.
+
+Den zweiten Gedanken hat Julian Assange einmal mit dem Satz ausgedrückt: Dedication wins against wealth. Hingabe gewinnt gegen Reichtum. Ich würde sagen: Das, was Menschen im Herzen tragen, ist stärker als jede Macht der Welt. Die Mächtigen haben sich damals für die Cypherpunks nicht wirklich interessiert. Sie haben sich über sie geärgert, sie wollten sie stoppen, sie weghaben, aber als Menschen waren sie für sie nicht interessant. Deswegen haben sie es nie geschafft, sie los zu werden. Sie waren brutal aber halbherzig und deswegen langsam, ungenau und unbeweglich. Die Wende kam dadurch, dass jedes Jahr mehr und mehr junge Menschen ihre eigenen Ideale in die Welt der Geheimdienste und großen Unternehmen hineintrugen, anstatt deren Ideale zu übernehmen. Sie wollten nicht vor allem mehr Geld, mehr Macht und mehr Sicherheit, sondern vor allem so leben wie sie sind. Sie wollten sich nicht verbiegen.
+
+Der dritte Gedanke ist die Überwindung des Gegeneinanders im Leben. Im Großen ist das die Überwindung von Nationalismus und Rassismus, davon dass Menschen als besser oder schlechter angesehen werden je nachdem wo sie herkommen, welchen Titel, wie viel Geld sie haben, ob sie Mann oder Frau sind. Im Kleinen geht es darum, zu erkennen, dass jeder Mensch einen guten Kern hat, wirklich jeder! Jeder macht das, was er für gut hält. Auch wenn er Bomben wirft. Er meint dann meist, dass es notwendig ist, Bomben zu werfen, dass es nicht anders geht. Das ist natürlich immer ein Denkfehler. Wenn die Menschen gegeneinander gehen, dann freuen sich die Mächtigen, sie werden stark dadurch, dass Menschen nicht das tun, was ihr Herz ihnen sagt. Dann können sie sie besser kontrollieren und unterdrücken.
+
+Der vierte ist die freie Entfaltung der eigenen Initiative. Da gab es schon in meiner Jugendzeit großartige Beispiele. Zum Beispiel das Linux-Projekt, das jeder von euch kennt. Zigtausende Menschen haben da zusammengearbeitet und die meisten davon nicht um Geld zu verdienen, sondern weil sie eigene Ideen verwirklichen wollten. Damit das gehen kann, braucht man starke und gute Regeln, und ein kräftiges miteinander Denken. Zum Beispiel durfte jeder ein eigenes Projekt anfangen und kein anderer durfte ihm dabei hineinreden. Und jeder durfte vom anderen alles sehen und sich auch alle Ideen und Pläne und Programme nehmen, die er wollte, ohne zu fragen. Heute machen wir das nicht nur mit Computer-Programmen so, sondern überall im Leben: Wenn wir Brücken bauen, Autos produzieren oder Strom erzeugen. Und auch jeder Lehrer hat heute mit seinen Schülern ähnliche Freiheiten wie damals die Menschen in ihrem eigenen Projekt.
+
+Der fünfte Grundgedanke ist, immer besser zu verstehen, warum andere Menschen machen, was sie machen, und sagen, was sie sagen. Und nicht nur ungefähr verstehen, sondern so weit verstehen, so weit Verständnis haben, dass man alles das, was der andere macht und sagt, auch machen und sagen würde, wenn man an seiner Stelle wäre und seine Erfahrungen hätte. Es geht darum, zuhören zu lernen, sich in die ganze Situation eines anderen hinein zu fühlen und zu denken, ihn so zu nehmen wie er ist. Jeden Gedanke, dass er anders sein sollte, dass er sich ändern sollte, dabei schweigen zu lassen. Der andere ist ok, so wie er ist. Man selbst ist auch ok. Alle sind ok. Und wenn jemand etwas Dummes oder Schlechtes macht, dann ist das deshalb, weil er etwas nicht versteht, weil er irgendwo blind ist.
+
+Der sechste ist ein wenig schwieriger zu verstehen. Er geht darum, dass es immer einen Unterschied gibt zwischen dem, was ich denke und dem, was ich sage. Auch wenn ich glaube, dass ich genau sage, was ich denke. Unsere Worte passen nie so ganz. Und weiter gibt es einen Unterschied zwischen dem, was ich sage und dem was der andere, mit dem ich spreche, hört. Und auch bei ihm dann zwischen dem, was er hört und dem, was er versteht. Das sind also vier verschiedene Dinge: Denken, sagen, hören und verstehen. Da kommen sehr viele Missverständnisse her. Was kann man tun? Ungefähr das, was die vier Leute machen, die alle das gleiche Haus gesehen haben, aber jeder nur von einer Seite. Sie treffen ich in einer Kneipe und sprechen über das Haus. Sie könnten jetzt darüber streiten, weil der eine eine Türe gesehen hat und die anderen nicht. Und der eine vier Fenster und der andere zwei. Aber sie tun es nicht, sondern hören dem anderen zu und versuchen herauszufinden, wie alles zusammenpasst, was sich widerspricht. Nach diesem Prinzip ist auch die Akademie gestrickt. Man muss Dinge immer von verschiedenen Seiten ansehen, sonst kennt man sie nicht.
+
+Der siebte ist das, mit dem die Cypherpunks-Bewegung weltweit bekannt wurde. Das ist das Recht, dass jeder Mensch erfahren darf, was die Regierungen, heute sagen wir Verwaltungen, Unternehmen, Armeen, Polizei und so weiter, alles tun. Von allem über das, was einen selbst betrifft, darf man alles erfahren. Wenn man ein Ei isst, dann darf man erfahren, was alles getan wurde, um es zu erzeugen und zu einem zu bringen. Genauso wenn man Strom nutzt, wenn man Straßenbahn oder Auto fährt. Und jeder darf erfahren, was die Verwaltung des eigenen Landes alles macht, um zum Beispiel für Sicherheit zu sorgen. Aber immer erst, wenn es schon getan ist, spätestens ein paar Wochen danach. Das Tun soll frei bleiben. Man soll nicht eingreifen, solange jemand etwas tut. Das würde viel durcheinander bringen.
+
+Jetzt fehlen noch vier. Aber von denen möchte ich hier noch nichts sagen. Sie sind ein wenig anders als die ersten sieben. Besonders die letzten zwei. Das soll noch ein bisschen spannend bleiben. Lasse kennt sie auch noch nicht. Ihr werdet sie erfahren, wenn ihr in der Akademie durch die ersten sieben durch seid.“
+
+
+
+SZENE 19: Die Psychologin
+[2019 Im Keller-Schlafraum.]
+
+Es klopfte an Mariannes Türe. Sie erschrak. Wer war das jetzt? Sie atmete durch. Corinne war noch überall in ihren Gliedern.
+
+Ihr Mutter sagte durch die Türe: „Deine Mama.“
+
+Marianne: „Ich will jetzt nicht.“
+
+Mutter: „Stefanie ist hier. Sie will mit dir reden.“
+
+Marianne: „Ich habe mit ihr geredet.“
+
+Stefanie war die Psychologin, die bei Marianne eine posttraumatische Störung entdeckt zu haben glaubte. Sie war 35 Jahre alt und eng mit ihrer Mutter befreundet. Sicherlich verlangte sie von ihrer Mutter kein Geld für die Gespräche, sie tat es aus bestem Willen, nur um zu helfen. Nichts, was Marianne jetzt im Entferntesten brauchen konnte. Sie brauchte einen Menschen, keine Psychologin, jemand, der sie verstand und mit dem sie reden konnte.
+
+„Marianne, ich habe eine Idee, die ich gerne mit dir teilen würde“, sagte Stefanie durch die Türe. “Vielleicht können wir die Situation damit verbessern.“
+
+Marianne antwortete nicht. Sie setzte sich auf ihr Sofa und schloss die Augen.
+
+Stefanie: „Ich nehme mir hier einen Stuhl und warte, bis du bereit bist. Es ist mir wichtig. Lass dir Zeit.“
+
+Marianne versuchte zu meditieren, zumindest das zu tun, was sie sich darunter vorstellte. Auf jeden Fall tat es ihr gut, für eine Zeit ihre innere Balance zu suchen. Und das funktionierte meist sogar in echten Stresssituationen, wie in der, in der sie gerade steckte. Paul hatte ihr erzählt, was er tat, wenn bei ihm alles aus den Fugen geriet, und er nicht mehr wusste, wo er war und wohin er wollte, und sie hatte sich daraus ihre eigene Sache zusammengebastelt. So saß sie mit geschlossenen Augen im Schneidersitz auf dem Sofa, ein Bein auf dem Boden.
+
+Nach etwa einer Viertelstunde stand sie auf, ging langsam zur Türe, öffnete sie und sah Stefanie an, die auf einem Stuhl an der Kellerwand saß und ein Buch las. Stefanie schaute auf und lächelte Marianne an, wollte aufstehen, aber Marianne machte ihr ein Zeichen und setzte sich an die Wand gegenüber.
+
+Marianne: „Was willst du mir sagen?“
+
+Stefanie: „Ich habe viel über deine Situation nachgedacht, in was du steckst. Ich hatte nicht richtig verstanden.“
+
+Marianne: „Was hattest du nicht richtig verstanden?“
+
+Stefanie: „Es ist real. Vollkommen real. Du hast keine Möglichkeit es anders zu sehen. Es ist absolut real! Auf eine gewisse Weise.“
+
+Marianne schaute auf den Boden. Eine leise Wut stieg in ihr hoch. Sie hasste Manipulationen.
+
+Stefanie: „Dein Körper macht es real. Wie der Körper bei einem Schock das Blut zurückhalten kann, auch wenn man eine große Wunde hat, so kann der Körper dein Denken fesseln, er kann bestimmen, was du denkst. Es ist als wärest du in einem Gefängnis, nur das du die Gitterstäbe weder sehen noch spüren kannst. Ich hoffe so sehr, dass du vielleicht etwas davon ahnst, dass du spürst, dass mit deinem Denken etwas nicht ganz stimmt.“
+
+Marianne antwortete ohne vom Boden aufzuschauen: „Und dann zaubert mir mein Körper ein Polizeiauto in meine Erinnerung hinein, aus dem drei Männer aussteigen, mit meinem Bruder sprechen, er mich dann anschaut und ohne auf Wiedersehen zu sagen, einsteigt?“ 
+
+Stefanie: „Ja. Das kann sein.“
+
+Marianne: „Und wie erklärst du, dass ich davon schon erzählt hatte, bevor ich überhaupt den Brief von Paul bekommen habe, in dem er geschrieben hat, dass er weg ist.“
+
+Stefanie: „Da habe ich auch schon darüber nachgedacht. Du hast vielleicht vorher geahnt, dass dein Bruder weg will oder es am Rande mitbekommen?“
+
+Marianne: „Am Rande mitbekommen? Ich habe es am Rande mitbekommen und mir davon so einen Schock geholt, dass mein Denken gefesselt wurde.“ Marianne kochte, aber sprach weiterhin in ruhigem Ton.
+
+Stefanie: „Ich glaube, er hat es dir vorher gesagt!“
+
+Marianne platze: „UND DAS ERFINDEST DU EINFACH ALLES! DAS IST ALLES AUSGEDACHT! Du sagst: 'Das kann sein' … 'ich glaube' … 'vielleicht'. Aber ich brauche Tatsachen, nicht irgendetwas Erfundenes aus deiner Fantasie.“
+
+Stefanie antwortete mit verständnisvoller Stimme: „Es ist doch völlig unwahrscheinlich, dass dein Bruder einfach so in das Auto einsteigt. Ohne die Polizisten etwas zu fragen. Hej, er war Profihacker, er hatte Zig-Male mit Polizisten zu tun gehabt und hat sie zur Weißglut gebracht. Ein Richter hat ihn einmal angebrüllt und dann die Verhandlung abgebrochen und er ist dabei ruhig geblieben. Ich sehe heute noch sein leises Lächeln. Und dann steigt er einfach so ein, ohne Frage, ohne Gegenwehr?“ Sie schaute Marianne streng an.
+
+Marianne erstarrte. Warum war er einfach so eingestiegen? Warum? Sie hatte sich das Tausendmal gefragt. Sie wusste es nicht. 
+
+Stefanie: „Ich glaube, und ich bin Psychologin, ich glaube, dass dein Bruder in ein Auto zu Freunden eingestiegen und mit ihnen davon gefahren ist. Er hat dir noch einen Blick zugeworfen, aber nichts gesagt. Aber durch den Blick hast du verstanden, dass er nicht wiederkommt. Und da ist für dich eine Welt zusammengebrochen. Da ist aus einem normalen Auto ein Polizeiauto geworden und aus drei Freunden, zwei Polizisten und ein Geheimdienstsmann. Du kamst an dem Tag völlig zerheult nach Hause. Warum? Wo warst du da gewesen?“
+
+„In Wedding, am Rathaus“, sagte sie leise und vergrub ihr Gesicht in ihren Händen.
+
+Stefanie legte ihre Hand auf Mariannes Schulter, aber die schob sie zurück.
+
+„Was war dein Vorschlag?“, meinte Marianne nach einer Weile leise.
+
+Stefanie: „Du solltest für ein paar Wochen auf die Havelhöhe gehen. Da gibt es ein Institut, da kannst du entspannen. Und da kannst du vielleicht die richtige Geschichte wiederfinden. Wenn du willst. Willst du das?“
+
+Marianne schaute langsam mit fragendem Blick hoch zu Stefanie. Dann erhob sie sich und verschwand in ihrem Zimmer.
+
+
+
+
+SZENE 20: Unterschiedliche Strategien
+[2019 Büro beim BND.]
+
+Heinz: „Schau dir das an! Unsere Fähnchen war auf einem TAO-Computer der NSA in Fort Meade und hat Daten mitgenommen. Das ist doch ein Ding!“
+
+Frederik ging zu Heinz herüber und schaute auf seinen Bildschirm.
+
+Frederik: „Sagt wer?“
+
+Heinz: „Die werten amerikanischen Kollegen. Ich hoffe, sie haben niemanden umgebracht, um an die Information zu kommen. Woher wissen die das auf einmal? Auf dem Computer waren nur Spuren von Bär dachte ich.“
+
+Frederik: „Die Freundin von Bär. Sie hat bestimmt geredet. Oder musste reden.“ Erlächelte. „Aber immerhin sagen sie uns so etwas einmal. Einfach so … Das könnte vielleicht der Beginn einer vertrauensvollen Zusammenarbeit werden.“
+
+Heinz: „Sie sagen es nicht ganz einfach so.“
+
+Frederik beugte sich über Heinz Schulter und las die E-Mail: “Näh! Nein, nein. Sie kriegen Fähnchen nicht. Nicht von mir. Nicht jetzt. Sie darf jetzt nicht nach Amerika. Wir sind so knapp davor. Ein Schritt noch und sie geht freiwillig in die Psychatrie. Wir können sie jetzt nicht da rausholen. Das gibt einen Aufruhr. Das ganze Umfeld, Familie, Freunde. Das ist ein Wespennest. Und wenn sie jetzt einfach so verschwindet wie Fahne, kriegen wir vielleicht eine Initiative, die sich ein paar Wochen lang vor die amerikanische Botschaft stellt, oder bei uns hier, oder irgendeine andere von diesen Aktionen. Und dann springt die Presse an … Zuviel Aufmerksamkeit.“
+
+Heinz schaute Frederik skeptisch an: „Und wie willst du das machen? Ich meine: Du sagst nein und kannst schon die Hand auf den Telefonhörer legen für den Anruf, der dann aus dem Direktorat kommt, wo dir dann irgend so ein Grünschnabel mit mit aufgeblähter Brust einen schönen Gruß vom Direktor ausrichtet und dir sagt, dass du das doch machen musst.“
+
+Frederik war zurück auf seinen Platz gegangen und lies sich in seinen Stuhl fallen. „Ich kann sie jetzt nicht hergeben. In einem halben Jahr vielleicht. Dann kann sie verschwinden. Aber nicht jetzt.“
+
+Frederik: „Wir können sie hierher bringen. Die Amis verhören sie und wir bringen sie wieder zurück. Im Augenblick glaubt ihr eh niemand etwas. Das würde sogar reinpassen. Schorsch ist ziemlich aktiv gerade. Und der ist echt gut. So dreist! Du glaubst es nicht. Schau, das hast du noch nicht gesehen ...“
+
+Frederik zeigte Heinz einen Umzugskarton mit einem Tagebuch, einigen Kleidungsstücken und einer Uhr. 
+
+„Alles von Fähnchen“,  grinste er. „Hat Schorsch in den letzten Tagen aus ihrem Zimmer geholt. Und immer während sie im Raum war. Sie verlässt ihn ja kaum. Nachts um drei. Ein bisschen Gas, und sie schläft tief. Er kommt echt überall rein. Ein total Verrückter. Er löscht sogar die Bilder von den zwei Überwachungskameras, die sie in ihrem Zimmer hat. Nur ihren Laptop hat er noch nicht präparieren können. Den hat sie anscheinend im Schlafsack direkt zwischen ihren Beinen. In den nächsten Tagen kommen die Sachen dann einzeln wieder zurück an ihren Platz.“
+
+„Zwischen ihren Beinen? Die ist ganz schön paranoid,“ lachte Heinz. „Ich sage dir, wir haben sie bald. Das hält kein Mensch aus. Du legst dein Tagebuch auf den Tisch und am nächsten Morgen ist es nicht mehr da. Du suchst es überall. Denkst, du wirst verrückt. Und dann zwei Tage später ist es auf einmal wieder da. Das ist die gute alte Zersetzung. Mein Onkel war bei der Stasi. Die haben mit ihren niedlichen Mitteln ganz schön viel erreicht. Das ganze Land hat vor ihnen gezittert, vor dem lahmfaulen Beamtenhaufen. Echt Angst gehabt! Ich sage dir, die einfachen Sachen wirken am besten. Computer manipulieren. Einfach mal ab und zu den Bildschirm aus- und einschalten, das Programm abstürzen lassen, wenn derjenige gerade eine wichtige E-Mail schreibt, den Mauszeiger anhalten, eine Textpassage löschen. Das ist Überwachungs-Homöopathie. Deswegen … Wir geben sie jetzt nicht raus!“
+
+Heinz: „Dann brauchst du eine gute Story.“
+
+Frederik: „Wir sagen ihnen, dass sie bald in die Psychatrie kommt. Dort bekommen sie dann Zugriff. Nicht jetzt.“ 
+
+
+
+SZENE 21: Die Sphinx
+[2064 Bühne im Versammlungshaus.]
+
+Marianne: „Es gibt noch etwas Neues.“ 
+
+Sie hob ihr flache Hand Richtung Publikum. Auf ihr erschien eine etwa 15 cm große, gezeichnete Mosquitofliege. Lasse und Sigur hatten im Raum einige 3D-Projektoren aufgestellt, mit denen man an beliebigen Stellen im Raum Dinge einblenden und bewegen konnte. 
+
+Marianne: „Das ist Mostafa. Er gehört zum Personal der Akademie.“
+
+Sie warf ihn in die Luft und Mostafa flatterte ziemlich aufgeregt eine Runde über die Zuschauer und dann Richtung Sofa, wo er sich neben Lasse auf der Sessellehne niederließ, noch einmal mit den Flügeln schlug und mit klarer, etwas piepsiger und aufgeregter Stimme zu sprechen anfing.
+
+Mostafa: „Hej, hej! Mein erster Auftritt hier. Überhaupt. Ja, was soll ich sagen? Ich bin Mostafa. Ich bin eine asiatische Tigermücke.“ Er schlug mit den Flügeln. „Und ich weiß eine Menge über die Akademie. Eigentlich alles. Alles, was ihr über die Akademie wissen müsst. Ich weiß welches die letzten vier Grundgedanken sind. He he. Und ich kenne jeden Eingang, jeden Übergang und jeden Ausgang. Ich war schon überall. Und … Ich kenne die Sphinx! Oh, ja. Und meine Kollegen hier: Wim, Tin und Wunderlich.“
+
+Ein großer Bär, eine Eule und eine Ratte erschienen hinter der Bühne. Der Bär sprang mit einem eleganten Schwung über die Sofarücklehne und landete mit einem leichten Lächeln auf den Lippen neben Lilly. Die Eule flatterte in die Höhe und nahm etwas ungelenk neben Bär und Lilly auf der Lehne Platz. Und die Ratte wuselte eine Zeit lang auf der Bühne herum und verschwand dann unter Lasses Sessel. Kurz darauf lugte sie etwas scheu wieder heraus.
+
+Lasse: „Das sind die vier Spiel-Meister der Akademie. Sie sind dafür da, dass ihr während des Lernens nicht aus dem Spielen herausfallt. Mostafa führt euch überall herum. Er erklärt neue Dinge und gibt alle möglichen Kommentare. Wim, der Bär, ist für die Atmosphäre zuständig, dafür, dass sich jeder frei fühlt, das auszuprobieren, was er probieren will. Tin, die Eule, weiß alles, was über der Befreiungskampf irgendwo geschrieben steht und alles was Cypherpunks darüber gesagt haben. Und Wunderlich ist unsere Hausratte. Sie klaut ab und zu Worte und Gedanken und anderes, die ihr dann wieder zurückholen müsst.“
+
+Unter Wunderlichs Sessel sah man ein angedeutetes Grinsen herausscheinen.
+
+Lasse: „Wenn ihr zur Akademie wollt, müsst ihr nur Mostafa fragen.“
+
+Viele Kinder und Jugendliche im Zuschauerraum holten ihren Türöffner-Wegweiser heraus, ein kleines, ovales, flaches Gerät, zeigten auf Mostafa und drückten dabei einen Knopf. 
+
+Lilly: „Mehr gibt es jetzt eigentlich nicht zu sagen. Wenn jemand jetzt hier in der großen Runde etwas sagen oder fragen möchte, gerne. Ansonsten: viel Spaß und wir sehen uns in TRON. Wer noch bleiben will: Marianne wird den ganzen Abend hier sein und Geschichten erzählen und alle eure Fragen beantworten.“
+
+Ein dunkles Grollen war von draußen zu hören. Es schien zuerst von der einen Seite, dann von der anderen zu kommen. Es kam näher und wurde lauter und plötzlich, mit einem Blitz und einem gewaltigen Krachen stürzte die Wand hinter der Bühne ein, zumindest schien es so. Steinbrocken rollten durch den Raum. Alles füllte sich mit Nebel. Grelles Licht blendete die Zuschauer, keiner konnte genau sehen, was vor sich ging. Die Eule hatte sich zum Licht hingedreht, der Bär saß weiterhin ruhig auf dem Sofa und schaute zu den Zuschauern, von der Ratte war nichts zu sehen und Mostafa runzelte demonstrativ die Stirn. Alle Zuschauer schauten gespannt in das Licht, wo sich eine Riesengestalt abzeichnete und langsam deutlicher wurde...“
+
+„Die Sphinx!“, rief Lasse.
+
+Mostafa grummelte neben ihm: „Sie kann nicht ein einziges Mal gesittet kommen, wie normale Menschen das tun. Nicht einmal wenn die Akademie eingeweiht wird.“
+
+
+
+
+SZENE 22: Flucht aus dem Keller
+[2019 – Marianne allein im Keller]
+
+Marianne schreckte im Bett hoch. 2 Uhr 30. Ihr Wecker hat einen kurzen Piepston von sich gegeben. Sie wischte sich die Augen und öffnete den Reisverschluss ihres Schlafsacks. Ihr erster Griff galt ihrem Laptop, den sie immer mit in den Schlafsack nahm. So hatte ihr das ihr Bruder gesagt: Werkzeuge immer bei sich behalten. Sie stand auf und schlüpfte in ihre Sneakers. War das ein leises Kratzen draußen im Gang? Oder nicht? Da, noch einmal, fast unhörbar. Sie musste wirklich hier raus, sonst würde noch verrückt werden. Paul sagte immer, dass sie zu allem fähig seien, nichts wäre ihnen heilig, nicht einmal die eigene Wohnung. Irgendwann werden sie dafür zur Rechenschaft gezogen, dachte Marianne.
+
+Sie schob den Schreibtisch beiseite. Dahinter kam ein Heizkörper zum Vorschein, der auf den ersten Blick wie ein normaler Heizkörper aussah. War er aber nicht. Paul hatte ihn dort angebracht, um einen Geheimgang zu verdecken, den er mit einem Freund im Sommer vor zwei Jahren gebaut hatte. Ein richtiger unterirdischer Gang, durch die Hausmauer hindurch, unter dem Rasen entlang bis hin zu einem Gartenhäuschen. Insgesamt etwa 25 Meter lang. Vielleicht brauchen wir den einmal, hatte er Marianne gesagt. Vielleicht müssen wir einmal aus dem Haus, ohne dass das jemand mitbekommt. Ein kleines Hebelchen löste eine Sperre, dann ließ sich die Heizung über zwei Scharniere wegschwingen. Marianne schaute in den dunklen Gang, es sah alles ok aus. Dann suchte sie ein paar Kleidungsstücke zusammen und steckte sie mit einem Waschbeutel und ihrem Laptop in einen Rucksack. Sie holten einen noch eingeschweißten Laptop, prüfte die Versiegelung und tat ihn mit hinein. Dann verschwand sie im Gang und zog den Heizkörper hinter sich zu, der mit einem satten Klack einschnappte. Leicht gebückt, aber realtiv bequem ging sie den Gang entlang und stieg im Gartenhäuschen über eine kleine Leiter hinaus. Dann verschwand sie über das angrenzende Maisfeld in der Dunkelheit.
+
+Sie lief lange, zwei Stunden, drei Stunden in Richtung Innenstadt, zur Janowitzbrücke und dort zur cbase, dem bekannten Hackerspace. Sie folgte auf ihrem Weg so gut es ging der Kamerakarte ihres Bruders. Dort waren die meisten Überwachungskameras der Stadt mit Reichweite und Richtung eingezeichnet. Es gab zu Fuß immer noch relative gute Wege in die Stadt hinein. Die Aktionen gegen Überwachungskameras in Berlin hatten eine Wirkung gehabt. Manchmal musste sie ein wenig komische Wege laufen und aufpassen, dass es für Menschen, die sie unterwegs traf, nicht zu seltsam aussah.
+
+Ihr Ziel war ein Projekt in der cbase, dass zwar allen bekannt war, von dem aber nur wenige wussten, was es wirklich war. Es war der so genannte Hackerraum, der so nach außen abgeschirmt war, dass keine Funksignale von außen eindringen oder herausgehen konnten. Gleichzeitig wurde jede fremde elektromagnetische Strahlung von mitgebrachten Computern, Handies und anderen Geräten erkannt. Die offizielle Aufgabe war es, drinnen Fotos, Filme oder Tonaufnahmen zu machen und rauszubringen, oder einen der Computer anzugreifen. Immer wenn das System ein Versuch erkannte, sprang ein großer Bildschirm an der Decke an und eine animierte Guy-Fawkes-Maske warnte in dramatisch-lustiger Weise vor dem Eindringling. Mit der Zeit waren die Versuche immer aufgefeilter geworden, Hacker kamen von weit her, aber auch das System war besser und besser geworden. Inzwischen musste man einen Riesenaufwand treiben, wenn man etwas mitschneiden oder hineinschmuggeln wollte.
+
+Marianne hatte seit einem Hackaton-Wettbewerb vor zwei Jahren einen Gutschein, einen eigenen Rechner dort unterzubringen. Und das wollte sie jetzt tun. Sie wollte sich zumindest für einige Zeit in der Öffentlichkeit verstecken, da wo viele Menschen um sie herum waren. Sie ging davon aus, dass welcher Geheimdienst auch immer hinter ihr her war, er sie irgendwo bei Freunden oder Bekannten versteckt vermuten würde. Sie würden alle Plätze bewachen, wo sie  in den letzten Jahren war, wo sie Kontakt hatte und die privat waren. Das war ihre Wette und ihr Bruder hatte gesagt, dass man solche Dinge mit dem Gefühl entscheiden sollte und manchmal müsste man Dinge tun, die unsinnig erscheinen. Schlafen wollte sie jeder Tag von 9 bis um 3 Uhr in einem der Schlafkoien im Keller der cbase. Den Rest der Zeit wollte sie mit Pudelmütze vor ihrem Rechner im Hackraum sitzen und … ja, was. Genau! Sie umfasste mit der Hand den USB-Stick in ihrer Tasche. Das wollte sie tun. Den wollte sie sich anschauen.
+
+Es war etwa 5 Uhr morgens als sie bei der cbase an ein Seitenfenster klopfte, wo sie noch eine Gruppe von Hackern um einen Laptop herum sah. Einer stand auf, warf einen flüchtigen Blick auf ihre Mitgliedskarte und lies sie hinein.
+
+
+
+SZENE 23: Drohung
+[1913, Nach der Rede im Gastraum einer Wirtschaft. Wilhelm, Hilde, ein Fahrer und der Parteisekretär]
+
+Wilhelm: „Danke, Hilde, für deine Standpauke vorhin. Ich wäre sonst nicht auf die Bühne gegangen. Es war gut zu den Genossen zu reden.“
+
+Hilde nickte.
+
+Wilhelm: „Ich habe lange nicht so deutlich gesprochen wie heute. Ich habe einige Sachen zum ersten Mal gesagt und die Genossen haben es gut aufgenommen, was ich höre. Es fühlt sich gut an, dass es jetzt in der Welt ist. Gut und wiederum auch nicht ...“
+
+Hilde: „Wiederum auch nicht?“
+
+Wilhelm: „Ja, wiederum auch nicht.“ Er schloss die Augen. In diesem Moment trat von hinten ein Bote heran und fragte mit vertraulicher Stimme: „Hilde Brandenburg?“
+
+Hilde: „Das bin ich.“
+
+Er überreichte ihr einen Brief und verschwand wieder. Hilde öffnete ihn hastig und las.
+
+Hilde: „Elfi ist in Not. Ich muss nach Potsdam. Sofort.“
+
+Wilhelm: „Du kannst nicht alleine fahren. Nicht in dieser Lage. Esist zu gefährlich. Und ich kann jetzt hier nicht weg. Nachher sind Verhandlungen.“
+
+Hilde: „Der Sekretär kann mich begleiten, oder nicht?“
+
+Der Sekretär nickte und begann seine Dinge zusammenzupacken. Wilhelm stand auf und ging um den Tisch herum, um Hilde zu umarmen. 
+
+Wilhelm: „Pass auf dich auf!“
+
+Hilde: „Das werde ich. Es ist ja keine Weltreise. Machs gut!“ 
+
+Hilde verließ mit dem Sekretär den Raum.
+
+Wilhelm zum Fahrer: „Nun sind wir alleine, Alfons. So schnell kann das gehen, nicht?“
+
+Der Fahrer schaute ihn nicht an, sondern stand ebenfalls auf und verließ den Raum, ohne ein Zeichen zu geben warum. Zugleich setzten sich zwei Männer mittleren Alters in grauen Anzügen neben und gegenüber von Wilhelm und schauten ihn an.
+
+Wilhelm erschrocken: „Was ist das hier?“ Seine Stimme zitterte leicht. Die beiden Männer schauten ihn nur an.
+
+Wilhelm: „Was wollen Sie?“
+
+Nach einer kurzen Weile antwortet der Mann, der ihm gegenüber saß: „Schöne Rede eben. Schlau ausgedacht. Das kann einer Masse den Kopf verdrehen.“
+
+Zweiter Mann: „Du Vaterlandsverräter! Wenn es nach Burschen wie dir geht, ist in Deutschland bald niemand mehr bereit zu kämpfen. Und dann überrennt uns der Franzose und der Russe und aus ist es mit Deutschland.“
+
+Erster Mann: „Das werde wir verhindern. Oder bist du vielleicht sogar Russe? Oder Franzose? Oder Engländer?“
+
+Wilhelm ballte eine Faust unter dem Tisch: „Ich bin alles zusammen. Ich bin ein Mensch, wie ihr auch.“
+
+Der zweite Mann prustete los, während der erste ihn streng ansah.
+
+Erster Mann: „Wir lassen nicht zu, dass du unser Deutschland verrätst. Wir vernichten alles, was sich Deutschland entgegenstellt. Und haben überall Leute. Überall um dich herum. Dass du hier mit uns alleine sitzt, ist nur eine Kostprobe von dem, was wir können. Diesmal wirst du überleben. Beim nächsten Mal vielleicht nicht.“ Er schnippte mit den Fingern.
+
+Zweiter Mann: „Wäre mir ein Vergnügen.“
+
+Erster Mann: „Es kommt alles darauf an, wie du dich in der nächsten Zeit beträgst. Die Leute für die ich arbeite, haben wenig Geduld. Du steht auf Kippe. Überleg dir gut deine nächsten Schritte.“
+
+Dann standen beide grußlos auf und verließen den Raum.
+
+Wilhelm legte sein Gesicht in seine Hände.
+
+
+
+
+SZENE 24: Night-Raid
+[2019. Dunkles Schlafzimmer in Mariannes Elternhaus. Vater und Mutter nebeneinander schlafend.]
+
+Ein lauter Knall im Erdgeschoss und ein greller Blitz, der durchs Schlafzimmerfenster im ersten Stock hineinschien, lies Mariannes Eltern hochschrecken. Stimmen brüllten durcheinander. Lautes Trampeln, dann nach einer Zeit wieder ein Rumms. Sie schauten sich an. 2 Uhr morgens zeigte die Uhr.
+
+Mutter: „Um Gottes Willen! Was ist das?“
+
+Sie nahm seine Hand.
+
+Vater: „Ein Sonderkommando! Scheiße. Jetzt müssen wir ruhig bleiben. Gott sei Dank ist Paul weg.“
+
+Mutter: „Marianne???“ 
+
+Sie schaute unsicher um sich.
+
+Vater: „Ist ok. Mach dir keine Sorgen. Sie suchen Paul. Sie werden ihr nichts tun. Sie wird einen gehörigen Schreck bekommen, aber das kriegen wir wieder hin. Ich habe so etwas erwartet.“
+
+„Marianne!!!“, schrie die Mutter, ließ seine Hand los und wollte zur Schlafzimmertüre, aber ihr Mann hielt sie auf. 
+
+Vater: „Keine falsche Bewegung jetzt. Und gleich die Hände hoch, wenn sie reinkommen. Dann passiert nichts.“ Seine Stimme zitterte.
+
+Das Trampeln kam näher, die Treppe hinauf. Mit einem Krach flog die Türe auf, grelles Licht. Vater und Mutter hoben beide ihre Arme.
+
+Vater: „Nicht schießen! Wir sind unbewaffnet.“
+
+Der vorderste Soldat kam mit angeschlagener Waffe zu ihnen vor und brüllte mit amerikanischem Akzent: „Marianne Lasser. Wo?“. Zwei weitere rissen derweil die Kleiderschränke auf. Einer kroch mit dem Kopf unter das Bett.
+
+Mutter und Vater schauten sich überrascht an.
+
+„Down in her room!“, antwortete der Vater aufgeregt.
+
+Soldat: „No!“
+
+Vater: „Then I don't know. I don't know. I don't know.“
+
+Der Soldat drehte sich um und verschwand im nächsten Zimmer. Die anderen ihm hinterher. Nach etwa 10 Minuten verließen sie das Haus. Der Mannschaftswagen, mit dem sie gekommen waren, brauste mit quietschenden Reifen davon. 
+
+Lange schauten sich Mutter und Vater stumm an. Plötzlich stutzte die Mutter: „Warum haben sie englisch gesprochen?“
+
+Vater: „Wo ist Marianne?“
+
+
+
+Table of Contents
+2064	1
+Die Geschichte	1
+der Cypherpunks	1
+SZENE 1: Das Spiele-Labor	1
+[Im Jahr 2064. Sonnendurchflutetes, hügeliges Gelände einer Schule. Viele einzelne in Charakter, Farben und Formen völlig unterschiedliche Häuser aus Holz, Stein und Lehm. Umgeben von Bäumen, Tieren, einem Bach.]	1
+SZENE 2: Marianne	3
+[Im Jahr 2019. Großer Rathausplatz mit Springbrunnen. Menschen. Verkehrs- und Stadtlärm.]	3
+SZENE 3: TRON-Attacke	4
+[2064: Im Spiele-Labor, großer, runder Raum, mit Pflanzen, vielen gemalten Fantasy-Bildern an der Wand und einem Podest mit Getränken und alle Arten von Früchten und Nüssen. Vier große Computer-Bildschirmscheiben in der Mitte des Raumes, die über einem Tisch zu schweben scheinen. Vor jeweils zwei Bildschirmen liegt eine Tastatur.]	4
+SZENE 4: Schwachstellen in Computern	6
+[2064: Kleine Hausküche des Spiele-Labors, alles in Holz und Marmor gehalten. Töpfe mit allen Arten von Kräutern.]	6
+SZENE 5: Einbruch in Amerika	9
+[2019: Am Rathausplatz.]	9
+SZENE 6: Ein Überraschungspaket	13
+[2064: In der Hausküche.]	13
+SZENE 7: Wilhelm	14
+[1913: Ein Raum hinter der Bühne einer Festwiese. Man hört im Hintergrund eine riesige Menschenmenge.]	14
+SZENE 8: Nur 30 Sekunden	15
+[2019 Hamburger Restaurant, laute Musik, laute Gespräche überall]	15
+SZENE 9: Endlich mal Action!	16
+[2019 In einem Büro des BND (deutscher Geheimdienst). Zwei Beamte sitzen sich an ihren abgenutzten Schreibtischen gegenüber. Einer hat ein Vesperpaket ausgepackt vor sich liegen, der andere mit Beinen auf dem Tisch eine Zeitung lesend.]	16
+SZENE 10: Auf dem Heimweg	17
+[2019 In Berlin-Mariendorf. Vorstadtsiedlung, einzelne Häuser mit Gärten dahinter.]	17
+SZENE 11: Verrat	18
+[2019 Rathaus-Hochhaus. Davor ein Platz, eine viel befahrene Straße.]	18
+SZENE 12: Marianne Lasser	19
+[2064 Im Versammlungshaus der Schule. Draußen ein milder Abend, leichter Wind, die Sonne gerade untergegangen.]	19
+SZENE 13: Rede	21
+[1913, Wilhelm auf der Bühne, vor ihm eine Menschenmasse, alle Augen auf ihn gerichtet. Viele Fäuste in die Luft gestreckt. Bravo-Rufe.]	21
+SZENE 14: Die Cypherpunk-Akademie	22
+[2064 Bühne im Vesammlungshaus.]	22
+SZENE 15: Wir holen sie nicht!	23
+[2019 Büro beim BND]	23
+SZENE 16: Alleine	25
+[2019 Marianne zu Hause, im Keller-Schlafraum ihres Bruders. Ein Bett ein Schreibtisch, zwei Schränke. Auf dem Tisch zwei große Computermonitor-Scheiben, zwei Tastaturen. In einem winzigen Nebenraum eine Toilette mit Waschbecken.]	25
+SZENE 17: Eine Freundin?	26
+[2019 Im Keller-Schlafraum.]	26
+SZENE 18: Elf Grundgedanken	28
+[2064 Marianne auf einem Stuhl sitzend am vorderen Rand der Bühne.]	28
+SZENE 19: Die Psychologin	30
+[2019 Im Keller-Schlafraum.]	30
+SZENE 20: Unterschiedliche Strategien	33
+[2019 Büro beim BND.]	33
+SZENE 21: Die Sphinx	34
+[2064 Bühne im Versammlungshaus.]	34
+SZENE 22: Flucht aus dem Keller	35
+[2019 – Marianne allein im Keller]	35
+SZENE 23: Drohung	37
+[1913, Nach der Rede im Gastraum einer Wirtschaft. Wilhelm, Hilde, ein Fahrer und der Parteisekretär]	37
+SZENE 24: Night-Raid	38
+[2019. Dunkles Schlafzimmer in Mariannes Elternhaus. Vater und Mutter nebeneinander schlafend.]	38
