@@ -29,44 +29,47 @@ var prefixValues = [];
 //Read the file and print its contents.
 var filename1 = process.argv[2];
 var filename2 = process.argv[3];
+var filename3 = process.argv[4];
 
 if( filename1 == "--help" ) {
-	console.log("Usage: node addwords filename filename");
+	console.log("Usage: node addwords mainfile newwords [removewords]");
 	return;
 }
 
 
-// read file and interpret it ...
+// read current main file 
 fs.readFile(filename1, 'utf8', function(err, data) {
 	if (err) throw err;
 	
 	var words = JSON.parse(data);
-	
-	if( !words ) exit(0);
-	
-	fs.readFile(filename2, 'utf8', function(err, data) {
-		if (err) throw err;
 
-		var newWords = data.match(/[\w\xc0-\xd6\xd8-\xf6\xf8-\xff]+/g);
-			foundWords = [];
-		
-		for( var i=0; i<newWords.length ; i++ ) {
-			var nw = newWords[i].toUpperCase();
-			if( nw.length < 4 || nw.length > 10 ) continue;
+	fs.readFile(filename3, 'utf8', function(err, data) {
+		if (err) removeWords = [];
+		else 	 removeWords = data.match(/[\w\xc0-\xd6\xd8-\xf6\xf8-\xff]+/g).sort();
+	
+		fs.readFile(filename2, 'utf8', function(err, data) {
+			if (err) throw err;
+	
+			var newWords = data.match(/[\w\xc0-\xd6\xd8-\xf6\xf8-\xff]+/g);
+				foundWords = [];
 			
-			var prefWords = words[nw.substr(0,3)];
+			for( var i=0; i<newWords.length ; i++ ) {
+				var nw = newWords[i].toUpperCase();
+				if( nw.length < 4 || nw.length > 10 || removeWords.indexOf(nw) != -1 ) continue;
+				
+				var prefWords = words[nw.substr(0,3)];
+				
+				for( var j=0 ; prefWords && j<prefWords.length ; j++ ) if( nw == prefWords[j].word ) break;
+				
+				if( !prefWords || j==prefWords.length ) foundWords.push(nw);
+			}
 			
-			for( var j=0 ; prefWords && j<prefWords.length ; j++ ) if( nw == prefWords[j].word ) break;
-			if( !prefWords || j>=prefWords.length ) foundWords.push(nw);
-		}
-		
-		foundWords.sort();
-		
-		for( var i=0 ; i<foundWords.length ; i++ ) {
-			if( i && foundWords[i] != foundWords[i-1] ) console.log(foundWords[i]+" 21");
-		}
-		
-		debugger;
+			foundWords.sort();
+			
+			for( var i=0 ; i<foundWords.length ; i++ ) {
+				if( i && foundWords[i] != foundWords[i-1] && foundWords[i].length >= 4 ) console.log(foundWords[i]+" 21");
+			}
+		});
 	});
 });
 
