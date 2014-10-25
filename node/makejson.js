@@ -167,6 +167,7 @@ var filename = process.argv[2];
 var hvReg = /^(\d+)-(\d+)$/,
 	hvCnt = 0,
 	hv = argv["h"] || null,
+	profile = argv["p"] || null,
 	lgCnt = 0;
 	lg = argv["l"] || null,
 	wv = argv["w"] || null,
@@ -231,6 +232,14 @@ for( var i=0 ; i<letterOrder.length ; i++ ) {
 	}; 
 }
 
+if( profile ) {
+	// set letter profile (a bit for each letter used) ... (3774191835 & 4294967295) >>> 0
+	var searchProfile = 0,
+		searchProfileCnt = 0;
+	for( var i=0 ; i<profile.length ; i++ )
+		searchProfile |= 1 << letterOrder.indexOf(profile[i].toUpperCase()) >>> 0;
+}
+
 // read file and interpret it ...
 fs.readFile(filename, 'utf8', function(err, data) {
 	if (err) throw err;
@@ -249,10 +258,8 @@ fs.readFile(filename, 'utf8', function(err, data) {
 	console.log("Processing "+allWords.length+" words ...");
 	for( var i=0 ; i<(test? 20 : allWords.length) ; i++ ) {
 		// make all uppercase
-		if( verbose ) console.log("\n\nLooking at word: "+allWords[i]);
 		var match = entry.exec(allWords[i]);
 		if( !match ) continue;	
-		if( verbose ) console.log("Found word: "+match[0]);
 
 		// get word and frequency
 		switch(src) {
@@ -304,6 +311,9 @@ fs.readFile(filename, 'utf8', function(err, data) {
 		max = Math.max(max,wordValue);
 		min = Math.min(min,wordValue);
 		
+		if( searchProfile && (letterProfile | searchProfile) > searchProfile ) continue;
+		else if( searchProfile ) searchProfileCnt++;
+		
 		// prepare word entry
 		var wordEntry = {
 			word: word,
@@ -329,12 +339,16 @@ fs.readFile(filename, 'utf8', function(err, data) {
 		}
 		
 		// fullfill options
-		if(hv && wordValue>=hvLow && wordValue<=hvHigh) {
+		if(hv && !lg && wordValue>=hvLow && wordValue<=hvHigh) {
 			console.log("High value word: "+word+", with "+wordValue+" points.");
 			hvCnt++;
 		}
-		if(lg && word.length>=lgLow && word.length<=lgHigh) {
+		if(lg && !hv && word.length>=lgLow && word.length<=lgHigh) {
 			console.log("Found '"+word+"', with length "+word.length+".");
+			lgCnt++;
+		}
+		if(lg && hv && word.length>=lgLow && word.length<=lgHigh && wordValue>=hvLow && wordValue<=hvHigh ) {
+			console.log("Found '"+word+"', with length "+word.length+" and value "+wordValue+".");
 			lgCnt++;
 		}
 	}
@@ -348,6 +362,11 @@ fs.readFile(filename, 'utf8', function(err, data) {
 		var words = muprisWords[prefix];
 		
 		words.sort(function(a,b) { return b.value-a.value; });
+	}
+	
+	if( searchProfile ) {
+		console.log(searchProfileCnt+" words with profile '"+profile+"' found.");
+		return;
 	}
 
 	fs.writeFile(filename+'.words.json', JSON.stringify(muprisWords), function (err) {
