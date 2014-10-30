@@ -53,7 +53,8 @@ var MURBIKS_MODULE = function(layer) {
 		fingerIsPressed = false,
 		fingerPos = null,
 		hookResumeAskForWord = null,
-		hookResumeMenuLayer = null;
+		hookResumeMenuLayer = null,
+		scoreBarDirty;
 	
 	/*
 	 * Program 1
@@ -226,7 +227,7 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 31.0,
 		    	anim: function() {
-		            showSpeechBubble(8.0 , $42.t.mostafa_basic06 , mostafa.getPosition());		    		
+		            showSpeechBubble(undefined , $42.t.mostafa_basic06 , mostafa.getPosition());		    		
 		    	}
 		    },{
 		    	time: 31.1,
@@ -320,54 +321,76 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 7.0,
 		    	anim: function() {
-		            showSpeechBubble(3.0 , $42.t.mostafa_advanced01 , mostafa.getPosition());		    		
+		            showSpeechBubble(3.0 , $42.t.mostafa_advanced01 , mostafa.getPosition());	
+		            setTimeout(function() {
+			    		ml.unselectWord();
+			    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		            	
+		            },1500);
 		    	}
 		    },{
-		    	time: 8.6,
-		    	anim: function() {
-		    		ml.unselectWord();
-		    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);
-		    	}		    	
-		    },{
-		    	time: 9.0,
+		    	time: 7.0,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
 		    		moveHandTo(1.1 , tilePos);		    		
 		    	}
 		    },{
-		    	time: 10.1,
+		    	time: 8.1,
 		    	anim: function() {
 	    			ml.dontAutoSelectWord = false;
 
 		    		pressFingerTo(1.0 , cc.p(128,400));		    		
 		    	}
 		    },{
-		    	time: 11.2,
+		    	time: 9.2,
 		    	anim: function() {
 		    		moveHandTo(1.1 , cc.p(-200,0));	
 		    	}
 		    },{
-		    	time: 13.0,
+		    	time: 11.0,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
 		    		moveHandTo(1.1 , tilePos);		    		
 		    	}
 		    },{
-		    	time: 14.1,
+		    	time: 12.1,
 		    	anim: function() {
 		    		pressFingerTo(1.0 , cc.p(192,400));		    		
 		    	}
 		    },{
-		    	time: 15.2,
+		    	time: 13.2,
 		    	anim: function() {
 		    		moveHandTo(1.1 , cc.p(-200,0));	
 		    	}
 		    },{
-		    	time: 16.3,
+		    	time: 14.3,
 		    	anim: function() {
-		            showSpeechBubble(7.0 , $42.t.mostafa_advanced02 , mostafa.getPosition());		    		
+		            showSpeechBubble(undefined , $42.t.mostafa_advanced02 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 14.4,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,2);
+		    		
+		    		moveHandTo(1.1 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 15.8,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,2);
+		    		
+		    		pressFingerTo(0.3 , boxPos);		    		
+		    	}
+		    },{
+		    	time: 16.6,
+		    	anim: function() {
+		    		var boxPos = getBoxPosition(1,2);
+		    		
+		    		boxPos.x -= 100;
+		    		boxPos.y -= 30;
+		    		
+		    		moveHandTo(0.5 , boxPos);		    		
 		    	}
 		    },{
 		    	time: 17.4,
@@ -381,34 +404,10 @@ var MURBIKS_MODULE = function(layer) {
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,2);
 		    		
-		    		pressFingerTo(0.6 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 19.6,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,2);
-		    		
-		    		boxPos.x -= 100;
-		    		boxPos.y -= 30;
-		    		
-		    		moveHandTo(0.5 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 20.4,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,2);
-		    		
-		    		moveHandTo(1.1 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 21.8,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,2);
-		    		
 		    		pressFingerTo(0.3 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 22.2,
+		    	time: 19.2,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,2);
 		    		
@@ -418,39 +417,34 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.5 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 25.0,
+		    	time: 22.0,
 		    	anim: function() {
 		    		moveHandTo(0.5 , cc.p(270,420));		    		
 		    	}
 		    },{
-		    	time: 25.5,
+		    	time: 22.5,
 		    	anim: function() {
 		    		pressFingerTo(0.643 , cc.p(280,670));		    		
 		    	}
 		    },{
-		    	time: 27.0,
+		    	time: 24.0,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
 		    		moveHandTo(1.1 , tilePos);		    		
 		    	}
 		    },{
-		    	time: 28.1,
+		    	time: 25.1,
 		    	anim: function() {
 		    		pressFingerTo(1.0 , cc.p(288,400));		    		
 		    	}
 		    },{
-		    	time: 29.2,
+		    	time: 26.2,
 		    	anim: function() {
 		    		moveHandTo(1.1 , cc.p(-200,0));	
 		    	}
 		    },{
-		    	time: 29.3,
-		    	anim: function() {
-		            showSpeechBubble(7.0 , $42.t.mostafa_advanced03 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 30.5,
+		    	time: 27.5,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,4);
 		    		
@@ -459,12 +453,17 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.5 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 36.3,
+		    	time: 27.6,
 		    	anim: function() {
-		            showSpeechBubble(7.0 , $42.t.mostafa_advanced04 , mostafa.getPosition());		    		
+		            showSpeechBubble(undefined , $42.t.mostafa_advanced03 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 37.5,
+		    	time: 27.7,
+		    	anim: function() {
+		            showSpeechBubble(undefined , $42.t.mostafa_advanced04 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 27.8,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,5);
 
@@ -473,7 +472,7 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.5 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 38.5,
+		    	time: 28.5,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,5);
 		    		
@@ -482,7 +481,7 @@ var MURBIKS_MODULE = function(layer) {
 		    		pressFingerTo(0.2 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 39.0,
+		    	time: 29.0,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(1,5);
 		    		
@@ -492,39 +491,34 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.5 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 42.0,
+		    	time: 32.0,
 		    	anim: function() {
 		    		moveHandTo(0.4 , cc.p(320,300));		    		
 		    	}
 		    },{
-		    	time: 42.4,
+		    	time: 32.4,
 		    	anim: function() {
 		    		pressFingerTo(0.2 , cc.p(320,500));		    		
 		    	}
 		    },{
-		    	time: 43.0,
+		    	time: 33.0,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
 		    		moveHandTo(0.5 , tilePos);		    		
 		    	}
 		    },{
-		    	time: 43.5,
+		    	time: 33.5,
 		    	anim: function() {
 		    		pressFingerTo(1.0 , cc.p(0,100));		    		
 		    	}
 		    },{
-		    	time: 44.6,
+		    	time: 34.6,
 		    	anim: function() {
 		    		moveHandTo(1.1 , cc.p(-200,0));	
 		    	}
 		    },{
-		    	time: 45.3,
-		    	anim: function() {
-		            showSpeechBubble(7.0 , $42.t.mostafa_advanced05 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 45.4,
+		    	time: 35.4,
 		    	anim: function() {
 		    		var boxPos = getBoxPosition(2,3);
 
@@ -532,12 +526,17 @@ var MURBIKS_MODULE = function(layer) {
 		    		moveHandTo(0.5 , boxPos);		    		
 		    	}
 		    },{
-		    	time: 52.3,
+		    	time: 35.9,
 		    	anim: function() {
-		            showSpeechBubble(4.0 , $42.t.mostafa_advanced06 , mostafa.getPosition());		    		
+		            showSpeechBubble(undefined , $42.t.mostafa_advanced05 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 53.3,
+		    	time: 36,
+		    	anim: function() {
+		            showSpeechBubble(3.0 , $42.t.mostafa_advanced06 , mostafa.getPosition());		    		
+		    	}
+		    },{
+		    	time: 36.1,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
@@ -545,67 +544,67 @@ var MURBIKS_MODULE = function(layer) {
 		    		hand.runAction(cc.rotateTo(2.5,$42.HAND_ROTATION));
 		    	}
 		    },{
-		    	time: 54.4,
+		    	time: 37.4,
 		    	anim: function() {
 		    		pressFingerTo(1.0 , cc.p(576,100));		    		
 		    	}
 		    },{
-		    	time: 55.5,
+		    	time: 38.5,
 		    	anim: function() {
 		    		moveHandTo(1.1 , cc.p(-200,0));	
 		    	}
 		    },{
-		    	time: 56.0,
+		    	time: 39.9,
 		    	anim: function() {
-		            showSpeechBubble(6.0 , $42.t.mostafa_advanced07 , mostafa.getPosition());		    		
+		            showSpeechBubble(undefined , $42.t.mostafa_advanced07 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 57.0,
+		    	time: 40.0,
 		    	anim: function() {
 		    		var tilePos = getTilePosition();
 		    		
 		    		moveHandTo(1.7 , tilePos);		    		
-		    		hand.runAction(cc.rotateTo(1.7,105));
+		    		hand.runAction(cc.rotateTo(1.7,125));
 		    	}
 		    },{
-		    	time: 58.8,
+		    	time: 41.8,
 		    	anim: function() {
-		    		pressFingerTo(10.0 , cc.p(448,300));		    		
+		    		pressFingerTo(8.0 , cc.p(448,300));		    		
 		    	}
 		    },{
-		    	time: 62.0,
+		    	time: 49.8,
 		    	anim: function() {
-		            showSpeechBubble(6.0 , $42.t.mostafa_advanced08 , mostafa.getPosition());		    		
+		            showSpeechBubble(undefined , $42.t.mostafa_advanced08 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 68.9,
+		    	time: 49.9,
 		    	anim: function() {
 		    		moveHandTo(2.5 , cc.p(-200,0));
 		    		hand.runAction(cc.rotateTo(2.5,$42.HAND_ROTATION));
 		    	}
 		    },{
-		    	time: 73.0,
+		    	time: 53.0,
 		    	anim: function() {
 		    		moveHandTo(0.8 , cc.p(340,640));		    		
 		    	}
 		    },{
-		    	time: 74.1,
+		    	time: 54.1,
 		    	anim: function() {
 		    		pressFingerTo(0.4 , cc.p(340,640));
 		    		hookResumeAskForWord(hookResumeMenuLayer , true);
 		    	}
 		    },{
-		    	time: 74.6,
+		    	time: 54.6,
 		    	anim: function() {
 		    		moveHandTo(0.8 , cc.p(-200,0));		    		
 		    	}
 		    },{
-		    	time: 76.2,
+		    	time: 55.2,
 		    	anim: function() {
-		            showSpeechBubble(4.0 , $42.t.mostafa_advanced09 , mostafa.getPosition());		    		
+		            showSpeechBubble(3.0 , $42.t.mostafa_advanced09 , mostafa.getPosition());		    		
 		    	}
 		    },{
-		    	time: 77.3,
+		    	time: 55.3,
 		    	anim: function() {
 		    		moveMostafaAndButton(3.0, [
            			    cc.p(500,180),
@@ -614,7 +613,7 @@ var MURBIKS_MODULE = function(layer) {
         		    ]);		
 		    	}
 		    },{
-		    	time: 82.7,
+		    	time: 60.7,
 		    	anim: function() {
 		    		mostafaFlyingToMiddle(6.0, [
 					    cc.p(0,0),
@@ -627,10 +626,19 @@ var MURBIKS_MODULE = function(layer) {
 					] )	
 		    	}
 		    },{
-		    	time: 84.7,
+		    	time: 62.7,
 		    	anim: function() {
-		            showSpeechBubble(6.0 , $42.t.mostafa_advanced10 , mostafa.getPosition());		    		
-		    	}
+		            showSpeechBubble(6.0 , $42.t.mostafa_advanced10 , mostafa.getPosition());	
+		    		ml.timeCounter = 0;
+		            setTimeout(function() {
+			    		ml.unselectWord();
+			    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		            	
+		            },6000);
+		            $42.wordTreasureBestWord = null;
+		            $42.wordTreasureValue = 0;
+		            $42.wordTreasure = [];
+		    		ml.totalPoints = 0;
+		    		scoreBarDirty = true;		    	}
 		    }
 		];
 	};
@@ -1173,6 +1181,12 @@ var MURBIKS_MODULE = function(layer) {
 		hookResumeAskForWord = cb;
 		hookResumeMenuLayer = menuLayer;
 	};
+	
+	ml.hookDrawScoreBar = function() {
+		var tmp = scoreBarDirty;
+		scoreBarDirty = false;
+		return tmp;
+	}
 	
 	var update = function(dt) {
 		if( animCnt !== null ) {

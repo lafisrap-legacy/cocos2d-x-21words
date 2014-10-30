@@ -335,7 +335,9 @@ var _42_MODULE = function(_42Layer) {
 							moveRollingLayer(1,$42.SCOREBAR_ROLLING_LAYER_DELAY);
 							var highlight = "bestWord";
 							if( w.value >= 7 ) setNextProfileLetter();
-						} 
+						}
+						
+						if( wtl == 3 && ml.hookStartProgram /*&& $42.tutorialsDone < 2*/ ) ml.hookStartProgram( 1 , true );	
 						if( wtl >= 42 ) youWonTheGame();
 
 						ml.unselectWord();
@@ -398,19 +400,6 @@ var _42_MODULE = function(_42Layer) {
 	
 	var showAllWordsFlyingIn = function(cb) {
 		var wt = $42.wordTreasure;
-		
-		var wt = [{
-			word: "CYPHERPUNK"
-		},{
-			word: "HASE"
-		},{
-			word: "FENSTER"
-		},{
-			word: "YOGHURT"
-		},{
-			word: "TEST"
-		}
-		];
 		
 		for( var i=41 ; i>=0 /* wt.length */ ; i-- ) {
 			var label = cc.LabelTTF.create(wt[i%wt.length].word, "SourceCodePro-Light" , 32);
@@ -1331,7 +1320,7 @@ var _42_MODULE = function(_42Layer) {
 		
 // ml.hookStartProgram( 2 , false );
 // ml.hookStartProgram( 0 , true );
-		if( ml.hookStartProgram /*&& $42.tutorialsDone < 1*/ ) ml.hookStartProgram( 0 , true );	
+		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
 		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
 
 		ml.levelsToBlow = [];
@@ -1353,11 +1342,6 @@ var _42_MODULE = function(_42Layer) {
 		// prepare for which letters can be used (word profile), and what
 		// letters will be next
 		$42.wordProfile = (1<<0) + (1<<1) + (1<<2) + (1<<3) + (1<<4) + (1<<5) + (1<<6); // start
-																						// profile
-																						// with
-																						// first
-																						// 7
-																						// letters
 		$42.wordProfileLetters = [];
 		$42.displayedProfileLetters = [];
 		$42.displayedProfileLettersMini = [];
@@ -1540,7 +1524,10 @@ var _42_MODULE = function(_42Layer) {
 			ml.plus1Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0, 100))));					
 		}
 		
-		setSelections();
+		if( ml.hookDrawScoreBar && ml.hookDrawScoreBar() ) {
+			drawScoreBar();
+		}
+		setSelections(); // OPTIMIZATION: Only look in current lines
 		return updateSelectedWord();
 	};	
 

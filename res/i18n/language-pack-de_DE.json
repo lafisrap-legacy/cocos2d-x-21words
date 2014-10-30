@@ -40,15 +40,15 @@
     	"mostafa_basic06"	: "Hier unten siehst du alle Buchstaben, die du verwenden kannst.",
     	"mostafa_basic07"	: "Viel Spaß!",
     	"mostafa_advanced01": "BOUMMM!",
-    	"mostafa_advanced02": "Du kannst Wortanfänge mit einem kurzen Klick wählen und mit einem langen Klick abwählen.",
+    	"mostafa_advanced02": "Du kannst Wortanfänge mit einem Klick wählen und abwählen.",
     	"mostafa_advanced03": "Wenn an einer Stelle mehrere Buchstaben möglich sind, erscheint solch ein Fragezeichen.",
     	"mostafa_advanced04": "Mit einem Klick kannst du den aktuellen Buchstaben auswählen.",
     	"mostafa_advanced05": "Siehst du das T, das dem Wort RATTE noch fehlt? Es muss eine Zeile tiefer.",
     	"mostafa_advanced06": "Das geht so ...",
-    	"mostafa_advanced07": "Ich lösche die Zeile. Die gelb markierte Buchstaben bleiben erhalten.",
+    	"mostafa_advanced07": "Die Zeile wird vervollständigt. Dadurch werden alle Buchstaben gelöscht, die nicht gelb markiert sind.",
     	"mostafa_advanced08": "Und so kann das T in die Lücke fallen.",
     	"mostafa_advanced09": "Tschüüüüssss ...",
-    	"mostafa_advanced10": "Ach ja, das noch:\nDer höchste Wortwert ist 42."   	
+    	"mostafa_advanced10": "Du hast 45 Minuten für 42 Worte. Die Zeit siehst du unten rechts."   	
     },
     "tiles": {
     	"turning_moving_falling_choosing": [
