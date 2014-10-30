@@ -25,6 +25,9 @@ var res = {
 	amtype36_fnt : "res/fonts/amtype36.fnt",
 	amtype56_fnt : "res/fonts/amtype56.fnt",
 	amtype72_fnt : "res/fonts/amtype72.fnt",
+	american_typewriter_ttf: "res/fonts/American Typewriter.ttf",
+	sourcecodepro_light_ttf: "res/fonts/SourceCodePro-Light.ttf",
+	libre_baskerville_regular_ttf: "res/fonts/LibreBaskerville-Regular.ttf",
 	
 	// murbiks / tutorial
     murbiks_single_png : "res/images/murbiks/mostafa_fly01.png",
@@ -58,6 +61,9 @@ var g_resources = [
     res.amtype36_fnt,
     res.amtype56_fnt,
     res.amtype72_fnt,
+    res.american_typewriter_ttf,
+    res.sourcecodepro_light_ttf,
+    res.libre_baskerville_regular_ttf,
 
     //tmx
 

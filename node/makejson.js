@@ -18,9 +18,19 @@ var argv = require('optimist').argv;
 var fs = require('fs');
 
 //Make sure we got a filename on the command line.
-if (process.argv.length < 3) {
-  console.log('Usage: node ' + process.argv[1] + ' INPUTFILE [OUTPUTFILE]');
-  process.exit(1);
+var filename = process.argv[2];
+if( process.argv.length < 3 || filename == "--help" ) {
+	console.log("Usage: node makejson filename [-options]");
+	console.log("Options:");
+	console.log("-h n1-n2: List words with value between n1 and n2.");
+	console.log("-l n1-n2: List words with length between n1 and n2.");
+	console.log("-p profile_letters: show only words that consist of specified letters");
+	console.log("-w word: Show word value of word.");
+	console.log("-s source: Define source language.");
+	console.log("-c: Display letter frequencies and write letter values to file.");
+	console.log("-v: verbose.");
+	console.log("-t: test with the first 20 entries.");
+	process.exit(1);
 }
 
 // Define data we need
@@ -163,7 +173,6 @@ for( i=0,l="ABCDEFGHIJKLMNOPQURSTUVWXYZÄÖÜÕ" ; i<l.length ; i++ ) letterCoun
 var prefixValues = [];
 
 //Read the file and print its contents.
-var filename = process.argv[2];
 var hvReg = /^(\d+)-(\d+)$/,
 	hvCnt = 0,
 	hv = argv["h"] || null,
@@ -175,6 +184,7 @@ var hvReg = /^(\d+)-(\d+)$/,
 	verbose = argv["v"] || null,
 	test = argv["t"] || null;
 
+var filename = process.argv[2];
 if( filename == "--help" ) {
 	console.log("Usage: node makejson filename [-options]");
 	console.log("Options:");
@@ -185,7 +195,7 @@ if( filename == "--help" ) {
 	console.log("-c: Display word frequencies and write letter values to file.");
 	console.log("-v: verbose.");
 	console.log("-t: test with the first 20 entries.");
-	return;
+	process.exit(1);
 }
 if( wv ) {
 	wv = wv.toUpperCase();
@@ -194,11 +204,11 @@ if( wv ) {
 	} 
 	
 	console.log("Word value of "+wv+" is "+value+".");
-	return;
+	process.exit(1);
 }
 if( src && !letterValues[src] ) {
 	console.log("Language "+src+" unknown.");	
-	return;
+	process.exit(1);
 }
 
 var match = hvReg.exec(hv);
@@ -284,6 +294,10 @@ fs.readFile(filename, 'utf8', function(err, data) {
 		// compute word value
 		var wordValue = 0;
 		for( var j=0 ; j<word.length ; j++ ) {
+			if( !letterValues[src][word[j]] ) {
+				console.log("Undefined letter in word: "+word+", letter: '"+word[j]+"'"); 
+				break;
+			}
 			wordValue += letterValues[src][word[j]].value;
 			if( isNaN(wordValue) ) {
 				console.log("Undefined letter in word: "+word+", letter: '"+word[j]+"'"); 

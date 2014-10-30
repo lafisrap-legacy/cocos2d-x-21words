@@ -4,10 +4,27 @@
 <dict>
 	<key>frames</key>
 	<dict>
+		<key>mostafabutton</key>
+		<dict>
+			<key>frame</key>
+			<string>{{0, 0}, {258, 103}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 14}, {251, 77}}</string>
+			<key>sourceSize</key>
+			<string>{258, 103}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
 		<key>bluebutton</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 0}, {250, 70}}</string>
+			<string>{{258, 0}, {250, 70}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -24,7 +41,7 @@
 		<key>hand</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 70}, {364, 640}}</string>
+			<string>{{508, 0}, {364, 640}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -41,7 +58,7 @@
 		<key>mostafa_fly01</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 710}, {100, 100}}</string>
+			<string>{{872, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -58,7 +75,7 @@
 		<key>mostafa_fly02</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 810}, {100, 100}}</string>
+			<string>{{972, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -75,7 +92,7 @@
 		<key>mostafa_fly03</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 910}, {100, 100}}</string>
+			<string>{{1072, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -92,7 +109,7 @@
 		<key>mostafa_fly04</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 1010}, {100, 100}}</string>
+			<string>{{1172, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -109,7 +126,7 @@
 		<key>mostafa_fly05</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 1110}, {100, 100}}</string>
+			<string>{{1272, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -126,7 +143,7 @@
 		<key>mostafa_fly06</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 1210}, {100, 100}}</string>
+			<string>{{1372, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -143,7 +160,7 @@
 		<key>mostafa_fly07</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 1310}, {100, 100}}</string>
+			<string>{{1472, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -160,7 +177,7 @@
 		<key>mostafa_fly08</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 1410}, {100, 100}}</string>
+			<string>{{1572, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -177,7 +194,7 @@
 		<key>mostafa_fly09</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 1510}, {100, 100}}</string>
+			<string>{{1672, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -194,7 +211,7 @@
 		<key>mostafa_land01</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 1610}, {100, 100}}</string>
+			<string>{{1772, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -211,7 +228,7 @@
 		<key>mostafa_land02</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 1710}, {100, 100}}</string>
+			<string>{{1872, 0}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -228,7 +245,7 @@
 		<key>mostafa_land03</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 1810}, {100, 100}}</string>
+			<string>{{0, 640}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -245,7 +262,7 @@
 		<key>mostafa_land04</key>
 		<dict>
 			<key>frame</key>
-			<string>{{0, 1910}, {100, 100}}</string>
+			<string>{{100, 640}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -262,7 +279,7 @@
 		<key>mostafa_land05</key>
 		<dict>
 			<key>frame</key>
-			<string>{{100, 710}, {100, 100}}</string>
+			<string>{{200, 640}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -279,7 +296,7 @@
 		<key>mostafa_land06</key>
 		<dict>
 			<key>frame</key>
-			<string>{{100, 810}, {100, 100}}</string>
+			<string>{{300, 640}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -296,7 +313,7 @@
 		<key>mostafa_land07</key>
 		<dict>
 			<key>frame</key>
-			<string>{{100, 910}, {100, 100}}</string>
+			<string>{{400, 640}, {100, 100}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -310,10 +327,27 @@
 
 			</array>
 		</dict>
+		<key>mostafabutton</key>
+		<dict>
+			<key>frame</key>
+			<string>{{500, 640}, {258, 103}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{0, 14}, {251, 77}}</string>
+			<key>sourceSize</key>
+			<string>{258, 103}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
 		<key>wordcloud</key>
 		<dict>
 			<key>frame</key>
-			<string>{{100, 1010}, {600, 375}}</string>
+			<string>{{758, 640}, {600, 375}}</string>
 			<key>offset</key>
 			<string>{0, 0}</string>
 			<key>rotated</key>
@@ -322,6 +356,23 @@
 			<string>{{6, 0}, {594, 375}}</string>
 			<key>sourceSize</key>
 			<string>{600, 375}</string>
+			<key>aliases</key>
+			<array>
+
+			</array>
+		</dict>
+		<key>go_on_button</key>
+		<dict>
+			<key>frame</key>
+			<string>{{1358, 640}, {162, 110}}</string>
+			<key>offset</key>
+			<string>{0, 0}</string>
+			<key>rotated</key>
+			<false/>
+			<key>sourceColorRect</key>
+			<string>{{9, 4}, {147, 99}}</string>
+			<key>sourceSize</key>
+			<string>{162, 110}</string>
 			<key>aliases</key>
 			<array>
 

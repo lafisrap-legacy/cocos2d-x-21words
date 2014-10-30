@@ -61,7 +61,10 @@ fs.readFile(filename1, 'utf8', function(err, data) {
 				
 				for( var j=0 ; prefWords && j<prefWords.length ; j++ ) if( nw == prefWords[j].word ) break;
 				
-				if( !prefWords || j==prefWords.length ) foundWords.push(nw);
+				if( !prefWords || j==prefWords.length ) {
+					//console.log("Found word: "+nw);
+					foundWords.push(nw);
+				}
 			}
 			
 			foundWords.sort();

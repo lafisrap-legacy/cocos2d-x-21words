@@ -26,6 +26,13 @@ var _42_GLOBALS = {
 	TAG_TITLE_4 : 105,
 	TAG_TITLE_2 : 106,
 	TAG_TITLE_WORD : 107,
+	TAG_LEAF_1 : 108,
+	TAG_LEAF_2 : 110,
+	TAG_LEAF_3 : 111,
+	TAG_LEAF_4 : 112,
+	TAG_LEAF_5 : 113,
+	TAG_LEAF_6 : 114,
+	TAG_START_BUTTON : 115,
 	BS : 64, 			// box size in pixel
 	BOXES_PER_COL : 22,	// lines of playground
 	GAME_OVER_ROW : 16,	// game over row
@@ -141,7 +148,7 @@ var _42GameLayer = cc.Layer.extend({
         var logMsg = cc.Node.create();
         
         $42.msg1 = cc.LabelTTF.create("TEST1", "Arial", 24),
-        $42.msg2 = cc.LabelTTF.create("TEST2", "Arial", 24);
+        $42.msg2 = cc.LabelTTF.create(" ", "Arial", 24);
         
         $42.msg1.setPosition(0,0);
         $42.msg2.setPosition(0,-20);
@@ -284,7 +291,7 @@ var _42GameLayer = cc.Layer.extend({
 	                }
 	
 	                // check for up
-	                if( loc.y > start.y + $42.TOUCH_SWIPE_THRESHOLD ) {
+	                if( loc.y > start.y + $42.TOUCH_SWIPE_THRESHOLD * 3 ) {
                     	self.isSwipeUp = true;                		
 	                }
 	                
@@ -1093,6 +1100,7 @@ var _42TitleLayer = cc.Layer.extend({
 			sprite.setPosition(options.pos || cc.p(size.width/2,size.height/2));
 			sprite.setOpacity(options.opacity !== undefined? options.opacity : 255);
 			sprite.setScale(options.scale || 1);
+			sprite.setRotation(options.rotation || 0);
 			sprite.retain();
 	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "title sprite "+options.tag, line: 1057 };
 	        (options.parent || self).addChild(sprite, 0, options.tag);
@@ -1116,16 +1124,72 @@ var _42TitleLayer = cc.Layer.extend({
 		
 		var title4 = addImage({
 			image: "4", 
-			pos:	cc.p(size.width/2-25, 1200), 
-			scale:	0.5,
+			pos:	cc.p(size.width/2-30, 1300), 
+			scale:	0.18,
+			opacity: 64,
 			tag:	$42.TAG_TITLE_4
 		});
 		
 		var title2 = addImage({
 			image: "2", 
-			pos: 	cc.p(size.width/2+25, 1200), 
-			scale:	0.5,
+			pos: 	cc.p(size.width/2+30, 1300), 
+			scale:	0.18,
+			opacity: 64,
 			tag: 	$42.TAG_TITLE_2
+		});
+		
+		var orange_leaf_left = addImage({
+			image: "orange_leave_left", 
+			pos: 	cc.p(size.width/2-200, 677), 
+			scale:	0.40,
+			rotation: -30,
+			opacity: 0,
+			tag: 	$42.TAG_LEAF_1
+		});
+		
+		var orange_leaf_right = addImage({
+			image: "orange_leave_right", 
+			pos: 	cc.p(size.width/2+210, 685), 
+			scale:	0.40,
+			rotation: 30,
+			opacity: 0,
+			tag: 	$42.TAG_LEAF_2
+		});
+		
+		var red_leaf_left = addImage({
+			image: "red_leave_left", 
+			pos: 	cc.p(size.width/2-190 , 735), 
+			scale:	0.50,
+			rotation: 20,
+			opacity: 0,
+			tag: 	$42.TAG_LEAF_3
+		});
+		
+		var red_leaf_right = addImage({
+			image: "red_leave_right", 
+			pos: 	cc.p(size.width/2+205, 745), 
+			scale:	0.50,
+			rotation: -20,
+			opacity: 0,
+			tag: 	$42.TAG_LEAF_4
+		});
+		
+		var yellow_leaf_left = addImage({
+			image: "yellow_leave_left", 
+			pos: 	cc.p(size.width/2-180, 770), 
+			scale:	0.40,
+			rotation: 10,
+			opacity: 0,
+			tag: 	$42.TAG_LEAF_5
+		});
+		
+		var yellow_leaf_right = addImage({
+			image: "yellow_leave_right", 
+			pos: 	cc.p(size.width/2+195, 780), 
+			scale:	0.40,
+			rotation: -10,
+			opacity: 0,
+			tag: 	$42.TAG_LEAF_6
 		});
 		
 		// Create title word with letters (record their positions)
@@ -1140,10 +1204,12 @@ var _42TitleLayer = cc.Layer.extend({
 			letters[i] = addImage({
 				image: titleWord.substr(i,1).toLowerCase()+"_",
 				pos: cc.p(i<titleWord.length/2? -400:400,0),
-				parent: word
+				parent: word,
+				scale: 1.1,
+				opacity: 0
 			});
 			var w = letters[i].width;
-			pos[i] = (i && pos[i-1]) + w/2 + oldW/2+ $42.TITLE_WORDS_OFFSETS[i];
+			pos[i] = (i && pos[i-1]) + w/2 + oldW/2+ $42.TITLE_WORDS_OFFSETS[i] + 10;
 			oldW = w;
 		}
 		
@@ -1156,25 +1222,30 @@ var _42TitleLayer = cc.Layer.extend({
 			)
 		);
 		// shake it ...
-		titleGrid.runAction(
+/*		titleGrid.runAction(
 			cc.sequence(
 				cc.delayTime(3.4),
 				cc.liquid( 0.4, cc.size(16,12), 1, 2)
 			)
-		);
+		);*/ 
 		
 		// animate 4 and 2
 		title4.runAction(
 			cc.sequence(
 				cc.delayTime(1.4),
-				cc.EaseElasticOut.create(
-					cc.moveTo(1.8,cc.p(size.width/2-25, 700))
+				cc.spawn(
+					cc.EaseSineIn.create(
+						cc.fadeIn(1.8)
+					),
+					cc.EaseElasticOut.create(
+						cc.moveTo(1.8,cc.p(size.width/2-27, 700))
+					)
 				),
 				cc.delayTime(0.2),
 				cc.EaseSineOut.create(
 					cc.spawn(
-						cc.scaleTo(0.3,1.3,1.3),
-						cc.moveTo(0.3,cc.p(size.width/2-70, 750))
+						cc.scaleTo(0.3,0.48),
+						cc.moveTo(0.3,cc.p(size.width/2-76, 790))
 					)
 				)
 			)
@@ -1183,17 +1254,29 @@ var _42TitleLayer = cc.Layer.extend({
 		title2.runAction(
 			cc.sequence(
 				cc.delayTime(1.3),
-				cc.EaseElasticOut.create(
-					cc.moveTo(2,cc.p(size.width/2+25, 700))
+				cc.spawn(
+					cc.EaseSineIn.create(
+						cc.fadeIn(2)
+					),
+					cc.EaseElasticOut.create(
+						cc.moveTo(2,cc.p(size.width/2+27, 700))
+					)
 				),
 				cc.EaseSineOut.create(
 					cc.spawn(
-						cc.scaleTo(0.3,1.3,1.3),
-						cc.moveTo(0.3,cc.p(size.width/2+70, 750))
+						cc.scaleTo(0.3,0.48),
+						cc.moveTo(0.3,cc.p(size.width/2+76, 790))
 					)
 				)
 			)
 		);
+		
+		orange_leaf_left.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
+		orange_leaf_right.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
+		red_leaf_left.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
+		red_leaf_right.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
+		yellow_leaf_left.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
+		yellow_leaf_right.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
 
 		// move letters in from left and right
 		var delays = [0.39,0.26,0.13,0.39,0.52];
@@ -1201,9 +1284,9 @@ var _42TitleLayer = cc.Layer.extend({
 			letters[i].runAction(
 				cc.sequence(
 					cc.delayTime(delays[i]),
-					cc.EaseSineOut.create(
-						cc.spawn(
-							cc.fadeIn(2.9),
+					cc.spawn(
+						cc.fadeIn(2.9),
+						cc.EaseSineOut.create(
 							cc.moveTo(0.9,cc.p(pos[i]-(pos[letters.length-1]+w/2)/2,0))
 						)
 					)
@@ -1221,7 +1304,9 @@ var _42TitleLayer = cc.Layer.extend({
 	        return item;
 		}
 		
-        var item1 = addMenu($42.TITLE_START_GAME, 52, function() {
+		var buttonImage = cc.spriteFrameCache.getSpriteFrame("start"),
+			buttonImage2 = cc.spriteFrameCache.getSpriteFrame("start2");
+        var item1 = cc.MenuItemImage.create(buttonImage, buttonImage2, function() {
         	// start game layer
         	self.getParent().addChild(new _42GameLayer(), 1, $42.TAG_GAME_LAYER);
         	
@@ -1238,6 +1323,12 @@ var _42TitleLayer = cc.Layer.extend({
 							var ml = self.getParent().getChildByTag($42.TAG_GAME_LAYER);
 							self.removeChild(title4); ml.addChild(title4);
 							self.removeChild(title2); ml.addChild(title2);
+							self.removeChild(orange_leaf_left); ml.addChild(orange_leaf_left);
+							self.removeChild(orange_leaf_right); ml.addChild(orange_leaf_right);
+							self.removeChild(red_leaf_left); ml.addChild(red_leaf_left);
+							self.removeChild(red_leaf_right); ml.addChild(red_leaf_right);
+							self.removeChild(yellow_leaf_left); ml.addChild(yellow_leaf_left);
+							self.removeChild(yellow_leaf_right); ml.addChild(yellow_leaf_right);
 							self.removeChild(word); ml.addChild(word);
 							self.getParent().removeChild(self);
 						})
@@ -1248,14 +1339,26 @@ var _42TitleLayer = cc.Layer.extend({
     		
     		title4.runAction(
 				cc.EaseSineIn.create(
-					cc.fadeTo(2,20)
+					cc.spawn(
+						cc.fadeTo(2,20),
+						cc.tintTo(2,100,100,100)
+					)
 				)
 			);
     		title2.runAction(
 				cc.EaseSineIn.create(
-					cc.fadeTo(2,20)
+					cc.spawn(
+						cc.fadeTo(2,20),
+						cc.tintTo(2,100,100,100)
+					)
 				)
 			);
+    		orange_leaf_left.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
+    		orange_leaf_right.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
+    		red_leaf_left.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
+    		red_leaf_right.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
+    		yellow_leaf_left.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
+    		yellow_leaf_right.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
     		
     		for( var i=0 ; i<letters.length ; i++ ) {
     			letters[i].runAction(
@@ -1268,7 +1371,9 @@ var _42TitleLayer = cc.Layer.extend({
         	menu.stopAllActions();
         	menu.setEnabled(false);
             menu.runAction(cc.EaseSineOut.create(cc.fadeOut(0.3)));
-        });
+        }, self);
+        
+        item1.setScale(0.7);
 
         var ls = cc.sys.localStorage;
         $42.wordTreasureWords = ls.getItem("wordTreasureWords") || 0;
@@ -1289,7 +1394,7 @@ var _42TitleLayer = cc.Layer.extend({
         menu.y = 200;
         menu.setOpacity(0);
         self.addChild(menu, 1);       
-        menu.alignItemsVerticallyWithPadding(30);
+        menu.alignItemsVerticallyWithPadding(20);
         menu.runAction(cc.EaseSineIn.create(cc.fadeIn(4)));
         
         return true;

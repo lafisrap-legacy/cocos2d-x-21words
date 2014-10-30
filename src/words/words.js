@@ -36,7 +36,7 @@ $42.MARKER_Y_OFFSET = -25;
 $42.UNSELECTED_BOX_OPACITY = 100;
 $42.NEEDED_LETTERS_PROBABILITY = 0.15; // additional probability that a needed
 										// letter will be selected
-$42.MAX_WORDS_BLOWN = 2;
+$42.MAX_WORDS_BLOWN = 1;
 $42.WORD_FRAME_WIDTH = 4;
 $42.WORD_FRAME_MOVE_TIME = 0.8;
 $42.SCORE_COLOR_DIMM = cc.color(160,120,55);
@@ -334,9 +334,9 @@ var _42_MODULE = function(_42Layer) {
 							$42.wordTreasureBestWord = w;
 							moveRollingLayer(1,$42.SCOREBAR_ROLLING_LAYER_DELAY);
 							var highlight = "bestWord";
-							if( wtl >= 7 ) setNextProfileLetter();
+							if( w.value >= 7 ) setNextProfileLetter();
 						} 
-						if( $42.wordTreasure.length >= 42 ) youWonTheGame();
+						if( wtl >= 42 ) youWonTheGame();
 
 						ml.unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
@@ -368,12 +368,15 @@ var _42_MODULE = function(_42Layer) {
 	
 	var youWonTheGame = function() {
 		
-		var self = this;
+		var self = this,
+			ls = cc.sys.localStorage;
 	       
         ml.pause();
         ml.unscheduleUpdate();
+        $42.bestTime = ml.timeCounter;
+        ls.setItem("bestTime",$42.bestTime);
 
-		blowLevelAndWordValue({allwords:true}, function() {
+		showAllWordsFlyingIn(function() {
 			var menuItems = [{
 				label: $42.t.won_end_game, 
 				cb: function(sender) {
@@ -390,10 +393,67 @@ var _42_MODULE = function(_42Layer) {
             	    $42.t.won_time+": "+(ml.timeCounter/3600>>>0)+":"+("0"+(ml.timeCounter/60>>>0)%60).substr(-2,2)+" "+$42.t.won_minutes
             	],menuItems), 1
             );
-			var ls = cc.sys.localStorage;
-            $42.bestTime = ml.timeCounter;
-            ls.setItem("bestTime",$42.bestTime);
 		});		
+	};
+	
+	var showAllWordsFlyingIn = function(cb) {
+		var wt = $42.wordTreasure;
+		
+		var wt = [{
+			word: "CYPHERPUNK"
+		},{
+			word: "HASE"
+		},{
+			word: "FENSTER"
+		},{
+			word: "YOGHURT"
+		},{
+			word: "TEST"
+		}
+		];
+		
+		for( var i=41 ; i>=0 /* wt.length */ ; i-- ) {
+			var label = cc.LabelTTF.create(wt[i%wt.length].word, "SourceCodePro-Light" , 32);
+			label.setPosition(ml.size.width/2,0);
+			label.setColor(cc.color(0,0,0));
+			label.setOpacity(50);
+			label.retain();
+	        /* retain */ tmpRetain[label.__instanceId] = { name: "flying word", line: 416 };	
+			ml.addChild(label, 5);
+			label.i = i;
+			label.runAction(
+				cc.sequence(
+					cc.delayTime(i * 0.32),
+					cc.moveTo(1.5,ml.size.width/2,200),
+					cc.spawn(
+						cc.moveTo(1.8,ml.size.width/2,600),
+						cc.EaseSineOut.create(
+							cc.scaleTo(1.8,2.1)
+						),
+						cc.EaseSineIn.create(
+							cc.fadeTo(1.8,255)
+						),
+						cc.tintTo(1.8,84,13,143)
+					),
+					cc.spawn(
+							cc.moveTo(1.8,ml.size.width/2,1000),
+							cc.EaseSineIn.create(
+								cc.scaleTo(1.8,1)
+							),
+							cc.EaseSineOut.create(
+								cc.fadeTo(1.8,50)
+							)
+						),
+					cc.moveTo(1.5,ml.size.width/2,1200),
+					cc.callFunc(function() {
+				        this.release();
+						delete tmpRetain[this.__instanceId];					        							
+						ml.removeChild(this);
+						if( cb && this.i === 41 ) cb();
+					}, label)
+				)
+			);
+		}		
 	};
 	
 	var blowLevelAndWordValue = function(blow,cb) {
@@ -565,9 +625,7 @@ var _42_MODULE = function(_42Layer) {
 	    						var self = this;
 					            menuLayer.removeAllChildren();
 	    						
-// showWordTreasure(word, sprite, function() {
-		    						resume(self,true);	    							
-// });
+	    						resume(self,true);	    							
 	    			        }
 	    				},{
 	    					label: $42.t.take_word_no, 
@@ -628,8 +686,7 @@ var _42_MODULE = function(_42Layer) {
 					value.setColor(cc.color(200,160,0));
 					sprite.addChild(value, 5);	
 					
-					// release and remove word sprite that is not visible any
-					// more
+					// release and remove word sprite that is not visible anymore
 			        var s = wordFrameSprite.getChildren();
 			        for( var i=0 ; i<s.length ; i++ ) {
 				        s[i].release();
@@ -1035,7 +1092,7 @@ var _42_MODULE = function(_42Layer) {
 			ml.score_words = drawText(wt.length.toString(),cc.p(50,151) , 72 , $42.SCORE_COLOR_BRIGHT , rl , true);
 			
 			// draw highscore into clipper
-			drawText($42.t.scorebar_highscore,cc.p(553,111),24,$42.SCORE_COLOR_DIMM,rl,false);			
+			drawText($42.t.scorebar_highscore,cc.p(558,111),24,$42.SCORE_COLOR_DIMM,rl,false);			
 			ml.highscore = drawText($42.maxPoints.toString(),cc.p(553,151),$42.maxPoints>=1000?56:72,$42.SCORE_COLOR_BRIGHT,rl,true);	
 			
 			// draw most valuable word
@@ -1043,7 +1100,7 @@ var _42_MODULE = function(_42Layer) {
 			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);	
 			
 			// draw remaining time
-			ml.score_time_left = drawText("no time",cc.p(553,135) , 72 , $42.SCORE_COLOR_BRIGHT , ml , true);
+			ml.score_time_left = drawText("no time",cc.p(558,135) , 72 , $42.SCORE_COLOR_BRIGHT , ml , true);
 			ml.score_time_left.setColor(cc.color(0,0,0));
 			ml.score_time_left.setOpacity(40);
 
@@ -1274,7 +1331,7 @@ var _42_MODULE = function(_42Layer) {
 		
 // ml.hookStartProgram( 2 , false );
 // ml.hookStartProgram( 0 , true );
-		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
+		if( ml.hookStartProgram /*&& $42.tutorialsDone < 1*/ ) ml.hookStartProgram( 0 , true );	
 		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
 
 		ml.levelsToBlow = [];
@@ -1608,7 +1665,7 @@ var _42_MODULE = function(_42Layer) {
 			s = 60 - (ml.timeCounter/60>>>0)%60;
 		
 		// display time
-		ml.score_time_left.setString(m? m.toString(): s.toString());
+		ml.score_time_left.setString(m>1? m.toString(): s.toString());
 		
 		if( warning && minutes > $42.MAX_PLAYING_TIME - warning.time ) {
 			blowLevelAndWordValue({info:[warning.text]});
