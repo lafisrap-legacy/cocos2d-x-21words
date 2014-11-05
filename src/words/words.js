@@ -334,10 +334,10 @@ var _42_MODULE = function(_42Layer) {
 							$42.wordTreasureBestWord = w;
 							moveRollingLayer(1,$42.SCOREBAR_ROLLING_LAYER_DELAY);
 							var highlight = "bestWord";
-							if( w.value >= 7 ) setNextProfileLetter();
+							if( wtl >= 7 ) setNextProfileLetter();
 						}
 						
-						if( wtl == 3 && ml.hookStartProgram /*&& $42.tutorialsDone < 2*/ ) ml.hookStartProgram( 1 , true );	
+						if( wtl == 3 && ml.hookStartProgram && $42.tutorialsDone < 2 ) ml.hookStartProgram( 1 , true );	
 						if( wtl >= 42 ) youWonTheGame();
 
 						ml.unselectWord();
@@ -463,7 +463,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		if( blow.info ) {
 			var lines = blow.info;
-			for( var i=0 ; i<lines.length ; i++ ) text = text.concat([{t:lines[i],scale:2,color:cc.color(0,0,128)}]);			
+			for( var i=0 ; i<lines.length ; i++ ) text = text.concat([{t:lines[i],scale: blow.scale? blow.scale 	: 2,color:cc.color(0,0,128)}]);			
 		}
 		
 		for( var i=0 ; i<text.length ; i++ ) {
@@ -1652,7 +1652,7 @@ var _42_MODULE = function(_42Layer) {
 			s = 60 - (ml.timeCounter/60>>>0)%60;
 		
 		// display time
-		ml.score_time_left.setString(m>1? m.toString(): s.toString());
+		ml.score_time_left.setString(m != 1? m.toString(): s.toString());
 		
 		if( warning && minutes > $42.MAX_PLAYING_TIME - warning.time ) {
 			blowLevelAndWordValue({info:[warning.text]});
@@ -1663,11 +1663,11 @@ var _42_MODULE = function(_42Layer) {
 			ml.timeIsUp = true;
 	        ml.pause();
 	        ml.unscheduleUpdate();
-			blowLevelAndWordValue({info:$42.t.timeout_text}, function() {
+			blowLevelAndWordValue({info:$42.t.timeout_text,scale:4}, function() {
 				var menuItems = [{
 					label: $42.t.won_end_game, 
 					cb: function(sender) {
-						if( self.hookEndGame ) self.hookEndGame();
+						if( ml.hookEndGame ) ml.hookEndGame();
 						/* must be tested */ ml.endGame();
 			        	cc.director.runScene(new _42Scene());
 			        }
