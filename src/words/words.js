@@ -64,7 +64,7 @@ $42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;
 $42.MAX_MULTIPLIERS = 5;
 $42.MAX_PLAYING_TIME = 45;
 
-$42.MULTIPLIER = [[2,"letter"],[3,"letter"],[2,"word"],[5,"letter"],[8,"letter"],[3,"word"],[10,"letter"]];
+$42.MULTIPLIER = [[2,"letter"],[2,"letter"],[2,"letter"],[3,"letter"],[2,"word"],[3,"letter"],[5,"letter"],[3,"word"],[3,"letter"],[5,"letter"],[10,"letter"]];
 
 var _42_MODULE = function(_42Layer) {
 
@@ -142,6 +142,7 @@ var _42_MODULE = function(_42Layer) {
 			words.push({
 				word: $42.words[prefix][i].word,
 				value: $42.words[prefix][i].value,
+				group: $42.words[prefix][i].group,
 				profile: $42.words[prefix][i].profile,
 				deleted: $42.words[prefix][i].deleted
 			});
@@ -266,7 +267,8 @@ var _42_MODULE = function(_42Layer) {
 		
 		// look if all marked letters form a complete word
 		for( var i=0 ; i<curWords.length ; i++ ) {
-			var word = curWords[i].word;
+			var word = curWords[i].word,
+				group = curWords[i].group;
 			for( var j=0 ; j<word.length ; j++ ) {
 				if( !ml.boxes[sw.brc.row][j+sw.brc.col] || 
 					word[j] !== ml.boxes[sw.brc.row][j+sw.brc.col].userData ) 
@@ -281,7 +283,7 @@ var _42_MODULE = function(_42Layer) {
 				if( !sw.words.length ) ml.unselectWord();
 				
 				ml.wordIsBeingSelected = true;
-				showFullWordAndAsk( sw.brc , word , options && options.rowsDeleted || 0 , function( takeWord ) {	
+				showFullWordAndAsk( sw.brc , word , group, options && options.rowsDeleted || 0 , function( takeWord ) {	
 					ml.wordIsBeingSelected = false;
 					if( takeWord ) {
 
@@ -337,16 +339,26 @@ var _42_MODULE = function(_42Layer) {
 							if( wtl >= 7 ) setNextProfileLetter();
 						}
 						
-						if( wtl == 3 && ml.hookStartProgram && $42.tutorialsDone < 2 ) ml.hookStartProgram( 1 , true );	
+						if( group == 2 ) {
+							ml.playingTime += 5;
+							blowLevelAndWordValue({info:$42.t.moretime_message,color:cc.color(0,128,0)});
+						}
+						
+						
+//						if( wtl == 4 && ml.hookStartProgram && $42.tutorialsDone < 2 ) ml.hookStartProgram( 1 , true );	
 						if( wtl >= 42 ) youWonTheGame();
 
 						ml.unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
 
-						// add new profile letters and multipliers
+						// add new profile letters
 						if( !(wtl%3) ) {
 							if( wtl >=  9 ) setNextProfileLetter();
-							if( wtl >= 21 ) setNextMultiplier();
+						}
+						
+						// add new profile letters
+						if( wtl >= 21 && wtl%2 ) {
+							setNextMultiplier();							
 						}
 						
 						cc.log("42words, updateSelectedWord, takeWord = true: setSelection()");
@@ -391,7 +403,6 @@ var _42_MODULE = function(_42Layer) {
             	new _42MenuLayer([
             	    $42.t.won_congrats,
             	    $42.t.won_word_value+": "+$42.wordTreasureValue+($42.wordTreasureValue === $42.maxPoints?" ("+$42.t.won_highscore+")":""),
-            	    $42.t.won_word_treasure+": "+$42.wordTreasureWords,
             	    $42.t.won_time+": "+(ml.timeCounter/3600>>>0)+":"+("0"+(ml.timeCounter/60>>>0)%60).substr(-2,2)+" "+$42.t.won_minutes
             	],menuItems), 1
             );
@@ -412,28 +423,28 @@ var _42_MODULE = function(_42Layer) {
 			label.i = i;
 			label.runAction(
 				cc.sequence(
-					cc.delayTime(i * 0.32),
-					cc.moveTo(1.5,ml.size.width/2,200),
+					cc.delayTime(i * 0.48),
+					cc.moveTo(2.2,ml.size.width/2,200),
 					cc.spawn(
-						cc.moveTo(1.8,ml.size.width/2,600),
+						cc.moveTo(2.6,ml.size.width/2,600),
 						cc.EaseSineOut.create(
-							cc.scaleTo(1.8,2.1)
+							cc.scaleTo(2.6,2.1)
 						),
 						cc.EaseSineIn.create(
-							cc.fadeTo(1.8,255)
+							cc.fadeTo(2.6,255)
 						),
-						cc.tintTo(1.8,84,13,143)
+						cc.tintTo(2.6,84,13,143)
 					),
 					cc.spawn(
-							cc.moveTo(1.8,ml.size.width/2,1000),
+							cc.moveTo(2.6,ml.size.width/2,1000),
 							cc.EaseSineIn.create(
-								cc.scaleTo(1.8,1)
+								cc.scaleTo(2.6,1)
 							),
 							cc.EaseSineOut.create(
-								cc.fadeTo(1.8,50)
+								cc.fadeTo(2.6,50)
 							)
 						),
-					cc.moveTo(1.5,ml.size.width/2,1200),
+					cc.moveTo(2.2,ml.size.width/2,1200),
 					cc.callFunc(function() {
 				        this.release();
 						delete tmpRetain[this.__instanceId];					        							
@@ -449,12 +460,6 @@ var _42_MODULE = function(_42Layer) {
 		
 		var text = [];
 		
-// if( levelAndValue.level ) text =
-// [{t:$42.t.new_level_level,scale:5,color:cc.color(0,128,0)} ,
-// {t:levelAndValue.level,scale:10,color:cc.color(0,160,0)}];
-// if( levelAndValue.value ) text =
-// text.concat([{t:$42.t.new_level_value,scale:5,color:cc.color(128,128,0)} ,
-// {t:levelAndValue.value,scale:10,color:cc.color(128,128,0)}]);
 		if( blow.allwords ) {
 			var wt = $42.wordTreasure;
 			for( var i=0 ; i<42 /* wt.length */ ; i++ ) 
@@ -463,7 +468,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		if( blow.info ) {
 			var lines = blow.info;
-			for( var i=0 ; i<lines.length ; i++ ) text = text.concat([{t:lines[i],scale: blow.scale? blow.scale 	: 2,color:cc.color(0,0,128)}]);			
+			for( var i=0 ; i<lines.length ; i++ ) text = text.concat([{t:lines[i],scale: blow.scale? blow.scale 	: 2,color:blow.color?blow.color:cc.color(0,0,128)}]);			
 		}
 		
 		for( var i=0 ; i<text.length ; i++ ) {
@@ -478,7 +483,7 @@ var _42_MODULE = function(_42Layer) {
 			label.setRotation(8.57*i*2);
 			label.runAction(
 				cc.sequence(
-					cc.delayTime(i * 0.44),
+					cc.delayTime(i * 0.88),
 					cc.spawn(
 						cc.scaleTo(3, text[i].scale),
 						cc.fadeTo(3,0),
@@ -508,7 +513,7 @@ var _42_MODULE = function(_42Layer) {
 		return false;
 	};
 	
-	var showFullWordAndAsk = function( brc , word , rowsDeleted , cb ) {
+	var showFullWordAndAsk = function( brc , word , group , rowsDeleted , cb ) {
 		var width = word.length * $42.BS,
 			height = $42.BS,
 			x = $42.BOXES_X_OFFSET + brc.col * $42.BS + width/2,
@@ -586,6 +591,11 @@ var _42_MODULE = function(_42Layer) {
 					
 					// play sound
 					cc.audioEngine.playEffect(res.pling_mp3);
+					
+					// if it is a cypherpunk word
+					if( group == 2 ) {
+						// ... do something
+					};
 
 	   				var sprite = null,
 	   					resume = function(menuLayer,takeWord) {
@@ -1320,9 +1330,10 @@ var _42_MODULE = function(_42Layer) {
 		
 // ml.hookStartProgram( 2 , false );
 // ml.hookStartProgram( 0 , true );
-		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
-		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
-
+//		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
+//		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
+		ml.hookStartProgram( 2 , false );
+		
 		ml.levelsToBlow = [];
 		ml.add1and3s = [];
 		ml.lettersForNextTile = [];
@@ -1333,6 +1344,7 @@ var _42_MODULE = function(_42Layer) {
 		ml.dontAutoSelectWord = false;
 		ml.timeCounter = 0;
 		ml.nextTimeoutWarning = 0;
+		ml.playingTime = $42.MAX_PLAYING_TIME;
 		
 		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
 		$42.wordTreasureBestWord = wt[bw] || null;
@@ -1524,9 +1536,6 @@ var _42_MODULE = function(_42Layer) {
 			ml.plus1Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0, 100))));					
 		}
 		
-		if( ml.hookDrawScoreBar && ml.hookDrawScoreBar() ) {
-			drawScoreBar();
-		}
 		setSelections(); // OPTIMIZATION: Only look in current lines
 		return updateSelectedWord();
 	};	
@@ -1648,18 +1657,18 @@ var _42_MODULE = function(_42Layer) {
 		
 		var minutes = ++ml.timeCounter / 3600,
 			warning = $42.t.timeout_warning[ml.nextTimeoutWarning],
-			m = $42.MAX_PLAYING_TIME - (ml.timeCounter/3600>>>0),
+			m = ml.playingTime - (ml.timeCounter/3600>>>0),
 			s = 60 - (ml.timeCounter/60>>>0)%60;
 		
 		// display time
 		ml.score_time_left.setString(m != 1? m.toString(): s.toString());
 		
-		if( warning && minutes > $42.MAX_PLAYING_TIME - warning.time ) {
+		if( warning && minutes > ml.playingTime - warning.time ) {
 			blowLevelAndWordValue({info:[warning.text]});
 			ml.nextTimeoutWarning++;
 		}
 		
-		if( !ml.timeIsUp && minutes > $42.MAX_PLAYING_TIME ) {
+		if( !ml.timeIsUp && minutes > ml.playingTime ) {
 			ml.timeIsUp = true;
 	        ml.pause();
 	        ml.unscheduleUpdate();
@@ -1682,6 +1691,10 @@ var _42_MODULE = function(_42Layer) {
 			});
 		}
 		
+		if( ml.hookDrawScoreBar && ml.hookDrawScoreBar() ) {
+			drawScoreBar();
+		}
+
 		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);
 					
 		if( !ml.layerIsRolling && ml.rollingLayerStage != 0 ) moveRollingLayer(0);

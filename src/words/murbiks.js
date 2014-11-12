@@ -25,7 +25,8 @@ $42.HAND_ROTATION = 60;
 $42.HAND_CONTACT_SIZE = 40;
 $42.HAND_CONTACT_COLOR = cc.color(0,0,70);
 $42.HAND_CONTACT_TIME = 0.3;
-
+$42.HAND_CONTACT_TIME = 0.3;
+$42.BUBBLE_BUTTON_SCALE = 0.7;
 
 var MURBIKS_MODULE = function(layer) {
 	var ml = layer,
@@ -321,7 +322,6 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 7.0,
 		    	anim: function() {
-		            showSpeechBubble(3.0 , $42.t.mostafa_advanced01 , mostafa.getPosition());	
 		            setTimeout(function() {
 			    		ml.unselectWord();
 			    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		            	
@@ -371,21 +371,21 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 14.4,
 		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,2);
+		    		var boxPos = getBoxPosition(1,1);
 		    		
 		    		moveHandTo(1.1 , boxPos);		    		
 		    	}
 		    },{
 		    	time: 15.8,
 		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,2);
+		    		var boxPos = getBoxPosition(1,1);
 		    		
 		    		pressFingerTo(0.3 , boxPos);		    		
 		    	}
 		    },{
 		    	time: 16.6,
 		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,2);
+		    		var boxPos = getBoxPosition(1,1);
 		    		
 		    		boxPos.x -= 100;
 		    		boxPos.y -= 30;
@@ -395,21 +395,21 @@ var MURBIKS_MODULE = function(layer) {
 		    },{
 		    	time: 17.4,
 		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,2);
+		    		var boxPos = getBoxPosition(1,1);
 		    		
 		    		moveHandTo(1.1 , boxPos);		    		
 		    	}
 		    },{
 		    	time: 18.8,
 		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,2);
+		    		var boxPos = getBoxPosition(1,1);
 		    		
 		    		pressFingerTo(0.3 , boxPos);		    		
 		    	}
 		    },{
 		    	time: 19.2,
 		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,2);
+		    		var boxPos = getBoxPosition(1,1);
 		    		
 		    		boxPos.x -= 100;
 		    		boxPos.y -= 30;
@@ -552,6 +552,7 @@ var MURBIKS_MODULE = function(layer) {
 		    	time: 38.5,
 		    	anim: function() {
 		    		moveHandTo(1.1 , cc.p(-200,0));	
+		    		hand.runAction(cc.rotateTo(1.1,125));
 		    	}
 		    },{
 		    	time: 39.9,
@@ -564,7 +565,6 @@ var MURBIKS_MODULE = function(layer) {
 		    		var tilePos = getTilePosition();
 		    		
 		    		moveHandTo(1.7 , tilePos);		    		
-		    		hand.runAction(cc.rotateTo(1.7,125));
 		    	}
 		    },{
 		    	time: 41.8,
@@ -815,14 +815,24 @@ var MURBIKS_MODULE = function(layer) {
 		speechBubble.setOpacity(0);
 		speechBubbleButton.setOpacity(0);
 		
-        speechBubbleButton.x = bubbleX - 100;
-        speechBubbleButton.y = bubbleY - 300 - speechBubble.getContentSize().height/2;
+        speechBubbleButton.x = bubbleX - 120;
+        speechBubbleButton.y = bubbleY - 240 - speechBubble.getContentSize().height/2;
         
-//        $42.msg2.setString("Content Size: "+speechBubble.getContentSize().height);
+        $42.msg2.setString("x: "+bubbleX+", y: "+bubbleY+", content size: "+speechBubble.getContentSize().height);
 		
         mul.addChild(speechBubbleLine,5,$42.SPEECH_BUBBLE_LINE_TAG);
 		mul.addChild(speechBubbleCloud,5,$42.SPEECH_BUBBLE_CLOUD_TAG);
-		if( !time ) mul.addChild(speechBubbleButton,5,$42.SPEECH_BUBBLE_BUTTON_TAG);
+		if( !time ) {
+			mul.addChild(speechBubbleButton,5,$42.SPEECH_BUBBLE_BUTTON_TAG);
+			speechBubbleButton.runAction(
+				cc.repeatForever(
+					cc.sequence(
+						cc.blink(0.66,4),
+						cc.delayTime(5)
+					)
+				)
+			);
+		}
 		mul.addChild(speechBubble,5,$42.SPEECH_BUBBLE_TAG);
 
         ml.pause();
@@ -857,8 +867,8 @@ var MURBIKS_MODULE = function(layer) {
 	       	        ml.scheduleUpdate();
         	        mul.resume();
 	       	        mul.scheduleUpdate();
+	       	        mul.removeChild(speechBubbleButton);			        
 					mul.removeChild(speechBubbleCloud);
-					mul.removeChild(speechBubbleButton);			        
 					mul.removeChild(speechBubble);			        
 	    		})
 	    	)
@@ -1094,10 +1104,8 @@ var MURBIKS_MODULE = function(layer) {
 		var sprite = cc.spriteFrameCache.getSpriteFrame("go_on_button");
 		speechBubbleButtonImage = cc.MenuItemImage.create(sprite, sprite, removeSpeechBubble);
         speechBubbleButton = cc.Menu.create.apply(mul, [speechBubbleButtonImage] );
-        speechBubbleButton.x = 320;
-        speechBubbleButton.y = 200;
         speechBubbleButton.setOpacity(255);
-        speechBubbleButton.setScale(0.7);
+        speechBubbleButton.setScale($42.BUBBLE_BUTTON_SCALE);
         speechBubbleButton.retain();
         
 		// load hand, finger and contact

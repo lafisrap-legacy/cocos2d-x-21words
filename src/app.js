@@ -452,7 +452,7 @@ var _42GameLayer = cc.Layer.extend({
         	direction: 0,  // 0, -1, 1 
         	isRotating : false,
         	action: null,
-        	fallingSpeed: $42.FALLING_SPEED * 33,
+        	fallingSpeed: $42.FALLING_SPEED,
         	userData: userData
         });
         
@@ -799,21 +799,37 @@ var _42GameLayer = cc.Layer.extend({
     		
     		// move rows above deleted rows down
     		if( rowsDeleted.length ) {
+
+    			var colsToCorrect = [],
+    				prevColBlocked, curColBlocked;
+    			
+    			colsToCorrect[0] = false;
+
     			// play sound
     			cc.audioEngine.playEffect(res.ritsch_mp3);
 
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
-    				// don't delete a box when it wasn't actually deleted (though it's row was)  
     				var rd = [];
     				for( var j=0 ; j<rowsDeleted.length ; j++) {
-    					if( self.boxes[rowsDeleted[j]][i] === null ) rd.push(rowsDeleted[j]);
+    					
+        				// don't delete a box when it wasn't actually deleted (though it's row was)  
+    					if( self.boxes[rowsDeleted[j]][i] === null ) {
+    						rd.push(rowsDeleted[j]);
+    					}
     				}
+    				
+    				// mark transitions between blocked and non blocked columns
+    				curColBlocked = rowsDeleted.length != rd.length;
+    				if( i !== 0 && curColBlocked !== prevColBlocked ) colsToCorrect[i-1] = colsToCorrect[i] = true;
+    				else colsToCorrect[i] = false;    			
+    				prevColBlocked = curColBlocked; 
     				
 	    			var r = 0,
 					rows = 1,
 					row = rd[0],
 					nextRow = rd[++r] || null;
 
+	    			// move boxes down caused by rows deleted
 	    			if( rd.length > 0 ) {
 		    			for( var j=row ; j<$42.BOXES_PER_COL ; j++ ) {
 
@@ -832,6 +848,36 @@ var _42GameLayer = cc.Layer.extend({
 							if( self.hookMoveBoxDown ) self.hookMoveBoxDown({row:j,col:i},{row:j+rows,col:i});
 	    				}	   
 	    			}
+    			}
+
+    			// move boxes down caused by having no neighbor boxes any more
+    			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
+    				if( colsToCorrect[i] ) {
+    					for( var j=rowsDeleted[0] ; j < $42.BOXES_PER_COL ; j++ ) {
+    						// check if box have no neighbors left
+    						if( self.boxes[j][i] && 
+       							( j>0 && !self.boxes[j-1][i] ) && 
+    							( j==$42.BOXES_PER_COL-1 || !self.boxes[j+1][i] ) && 
+    							( i==0 || !self.boxes[j][i-1] ) && 
+    							( i==$42.BOXES_PER_ROW-1 || !self.boxes[j+1][i] ) ) {
+    							
+    							// check how far it should fall
+    							for( var k=j-2 ; k>=0 ; k-- ) if( self.boxes[k][i] ) break;
+    							k++; // destination row is one above
+    							
+    							// move the sprite
+    							cc.assert(self.boxes[j][i],"Box must be filled.")
+    							var sprite = self.boxes[j][i].sprite;
+    							if( sprite ) {
+    								sprite.runAction(cc.moveBy($42.MOVE_SPEED*(j-k), cc.p(0,-$42.BS*(j-k))));
+    							}    						
+
+    							// move the box
+    							self.boxes[k][i] = self.boxes[j][i];
+    							self.boxes[j][i] = null;
+    						}
+    					}
+    				}
     			}
     			
     			if( self.hookAllBoxesMovedDown ) self.hookAllBoxesMovedDown(rowsDeleted.length);
@@ -934,6 +980,15 @@ var _42GameLayer = cc.Layer.extend({
 	    				y: lp.y - sp.y
 	    			}
 	    		} 
+    			
+    			if( !self.isSwipeDown ) {
+    	    		// go back to normal falling speed if tile is not dragged
+    	    		if( lp.y < size.height - $42.BS ) {
+    	    			t.fallingSpeed = $42.FALLING_SPEED;
+    	    		} else {
+    	    			t.fallingSpeed = $42.FALLING_SPEED * 36;
+    	    		}
+    			}
 	    		
     		} else {
 
@@ -948,14 +1003,14 @@ var _42GameLayer = cc.Layer.extend({
     			} else {
 
     				if( !t.isAligning ) {
-        	    		moveHorizontalyAndCheckForBarrier(t,lp,tp);    					
+        	    		moveHorizontalyAndCheckForBarrier(t,lp,tp);   
+    				}
         			
-	    	    		if(tp.y < lp.y - $42.BS*2 && !t.isRotating) {
-	    	    			t.fallingSpeed = Math.max( Math.min($42.FALLING_SPEED * 36, lp.y - $42.BS*2 - tp.y) , $42.FALLING_SPEED);
-	    	    		} else {
-	    	    			t.fallingSpeed = $42.FALLING_SPEED;
-	    	    		}
-    				}    	    		
+    	    		if(tp.y < lp.y - $42.BS*2 && !t.isRotating) {
+    	    			t.fallingSpeed = Math.max( Math.min($42.FALLING_SPEED * 36, lp.y - $42.BS*2 - tp.y) , $42.FALLING_SPEED);
+    	    		} else {
+    	    			t.fallingSpeed = $42.FALLING_SPEED;
+    	    		}
     			}
     		}
     		
@@ -963,13 +1018,7 @@ var _42GameLayer = cc.Layer.extend({
     			self.isTap = false;
     			t.fallingSpeed = $42.FALLING_SPEED;
     		}
-    		
-    		// stop the initial falling of a tile
-    		if( t.fallingSpeed === $42.FALLING_SPEED * 33 && lp.y < size.height - $42.BS ) {
-    			t.fallingSpeed = $42.FALLING_SPEED;
-    		}
-    		
-	    	
+    			    	
     		// let tile fall down
     		lp.y -= t.fallingSpeed;
     		
