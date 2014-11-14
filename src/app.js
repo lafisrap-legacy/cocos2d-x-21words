@@ -42,7 +42,7 @@ var _42_GLOBALS = {
 	INITIAL_TILE_ROTATION: 0,
 	SNAP_SPEED : 10.0, // pixel per 1/60
 	LONG_TAP_TIME : 300, // milliseconds
-	FALLING_SPEED : 0.33, // pixel per 1/60
+	FALLING_SPEED : 0.40, // pixel per 1/60
 	MOVE_SPEED : 0.09, // seconds
 	TOUCH_THRESHOLD : 6, // pixel
 	KEY_LEFT_CODE : 37,
@@ -694,7 +694,7 @@ var _42GameLayer = cc.Layer.extend({
     		
     	};
     	
-    	var checkRotation = function(t, lp) {
+    	var checkRotation = function(t, lp, evade) {
     		
     		var b = t.rotatedBoxes,
     			minOffset = 0,
@@ -709,7 +709,17 @@ var _42GameLayer = cc.Layer.extend({
         		maxOffset = Math.max(maxOffset, lp.x + b[i].x - $42.BOXES_X_OFFSET + $42.BS/2);
         		
         		// check if other tiles are at the play
-        		if( brc.row < 0 || self.boxes[brc.row][brc.col] ) return "collision";
+        		if( brc.row < 0 || self.boxes[brc.row][brc.col] ) {
+        			var offset,move;
+        			if( !evade && 
+        				((move = -$42.BS, offset = checkRotation( t , {x:lp.x + move , y:lp.y}  , true )) !== "collision" || 
+        				 (move =  $42.BS, offset = checkRotation( t , {x:lp.x + move , y:lp.y}  , true )) !== "collision") )
+        				 return (offset==="ok"?0:offset)-move;
+        			
+        			// hier geht's weiter: Tiles are not correctly aligned with grid +- 32 (set move intelligently!)
+        			
+        			else return "collision";
+        		}
     		}
     		
     		if( minOffset < 0 || maxOffset > $42.BOXES_PER_ROW * $42.BS ) {
@@ -719,7 +729,7 @@ var _42GameLayer = cc.Layer.extend({
     					y: lp.y
         			};
     				
-    			if( checkRotation(t , newLp) === "ok" ) return offset;
+    			if( checkRotation(t , newLp , true ) === "ok" ) return offset;
     			else return "collision";
     		} 
     			
@@ -859,7 +869,7 @@ var _42GameLayer = cc.Layer.extend({
        							( j>0 && !self.boxes[j-1][i] ) && 
     							( j==$42.BOXES_PER_COL-1 || !self.boxes[j+1][i] ) && 
     							( i==0 || !self.boxes[j][i-1] ) && 
-    							( i==$42.BOXES_PER_ROW-1 || !self.boxes[j+1][i] ) ) {
+    							( i==$42.BOXES_PER_ROW-1 || !self.boxes[j][i+1] ) ) {
     							
     							// check how far it should fall
     							for( var k=j-2 ; k>=0 ; k-- ) if( self.boxes[k][i] ) break;
@@ -875,6 +885,8 @@ var _42GameLayer = cc.Layer.extend({
     							// move the box
     							self.boxes[k][i] = self.boxes[j][i];
     							self.boxes[j][i] = null;
+    							
+    							cc.log("42Words, checkForAndRemoveCompleteRows: Move box from ("+i+","+j+") to ("+i+","+k+")");
     						}
     					}
     				}

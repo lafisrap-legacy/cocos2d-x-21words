@@ -63,6 +63,7 @@ $42.SCOREBAR_LETTERS_SCALE = 0.45;
 $42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;
 $42.MAX_MULTIPLIERS = 5;
 $42.MAX_PLAYING_TIME = 45;
+$42.WORD_MULTIPLIER_CYPHERPUNKS = 3;
 
 $42.MULTIPLIER = [[2,"letter"],[2,"letter"],[2,"letter"],[3,"letter"],[2,"word"],[3,"letter"],[5,"letter"],[3,"word"],[3,"letter"],[5,"letter"],[10,"letter"]];
 
@@ -313,16 +314,22 @@ var _42_MODULE = function(_42Layer) {
 							value += val;
 						}
 						
+						if( group == 2 ) {
+							ml.playingTime += 5;
+							blowLevelAndWordValue({info:$42.t.moretime_message,color:cc.color(0,128,0)});
+							wordMul *= $42.WORD_MULTIPLIER_CYPHERPUNKS;
+						}
+						
 						// put word into treasure
 						var ls = cc.sys.localStorage,
 							w = { 
 								word: word,
-								value: value * wordMul
+								value: value
 							};
 						$42.wordTreasure.push(w);
 						$42.wordTreasureWords++;
 						ls.setItem("wordTreasureWords",$42.wordTreasureWords);
-						$42.wordTreasureValue += w.value;
+						$42.wordTreasureValue += w.value * wordMul;
 						
 						var wtl = $42.wordTreasure.length;
 						if( $42.wordTreasureValue > $42.maxPoints ) {
@@ -337,11 +344,6 @@ var _42_MODULE = function(_42Layer) {
 							moveRollingLayer(1,$42.SCOREBAR_ROLLING_LAYER_DELAY);
 							var highlight = "bestWord";
 							if( wtl >= 7 ) setNextProfileLetter();
-						}
-						
-						if( group == 2 ) {
-							ml.playingTime += 5;
-							blowLevelAndWordValue({info:$42.t.moretime_message,color:cc.color(0,128,0)});
 						}
 						
 						
@@ -592,11 +594,6 @@ var _42_MODULE = function(_42Layer) {
 					// play sound
 					cc.audioEngine.playEffect(res.pling_mp3);
 					
-					// if it is a cypherpunk word
-					if( group == 2 ) {
-						// ... do something
-					};
-
 	   				var sprite = null,
 	   					resume = function(menuLayer,takeWord) {
 					        ml.resume();
@@ -678,6 +675,17 @@ var _42_MODULE = function(_42Layer) {
     			        valueSprite.setColor(cc.color(200,160,0));
     			        sprite.addChild(valueSprite, 5);	    					
     				}
+    				
+    				if( wordMul > 1 ) {
+        				showWordMultiplier(wordMul , cc.p(sprite.getTextureRect().width/2+220 , pos.y + $42.BS * 2 + 40), {r:207,g:10,b:10}, sprite);    					
+    				}
+    				
+					// if it is a cypherpunk word ...
+					if( group == 2 ) {
+        				showWordMultiplier($42.WORD_MULTIPLIER_CYPHERPUNKS , cc.p(sprite.getTextureRect().width/2+120 , pos.y + $42.BS * 2 + 90), {r:43,g:255,b:17},  sprite);
+						wordMul *= $42.WORD_MULTIPLIER_CYPHERPUNKS;
+					};
+
     				var value = cc.LabelTTF.create($42.t.take_word_wordvalue+": "+sum*wordMul, "Arial", 48);
 					value.setPosition(sprite.getTextureRect().width/2 , pos.y + $42.BS * 2 + 10);
 					value.retain();
@@ -703,6 +711,22 @@ var _42_MODULE = function(_42Layer) {
 			)
 		));
 
+	};
+	
+	var showWordMultiplier = function( multiplier , pos , color , parent ) {
+		var	sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("multiplier"+multiplier+"word"),cc.rect(0,0,$42.BS,$42.BS));
+		cc.assert(sprite,"42Words, showWordMultiplier: Couldn't load sprite ressource for multiplier "+multiplier);
+		sprite.setScale(0.1,0.1);
+		sprite.setPosition(pos);
+		sprite.runAction(cc.sequence(
+			cc.delayTime(Math.random()*0.33),
+			cc.spawn(
+				cc.tintTo(0.95,color.r,color.g,color.b),
+				cc.scaleTo(0.95,1.2),
+				cc.rotateTo(0.95,11)
+			)
+		));
+    	parent.addChild(sprite, 5);
 	};
 	
 	var showWordTreasure = function(word, sprite, cb) {
@@ -950,7 +974,15 @@ var _42_MODULE = function(_42Layer) {
 		for( var i=0 ; i<dpl.length ; i++ ) {
 			var children = dpl[i].getChildren();
 			children[0].release();			
-			children[1].release();			
+			children[1].release();		
+			
+//			D/cocos2d-x debug info(20625): JS: 42words, getNextProfileCandidate: New next letter: V
+//			D/cocos2d-x debug info(20625): JS: 42words, updateSelectedWord, takeWord = true: setSelection()
+//			D/cocos2d-x debug info(20625): Assert failed: Node still marked as running on node destruction! Was base class onExit() called in derived class onExit() implementations?
+//			E/cocos2d-x assert(20625): /Applications/MAMP/htdocs/42words-js/frameworks/runtime-src/proj.android/../../js-bindings/cocos2d-x/cocos/./2d/CCNode.cpp function:~Node line:205
+//			D/cocos2d-x debug info(20625): JS: assets/src/words/words.js:953:TypeError: children[1] is undefined
+//			Fehler: Ö wurde nicht in der Scorebar angezeigt, stattdessen (?) ein gelbes Quadrat?
+			
 			dpl[i].release();
 			delete tmpRetain[children[0].__instanceId];
 			delete tmpRetain[children[1].__instanceId];
@@ -988,6 +1020,8 @@ var _42_MODULE = function(_42Layer) {
 				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS)),
 				pos = cc.p(($42.BS/2+$42.WORD_FRAME_WIDTH)*options.scale,
 						   ($42.BS/2+$42.WORD_FRAME_WIDTH)*options.scale);
+			
+			cc.assert(spriteFrame,"42Words, drawLetterBoxes: Couldn't load sprite for letter '"+letter+"', file: "+file+", spriteFrame: "+spriteFrame);
 			sprite.setPosition(pos);
 			sprite.setScale(options.scale);
 			sprite.retain();
@@ -996,6 +1030,7 @@ var _42_MODULE = function(_42Layer) {
 			
 			// draw value
 			var label = cc.LabelBMFont.create( $42.letterValues[letter].value , "res/fonts/amtype24.fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT, cc.p(0, 0) );
+			cc.assert(label,"42Words, drawLetterBoxes: Couldn't load font for letter '"+letter+"', letterValue: "+$42.letterValues[letter].value );
 			label.setPosition(pos.x+30,pos.y);
 			label.retain();
 	        /* retain */ tmpRetain[label.__instanceId] = { name: "label "+$42.letterValues[letter].value , line: 878 };
