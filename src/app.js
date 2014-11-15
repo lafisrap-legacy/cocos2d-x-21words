@@ -712,11 +712,9 @@ var _42GameLayer = cc.Layer.extend({
         		if( brc.row < 0 || self.boxes[brc.row][brc.col] ) {
         			var offset,move;
         			if( !evade && 
-        				((move = -$42.BS, offset = checkRotation( t , {x:lp.x + move , y:lp.y}  , true )) !== "collision" || 
-        				 (move =  $42.BS, offset = checkRotation( t , {x:lp.x + move , y:lp.y}  , true )) !== "collision") )
+        				((move = -$42.BS/2, offset = checkRotation( t , {x:lp.x + move , y:lp.y}  , true )) !== "collision" || 
+        				 (move =  $42.BS/2, offset = checkRotation( t , {x:lp.x + move , y:lp.y}  , true )) !== "collision") )
         				 return (offset==="ok"?0:offset)-move;
-        			
-        			// hier geht's weiter: Tiles are not correctly aligned with grid +- 32 (set move intelligently!)
         			
         			else return "collision";
         		}
