@@ -9,8 +9,6 @@
  * 
  */ 
 
-var tmpRetain = [];
-
 var _42_GLOBALS = { 
 	TITLE_WORDS : "TETRIS",
 	TITLE_START_GAME : "SPIEL STARTEN",
@@ -19,6 +17,7 @@ var _42_GLOBALS = {
 	TAG_SPRITE_MANAGER : 1,
 	TAG_GAME_LAYER : 3,
 	TAG_TITLE_LAYER : 4,
+	TAG_NONE : 100,
 	TAG_BACKGROUND_SPRITE : 101,
 	TAG_MENU_QUESTION : 102,
 	TAG_MENU_MENU : 103,
@@ -141,8 +140,7 @@ var _42GameLayer = cc.Layer.extend({
             rotation: 0
         });
         this.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
-        background.retain();
-        /* retain */ tmpRetain[background.__instanceId] = { name: "background", line: 123 };
+        _42_retain(background, "startAnimation: background");
         
         // tmp Errormessage layer
         var logMsg = cc.Node.create();
@@ -162,9 +160,7 @@ var _42GameLayer = cc.Layer.extend({
 	
 	endAnimation: function() {
 		var background = this.getChildByTag($42.TAG_BACKGROUND_SPRITE);
-		if( background ) background.release();
-		
-		delete tmpRetain[background.__instanceId];
+		if( background ) _42_release(background);
 	},
 	
 	loadImages: function() {
@@ -425,8 +421,7 @@ var _42GameLayer = cc.Layer.extend({
 			// create sprite for tile and set is size 0, we only use its position and rotation
 			var tileSprite = cc.Sprite.create(res.tiles_png,cc.rect(0,0,0,0));
 			
-			tileSprite.retain();
-			/* retain */ tmpRetain[tileSprite.__instanceId] = { name: "tileSprite", line: 397 };
+			_42_retain(tileSprite, "buildTile: tileSprite");
 	        tileSprite.setPosition(p);
 	        self.addChild(tileSprite);
 
@@ -436,8 +431,7 @@ var _42GameLayer = cc.Layer.extend({
 	    		spriteFrame = cc.spriteFrameCache.getSpriteFrame(newTile+".png"),
 	    		sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
 
-	    		sprite.retain();
-	    		/* retain */ tmpRetain[sprite.__instanceId] = { name: "sprite", line: 408 };
+	    		_42_retain(sprite, "builTile: sprite "+i);
 	        	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
 	        	sprite.setRotation(-$42.INITIAL_TILE_ROTATION);
 		        tileSprite.addChild(sprite);
@@ -761,8 +755,7 @@ var _42GameLayer = cc.Layer.extend({
         			var sprite = t.sprite.children[i],
         				newSprite = cc.Sprite.create(sprite.getTexture(), sprite.getTextureRect());
 
-        			newSprite.retain();
-        			/* retain */ tmpRetain[newSprite.__instanceId] = { name: "box sprite", line: 722 };
+        			_42_retain(newSprite, "box sprite"+i);
         			
         			// Insert into boxes array
     				var brc = getRowCol(b[i], lp);
@@ -902,8 +895,7 @@ var _42GameLayer = cc.Layer.extend({
 		    		
 	        		// destroy sprite and box  
 		    		if( self.boxes[row][i] ) {
-		    			self.boxes[row][i].sprite.release();
-	    				delete tmpRetain[self.boxes[row][i].sprite.__instanceId];
+		    			_42_release(self.boxes[row][i].sprite);
 	    				
 		            	self.removeChild(self.boxes[row][i].sprite);
 		            	self.boxes[row][i].sprite = null;
@@ -913,7 +905,7 @@ var _42GameLayer = cc.Layer.extend({
 			            var emitter = new cc.ParticleSystem( res.particle_lavaflow );
 			            emitter.x = $42.BOXES_Y_OFFSET + i * $42.BS - $42.BS/2;
 			            emitter.y = $42.BOXES_Y_OFFSET + row * $42.BS + $42.BS/2;
-			            emitter.retain();
+			            _42_retain(emitter, "Emitter");
 			            emitter.setAngle(Math.random()*360);
 			            self.addChild(emitter);
 			            
@@ -925,7 +917,7 @@ var _42GameLayer = cc.Layer.extend({
 			            		},emitter),
 			            		cc.delayTime(3.0),
 			            		cc.callFunc(function() {
-			            			this.release();
+			            			_42_release(this);
 			            			self.removeChild(this);
 			            		},emitter)
 			            	)
@@ -1038,11 +1030,9 @@ var _42GameLayer = cc.Layer.extend({
     			
     			var t = self.tiles[tile].sprite,
     				ch = t.getChildren();
-    			t.release();
-				delete tmpRetain[t.__instanceId];
+    			_42_release(t);
     			for(var i=0 ; i<ch.length; i++) {
-    				ch[i].release();
-    				delete tmpRetain[ch[i].__instanceId];
+    				_42_release(ch[i]);
     			}
     			delete self.tiles[tile];
 
@@ -1102,7 +1092,7 @@ var _42MenuLayer = cc.LayerColor.extend({
         this._super(new cc.Color(40,0,0,160),size.width,size.height);
 
         this.initMenu(question, menuItems);
-        
+		
         return true;
     },
 
@@ -1125,7 +1115,7 @@ var _42MenuLayer = cc.LayerColor.extend({
         
         // Show menu items
         for( var i=0 ; i<menuItems.length ; i++ ) {
-            items[i] = cc.MenuItemFont.create(menuItems[i].label, menuItems[i].cb, this);
+            items[i] = new cc.MenuItemFont(menuItems[i].label, menuItems[i].cb, this);
             items[i].setFontSize(48);        	
         }
 
@@ -1160,8 +1150,8 @@ var _42TitleLayer = cc.Layer.extend({
 			sprite.setOpacity(options.opacity !== undefined? options.opacity : 255);
 			sprite.setScale(options.scale || 1);
 			sprite.setRotation(options.rotation || 0);
-			sprite.retain();
-	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "title sprite "+options.tag, line: 1057 };
+			_42_retain(sprite, "title sprite "+options.tag);
+			cc.log("Trying to add sprite: "+options.image+" / "+options.tag);
 	        (options.parent || self).addChild(sprite, 0, options.tag);
 	        return sprite;
 		};
@@ -1171,14 +1161,14 @@ var _42TitleLayer = cc.Layer.extend({
 	
 		// get a grid for the whole background (for special effects)
 		var titleGrid = new cc.NodeGrid();
-		titleGrid.retain();
-        /* retain */ tmpRetain[titleGrid.__instanceId] = { name: "title grid", line: 1085 };
+		_42_retain(titleGrid, "title grid");
 		self.addChild(titleGrid,0,$42.TAG_TITLE_BACKGROUND);
 		
 		var titleBg = addImage({
 			image: "42background", 
 			opacity: 0,
-			parent: titleGrid 
+			parent: titleGrid,
+			tag:	$42.TAG_NONE
 		});
 		
 		var title4 = addImage({
@@ -1256,8 +1246,7 @@ var _42TitleLayer = cc.Layer.extend({
 			oldW = 0, 
 			pos = [];
 		word.setPosition(cc.p(size.width/2, size.height/2));
-		word.retain();
-        /* retain */ tmpRetain[word.__instanceId] = { name: "title word sprite", line: 1105 };
+		_42_retain(word, "title word sprite");
 		self.addChild(word,0,$42.TAG_TITLE_WORD);
 		for( var i=0 ; i<titleWord.length ; i++ ) {
 			letters[i] = addImage({
@@ -1265,7 +1254,8 @@ var _42TitleLayer = cc.Layer.extend({
 				pos: cc.p(i<titleWord.length/2? -400:400,0),
 				parent: word,
 				scale: 1.1,
-				opacity: 0
+				opacity: 0,
+				tag:	$42.TAG_NONE
 			});
 			var w = letters[i].width;
 			pos[i] = (i && pos[i-1]) + w/2 + oldW/2+ $42.TITLE_WORDS_OFFSETS[i] + 10;
@@ -1355,7 +1345,7 @@ var _42TitleLayer = cc.Layer.extend({
 		
         // Show menu items
 		var addMenu = function(name, fontSize, cb) {
-	        var item = cc.MenuItemFont.create(name, cb, self);
+	        var item = new cc.MenuItemFont(name, cb, self);
 	        item.setFontName("Arial");        	
 	        item.setFontSize(fontSize);  
 	        item.setColor($42.TITLE_MENU_COLOR);
@@ -1463,12 +1453,10 @@ var _42TitleLayer = cc.Layer.extend({
     	
     	// release title graphics
  		var node = this.getChildByTag($42.TAG_TITLE_BACKGROUND);
-		if( node ) node.release();
-		delete tmpRetain[node.__instanceId];
+		if( node ) _42_release(node);
 		
 		node = node.getChildren()[0];
-		if( node ) node.release();
-		delete tmpRetain[node.__instanceId];
+		if( node ) _42_release(node);
 
 /* 		node = this.getChildByTag($42.TAG_TITLE_4);
 		if( node ) node.release();
@@ -1484,12 +1472,38 @@ var _42TitleLayer = cc.Layer.extend({
 
 		var nodes = node.getChildren();
 		for( var i=0 ; i<nodes.length ; i++ ) {
-			if( nodes[i] ) nodes[i].release();
-			delete tmpRetain[nodes[i].__instanceId];			
+			if( nodes[i] ) _42_release(nodes[i]);
 		}
     }
 });
 
+var _42_retained = [];
+var _42_retain = function(obj,name) {
+    obj.retain();
+
+	obj.__retainId = _42_getId();
+
+	_42_retained[obj.__retainId] = name;
+	//cc.log("Retaining "+obj.__retainId+": '"+_42_retained[obj.__retainId]+"'");
+}
+
+var _42_release = function(obj) {
+
+	cc.assert(obj && _42_retained[obj.__retainId], "_42_release: Object '"+obj.__retainId+"' not valid or not in retained array...");
+	obj.release();
+	//cc.log("Releasing "+obj.__retainId+": '"+_b_retained[obj.__retainId]+"'");
+
+	delete _42_retained[obj.__retainId];
+}
+
+var _42_IdFactory = function() {
+	var id = 1000;
+
+	return function() {
+		return ++id;
+	}
+}
+var _42_getId = _42_IdFactory();
 
 var _42Scene = cc.Scene.extend({
 	

@@ -180,8 +180,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		if( !sw.startMarker ) {
 			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2"),cc.rect(0,0,$42.BS,$42.BS));
-			sw.startMarker.retain();
-	        /* retain */ tmpRetain[sw.startMarker.__instanceId] = { name: "words: sw.startMarker", line: 186 };	
+			_42_retain(sw.startMarker, "words: sw.startMarker");	
 			sw.startMarker.setPosition(cc.p($42.BOXES_X_OFFSET + sw.brc.col * $42.BS + $42.START_MARKER_X_OFFSET,
 											$42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.START_MARKER_Y_OFFSET));
 			ml.addChild(sw.startMarker,2);
@@ -220,8 +219,7 @@ var _42_MODULE = function(_42Layer) {
 			var col = i-sw.brc.col;
 			// remove old sprite
 			if( sw.sprites[col] ) {
-				sw.sprites[col].release();
-				delete tmpRetain[sw.sprites[col].__instanceId];
+				_42_release(sw.sprites[col]);
 				ml.removeChild( sw.sprites[col] );
 			}
 			sw.sprites[col] = null;
@@ -252,8 +250,7 @@ var _42_MODULE = function(_42Layer) {
 			}
 			
 			if( hits > 0 ) {
-				sw.sprites[col].retain();
-		        /* retain */ tmpRetain[sw.sprites[col].__instanceId] = { name: "words: sw.sprites["+col+"]", line: 252 };	
+				_42_retain(sw.sprites[col],"words: sw.sprites["+col+"]");	
 				ml.addChild(sw.sprites[col],5);
 				sw.sprites[col].setPosition(cc.p($42.BOXES_X_OFFSET + i * $42.BS + $42.MARKER_X_OFFSET, 
 						   						 $42.BOXES_Y_OFFSET + row * $42.BS + $42.MARKER_Y_OFFSET));
@@ -288,6 +285,7 @@ var _42_MODULE = function(_42Layer) {
 					ml.wordIsBeingSelected = false;
 					if( takeWord ) {
 
+						cc.log("CYPHERPUNK: takeWord! In ...");
 						// delete complete row
 						var row = sw.brc.row;
 
@@ -303,8 +301,7 @@ var _42_MODULE = function(_42Layer) {
 										val *= m[l].mul;
 									}
 									// release and delete it
-									m[l].sprite.retain();
-							        /* retain */ tmpRetain[m[l].sprite.__instanceId] = { name: "multiplier", line: 299 };	
+									_42_release(m[l].sprite);
 									ml.removeChild(m[l].sprite);
 									m.splice(l,1);
 									break;
@@ -313,11 +310,13 @@ var _42_MODULE = function(_42Layer) {
 							
 							value += val;
 						}
-						
+					
 						if( group == 2 ) {
+							cc.log("CYPHERPUNK: Cypherpunk word detected: Adding playing time and blow ...");
 							ml.playingTime += 5;
 							blowLevelAndWordValue({info:$42.t.moretime_message,color:cc.color(0,128,0)});
 							wordMul *= $42.WORD_MULTIPLIER_CYPHERPUNKS;
+							cc.log("CYPHERPUNK: ... after blow.");
 						}
 						
 						// put word into treasure
@@ -353,6 +352,7 @@ var _42_MODULE = function(_42Layer) {
 						ml.unselectWord();
 						ml.checkForAndRemoveCompleteRows(row);
 
+						cc.log("CYPHERPUNK: Rows are gone ...");
 						// add new profile letters
 						if( !(wtl%3) ) {
 							if( wtl >=  9 ) setNextProfileLetter();
@@ -363,12 +363,11 @@ var _42_MODULE = function(_42Layer) {
 							setNextMultiplier();							
 						}
 						
-						cc.log("42words, updateSelectedWord, takeWord = true: setSelection()");
 						setSelections();
 						drawScoreBar(highlight);
+						cc.log("CYPHERPUNK: score bar is drawn!");
 					} else {
 						ml.checkForAndRemoveCompleteRows();
-						cc.log("42words, updateSelectedWord, takeWord = false: setSelection()");
 						ml.unselectWord();
 						setSelections();
 						moveSelectedWord(sw.brc);
@@ -419,8 +418,7 @@ var _42_MODULE = function(_42Layer) {
 			label.setPosition(ml.size.width/2,0);
 			label.setColor(cc.color(0,0,0));
 			label.setOpacity(50);
-			label.retain();
-	        /* retain */ tmpRetain[label.__instanceId] = { name: "flying word", line: 416 };	
+			_42_retain(label, "flying word");	
 			ml.addChild(label, 5);
 			label.i = i;
 			label.runAction(
@@ -448,8 +446,7 @@ var _42_MODULE = function(_42Layer) {
 						),
 					cc.moveTo(2.2,ml.size.width/2,1200),
 					cc.callFunc(function() {
-				        this.release();
-						delete tmpRetain[this.__instanceId];					        							
+				        _42_release(this);
 						ml.removeChild(this);
 						if( cb && this.i === 41 ) cb();
 					}, label)
@@ -478,8 +475,7 @@ var _42_MODULE = function(_42Layer) {
 			label.setPosition(ml.size.width/2,ml.size.height/2);
 			label.setScale(0,0);
 			label.setColor(text[i].color);
-			label.retain();
-	        /* retain */ tmpRetain[label.__instanceId] = { name: "blow up word", line: 416 };	
+			_42_retain(label, "blow up word");	
 			ml.addChild(label, 5);
 			label.i = i;
 			label.setRotation(8.57*i*2);
@@ -492,8 +488,7 @@ var _42_MODULE = function(_42Layer) {
 						cc.rotateBy(3,45,30)
 					),
 					cc.callFunc(function() {
-				        this.release();
-						delete tmpRetain[this.__instanceId];					        							
+				        _42_release(this);
 						ml.removeChild(this);
 						if( cb && this.i === text.length-1 ) cb();
 					}, label)
@@ -526,8 +521,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		var	wordFrameSprite = cc.Sprite.create(wordFrameFrame),
 			rect = wordFrameSprite.getTextureRect();
-		wordFrameSprite.retain();
-        /* retain */ tmpRetain[wordFrameSprite.__instanceId] = { name: "words: wordFrameSprite", line: 446 };	
+		_42_retain(wordFrameSprite, "words: wordFrameSprite");	
 		rect.width = width + $42.WORD_FRAME_WIDTH * 2;
 		rect.height = height + $42.WORD_FRAME_WIDTH * 2;
 		wordFrameSprite.setTextureRect(rect);
@@ -542,8 +536,7 @@ var _42_MODULE = function(_42Layer) {
 			var orgSprite = ml.boxes[brc.row][brc.col+i].sprite,
 				sprite = cc.Sprite.create(orgSprite.getTexture(),orgSprite.getTextureRect());
 			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
-			sprite.retain();
-	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "words: sprite "+i, line: 461 };	
+			_42_retain(sprite, "words: sprite "+i);	
 			wordFrameSprite.addChild( sprite );
 			
 			// look for mulitpliers and add if there are
@@ -557,8 +550,7 @@ var _42_MODULE = function(_42Layer) {
 					sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
 					sprite.setColor(cc.color(128,0,0,255));
 					sprite.setScale(1.3,1.3);
-					sprite.retain();
-			        /* retain */ tmpRetain[sprite.__instanceId] = { name: "multiplier "+j, line: 480 };	
+					_42_retain(sprite, "multiplier "+j);	
 					wordFrameSprite.addChild( sprite , 2 );
 					
 					multipliersInWord[i] = m[j];
@@ -602,17 +594,15 @@ var _42_MODULE = function(_42Layer) {
 					        // release and remove sprites
 							s = sprite.getChildren();
 					        for( var i=0 ; i<s.length ; i++ ) {
-						        s[i].release();
-								delete tmpRetain[s[i].__instanceId];					        	
+						        if( s[i].__retainId ) _42_release(s[i]);
 					        }
-					        sprite.release();
-							delete tmpRetain[sprite.__instanceId];
+					        _42_release(sprite);
 
 							// remove sprites and layer
 				            ml.getParent().removeChild(menuLayer);
 					        sprite.removeAllChildren(true);
 					        ml.getParent().removeChild(sprite);
-					        
+
 					        cb( takeWord );					        
 	   					},
 	   					menuItems = [{
@@ -640,8 +630,7 @@ var _42_MODULE = function(_42Layer) {
     					childSprites = [];
     				for( var i=0 ; i<children.length ; i++ ) {
     					childSprites[i] = cc.Sprite.create(children[i].getTexture(),children[i].getTextureRect());
-    					childSprites[i].retain();
-    			        /* retain */ tmpRetain[childSprites[i].__instanceId] = { name: "words: childSprites["+i+"] ", line: 548 };	
+    					_42_retain(childSprites[i],"words: childSprites["+i+"] ");	
     					childSprites[i].setPosition(children[i].getPosition());
     					childSprites[i].setColor(children[i].getColor());
     					childSprites[i].setScale(children[i].getScale());
@@ -649,8 +638,7 @@ var _42_MODULE = function(_42Layer) {
         				sprite.addChild(childSprites[i],2);    					
     				}
     				sprite.setPosition(this.getPosition());
-    				sprite.retain();
-			        /* retain */ tmpRetain[sprite.__instanceId] = { name: "words: sprite", line: 554 };	
+    				_42_retain(sprite, "words: sprite");	
     				sprite.setScale(0.95,0.95);
     				ml.getParent().addChild(sprite,2);
     				
@@ -670,8 +658,7 @@ var _42_MODULE = function(_42Layer) {
 
         				var valueSprite = cc.LabelTTF.create(value, "Arial", 32);
         				valueSprite.setPosition(pos.x + $42.BS*i , pos.y + $42.BS + 10);
-        				valueSprite.retain();
-    			        /* retain */ tmpRetain[valueSprite.__instanceId] = { name: "words: value "+i, line: 565 };	
+        				_42_retain(valueSprite, "words: value "+i);	
     			        valueSprite.setColor(cc.color(200,160,0));
     			        sprite.addChild(valueSprite, 5);	    					
     				}
@@ -688,19 +675,16 @@ var _42_MODULE = function(_42Layer) {
 
     				var value = cc.LabelTTF.create($42.t.take_word_wordvalue+": "+sum*wordMul, "Arial", 48);
 					value.setPosition(sprite.getTextureRect().width/2 , pos.y + $42.BS * 2 + 10);
-					value.retain();
-			        /* retain */ tmpRetain[value.__instanceId] = { name: "words: value ", line: 572 };	
+					_42_retain(value,"words: value ("+sum+", "+wordMul+", "+value+")");	
 					value.setColor(cc.color(200,160,0));
 					sprite.addChild(value, 5);	
 					
 					// release and remove word sprite that is not visible anymore
 			        var s = wordFrameSprite.getChildren();
 			        for( var i=0 ; i<s.length ; i++ ) {
-				        s[i].release();
-						delete tmpRetain[s[i].__instanceId];					        	
+				        _42_release(s[i]);
 			        }
-			        wordFrameSprite.release();
-					delete tmpRetain[wordFrameSprite.__instanceId];
+			        _42_release(wordFrameSprite);
 			        wordFrameSprite.removeAllChildren(true);
 			        ml.removeChild(wordFrameSprite);	  
 
@@ -795,14 +779,12 @@ var _42_MODULE = function(_42Layer) {
 			
 			// delete old sprites
 			if( sw.startMarker ) {
-				sw.startMarker.release();
-				delete tmpRetain[sw.startMarker.__instanceId];
+				_42_release(sw.startMarker);
 
 				ml.removeChild( sw.startMarker );				
 			}
 			for( var i=0 ; i<sw.sprites.length ; i++ ) if( sw.sprites[i]  ) {
-				sw.sprites[i].release();
-				delete tmpRetain[sw.sprites[i].__instanceId];
+				_42_release(sw.sprites[i]);
 				ml.removeChild( sw.sprites[i] );
 				sw.sprites[i] = null;
 			}
@@ -850,8 +832,7 @@ var _42_MODULE = function(_42Layer) {
 			
 			word.setPosition(x,y);
 	        word.setRotation(angle+90);
-	        word.retain();
-	        /* retain */ tmpRetain[word.__instanceId] = { name: "words", line: 669 };	
+	        _42_retain(word, "blow word "+i);	
 	        angle = (angle+79)%360;
 	        ml.addChild(word, 5);
 	        var x2 = Math.random()>0.5? -400 : ml.size.width + 400,
@@ -893,8 +874,7 @@ var _42_MODULE = function(_42Layer) {
 	        word.runAction(fadeAction);
 	        word.runAction(rotateAction);
 	        word.runAction(cc.sequence(bezierAction,cc.callFunc(function(){
-				this.release();
-				delete tmpRetain[this.__instanceId];
+				_42_release(this);
 
 	        	ml.removeChild(this);
 	        },word)));
@@ -903,14 +883,14 @@ var _42_MODULE = function(_42Layer) {
 		
 	var drawText = function(text,pos,size,color,parent,retain) {
 		
-		var label = cc.LabelBMFont.create( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT, cc.p(0, 0) );
+		var label = new cc.LabelBMFont( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT );
+		cc.log("drawText: text = "+text+", label = "+label );
 		label.setPosition(pos);
 		if( retain ) {
-			label.retain();
-	        /* retain */ tmpRetain[label.__instanceId] = { name: "label "+text, line: 769 };
+			_42_retain(label, "label "+text);
 		}
 		label.setColor(color);
-		parent.addChild(label, 5);	
+		parent.addChild(label, 5, $42.TAG_NONE);	
 		
 		return label;
 	};
@@ -923,8 +903,7 @@ var _42_MODULE = function(_42Layer) {
 				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
 				rect = wordFrameSprite.getTextureRect();
 			if( retain ) {
-				wordFrameSprite.retain();
-		        /* retain */ tmpRetain[wordFrameSprite.__instanceId] = { name: "wordFrameSprite "+word, line: 782 };	
+				_42_retain(wordFrameSprite,"wordFrameSprite "+word);	
 			}
 			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
 			rect.height = word.length? $42.BS + $42.WORD_FRAME_WIDTH * 2 : 8;
@@ -942,8 +921,7 @@ var _42_MODULE = function(_42Layer) {
 			// release and remove old letters
 			var ch = wordFrameSprite.getChildren();
 			for( var i=0; i<ch.length ; i++ ) {
-				ch[i].release();
-				delete tmpRetain[ch[i].__instanceId];
+				_42_release(ch[i]);
 			}
 			wordFrameSprite.removeAllChildren(true);
 		}
@@ -955,8 +933,7 @@ var _42_MODULE = function(_42Layer) {
 				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
 			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
 			if( retain ) {
-				sprite.retain();
-		        /* retain */ tmpRetain[sprite.__instanceId] = { name: "wordFrameSprite sprite "+word[i], line: 805 };	
+				_42_retain(sprite, "wordFrameSprite sprite "+word[i]);	
 			}
 			wordFrameSprite.addChild( sprite );
 		}		
@@ -973,8 +950,8 @@ var _42_MODULE = function(_42Layer) {
 		
 		for( var i=0 ; i<dpl.length ; i++ ) {
 			var children = dpl[i].getChildren();
-			children[0].release();			
-			children[1].release();		
+			_42_release(children[0]);			
+			_42_release(children[1]);		
 			
 //			D/cocos2d-x debug info(20625): JS: 42words, getNextProfileCandidate: New next letter: V
 //			D/cocos2d-x debug info(20625): JS: 42words, updateSelectedWord, takeWord = true: setSelection()
@@ -983,10 +960,7 @@ var _42_MODULE = function(_42Layer) {
 //			D/cocos2d-x debug info(20625): JS: assets/src/words/words.js:953:TypeError: children[1] is undefined
 //			Fehler: Ö wurde nicht in der Scorebar angezeigt, stattdessen (?) ein gelbes Quadrat?
 			
-			dpl[i].release();
-			delete tmpRetain[children[0].__instanceId];
-			delete tmpRetain[children[1].__instanceId];
-			delete tmpRetain[dpl[i].__instanceId];
+			_42_release(dpl[i]);
 			if( i==0 && wpl.length - dplm.length > boxes ) {
 				cc.assert(dpl.length === boxes, "42words, drawLetterBoxes: Cannot take out box when display is not full.")
 				dplm.push(dpl[0]);
@@ -1003,8 +977,7 @@ var _42_MODULE = function(_42Layer) {
 			var letterFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe"),
 				letterFrameSprite = cc.Sprite.create(letterFrameFrame),
 				rect = letterFrameSprite.getTextureRect();
-			letterFrameSprite.retain();
-	        /* retain */ tmpRetain[letterFrameSprite.__instanceId] = { name: "letterFrameSprite (i="+i+": "+wpl[i+Math.max(0,wpl.length-boxes)]+")", line: 850 };	
+			_42_retain(letterFrameSprite, "letterFrameSprite (i="+i+": "+wpl[i+Math.max(0,wpl.length-boxes)]+")");	
 			rect.width  = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
 			rect.height = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
 			letterFrameSprite.setTextureRect(rect);
@@ -1024,16 +997,14 @@ var _42_MODULE = function(_42Layer) {
 			cc.assert(spriteFrame,"42Words, drawLetterBoxes: Couldn't load sprite for letter '"+letter+"', file: "+file+", spriteFrame: "+spriteFrame);
 			sprite.setPosition(pos);
 			sprite.setScale(options.scale);
-			sprite.retain();
-	        /* retain */ tmpRetain[sprite.__instanceId] = { name: "letterFrameSprite sprite "+letter, line: 870 };	
+			_42_retain(sprite, "letterFrameSprite sprite "+letter);	
 			letterFrameSprite.addChild( sprite );
 			
 			// draw value
-			var label = cc.LabelBMFont.create( $42.letterValues[letter].value , "res/fonts/amtype24.fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT, cc.p(0, 0) );
+			var label = new cc.LabelBMFont( $42.letterValues[letter].value , "res/fonts/amtype24.fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT );
 			cc.assert(label,"42Words, drawLetterBoxes: Couldn't load font for letter '"+letter+"', letterValue: "+$42.letterValues[letter].value );
 			label.setPosition(pos.x+30,pos.y);
-			label.retain();
-	        /* retain */ tmpRetain[label.__instanceId] = { name: "label "+$42.letterValues[letter].value , line: 878 };
+			_42_retain(label, "label "+$42.letterValues[letter].value);
 			label.setColor(cc.color(255,255,255,255));
 			letterFrameSprite.addChild(label, 5);	
 		}		
@@ -1065,16 +1036,17 @@ var _42_MODULE = function(_42Layer) {
 			wpl = $42.wordProfileLetters,
 			rl = $42.rollingLayer;
 		
+		cc.log("drawScoreBar: STEP1");
 		if( !sb ) {
 			
+			cc.log("drawScoreBar: STEP2");
 		    // create score bar
 		    var sb = ml.scoreBar = new cc.LayerColor(cc.color(128,0,0,0),ml.size.width,$42.BOXES_Y_OFFSET),
 				len = bw? bw.word.length : 0;
 
 		    sb.setPosition(0,0);
 		    sb.setOpacity(0);
-			sb.retain();
-	        /* retain */ tmpRetain[sb.__instanceId] = { name: "scorebar", line: 835 };	
+			_42_retain(sb, "scorebar");	
 			ml.addChild(sb, 5);
 			
 			// draw clipping rect with stencil and rolling layer
@@ -1101,8 +1073,7 @@ var _42_MODULE = function(_42Layer) {
 	        // rolling layer
 			rl = $42.rollingLayer = new cc.Layer();
 			rl.setPosition(0,0);
-			rl.retain();
-	        /* retain */ tmpRetain[rl.__instanceId] = { name: "rolling layer", line: 865 };	
+			_42_retain(rl, "rolling layer");	
 			clipper.addChild(rl, 5);
 
 			drawLetterBoxes({
@@ -1134,6 +1105,7 @@ var _42_MODULE = function(_42Layer) {
 			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);	
 			
 			// draw remaining time
+			cc.log("drawScoreBar: STEP3");
 			ml.score_time_left = drawText("no time",cc.p(558,135) , 72 , $42.SCORE_COLOR_BRIGHT , ml , true);
 			ml.score_time_left.setColor(cc.color(0,0,0));
 			ml.score_time_left.setOpacity(40);
@@ -1259,8 +1231,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		var mul = $42.MULTIPLIER[ml.nextMultiplier],
 			sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("multiplier"+mul[0]+mul[1]),cc.rect(0,0,$42.BS,$42.BS));
-		sprite.retain();
-        /* retain */ tmpRetain[sprite.__instanceId] = { name: "multiplier"+mul[0]+" "+mul[1], line: 1079 };	
+		_42_retain(sprite, "multiplier"+mul[0]+" "+mul[1]);	
 
         // find a new position
         while( true ) {
@@ -1322,8 +1293,7 @@ var _42_MODULE = function(_42Layer) {
 			time = 0.5;
 
 		coin.setPosition(pos.x,pos.y);
-		coin.retain();
-		/* retain */ tmpRetain[coin.__instanceId] = { name: "coin", line: 741 };	
+		_42_retain(coin, "coin");	
 		coin.setColor(cc.color(40,0,0));
 		ml.addChild(coin, 5);
 		coin.runAction(
@@ -1336,8 +1306,7 @@ var _42_MODULE = function(_42Layer) {
 			    	)
 			    ),
 			    cc.callFunc(function() {
-					this.release();
-					delete tmpRetain[this.__instanceId];
+					_42_release(this);
 			    	ml.removeChild(this);
 			    },coin)
 			)
@@ -1409,8 +1378,7 @@ var _42_MODULE = function(_42Layer) {
         ml.plus1Button = cc.Menu.create( item );
         ml.plus1Button.x = $42.PLUS1_BUTTON_X;
         ml.plus1Button.y = $42.PLUS1_BUTTON_Y;
-        ml.plus1Button.retain();
-        /* retain */ tmpRetain[ml.plus1Button.__instanceId] = { name: "plus1Button", line: 1010 };	
+        _42_retain(ml.plus1Button, "plus1Button");	
         ml.addChild(ml.plus1Button,10);
 
         var item = cc.MenuItemImage.create(cc.spriteFrameCache.getSpriteFrame("plus3"), cc.spriteFrameCache.getSpriteFrame("plus3highlit"), function() {
@@ -1420,8 +1388,7 @@ var _42_MODULE = function(_42Layer) {
         ml.plus3Button = cc.Menu.create( item );
         ml.plus3Button.x = $42.PLUS3_BUTTON_X;
         ml.plus3Button.y = $42.PLUS3_BUTTON_Y;
-        ml.plus3Button.retain();
-        /* retain */ tmpRetain[ml.plus3Button.__instanceId] = { name: "plus3Button", line: 1025 };	
+        _42_retain(ml.plus3Button, "plus3Button");	
         ml.addChild(ml.plus3Button,10);
 		
 		drawScoreBar();
@@ -1436,16 +1403,14 @@ var _42_MODULE = function(_42Layer) {
 			if( sprite ) {
 				var ch = sprite.getChildren();
 				for( var i=0 ; i<ch.length ; i++ ) {
-					ch[i].release();
-					delete tmpRetain[ch[i].__instanceId];
+					_42_release(ch[i]);
 				}			
 			}
 		};
 		
 		var releaseSprite = function(sprite) {
 			if( !sprite ) debugger;
-			sprite.release();
-			delete tmpRetain[sprite.__instanceId];
+			_42_release(sprite);
 		};
 		
 		var sb = this.scoreBar,
@@ -1469,10 +1434,8 @@ var _42_MODULE = function(_42Layer) {
 		sb.removeAllChildren(true);
 		
 		// release plus1 and plus3
-		ml.plus1Button.release();
-		delete tmpRetain[ml.plus1Button.__instanceId];
-		ml.plus3Button.release();
-		delete tmpRetain[ml.plus3Button.__instanceId];
+		_42_release(ml.plus1Button);
+		_42_release(ml.plus3Button);
 	};
 
 	/*
@@ -1504,8 +1467,7 @@ var _42_MODULE = function(_42Layer) {
 
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0));
 				
-		tileSprite.retain();
-        tmpRetain[tileSprite.__instanceId] = { name: "words: tileSprite", line: 997 };
+		_42_retain(tileSprite, "words: tileSprite");
 		tileSprite.setPosition(p);
 		ml.addChild(tileSprite,2);
 
@@ -1543,8 +1505,7 @@ var _42_MODULE = function(_42Layer) {
     		
     		cc.assert(sprite, "42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
     		if( !sprite ) cc.log("42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
-    		sprite.retain();
-	        tmpRetain[sprite.__instanceId] = { name: "words: sprite", line: 1038 };
+    		_42_retain(sprite, "words: sprite");
         	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
         	sprite.setRotation(-$42.INITIAL_TILE_ROTATION);
         	userData[i] = $42.LETTERS[val];
@@ -1689,7 +1650,6 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookUpdate = function(dt) {
-		
 		var minutes = ++ml.timeCounter / 3600,
 			warning = $42.t.timeout_warning[ml.nextTimeoutWarning],
 			m = ml.playingTime - (ml.timeCounter/3600>>>0),

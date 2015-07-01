@@ -716,7 +716,7 @@ var MURBIKS_MODULE = function(layer) {
 	            cc.p(200,415),
 	            cc.p(500,75)
 			];
-		animAction.retain();
+		_42_retain(animAction,"mostafa animAction 1");
 			
 	    mostafa.runAction(
 	        	cc.sequence(
@@ -724,7 +724,7 @@ var MURBIKS_MODULE = function(layer) {
 	        		cc.callFunc(function() {
 	        			mul.stopAction(animAction);
 	        			animAction = mostafa.runAction(anims.mostafa_land);
-	        			animAction.retain();
+	        			 _42_retain(animAction, "mostafa animAction 2");
 	        		})
 	    		)
 	    	); 
@@ -741,7 +741,7 @@ var MURBIKS_MODULE = function(layer) {
 				cc.p(bezier[1].x,bezier[1].y-105),
 				cc.p(bezier[2].x,bezier[2].y-105),
 			];
-		animAction.retain();
+		 _42_retain(animAction, "mostafa animAction 3");
 			
 	    mostafa.runAction(
 	        	cc.sequence(
@@ -749,7 +749,7 @@ var MURBIKS_MODULE = function(layer) {
 	        		cc.callFunc(function() {
 	        			mul.stopAction(animAction);
 	        			animAction = mostafa.runAction(anims.mostafa_land);
-	        			animAction.retain();
+	        			 _42_retain(animAction, "mostafa animAction 4");
 	        		})
 	    		)
 	    	); 
@@ -769,7 +769,7 @@ var MURBIKS_MODULE = function(layer) {
 	   			cc.p(350,400),
 	   			cc.p(500,180)
 	   		];
-		animAction.retain();
+		 _42_retain(animAction,"mostafa animAction 5");
 			
 	    mostafa.runAction(
         	cc.sequence(
@@ -781,7 +781,7 @@ var MURBIKS_MODULE = function(layer) {
         		cc.callFunc(function() {
         			mul.stopAction(animAction);
         			animAction = mostafa.runAction(anims.mostafa_land);
-        			animAction.retain();
+        			 _42_retain(animAction, "mostafa animAction 6");
         		})
     		)
     	); 		
@@ -1048,7 +1048,7 @@ var MURBIKS_MODULE = function(layer) {
 
 		// Create layer for tutorial
 		mul = new cc.Layer();
-		mul.retain();
+		_42_retain(mul, "Tutorial layer");
 		
 		// Load sprite frames to frame cache, add texture node
         cc.spriteFrameCache.addSpriteFrames(res.murbiks_plist);
@@ -1061,7 +1061,7 @@ var MURBIKS_MODULE = function(layer) {
 	    	}
 	    	var anim = cc.Animation.create(frames, 0.06);
 	    	anims[name] = cc.animate(anim);
-	    	anims[name].retain();
+	    	_42_retain(anims[name], "anim "+anims[name]);
 		}
 
 		loadFrames("mostafa_fly",9);
@@ -1074,18 +1074,18 @@ var MURBIKS_MODULE = function(layer) {
         	scale: 1.9,
         	rotation: 0
     	});
-        mostafa.retain();
+        _42_retain(mostafa, "Mostafa");
     	mul.addChild(mostafa, 5);
     	
     	// load blue button items
 		blueButton = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("mostafabutton"),cc.rect(0,0,250,70));
 		blueButton.x =  0;
 		blueButton.y =  -105;
-		blueButton.retain();
+		_42_retain(blueButton, "Blue button");
 		menuText = cc.MenuItemFont.create(" ", function() {
 			endProgram(true);
 		} , mul);
-		menuText.retain();
+		_42_retain(menuText, "menuText");
 		var menuBox = cc.Menu.create(menuText);
 		menuBox.x = 125;
 		menuBox.y = 35;		
@@ -1095,27 +1095,27 @@ var MURBIKS_MODULE = function(layer) {
 		
 		// speech bubble load cloud and text object
 		speechBubbleCloud = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("wordcloud"),cc.rect(0,0,480,300));
-		speechBubbleCloud.retain();
+		_42_retain(speechBubbleCloud, "speechBubbleCloud");
 		speechBubble = cc.LabelTTF.create("", "LibreBaskerville-Regular", $42.SPEECH_BUBBLE_FONTSIZE, cc.size($42.SPEECH_BUBBLE_WIDTH,0),cc.TEXT_ALIGNMENT_CENTER, cc.VERTICAL_TEXT_ALIGNMENT_CENTER);
-		speechBubble.retain();
+		_42_retain(speechBubble, "speechBubble");
 		speechBubble.setColor($42.SPEECH_BUBBLE_COLOR);
 		speechBubbleLine = cc.DrawNode.create();
-		speechBubbleLine.retain();
+		_42_retain(speechBubbleLine, "speechBubbleLine");
 		var sprite = cc.spriteFrameCache.getSpriteFrame("go_on_button");
 		speechBubbleButtonImage = cc.MenuItemImage.create(sprite, sprite, removeSpeechBubble);
         speechBubbleButton = cc.Menu.create.apply(mul, [speechBubbleButtonImage] );
         speechBubbleButton.setOpacity(255);
         speechBubbleButton.setScale($42.BUBBLE_BUTTON_SCALE);
-        speechBubbleButton.retain();
+        _42_retain(speechBubbleButton, "speechBubbleButton");
         
 		// load hand, finger and contact
 		hand = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("hand"),cc.rect(0,0,364,640));
 		hand.setRotation($42.HAND_ROTATION);
 		hand.setPosition(cc.p(-300,-300));
-		hand.retain();
+		_42_retain(hand, "Hand");
 		finger = cc.Node.create();
 		finger.setPosition(260,620);
-		finger.retain();
+		_42_retain(finger, "Finger");
 		hand.addChild(finger,-1,$42.FINGER_TAG);
 		mul.addChild(hand, 5, $42.HAND_TAG);
 		
@@ -1125,7 +1125,7 @@ var MURBIKS_MODULE = function(layer) {
 			contactRings[i].setScale(0);
 			contactRings[i].drawCircle(cc.p(0,0), $42.HAND_CONTACT_SIZE, 0, 100, false, 2, $42.HAND_CONTACT_COLOR);
 			finger.addChild(contactRings[i]);
-			contactRings[i].retain();
+			_42_retain(contactRings[i], "contactRing "+i);
 		}
 		
 		mul.update = update;
@@ -1135,7 +1135,7 @@ var MURBIKS_MODULE = function(layer) {
 	var exitAnimation = function() {
 
 		// Create layer for tutorial
-		mul.release();
+		_42_release(mul);
 		mul.unscheduleUpdate();
 		ml.getParent().removeChild(mul);
 	};
