@@ -1,54 +1,73 @@
-/*
+////////////////////////////////////////////////////////////////////
+// Main app holding a plain vanilla tetris game
+//
+//  LAYERS
+//
+// _42_GLOBALS:     Globally available variables
+// _42GameLayer:    The TETRIS like game
+// _42MenuLayer:    The menu functionality
+// _42TitleLayer:   The title screen
+//  
+//  HOOKS to overload functionality (all in _42GameLayer)
+//
+//  hookStartGame
+//  hookLoadImages
+//  hookOnLongTap
+//  hookOnTap 
+//  hookSetTile
+//  hookSetTileImages 
+//  hookTileFixed 
+//  hookTileFixedAfterRowsDeleted 
+//  hookMoveBoxDown 
+//  hookAllBoxesMovedDown 
+//  hookDeleteBox 
+//  hookUpdate
+//  hookEndGame
+ 
 
- * set TOUCH_THRESHOLD to higher value when low real resolution
- * 
- * 	KEY_LEFT_CODE : 37, for MAC
- *	KEY_UP_CODE : 38,
- *	KEY_RIGHT_CODE : 39,
- *	KEY_DOWN_CODE : 40,
- * 
- */ 
-
+////////////////////////////
+// Global variables
+//
 var _42_GLOBALS = { 
-	TITLE_WORDS : "TETRIS",
-	TITLE_START_GAME : "SPIEL STARTEN",
-	TITLE_SCORE : " ",
-	TITLE_MENU_COLOR: cc.color(0,40,0,255),
-	TAG_SPRITE_MANAGER : 1,
-	TAG_GAME_LAYER : 3,
-	TAG_TITLE_LAYER : 4,
-	TAG_NONE : 100,
-	TAG_BACKGROUND_SPRITE : 101,
-	TAG_MENU_QUESTION : 102,
-	TAG_MENU_MENU : 103,
-	TAG_TITLE_BACKGROUND : 104,
-	TAG_TITLE_4 : 105,
-	TAG_TITLE_2 : 106,
-	TAG_TITLE_WORD : 107,
-	TAG_LEAF_1 : 108,
-	TAG_LEAF_2 : 110,
-	TAG_LEAF_3 : 111,
-	TAG_LEAF_4 : 112,
-	TAG_LEAF_5 : 113,
-	TAG_LEAF_6 : 114,
-	TAG_START_BUTTON : 115,
-	BS : 64, 			// box size in pixel
-	BOXES_PER_COL : 22,	// lines of playground
-	GAME_OVER_ROW : 16,	// game over row
-	BOXES_PER_ROW : 10,	// cols in playgound
-	BOXES_X_OFFSET : 0,
-	BOXES_Y_OFFSET : 96,
-	INITIAL_TILE_ROTATION: 0,
-	SNAP_SPEED : 10.0, // pixel per 1/60
-	LONG_TAP_TIME : 300, // milliseconds
-	FALLING_SPEED : 0.40, // pixel per 1/60
-	MOVE_SPEED : 0.09, // seconds
-	TOUCH_THRESHOLD : 6, // pixel
-	KEY_LEFT_CODE : 37,
-	KEY_UP_CODE : 38,
-	KEY_RIGHT_CODE : 39,
-	KEY_DOWN_CODE : 40,
-	TILE_BOXES : [
+    TITLE_WORDS : "TETRIS",                 // Todo: Should be loaded as resource
+	TITLE_START_GAME : "SPIEL STARTEN",     //   ""
+	TITLE_SCORE : " ",                      //   ""
+	TITLE_MENU_COLOR: cc.color(0,40,0,255), //   ""
+	TAG_SPRITE_MANAGER : 1,                 // Sprite Ids
+	TAG_GAME_LAYER : 3,                     //
+	TAG_TITLE_LAYER : 4,                    //
+	TAG_NONE : 100,                         // 
+	TAG_BACKGROUND_SPRITE : 101,            //
+	TAG_MENU_QUESTION : 102,                //
+	TAG_MENU_MENU : 103,                    //
+	TAG_TITLE_BACKGROUND : 104,             //
+	TAG_TITLE_4 : 105,                      //
+	TAG_TITLE_2 : 106,                      //
+	TAG_TITLE_WORD : 107,                   //
+	TAG_LEAF_1 : 108,                       //
+	TAG_LEAF_2 : 110,                       //
+	TAG_LEAF_3 : 111,                       //
+	TAG_LEAF_4 : 112,                       //
+	TAG_LEAF_5 : 113,                       //  
+	TAG_LEAF_6 : 114,                       //
+	TAG_START_BUTTON : 115,                 //
+	BS : 64, 			                    // box size in pixel
+	BOXES_PER_COL : 22,	                    // lines of playground 
+	GAME_OVER_ROW : 16,	                    // game over row
+	BOXES_PER_ROW : 10,	                    // cols in playgound
+	BOXES_X_OFFSET : 0,                     // position of the playground: x
+	BOXES_Y_OFFSET : 96,                    // y
+	INITIAL_TILE_ROTATION: 0,               // How the tiles start coming
+	SNAP_SPEED : 10.0,                      // pixel per 1/60    
+	LONG_TAP_TIME : 300,                    // minimum time for tap
+	FALLING_SPEED : 0.40,                   // pixel per 1/60
+	MOVE_SPEED : 0.09,                      // animation speed of sprites in seconds
+	TOUCH_THRESHOLD : 6,                    // pixel
+	KEY_LEFT_CODE : 37,                     // keys for browser usage
+	KEY_UP_CODE : 38,                       //
+	KEY_RIGHT_CODE : 39,                    //
+	KEY_DOWN_CODE : 40,                     //
+	TILE_BOXES : [                          // Tetris forms
 	    [{x:-1.5*64,y: 0.0*64},{x:-0.5*64,y: 0.0*64},{x: 0.5*64,y: 0.0*64},{x: 1.5*64,y: 0.0*64}],
 		[{x:-0.5*64,y:-0.5*64},{x:-0.5*64,y: 0.5*64},{x: 0.5*64,y:-0.5*64},{x: 0.5*64,y: 0.5*64}],
 		[{x:-1.0*64,y:-0.5*64},{x:-1.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
@@ -59,10 +78,13 @@ var _42_GLOBALS = {
   		[{x:0,y:0}],
 	    [{x:-1.0*64,y: 0.0*64},{x: 0.0*64,y: 0.0*64},{x: 1.0*64,y: 0.0*64}],
 	],
-	TILE_OCCURANCES : [10,5,7,7,2,2,7,0,0]
+	TILE_OCCURANCES : [10,5,7,7,2,2,7,0,0], // How often the tiles appear, when selected randomly
 };
 var $42 = _42_GLOBALS;
 
+/////////////////////////////////////////////////////////////////////////////////7
+// The game layer
+//
 var _42GameLayer = cc.Layer.extend({
     sprite:null,
     
@@ -81,7 +103,9 @@ var _42GameLayer = cc.Layer.extend({
     isSwipeRight: false,
     isSwipeDown: false,    
     isTap: false,
-    
+   
+    //////////////////////////////////////////////////////////////////////////
+    // ctor is the startup function of the game layer
     ctor:function () {
         this._super();
 
@@ -91,7 +115,9 @@ var _42GameLayer = cc.Layer.extend({
         $42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD * size.height / res.height;
         cc.log();
         
-        if( typeof _42_MODULE !== 'undefined' ) _42_MODULE(this);
+        /////////////////////////
+        // Look if there is a plugin module
+        if( typeof _42_MODULE === 'function' ) _42_MODULE(this);
 
         this.startAnimation();
         this.initBoxSpace();
@@ -102,6 +128,8 @@ var _42GameLayer = cc.Layer.extend({
         return true;
     },
 
+    ////////////////////////////////////////////////////////////////////////////
+    // onEnter is also called at creation of the object, but after ctor
     onEnter: function() {
     	var self = this;
 		this._super();
@@ -114,6 +142,8 @@ var _42GameLayer = cc.Layer.extend({
 		},2500);
     },
     
+    ////////////////////////////////////////////////////////////////////////////
+    // onExit is called when the object is destructed
     onExit: function() {
 		this._super();
 
@@ -121,6 +151,8 @@ var _42GameLayer = cc.Layer.extend({
 	    this.unscheduleUpdate();	    	
     },
     
+    ////////////////////////////////////////////////////////////////////////////
+    // endGame cleans up after a game is finished
     endGame: function() {
     	this.endAnimation();
     	
@@ -128,6 +160,8 @@ var _42GameLayer = cc.Layer.extend({
 		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) this.deleteRow(i,true);		
     },
     
+    ////////////////////////////////////////////////////////////////////////////
+    // startAnimation introduces the background and log text (currently wrongly named)
 	startAnimation: function() {
 		
         var size = this.size;
@@ -158,11 +192,15 @@ var _42GameLayer = cc.Layer.extend({
         
 	},
 	
+    ////////////////////////////////////////////////////////////////////////////
+    // endAnimation frees the background
 	endAnimation: function() {
 		var background = this.getChildByTag($42.TAG_BACKGROUND_SPRITE);
 		if( background ) _42_release(background);
 	},
 	
+    ////////////////////////////////////////////////////////////////////////////
+    // loadImages loads tile images itself or calls a hook to do it
 	loadImages: function() {
 
 		// lets module load images ...
@@ -173,6 +211,8 @@ var _42GameLayer = cc.Layer.extend({
 		}
 	},
 	
+    ////////////////////////////////////////////////////////////////////////////
+    // initBoxSpace initializes the box array and draws the score bar
 	initBoxSpace: function() {
         var size = this.size;
         
@@ -195,6 +235,8 @@ var _42GameLayer = cc.Layer.extend({
         
 	},
 	
+    /////////////////////////////////////////////////////////////////////////////
+    // initListeners works on the touch and keyboard inputs
     initListeners: function() {
        	var self = this;
 	
@@ -397,26 +439,40 @@ var _42GameLayer = cc.Layer.extend({
 	    }
     },
     
+    //////////////////////////////////////////////////////////////////////////////////////
+    // Stopps touch and keyboard events
+    //
     stopListeners: function() {
         if( this._touchListener ) cc.eventManager.removeListener(this._touchListener);
         if( this._keyboardListener ) cc.eventManager.removeListener(this._keyboardListener);
     },
 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    // Form a aggregated tile sprite
+    //
+    // p is the position
+    //
 	buildTile: function(p) {
 		
+        ////////////////////////////
 		// select a random tile type
 		var self = this,
 			newTile = self.hookSetTile? self.hookSetTile() : this.getRandomValue($42.TILE_OCCURANCES),
 			tileBoxes = $42.TILE_BOXES[newTile],
 			userData = {};
 		
+        //////////////////////////////
 		// set tile sprite to a column
 		p.x = Math.round(p.x/$42.BS)*$42.BS+(32-(Math.abs(tileBoxes[0].x)%$42.BS));
 		cc.assert(p.x%($42.BS/2) === 0, "_42, buildTile: Tile is not aligned to column.");
 
+        //////////////////////////////
+        // Get tile images from a hook or ...
 		if( this.hookSetTileImages ) {
 			var tileSprite = this.hookSetTileImages(tileBoxes, newTile, p, userData);
 		}
+        //////////////////////////////
+        // draw plain vanilla tiles
 		else {
 			// create sprite for tile and set is size 0, we only use its position and rotation
 			var tileSprite = cc.Sprite.create(res.tiles_png,cc.rect(0,0,0,0));
@@ -438,12 +494,13 @@ var _42GameLayer = cc.Layer.extend({
 	        }			
 		}
         
+        //////////////////////////
         // build a tile object
         this.tiles.push({
         	boxes: tileBoxes,
         	sprite: tileSprite,
         	rotation: $42.INITIAL_TILE_ROTATION,
-        	direction: 0,  // 0, -1, 1 
+        	direction: 0,  // 0: not moving, -1: left, 1: right 
         	isRotating : false,
         	action: null,
         	fallingSpeed: $42.FALLING_SPEED,
@@ -457,6 +514,9 @@ var _42GameLayer = cc.Layer.extend({
 		cc.audioEngine.playEffect(res.plopp_mp3);
 	},
 	
+    ///////////////////////////////////////////////////////////////////
+    // getRandomValue returns a weighted random number
+    //
 	getRandomValue: function(occs, sum) {
 		
 		if( !sum ) for( var i=0, sum=0 ; i<occs.length ; i++ ) sum += occs[i];
@@ -471,6 +531,9 @@ var _42GameLayer = cc.Layer.extend({
 		return i;
 	},
 	
+    ///////////////////////////////////////////////////////////////////////
+    // rotateBoxes rotates the boxes array 
+    //
 	rotateBoxes: function(t) {
 		var r = t.rotation % 360,
 		rb = []; // rotated boxes
@@ -510,6 +573,9 @@ var _42GameLayer = cc.Layer.extend({
 		t.rotatedBoxes = rb;
 	},
 	
+    //////////////////////////////////////////////////////////////////////////
+    // update is called 60 times a second and e.g. moves the tiles
+    //
     update: function(dt) {
     	
     	var self = this,
@@ -518,9 +584,8 @@ var _42GameLayer = cc.Layer.extend({
     	// tmp log
     	$42.msg1.setString("Nodes: "+this.getChildren().length);
 
-    	/*
-    	 * get current row / col of a box
-    	 */
+    	/////////////////////////////////////
+    	// Internal function: get current row / col of a box
     	var getRowCol = function(box, lp) {
     		return {
     			col: Math.round((lp.x + box.x - $42.BOXES_X_OFFSET - $42.BS/2) / $42.BS),
@@ -528,17 +593,17 @@ var _42GameLayer = cc.Layer.extend({
     		};
     	};
     	
-    	/*
-    	 * check if a collision happened
-    	 */
+    	/////////////////////////////////////
+    	// Internal function: check if a collision happened
     	var checkForBottom = function(t, lp) {
     		var b = t.rotatedBoxes; // usually four boxes of a tile
     		
-    		// check all boxes
+            /////////////////////
+    		// check all boxes individually
     		for( var i=0 ; i<b.length ; i++ ) {
     			var bx = lp.x + b[i].x,		// x pos of box
     				by = lp.y + b[i].y,		// y pos of box
-    				brc1 = getRowCol(b[i], { x: lp.x + $42.BS/2 - 5, y: lp.y}),  // 5 is 
+    				brc1 = getRowCol(b[i], { x: lp.x + $42.BS/2 - 5, y: lp.y}), 
 					brc2 = getRowCol(b[i], { x: lp.x - $42.BS/2 + 5, y: lp.y});
     			if( by - $42.BS/2 <= $42.BOXES_Y_OFFSET ||    // bottom reached? 
     				(brc1.row < $42.BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
@@ -554,6 +619,8 @@ var _42GameLayer = cc.Layer.extend({
     		return false;
     	};
     	
+        //////////////////////////////////////
+        // Internal function: Move tile left or right
     	var moveHorizontalyAndCheckForBarrier = function(t, lp, tp) {
     		var b = t.rotatedBoxes,					// usually four tile boxes
     			op = t.offsetToStartPoint, 			// distance of user finger to sprite center when grabbing a tile 
@@ -607,6 +674,8 @@ var _42GameLayer = cc.Layer.extend({
     		return true;
     	};
     	
+        //////////////////////////////////////
+        // Internal function: Align tile gently to a column 
 		var alignToColumn = function(t, lp, doneFn) {
 			var tileOffset = $42.BS/2 - Math.abs(t.rotatedBoxes[0].x%$42.BS),
 				offset = (lp.x-$42.BOXES_X_OFFSET-tileOffset)%$42.BS;
@@ -633,6 +702,8 @@ var _42GameLayer = cc.Layer.extend({
 			}
 		};
     	
+        //////////////////////////////////////////
+        // Internal function: Rotate tile
     	var rotateTile = function rotate(t,lp) {
 			var oldRotation = t.rotation;
 			t.rotation = (t.rotation + 90)%360;
@@ -688,6 +759,8 @@ var _42GameLayer = cc.Layer.extend({
     		
     	};
     	
+        /////////////////////////////
+        // Internal function: Look if rotation is possible, 
     	var checkRotation = function(t, lp, evade) {
     		
     		var b = t.rotatedBoxes,
@@ -728,9 +801,8 @@ var _42GameLayer = cc.Layer.extend({
     		return "ok";
     	};
     	
-    	/*
-    	 * Tile gets fixed on the ground
-    	 */
+    	//////////////////////////////////
+    	// Internal function: fix tile to the ground
     	var fixTile = function fixTileFn(t, lp) {
     		var b = t.rotatedBoxes,
     			newBrcs = [],
@@ -779,11 +851,12 @@ var _42GameLayer = cc.Layer.extend({
     		}
 
     		self.removeChild(t.sprite);
-//       		delete t;
        		
     		return ret;
     	};
-    	
+    
+        /////////////////////////////////////////
+        // Layer function: Check if a row is complete and remove it     
     	self.checkForAndRemoveCompleteRows = function(rowToDelete) {
     		
     		// always check all rows (for now)
@@ -887,6 +960,8 @@ var _42GameLayer = cc.Layer.extend({
     		}
     	};
     	
+        //////////////////////////////////////////
+        // Layer function: Delete a row
     	self.deleteRow = function(row, deleteAnyway) {
 
         	// delete row ... 
@@ -928,43 +1003,48 @@ var _42GameLayer = cc.Layer.extend({
     		}           	
     	};
 
-    	// call hook
+        /////////////////////////////
+        // Internal function: 
+        var isSwipe = function() {
+        	return self.isSwipeLeft || self.isSwipeRight || self.isSwipeUp || self.isSwipeDown;
+        }
+
+        //////////////////////////////////////////////////////77/
+    	// Actual update functionality starts here ... beginning by calling hook update function
     	if( self.hookUpdate ) self.hookUpdate(dt);
     	
-    	// if there is no tile flying, build a new one
+        /////////////////////////////////////
+    	// if there is no tile flying right now, build a new one
         var tilesFlying = self.tiles.filter(function(value) { return value !== undefined }).length;
         if( !tilesFlying ) {
             self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, size.height)); 
         }
         
-        var isSwipe = function() {
-        	return self.isSwipeLeft || self.isSwipeRight || self.isSwipeUp || self.isSwipeDown;
-        }
-
-    	/*
-    	 * Main loop to move tiles
-    	 */
+    	/////////////////////////////////////
+    	// Main loop to move tiles (function is built to be able to move more than one tile at once, but it is not used)
     	for( tile in self.tiles ) {
     		var t = self.tiles[tile],
     			lp = t.sprite.getPosition(),
     			sp = self.touchStartPoint,
     			tp = self.touchLastPoint;
     		
-    		// align x with pixels
-    		lp.x = Math.round(lp.x); // positions manipulated by MoveBy seem to be not precise
+    		lp.x = Math.round(lp.x); // align x (positions manipulated by MoveBy seem to be not precise)
 
-    		/*
-    		 * Move tile left and right
-    		 */
+    		////////////////////////////////////////
+    		// Move tile left and right
     		if( !t.isDragged && !t.isAligning ) {
 
     			if( !t.isRotating ) {
+                    /////////////////////////////////////
+                    // swipe up rotates a tile
     	    		if( self.isSwipeUp ) {
         				
         				t.isRotating = true;
         				t.fallingSpeed = $42.FALLING_SPEED;
         				
         				rotateTile(t , lp);
+                    /////////////////////////////////////
+                    // swipe down let a tile fall
     	    		} else if( self.isSwipeDown && !sp || self.isSwipeDown &&
     		    			sp.x < lp.x + $42.BS*2 && sp.x > lp.x - $42.BS*2 &&
     		    			sp.y < lp.y + $42.BS*2 && sp.y > lp.y - $42.BS*2) {
@@ -973,6 +1053,8 @@ var _42GameLayer = cc.Layer.extend({
     			}
     			
     			if( !t.isRotating && isSwipe() && sp &&
+                    /////////////////////////////////
+                    // Grab a tile
 	    			sp.x < lp.x + $42.BS*2 && sp.x > lp.x - $42.BS*2 &&
 	    			sp.y < lp.y + $42.BS*2 && sp.y > lp.y - $42.BS*2	) { // move the tile if the touch is in range
 	  
@@ -984,6 +1066,7 @@ var _42GameLayer = cc.Layer.extend({
 	    		} 
     			
     			if( !self.isSwipeDown ) {
+                    ////////////////////////////////////////
     	    		// go back to normal falling speed if tile is not dragged
     	    		if( lp.y < size.height - $42.BS ) {
     	    			t.fallingSpeed = $42.FALLING_SPEED;
@@ -991,11 +1074,12 @@ var _42GameLayer = cc.Layer.extend({
     	    			t.fallingSpeed = $42.FALLING_SPEED * 36;
     	    		}
     			}
-	    		
+
     		} else {
 
     			if( self.touchStartPoint == null ) {
-    				// align to column
+                    /////////////////////
+    				// align to column if player does't touch the tile
     				if( !t.isAligning ) {
     					
         				alignToColumn(t,lp,function() {
@@ -1003,7 +1087,8 @@ var _42GameLayer = cc.Layer.extend({
         				});	
     				}
     			} else {
-
+                    ///////////////////////
+                    // Move tile if she touches it
     				if( !t.isAligning ) {
         	    		moveHorizontalyAndCheckForBarrier(t,lp,tp);   
     				}
@@ -1021,26 +1106,31 @@ var _42GameLayer = cc.Layer.extend({
     			t.fallingSpeed = $42.FALLING_SPEED;
     		}
     			    	
+            //////////////////////////////
     		// let tile fall down
     		lp.y -= t.fallingSpeed;
     		
+            //////////////////////////////
+            // Check for bottom
     		var ret;
     		if( ret = checkForBottom(t, lp) ) {
+                //////////////////////////////////////////
     			// tile landed, release and delete it ...
-    			
     			var t = self.tiles[tile].sprite,
     				ch = t.getChildren();
     			_42_release(t);
-    			for(var i=0 ; i<ch.length; i++) {
-    				_42_release(ch[i]);
-    			}
+    			for(var i=0 ; i<ch.length; i++) _42_release(ch[i]);
     			delete self.tiles[tile];
 
+                //////////////////////////////////
+                // Check for game over (preliminary, still can be revoked)
     			if( ret == "gameover" ) {
 
     				var menuItems = [];
         			if( !this.lastGameOverTime || this.lastGameOverTime < new Date().getTime() - 1000 ) {
         				
+                        ///////////////////////7
+                        // Ask player if to go on
         				menuItems.push({
         					label: $42.t.reached_top_continue, 
         					cb: function(sender) {
@@ -1055,6 +1145,8 @@ var _42GameLayer = cc.Layer.extend({
         				});
         			} 
         			
+                    //////////////////////////
+                    // Ask the player to end game
         			menuItems.push({
     					label: $42.t.reached_top_end_game, 
     					cb: function(sender) {
@@ -1082,9 +1174,13 @@ var _42GameLayer = cc.Layer.extend({
     }
 });
 
-
+///////////////////////////////////////////////////////////////////////////////////////7
+// The Menu Layer
 var _42MenuLayer = cc.LayerColor.extend({
     
+    ///////////////////////////////////
+    // ctor is the init function
+    //
     ctor:function (question, menuItems) {
         var size = this.size = cc.director.getWinSize(),
     	self = this;            
@@ -1096,12 +1192,16 @@ var _42MenuLayer = cc.LayerColor.extend({
         return true;
     },
 
+    //////////////////////////////////////
+    // initMenu init the actual menu
+    //
 	initMenu: function(questions, menuItems) {
 		
         var size = this.size,
         	self = this,
         	items = [];
 
+        ////////////////////
         // Show question
         if( typeof questions === "string") questions = [questions];
         for( var i=0 ; i<questions.length ; i++ ) {
@@ -1113,12 +1213,15 @@ var _42MenuLayer = cc.LayerColor.extend({
 			this.addChild(q, 1);        	
         }
         
+        ////////////////////
         // Show menu items
         for( var i=0 ; i<menuItems.length ; i++ ) {
             items[i] = new cc.MenuItemFont(menuItems[i].label, menuItems[i].cb, this);
             items[i].setFontSize(48);        	
         }
 
+        /////////////////////
+        // Create menu
         var menu = cc.Menu.create.apply(this, items);
         menu.x = size.width/2;
         menu.y = size.height/2;
@@ -1132,6 +1235,9 @@ var _42MenuLayer = cc.LayerColor.extend({
     }
 });
 
+//////////////////////////////////////////////////////////////////////////////////
+// The Title layer of the game
+//
 var _42TitleLayer = cc.Layer.extend({
     
 	letters: [],
@@ -1490,11 +1596,13 @@ var _42_retain = function(obj,name) {
 var _42_release = function(obj) {
 
 	cc.assert(obj && _42_retained[obj.__retainId], "_42_release: Object '"+obj.__retainId+"' not valid or not in retained array...");
-	obj.release();
-	//cc.log("Releasing "+obj.__retainId+": '"+_b_retained[obj.__retainId]+"'");
+	if( obj && _42_retained[obj.__retainId] ) {
+        obj.release();
+	    //cc.log("Releasing "+obj.__retainId+": '"+_b_retained[obj.__retainId]+"'");
 
-	delete _42_retained[obj.__retainId];
-}
+	    delete _42_retained[obj.__retainId];
+    }
+};
 
 var _42_IdFactory = function() {
 	var id = 1000;

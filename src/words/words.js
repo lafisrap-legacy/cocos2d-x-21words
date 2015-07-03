@@ -1,103 +1,105 @@
-/* Enhancement module for 42 WORDS
- * 
- * NEXT STEPS:
- * 
- * Tutorial, Tiles order
- * 
- * 
- * + FEHLER
- * 
- * 
- * + GAMEPLAY
- * 
- * + WORTSCHATZ
- * 
- * + INTERNATIONALIZATION
- * 
- * + IPHONE
- * 
- * 
- * + STABILIZATION
- * 
- * 
- * 
- */
+
+////////////////////////////////////////////////////////////////////
+// Main app holding a plain vanilla tetris game
+//
+//  LAYERS
+//
+//  _42_GLOBALS: Global variables (added to alias $42) 
+//
+//
+//
+//
+
 
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
 $42.LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao"];
 $42.LETTERS =      ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","Å"];
-$42.MARKER_SET = 1;
-$42.MARKER_OPT = 2;
-$42.MARKER_SEL = 3;
-$42.START_MARKER_X_OFFSET = -18;
-$42.START_MARKER_Y_OFFSET = $42.BS/2;
-$42.MARKER_X_OFFSET = $42.BS/2;
-$42.MARKER_Y_OFFSET = -25;
-$42.UNSELECTED_BOX_OPACITY = 100;
-$42.NEEDED_LETTERS_PROBABILITY = 0.15; // additional probability that a needed
-										// letter will be selected
-$42.MAX_WORDS_BLOWN = 1;
-$42.WORD_FRAME_WIDTH = 4;
-$42.WORD_FRAME_MOVE_TIME = 0.8;
-$42.SCORE_COLOR_DIMM = cc.color(160,120,55);
-$42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);
-$42.SCORE_COLOR_WHITE = cc.color(255,255,255);
-$42.POINTS_TO_ADD_CYCLES = 3;
-$42.POINTS_TO_ADD_BLOW_UP = -1;
-$42.LEVELS_TO_BLOW_CYCLES = 30;
-$42.NEXT_PROFILE_LETTERS = 5;
-$42.NEXT_PROFILE_LETTER_CNT = 3;
-$42.PLUS1_BUTTON_X = 130;
-$42.PLUS1_BUTTON_Y = 1200;
-$42.PLUS1_BUTTON_COST = 1000;
-$42.PLUS1_BUTTON_TOPROW = 10;
-$42.PLUS1_BUTTON_OPACITY = 170;
-$42.PLUS3_BUTTON_X = 490;
-$42.PLUS3_BUTTON_Y = 1200;
-$42.PLUS3_BUTTON_COST = 10000;
-$42.PLUS3_BUTTON_OPACITY = 170;
-$42.SCOREBAR_LETTERS_PER_ROW = 8;
-$42.SCOREBAR_LETTERS_PER_COL = 2;
-$42.SCOREBAR_LETTERS_PADDING = 16;
-$42.SCOREBAR_LETTERS_SCALE = 0.45;
-$42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;
-$42.MAX_MULTIPLIERS = 5;
-$42.MAX_PLAYING_TIME = 45;
-$42.WORD_MULTIPLIER_CYPHERPUNKS = 3;
+$42.MARKER_SET = 1;                         // Marker under a letter is set, meaning that the letter is obligatory
+$42.MARKER_OPT = 2;                         // Letter can be chosen (?)
+$42.MARKER_SEL = 3;                         // Letter was chosen (!)
+$42.START_MARKER_X_OFFSET = -18;            // X offset of start marker on screen
+$42.START_MARKER_Y_OFFSET = $42.BS/2;       // Y offset 
+$42.MARKER_X_OFFSET = $42.BS/2;             // X offset of markers under letters
+$42.MARKER_Y_OFFSET = -25;                  // Y offset
+$42.UNSELECTED_BOX_OPACITY = 100;           // Opacity of an unselected box (not part of a chosen word)
+$42.NEEDED_LETTERS_PROBABILITY = 0.15;      // additional probability that a needed letter appear (needed for the currently possible words)
+$42.MAX_WORDS_BLOWN = 1;                    // How many words are blown up after a row is deleted
+$42.WORD_FRAME_WIDTH = 4;                   // Weight of the frame of a completed word 
+$42.WORD_FRAME_MOVE_TIME = 0.8;             // Animation time of a completed word
+$42.SCORE_COLOR_DIMM = cc.color(160,120,55);    // Score color when not bright
+$42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);  // same for bright
+$42.SCORE_COLOR_WHITE = cc.color(255,255,255);  // same for white
+$42.NEXT_PROFILE_LETTERS = 5;               // Number of next new letter candidates
+$42.NEXT_PROFILE_LETTER_CNT = 3;            // A new letter after n words
+//$42.PLUS1_BUTTON_X = 130;
+//$42.PLUS1_BUTTON_Y = 1200;
+//$42.PLUS1_BUTTON_COST = 1000;
+//$42.PLUS1_BUTTON_TOPROW = 10;
+//$42.PLUS1_BUTTON_OPACITY = 170;
+//$42.PLUS3_BUTTON_X = 490;
+//$42.PLUS3_BUTTON_Y = 1200;
+//$42.PLUS3_BUTTON_COST = 10000;
+//$42.PLUS3_BUTTON_OPACITY = 170;
+$42.SCOREBAR_LETTERS_PER_ROW = 8;           // Show n small letters in the score bar per row
+$42.SCOREBAR_LETTERS_PER_COL = 2;           // Show max n columns
+$42.SCOREBAR_LETTERS_PADDING = 16;          // Padding of small letters
+$42.SCOREBAR_LETTERS_SCALE = 0.45;          // Size difference to real normal letters
+$42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;     // Seconds till the next score bar roll
+$42.MAX_MULTIPLIERS = 5;                    // Maximum number of multipliers
+$42.MAX_PLAYING_TIME = 45;                  // Normal length of a full game in minutes
+$42.WORD_MULTIPLIER_CYPHERPUNKS = 3;        // Multiplier for Cypherpunk words
 
+// Order of multipliers
 $42.MULTIPLIER = [[2,"letter"],[2,"letter"],[2,"letter"],[3,"letter"],[2,"word"],[3,"letter"],[5,"letter"],[3,"word"],[3,"letter"],[5,"letter"],[10,"letter"]];
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// The game plugin module 
+//
 var _42_MODULE = function(_42Layer) {
 
-	var ml = _42Layer,
+	var ml = _42Layer,          // ml is the standard shortcut for the game layer
 		nextTile = null;
 	
-	// go through box array and look for prefixes
+    /////////////////////////////////////////////
+    // Internal function: go through box array and look for posible prefixes of words
+    //
 	var setSelections = function( dontSelectWord ) {
 		var s = [],
 			sw = ml.selectedWord,
 			nsw = null;
 
+        //////////////////////////////////
+        // Look through all rows ...
 		for( var i=0 ; i<$42.BOXES_PER_COL ; i++) {
-			// dim all boxes in a row
+            //////////////////////////
+			// dim (deselect) all boxes in a row
 			for( var j=0 ; j<$42.BOXES_PER_ROW ; j++ ) {
 				var box = ml.boxes[i][j];				
 				if( box && box.sprite ) box.sprite.setOpacity($42.UNSELECTED_BOX_OPACITY);				
 			}
-			// check all boxes for word starts (prefixes)
+
+            //////////////////////////////
+			// check all boxes in a row for word beginnings (prefixes)
 			for( var j=0 ; j<$42.BOXES_PER_ROW-2 ; j++ ) {
 				var box = ml.boxes[i][j];				
 				if(!box) continue;
 				
+                //////////////////////////////
+                // get current prefix of a box
 				var oldPrefix = box.words && box.words[0] && box.words[0].word.substring(0,3) || null;
 				box.words = null;
+
+                //////////////////////////////
+                // Check if a prefix starts a current box (checkForPrefixes callback return a list of all possible words)
 				checkForPrefixes({row:i,col:j}, function(brc, words) {
 					box.words = words;
-					// don't show selections in the row of the selected word
+                    /////////////////////////////////////////
+					// don't highlight possible selections in the row of the selected word
 					if( sw && sw.brc.row === i ) return;
 					
 					var newPrefix = words[0].word.substring(0,3);
 
+                    /////////////////////////////////
 					// let a newly found sprite blink
 					for( var k=0 ; k<3 ; k++ ) {
 						var box1 = ml.boxes[brc.row][brc.col+k];
@@ -107,7 +109,8 @@ var _42_MODULE = function(_42Layer) {
 						}
 					}
 					
-					// fill the selection
+                    /////////////////////////////////
+					// fill the possible selection and put it on the list
 					s.push({
 						brc: brc,
 						width: $42.BS * 3,
@@ -127,10 +130,14 @@ var _42_MODULE = function(_42Layer) {
 			}
 		}
 		
+        ////////////////////////
+        // The result of the function is a list with possible selections (enlighted on the playground)
 		ml.selections = s;
 	};
 	
+    //////////////////////////////////////////////////////////////////
 	// look for words at a specified position
+    //
 	var checkForPrefixes = function(brc, cb) {
 
 		var prefix = (ml.boxes[brc.row][brc.col]   && ml.boxes[brc.row][brc.col].userData || " ")+
@@ -164,8 +171,10 @@ var _42_MODULE = function(_42Layer) {
 			}
 		}
 	};
-	
-	// update selected word
+
+    ///////////////////////////////////////////////////////////////////    
+	// update markers of selected word, look if a full word was found, process it ...
+    //
 	var updateSelectedWord = function(options) {
 		var sw = ml.selectedWord;
 		
@@ -210,7 +219,7 @@ var _42_MODULE = function(_42Layer) {
 		}
 		// if no words are found with currently selected markers, than the last
 		// fitting word was removed
-		// so all selected markers and start with all words anew
+		// so all selected markers and start with all words a new
 		if( curWords.length === 0 ) {
 			curWords = sw.words.slice();
 			for( var i=3 ; i<sw.markers.length ; i++ ) if( sw.markers[i] === $42.MARKER_SEL || sw.markers[i] === $42.MARKER_SET ) sw.markers[i] = null;
@@ -263,6 +272,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		sw.missingLetters = missingLetters;
 		
+        /////////////////////////////////////////////
 		// look if all marked letters form a complete word
 		for( var i=0 ; i<curWords.length ; i++ ) {
 			var word = curWords[i].word,
@@ -272,23 +282,29 @@ var _42_MODULE = function(_42Layer) {
 					word[j] !== ml.boxes[sw.brc.row][j+sw.brc.col].userData ) 
 						break;
 			}
+
+            ///////////////////////////////////////////////
+            // Full word found?
 			if( j === word.length ) {
-				// delete word from global word list
+                ////////////////////////////////////
+                // FULL WORD FOUND!
+				// First delete word from global word list and selected word list
 				var ret = deleteWordFromList(word);
-				cc.assert(ret,"42words, updateSelectedWord: "+word+" is not in the list!");
-				// also delete if from selected word list
+				cc.assert(ret,"42words, updateSelectedWord: "+word+" is not in the list!");	
 				sw.words.splice(i,1);
 				if( !sw.words.length ) ml.unselectWord();
 				
+                /////////////////////////////////////
+                // Let the word fly ...
 				ml.wordIsBeingSelected = true;
 				showFullWordAndAsk( sw.brc , word , group, options && options.rowsDeleted || 0 , function( takeWord ) {	
 					ml.wordIsBeingSelected = false;
+                    //////////////////////////////////
+                    // Was the word taken?
 					if( takeWord ) {
+						cc.log("TakeWord! In ...");
 
-						cc.log("CYPHERPUNK: takeWord! In ...");
-						// delete complete row
-						var row = sw.brc.row;
-
+                        /////////////////////////
 						// calculate word value
 						for( var wordMul=1,value=0,k=0 ; k<word.length ; k++ ) {
 							var val = $42.letterValues[word[k]].value,
@@ -311,6 +327,8 @@ var _42_MODULE = function(_42Layer) {
 							value += val;
 						}
 					
+                        //////////////////////////////////////
+                        // Cypherpunk special treatment
 						if( group == 2 ) {
 							cc.log("CYPHERPUNK: Cypherpunk word detected: Adding playing time and blow ...");
 							ml.playingTime += 5;
@@ -318,7 +336,8 @@ var _42_MODULE = function(_42Layer) {
 							wordMul *= $42.WORD_MULTIPLIER_CYPHERPUNKS;
 							cc.log("CYPHERPUNK: ... after blow.");
 						}
-						
+					
+                        ////////////////////////////    
 						// put word into treasure
 						var ls = cc.sys.localStorage,
 							w = { 
@@ -350,15 +369,14 @@ var _42_MODULE = function(_42Layer) {
 						if( wtl >= 42 ) youWonTheGame();
 
 						ml.unselectWord();
-						ml.checkForAndRemoveCompleteRows(row);
+						ml.checkForAndRemoveCompleteRows(sw.brc.row);
 
-						cc.log("CYPHERPUNK: Rows are gone ...");
 						// add new profile letters
 						if( !(wtl%3) ) {
 							if( wtl >=  9 ) setNextProfileLetter();
 						}
 						
-						// add new profile letters
+						// add new multiplieres
 						if( wtl >= 21 && wtl%2 ) {
 							setNextMultiplier();							
 						}
@@ -378,9 +396,13 @@ var _42_MODULE = function(_42Layer) {
 			}
 		}
 		
-		return false;
+		return false; // no word was found
 	};
 	
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Game end
+    // TODO: Word selection tool and the twitter send button
+    //
 	var youWonTheGame = function() {
 		
 		var self = this,
@@ -409,7 +431,10 @@ var _42_MODULE = function(_42Layer) {
             );
 		});		
 	};
-	
+
+    //////////////////////////////////////////////////////////////////////////7
+    // Show word list at the end
+    //
 	var showAllWordsFlyingIn = function(cb) {
 		var wt = $42.wordTreasure;
 		
@@ -455,6 +480,9 @@ var _42_MODULE = function(_42Layer) {
 		}		
 	};
 	
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Blow the new level value in big letters 
+    //
 	var blowLevelAndWordValue = function(blow,cb) {
 		
 		var text = [];
