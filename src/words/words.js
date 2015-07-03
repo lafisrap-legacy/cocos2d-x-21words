@@ -1,4 +1,3 @@
-
 ////////////////////////////////////////////////////////////////////
 // Main app holding a plain vanilla tetris game
 //
@@ -9,8 +8,7 @@
 //
 //
 //
-
-
+//
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
 $42.LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao"];
 $42.LETTERS =      ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","Å"];
@@ -1476,11 +1474,9 @@ var _42_MODULE = function(_42Layer) {
 	 */
 	_42Layer.hookSetTile = function() {
 		
-		if( ml.hookGetProgrammedTile ) nextTile = ml.hookGetProgrammedTile();
+		if( ml.hookGetProgrammedTile ) this._nextTile = ml.hookGetProgrammedTile();
 		
-		return nextTile? 								nextTile.tile : 
-			   ml.add1and3s && ml.add1and3s.length? 	(ml.add1and3s.splice(0,1)[0] === "1"? 7 : 8) :
-					   									ml.getRandomValue($42.TILE_OCCURANCES);
+		return this._nextTile && this._nextTile.tile || ml.getRandomValue($42.TILE_OCCURANCES); 
 	};
 
 	/*
@@ -1491,12 +1487,12 @@ var _42_MODULE = function(_42Layer) {
 	 * Param: tileBoxes: metrics of the boxes
 	 * 
 	 */
-	_42Layer.hookSetTileImages = function(tileBoxes, newTile, p, userData) {
+	_42Layer.hookSetTileImages = function(tileBoxes, pos, userData) {
 
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0));
 				
 		_42_retain(tileSprite, "words: tileSprite");
-		tileSprite.setPosition(p);
+		tileSprite.setPosition(pos);
 		ml.addChild(tileSprite,2);
 
         // add single boxes with letters to the tile
@@ -1506,8 +1502,8 @@ var _42_MODULE = function(_42Layer) {
         		lnt = ml.lettersForNextTile;
         	if( lnt && lnt.length > 0 ) {
         		var val = $42.LETTERS.indexOf(lnt.splice(0,1)[0]);
-        	} else if( nextTile !== null ) {
-        		var val = $42.LETTERS.indexOf(nextTile.letters[i]);
+        	} else if( this._nextTile !== null ) {
+        		var val = $42.LETTERS.indexOf(this._nextTile.letters[i]);
         	} else {
 	         	var len = sw && sw.missingLetters && sw.missingLetters.length || 0,
          			prob = len <= 3? $42.NEEDED_LETTERS_PROBABILITY / (5-len) : $42.NEEDED_LETTERS_PROBABILITY; 
@@ -1542,7 +1538,7 @@ var _42_MODULE = function(_42Layer) {
         }
 
         // tile was used, so delete it
-        nextTile = null;
+        this._nextTile = null;
         
         return tileSprite;
 	};	
@@ -1557,8 +1553,7 @@ var _42_MODULE = function(_42Layer) {
 			ml.plus1Button.runAction(cc.EaseSineIn.create(cc.moveBy(0.75,cc.p(0, -100))));
 		} else if( ml.plus1ButtonVisible && (i === brcs.length || ml.totalPoints <= $42.PLUS1_BUTTON_COST) ) {
 			ml.plus1ButtonVisible = false;
-			ml.plus1Button.runAction(cc.EaseSineOut.create(cc.moveBy(0.75,cc.p(0, 100))));					
-		}
+        }
 		
 		setSelections(); // OPTIMIZATION: Only look in current lines
 		return updateSelectedWord();

@@ -7,7 +7,6 @@
  * 
  * 
  * */
-
 $42.MURBIKS_LAYER_TAG = 103;
 $42.SPEECH_BUBBLE_WIDTH = 500;
 $42.SPEECH_BUBBLE_HEIGHT = 450;
@@ -1176,13 +1175,35 @@ var MURBIKS_MODULE = function(layer) {
 	};
 	
 	ml.hookGetProgrammedTile = function() {
-		if( !curTileProgram || curTileProgramCnt >= curTileProgram.length ) {
-			curTileProgram = null;
-			curTileProgramCnt = null;
-			return null;
-		}
-		
-		return curTileProgram[curTileProgramCnt++];
+		if( curTileProgram && curTileProgramCnt < curTileProgram.length ) {
+		    return curTileProgram[curTileProgramCnt++];
+        }
+
+		curTileProgram = null;
+		curTileProgramCnt = null;
+        
+        ////////////////////////////////
+        // Fit in words from wordsForTiles list
+        var wft = ml.wordsForTiles;
+        if( wft.words.length > 0 ) {
+            var word = wft[0].word,
+                letters = [],
+                tileBox = $42.TILE_BOXES[Math.floor(Math.random()*7)],
+                box = Math.floor(Math.random()*tileBox.length),
+                direction = [{x: 1, y:0}, {x:-1, y:0}, {x:0, y:-1}, {x:0, y:1}][Math.floor(Math.random()*4)];
+
+            letters[box] = word[wft.index++];
+
+            while( wft.index < word.length ) {
+                // Going the way through the tile ...
+            }
+
+
+
+            while
+        } 
+
+		return null;
 	};
 	
 	ml.hookResumeAskForWord = function(cb , menuLayer ) {

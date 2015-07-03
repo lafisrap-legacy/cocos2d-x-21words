@@ -23,8 +23,6 @@
 //  hookDeleteBox 
 //  hookUpdate
 //  hookEndGame
- 
-
 ////////////////////////////
 // Global variables
 //
@@ -469,7 +467,7 @@ var _42GameLayer = cc.Layer.extend({
         //////////////////////////////
         // Get tile images from a hook or ...
 		if( this.hookSetTileImages ) {
-			var tileSprite = this.hookSetTileImages(tileBoxes, newTile, p, userData);
+			var tileSprite = this.hookSetTileImages(tileBoxes, p, userData);
 		}
         //////////////////////////////
         // draw plain vanilla tiles
@@ -1591,7 +1589,7 @@ var _42_retain = function(obj,name) {
 
 	_42_retained[obj.__retainId] = name;
 	//cc.log("Retaining "+obj.__retainId+": '"+_42_retained[obj.__retainId]+"'");
-}
+};
 
 var _42_release = function(obj) {
 
@@ -1619,9 +1617,6 @@ var _42Scene = cc.Scene.extend({
         this._super();
 
         this.addChild(new _42TitleLayer(), 2, $42.TAG_TITLE_LAYER);
-//        
     }
 });
-
-
 
