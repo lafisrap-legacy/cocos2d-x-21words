@@ -1179,10 +1179,17 @@ var MURBIKS_MODULE = function(layer) {
     ml.wordsForTiles = {
         index: 0,
         words: [
-            "Maarja",
-            "Eselein",
-            "Affe",
-            "Cypherpunk"
+            "EISEN",
+            "EISTEE",
+            "ERINNERN",
+            "INSERAT",
+            "INTERNET",
+            "IRRSINN",
+            "NIERE",
+            "RASIEREN",
+            "RATTEN",
+            "REISEN",
+            "SANIEREN"
         ]
     };
 

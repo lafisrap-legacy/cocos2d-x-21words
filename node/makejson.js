@@ -69,8 +69,7 @@ letterValues.german = {
 	"Ä":6,
 	"Ö":8,
 	"Ü":6,
-	"1":7,
-	"3":8
+    " ":0
 };
 
 letterValues.english = {
@@ -100,8 +99,7 @@ letterValues.english = {
 		"X":7,
 		"Y":5,
 		"Z":7,
-		"1":7,
-		"3":8
+        " ":0
 	};
 
 letterValues.estonian = {
@@ -129,8 +127,7 @@ letterValues.estonian = {
 		"Ö":8,
 		"Ü":6,
 		"Õ":6,
-		"1":5,
-		"3":8
+        " ":0
 	};
 
 letterValues.swedish = {
@@ -163,8 +160,7 @@ letterValues.swedish = {
 		"Ä":4,
 		"Ö":5,
 		"Å":7,
-		"1":7,
-		"3":8
+        " ":0
 	};
 
 var letterCounts = {};
@@ -232,6 +228,7 @@ if( match ) {
 // calculate letter order
 var letterOrder = [],
 	lvs = letterValues[src];
+
 for( var i in lvs ) letterOrder.push({letter:i,value:lvs[i]});
 letterOrder.sort(function(a,b) { return a.value - b.value });
 for( var i=0 ; i<letterOrder.length ; i++ ) {
