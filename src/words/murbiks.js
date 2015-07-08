@@ -1174,6 +1174,18 @@ var MURBIKS_MODULE = function(layer) {
 		programs[program]();
 	};
 	
+
+    // tmp ..................
+    ml.wordsForTiles = {
+        index: 0,
+        words: [
+            "Maarja",
+            "Eselein",
+            "Affe",
+            "Cypherpunk"
+        ]
+    };
+
 	ml.hookGetProgrammedTile = function() {
 		if( curTileProgram && curTileProgramCnt < curTileProgram.length ) {
 		    return curTileProgram[curTileProgramCnt++];
@@ -1185,22 +1197,170 @@ var MURBIKS_MODULE = function(layer) {
         ////////////////////////////////
         // Fit in words from wordsForTiles list
         var wft = ml.wordsForTiles;
+
+        if( wft.index === undefined ) wft.index = 0;
         if( wft.words.length > 0 ) {
-            var word = wft[0].word,
-                letters = [],
-                tileBox = $42.TILE_BOXES[Math.floor(Math.random()*7)],
-                box = Math.floor(Math.random()*tileBox.length),
-                direction = [{x: 1, y:0}, {x:-1, y:0}, {x:0, y:-1}, {x:0, y:1}][Math.floor(Math.random()*4)];
+            var word = wft.words[0].toUpperCase(),
+                directions = [{x: $42.BS, y:0}, {x:0, y:$42.BS}, {x:-$42.BS, y:0}, {x:0, y:-$42.BS}];
+            
+            var getFittingTile = function(word, index) {
+                var tb = $42.TILE_BOXES,
+                    fittingTiles = [],
+                    brc;
 
-            letters[box] = word[wft.index++];
+                if( !(brc = isWordPossible(word, index) )) return null;
+                
+                brc = {row: brc.row, col: brc.col+index};
+                for( var i=0 ; i<tb.length ; i++ ) {
+                    var t = {
+                            boxes: tb[i],
+                            rotatedBoxes: null,
+                            rotation: 0
+                        };
+                    for( r=0 ; r<360 ; r+=90 ) {
+                        t.rotation = r;
+                        ml.rotateBoxes(t);
 
-            while( wft.index < word.length ) {
-                // Going the way through the tile ...
+                        var rb = t.rotatedBoxes;
+                        for( var j=0 ; j<rb.length ; j++ ) {
+                            var clear = true,
+                                grounded = false,
+                                groundedAt = [];
+                            for( var k=0 ; k<rb.length ; k++ ) {
+                                var rowOff = (rb[k].y - rb[j].y) / $42.BS,
+                                    colOff = (rb[k].x - rb[j].x) / $42.BS;
+
+                                if( brc.row + rowOff < 0 || brc.row + rowOff >= $42.BOXES_PER_COL ||
+                                    brc.col + colOff < 0 || brc.col + colOff >= $42.BOXES_PER_ROW ) {
+                                    clear = false;
+                                    break;
+                                } 
+
+                                var box = ml.boxes[brc.row + rowOff][brc.col + colOff];
+
+                                if( box && box.userData ) {
+                                    clear = false;
+                                    break;
+                                }
+                                var row = brc.row + rowOff,
+                                    col = brc.col + colOff;
+
+                                if( row === 0 || (ml.boxes[row-1][col] && ml.boxes[row-1][col].userData) ) {
+                                    grounded = true;
+                                    groundedAt.push({
+                                        row: row? row-1:0,
+                                        col: col,
+                                        box: row? ml.boxes[row-1][col].userData:null
+                                    });
+                                }
+                            }
+
+                            if( clear && grounded ) {
+                                fittingTiles.push({
+                                    tile:       i,
+                                    boxIndex:   j,
+                                    dir:        r/90,
+                                    groundedAt: groundedAt
+                                });
+                            } 
+                        }
+                    }
+                }
+
+                if( fittingTiles.length ) return fittingTiles[Math.floor(Math.random()*fittingTiles.length)];
+                else return null;
+            };
+
+            var isWordPossible = function(word, index) {
+                for( var i=$42.BOXES_PER_COL-1 ; i>=0 ; i-- ) {
+                    var wi = 0;
+                    for( var j=0 ; j<$42.BOXES_PER_ROW ; j++ ) {
+                        if( ml.boxes[i][j] && ml.boxes[i][j].userData === word[wi] ) {
+                            if( wi === 0 ) var brc = {
+                                row: i,
+                                col: j
+                            }
+                            if( ++wi === index ) {
+                                for( var k=1 ; k<=word.length-index ; k++ ) 
+                                    if( j+k >= $42.BOXES_PER_ROW || (ml.boxes[i][j+k] && ml.boxes[i][j+k].userData) ) break;
+
+                                if( k <= word.length-index ) { 
+                                    brc = null;
+                                    wi = 0;
+                                    continue;
+                                } 
+
+                                return brc;
+                            }
+                        }
+                    }
+                }
+    
+                return false;
+            };
+
+            if( wft.index > 0 ) {
+                var fittingTile = getFittingTile(word, wft.index);
+                if( !fittingTile ) {
+                    wft.index = 0;
+                    wft.words.splice(0,1);
+                    return ml.hookGetProgrammedTile();
+                }
+
+                cc.log("New tile is grounded at: "+JSON.stringify(fittingTile.groundedAt));
             }
 
+            var tile = { 
+                    tile: fittingTile? fittingTile.tile : Math.floor(Math.random()*7),
+                    letters: []
+                },
+                tileBoxes = $42.TILE_BOXES[tile.tile],
+                boxIndex = fittingTile? fittingTile.boxIndex : Math.floor(Math.random()*tileBoxes.length),
+                dir = fittingTile? fittingTile.dir : Math.floor(Math.random()*4),
+                direction = directions[dir],
+                dirFixed = !!fittingTile;
+            
+            tile.letters[boxIndex] = word[wft.index++];
 
+            var cnt = 1,
+                index = wft.index;
 
-            while
+            while( wft.index < word.length && cnt < 2 ) {
+                var found = true;
+                wft.index = index;
+
+                while( wft.index < word.length && found === true ) {
+                    var box = tileBoxes[boxIndex],
+                        nextX = box.x + direction.x,
+                        nextY = box.y + direction.y;
+
+                    cc.log("ml.hookGetProgrammedTile, tile: "+tile.tile+", boxIndex: "+boxIndex+", nextX: "+nextX+", nextY: "+nextY+", cnt: "+cnt+", direction: "+JSON.stringify(direction));
+                    
+                    found = false;
+                    for( var i=0 ; i<tileBoxes.length ; i++ ) {
+                        if( !tile.letters[i] && tileBoxes[i].x === nextX && tileBoxes[i].y === nextY ) {
+                            tile.letters[i] = word[wft.index++];
+                            boxIndex = i;
+                            found = true;
+                            cnt++;
+                            cc.log("ml.hookGetProgrammedTile, FOUND! tile: "+tile.tile+", boxIndex: "+boxIndex+", nextX: "+nextX+", nextY: "+nextY+", cnt: "+cnt+", direction: "+JSON.stringify(direction));
+                            break;
+                        }
+                    }
+                }
+                if( dirFixed ) break;
+
+                direction = directions[++dir%directions.length];
+            }
+
+            // Look if word is complete and delete it then ...
+            cc.assert( wft.index <= word.length, "ml.hookGetProgrammedTile: index out of range.");
+            if( wft.index === word.length ) {
+                wft.index = 0;
+                wft.words.splice(0,1);
+            }
+            for( var i=0 ; i<tileBoxes.length ; i++ ) if( !tile.letters[i] ) tile.letters[i] = " ";
+            return tile;
         } 
 
 		return null;

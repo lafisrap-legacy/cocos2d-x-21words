@@ -10,8 +10,8 @@
 //
 //
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
-$42.LETTER_NAMES = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao"];
-$42.LETTERS =      ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","Å"];
+$42.LETTER_NAMES = ["space","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao"];
+$42.LETTERS =      [" ","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","Å"];
 $42.MARKER_SET = 1;                         // Marker under a letter is set, meaning that the letter is obligatory
 $42.MARKER_OPT = 2;                         // Letter can be chosen (?)
 $42.MARKER_SEL = 3;                         // Letter was chosen (!)
@@ -180,14 +180,14 @@ var _42_MODULE = function(_42Layer) {
 		
 		// Define sprites and show word start sprite
 		var setMarkerFrame = [],
-			optMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker1"),
-			selMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker3");
+			optMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker1.png"),
+			selMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker3.png");
 		
-		setMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker0");
+		setMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker0.png");
 		
 		if( !sw.startMarker ) {
-			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2"),cc.rect(0,0,$42.BS,$42.BS));
-			_42_retain(sw.startMarker, "words: sw.startMarker");	
+			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2.png"),cc.rect(0,0,$42.BS,$42.BS));
+			_42_retain(sw.startMarker, "words: sw.startMarker.png");	
 			sw.startMarker.setPosition(cc.p($42.BOXES_X_OFFSET + sw.brc.col * $42.BS + $42.START_MARKER_X_OFFSET,
 											$42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.START_MARKER_Y_OFFSET));
 			ml.addChild(sw.startMarker,2);
@@ -543,7 +543,7 @@ var _42_MODULE = function(_42Layer) {
 			y = $42.BOXES_Y_OFFSET + brc.row * $42.BS + height/2;
 		
 		// create yellow frame sprite
-		var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe");
+		var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png");
 		
 		var	wordFrameSprite = cc.Sprite.create(wordFrameFrame),
 			rect = wordFrameSprite.getTextureRect();
@@ -724,7 +724,7 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	var showWordMultiplier = function( multiplier , pos , color , parent ) {
-		var	sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("multiplier"+multiplier+"word"),cc.rect(0,0,$42.BS,$42.BS));
+		var	sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("multiplier"+multiplier+"word.png"),cc.rect(0,0,$42.BS,$42.BS));
 		cc.assert(sprite,"42Words, showWordMultiplier: Couldn't load sprite ressource for multiplier "+multiplier);
 		sprite.setScale(0.1,0.1);
 		sprite.setPosition(pos);
@@ -925,7 +925,7 @@ var _42_MODULE = function(_42Layer) {
 		cc.assert(word !== undefined,"42words, drawWordSprite: No word to draw as a sprite.")
 		
 		if( !wordSprite ) {
-			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe"),
+			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
 				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
 				rect = wordFrameSprite.getTextureRect();
 			if( retain ) {
@@ -955,7 +955,7 @@ var _42_MODULE = function(_42Layer) {
 		for( var i=0 ; i<word.length ; i++) {
 			
 			var file = $42.LETTER_NAMES[$42.LETTERS.indexOf(word[i])],
-				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file),
+				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
 				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
 			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
 			if( retain ) {
@@ -1000,7 +1000,7 @@ var _42_MODULE = function(_42Layer) {
 		// fill display with letter boxes (two rows)
 		for( var i=0 ; i<Math.min(boxes,wpl.length) ; i++ ) {
 			// create sprite frame
-			var letterFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe"),
+			var letterFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
 				letterFrameSprite = cc.Sprite.create(letterFrameFrame),
 				rect = letterFrameSprite.getTextureRect();
 			_42_retain(letterFrameSprite, "letterFrameSprite (i="+i+": "+wpl[i+Math.max(0,wpl.length-boxes)]+")");	
@@ -1015,7 +1015,7 @@ var _42_MODULE = function(_42Layer) {
 			// draw letter
 			var letter = wpl[i+Math.max(0,wpl.length-boxes)],
 				file = $42.LETTER_NAMES[$42.LETTERS.indexOf(letter)],
-				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file),
+				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
 				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS)),
 				pos = cc.p(($42.BS/2+$42.WORD_FRAME_WIDTH)*options.scale,
 						   ($42.BS/2+$42.WORD_FRAME_WIDTH)*options.scale);
@@ -1256,7 +1256,7 @@ var _42_MODULE = function(_42Layer) {
 		if( m.length >= $42.MAX_MULTIPLIERS ) return;
 		
 		var mul = $42.MULTIPLIER[ml.nextMultiplier],
-			sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("multiplier"+mul[0]+mul[1]),cc.rect(0,0,$42.BS,$42.BS));
+			sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("multiplier"+mul[0]+mul[1]+".png"),cc.rect(0,0,$42.BS,$42.BS));
 		_42_retain(sprite, "multiplier"+mul[0]+" "+mul[1]);	
 
         // find a new position
@@ -1362,7 +1362,7 @@ var _42_MODULE = function(_42Layer) {
 // ml.hookStartProgram( 0 , true );
 //		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
 //		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
-		ml.hookStartProgram( 2 , false );
+		// ml.hookStartProgram( 2 , false );
 		
 		ml.levelsToBlow = [];
 		ml.add1and3s = [];
@@ -1397,7 +1397,7 @@ var _42_MODULE = function(_42Layer) {
 		}
 				
 		// draw two plus buttons
-        var item = cc.MenuItemImage.create(cc.spriteFrameCache.getSpriteFrame("plus1"), cc.spriteFrameCache.getSpriteFrame("plus1highlit"), function() {
+/*        var item = cc.MenuItemImage.create(cc.spriteFrameCache.getSpriteFrame("plus1"), cc.spriteFrameCache.getSpriteFrame("plus1highlit"), function() {
             	ml.add1and3s.push("1");        		
         } , ml);
         item.setOpacity($42.PLUS1_BUTTON_OPACITY);
@@ -1416,7 +1416,7 @@ var _42_MODULE = function(_42Layer) {
         ml.plus3Button.y = $42.PLUS3_BUTTON_Y;
         _42_retain(ml.plus3Button, "plus3Button");	
         ml.addChild(ml.plus3Button,10);
-		
+*/		
 		drawScoreBar();
 	};
 	
@@ -1476,7 +1476,8 @@ var _42_MODULE = function(_42Layer) {
 		
 		if( ml.hookGetProgrammedTile ) this._nextTile = ml.hookGetProgrammedTile();
 		
-		return this._nextTile && this._nextTile.tile || ml.getRandomValue($42.TILE_OCCURANCES); 
+		if( !this._nextTile || this._nextTile.tile === undefined ) return ml.getRandomValue($42.TILE_OCCURANCES);
+        else return this._nextTile.tile; 
 	};
 
 	/*
@@ -1517,6 +1518,7 @@ var _42_MODULE = function(_42Layer) {
 	        	    	if( userData[k] === $42.LETTERS[val] ) double++;
 	        	    if( double > 1 ) continue;
 	        	    
+                    cc.log("_42Layer.hookSetTileImages, val: "+val+", $42.LETTERS[val]: "+$42.LETTERS[val]+"$42.letterValues[$42.LETTERS[val]]: ", $42.letterValues[$42.LETTERS[val]]);
 	         		if( $42.letterValues[$42.LETTERS[val]].value <= $42.maxWordValue - 3 ) break;		
 	         		if( $42.wordProfileLetters.indexOf($42.LETTERS[val]) > -1 ) break;	
 	         		
@@ -1524,7 +1526,7 @@ var _42_MODULE = function(_42Layer) {
         		}
         	}
        					
-    		var	spriteFrame = cc.spriteFrameCache.getSpriteFrame($42.LETTER_NAMES[val]),
+    		var	spriteFrame = cc.spriteFrameCache.getSpriteFrame($42.LETTER_NAMES[val]+".png"),
     			sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
     		
     		cc.assert(sprite, "42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
