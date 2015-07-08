@@ -1,339 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>frames</key>
-	<dict>
-		<key>2</key>
-		<dict>
-			<key>frame</key>
-			<string>{{0, 0}, {280, 589}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{3, 0}, {277, 588}}</string>
-			<key>sourceSize</key>
-			<string>{280, 589}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>4</key>
-		<dict>
-			<key>frame</key>
-			<string>{{280, 0}, {232, 608}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{0, 0}, {232, 608}}</string>
-			<key>sourceSize</key>
-			<string>{232, 608}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>42background</key>
-		<dict>
-			<key>frame</key>
-			<string>{{512, 0}, {640, 1152}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{0, 0}, {640, 1152}}</string>
-			<key>sourceSize</key>
-			<string>{640, 1152}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>d_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{1152, 0}, {90, 90}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{2, 2}, {86, 86}}</string>
-			<key>sourceSize</key>
-			<string>{90, 90}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>e_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{1242, 0}, {45, 90}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{0, 0}, {45, 90}}</string>
-			<key>sourceSize</key>
-			<string>{45, 90}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>n_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{1287, 0}, {90, 90}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{0, 0}, {90, 90}}</string>
-			<key>sourceSize</key>
-			<string>{90, 90}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>o_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{1377, 0}, {88, 95}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{0, 0}, {88, 95}}</string>
-			<key>sourceSize</key>
-			<string>{88, 95}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>orange_leave_left</key>
-		<dict>
-			<key>frame</key>
-			<string>{{1465, 0}, {261, 157}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{14, 7}, {239, 141}}</string>
-			<key>sourceSize</key>
-			<string>{261, 157}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>orange_leave_right</key>
-		<dict>
-			<key>frame</key>
-			<string>{{1726, 0}, {261, 157}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{8, 7}, {239, 141}}</string>
-			<key>sourceSize</key>
-			<string>{261, 157}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>r_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{1987, 0}, {59, 91}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{0, 0}, {59, 91}}</string>
-			<key>sourceSize</key>
-			<string>{59, 91}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>red_leave_left</key>
-		<dict>
-			<key>frame</key>
-			<string>{{0, 1152}, {388, 150}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{9, 13}, {356, 132}}</string>
-			<key>sourceSize</key>
-			<string>{388, 150}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>red_leave_right</key>
-		<dict>
-			<key>frame</key>
-			<string>{{388, 1152}, {388, 150}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{23, 13}, {356, 132}}</string>
-			<key>sourceSize</key>
-			<string>{388, 150}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>s_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{776, 1152}, {90, 90}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{2, 2}, {86, 86}}</string>
-			<key>sourceSize</key>
-			<string>{90, 90}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>t_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{866, 1152}, {68, 90}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{0, 0}, {68, 90}}</string>
-			<key>sourceSize</key>
-			<string>{68, 90}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>w_</key>
-		<dict>
-			<key>frame</key>
-			<string>{{934, 1152}, {98, 89}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{0, 0}, {98, 89}}</string>
-			<key>sourceSize</key>
-			<string>{98, 89}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>yellow_leave_left</key>
-		<dict>
-			<key>frame</key>
-			<string>{{1032, 1152}, {269, 198}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{12, 17}, {244, 178}}</string>
-			<key>sourceSize</key>
-			<string>{269, 198}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>yellow_leave_right</key>
-		<dict>
-			<key>frame</key>
-			<string>{{1301, 1152}, {269, 198}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{13, 17}, {244, 178}}</string>
-			<key>sourceSize</key>
-			<string>{269, 198}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>start</key>
-		<dict>
-			<key>frame</key>
-			<string>{{1570, 1152}, {321, 121}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{6, 5}, {309, 102}}</string>
-			<key>sourceSize</key>
-			<string>{321, 121}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		<key>start2</key>
-		<dict>
-			<key>frame</key>
-			<string>{{0, 1350}, {300, 101}}</string>
-			<key>offset</key>
-			<string>{0, 0}</string>
-			<key>rotated</key>
-			<false/>
-			<key>sourceColorRect</key>
-			<string>{{15, 5}, {269, 91}}</string>
-			<key>sourceSize</key>
-			<string>{300, 101}</string>
-			<key>aliases</key>
-			<array>
-
-			</array>
-		</dict>
-		</dict>
-		<key>metadata</key>
-		<dict>
-		<key>format</key>
-		<integer>2</integer>
-		<key>textureFileName</key>
-		<string>title.png</string>
-		<key>size</key>
-		<string>{2048, 2048}</string>
-	</dict></dict></plist>
+    <dict>
+        <key>frames</key>
+        <dict>
+            <key>42background.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,2},{640,1152}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{640,1152}}</string>
+                <key>sourceSize</key>
+                <string>{640,1152}</string>
+            </dict>
+            <key>start.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,1156},{309,103}}</string>
+                <key>offset</key>
+                <string>{0,5}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{6,4},{309,103}}</string>
+                <key>sourceSize</key>
+                <string>{321,121}</string>
+            </dict>
+            <key>start2.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{313,1156},{270,91}}</string>
+                <key>offset</key>
+                <string>{-1,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{14,5},{270,91}}</string>
+                <key>sourceSize</key>
+                <string>{300,101}</string>
+            </dict>
+        </dict>
+        <key>metadata</key>
+        <dict>
+            <key>format</key>
+            <integer>2</integer>
+            <key>realTextureFileName</key>
+            <string>title.png</string>
+            <key>size</key>
+            <string>{644,1261}</string>
+            <key>smartupdate</key>
+            <string>$TexturePacker:SmartUpdate:ecad518ac1f969801c114ace6c073069:22abc252171682aa0bb34b5b52836a86:eac3319ae54fe6d043150c971d4e6759$</string>
+            <key>textureFileName</key>
+            <string>title.png</string>
+        </dict>
+    </dict>
+</plist>

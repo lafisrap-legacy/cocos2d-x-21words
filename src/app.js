@@ -1260,192 +1260,16 @@ var _42TitleLayer = cc.Layer.extend({
 	        return sprite;
 		};
 		
-		var titleWord = $42.TITLE_WORDS,
-		letters = [];
-	
-		// get a grid for the whole background (for special effects)
-		var titleGrid = new cc.NodeGrid();
-		_42_retain(titleGrid, "title grid");
-		self.addChild(titleGrid,0,$42.TAG_TITLE_BACKGROUND);
-		
 		var titleBg = addImage({
-			image: "42background", 
+			image: "42background.png", 
 			opacity: 0,
-			parent: titleGrid,
+			parent: self,
 			tag:	$42.TAG_NONE
 		});
-		
-		var title4 = addImage({
-			image: "4", 
-			pos:	cc.p(size.width/2-30, 1300), 
-			scale:	0.18,
-			opacity: 64,
-			tag:	$42.TAG_TITLE_4
-		});
-		
-		var title2 = addImage({
-			image: "2", 
-			pos: 	cc.p(size.width/2+30, 1300), 
-			scale:	0.18,
-			opacity: 64,
-			tag: 	$42.TAG_TITLE_2
-		});
-		
-		var orange_leaf_left = addImage({
-			image: "orange_leave_left", 
-			pos: 	cc.p(size.width/2-200, 677), 
-			scale:	0.40,
-			rotation: -30,
-			opacity: 0,
-			tag: 	$42.TAG_LEAF_1
-		});
-		
-		var orange_leaf_right = addImage({
-			image: "orange_leave_right", 
-			pos: 	cc.p(size.width/2+210, 685), 
-			scale:	0.40,
-			rotation: 30,
-			opacity: 0,
-			tag: 	$42.TAG_LEAF_2
-		});
-		
-		var red_leaf_left = addImage({
-			image: "red_leave_left", 
-			pos: 	cc.p(size.width/2-190 , 735), 
-			scale:	0.50,
-			rotation: 20,
-			opacity: 0,
-			tag: 	$42.TAG_LEAF_3
-		});
-		
-		var red_leaf_right = addImage({
-			image: "red_leave_right", 
-			pos: 	cc.p(size.width/2+205, 745), 
-			scale:	0.50,
-			rotation: -20,
-			opacity: 0,
-			tag: 	$42.TAG_LEAF_4
-		});
-		
-		var yellow_leaf_left = addImage({
-			image: "yellow_leave_left", 
-			pos: 	cc.p(size.width/2-180, 770), 
-			scale:	0.40,
-			rotation: 10,
-			opacity: 0,
-			tag: 	$42.TAG_LEAF_5
-		});
-		
-		var yellow_leaf_right = addImage({
-			image: "yellow_leave_right", 
-			pos: 	cc.p(size.width/2+195, 780), 
-			scale:	0.40,
-			rotation: -10,
-			opacity: 0,
-			tag: 	$42.TAG_LEAF_6
-		});
-		
-		// Create title word with letters (record their positions)
-		var word = cc.Node.create(),
-			oldW = 0, 
-			pos = [];
-		word.setPosition(cc.p(size.width/2, size.height/2));
-		_42_retain(word, "title word sprite");
-		self.addChild(word,0,$42.TAG_TITLE_WORD);
-		for( var i=0 ; i<titleWord.length ; i++ ) {
-			letters[i] = addImage({
-				image: titleWord.substr(i,1).toLowerCase()+"_",
-				pos: cc.p(i<titleWord.length/2? -400:400,0),
-				parent: word,
-				scale: 1.1,
-				opacity: 0,
-				tag:	$42.TAG_NONE
-			});
-			var w = letters[i].width;
-			pos[i] = (i && pos[i-1]) + w/2 + oldW/2+ $42.TITLE_WORDS_OFFSETS[i] + 10;
-			oldW = w;
-		}
-		
-		// fade in background
-		titleBg.runAction(
-			cc.EaseSineOut.create(
-				cc.spawn(
-					cc.fadeIn(1.9)
-				)
-			)
-		);
-		// shake it ...
-/*		titleGrid.runAction(
-			cc.sequence(
-				cc.delayTime(3.4),
-				cc.liquid( 0.4, cc.size(16,12), 1, 2)
-			)
-		);*/ 
-		
-		// animate 4 and 2
-		title4.runAction(
-			cc.sequence(
-				cc.delayTime(1.4),
-				cc.spawn(
-					cc.EaseSineIn.create(
-						cc.fadeIn(1.8)
-					),
-					cc.EaseElasticOut.create(
-						cc.moveTo(1.8,cc.p(size.width/2-27, 700))
-					)
-				),
-				cc.delayTime(0.2),
-				cc.EaseSineOut.create(
-					cc.spawn(
-						cc.scaleTo(0.3,0.48),
-						cc.moveTo(0.3,cc.p(size.width/2-76, 790))
-					)
-				)
-			)
-		);
-		
-		title2.runAction(
-			cc.sequence(
-				cc.delayTime(1.3),
-				cc.spawn(
-					cc.EaseSineIn.create(
-						cc.fadeIn(2)
-					),
-					cc.EaseElasticOut.create(
-						cc.moveTo(2,cc.p(size.width/2+27, 700))
-					)
-				),
-				cc.EaseSineOut.create(
-					cc.spawn(
-						cc.scaleTo(0.3,0.48),
-						cc.moveTo(0.3,cc.p(size.width/2+76, 790))
-					)
-				)
-			)
-		);
-		
-		orange_leaf_left.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
-		orange_leaf_right.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
-		red_leaf_left.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
-		red_leaf_right.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
-		yellow_leaf_left.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
-		yellow_leaf_right.runAction(cc.sequence(cc.delayTime(1.3),cc.EaseSineIn.create(cc.fadeIn(2.3))));
 
-		// move letters in from left and right
-		var delays = [0.39,0.26,0.13,0.39,0.52];
-		for( var i=0 ; i<letters.length ; i++ ) {
-			letters[i].runAction(
-				cc.sequence(
-					cc.delayTime(delays[i]),
-					cc.spawn(
-						cc.fadeIn(2.9),
-						cc.EaseSineOut.create(
-							cc.moveTo(0.9,cc.p(pos[i]-(pos[letters.length-1]+w/2)/2,0))
-						)
-					)
-				)
-			);			
-		}
+        titleBg.runAction(
+            cc.fadeIn(3)
+        );
 		
         // Show menu items
 		var addMenu = function(name, fontSize, cb) {
@@ -1457,75 +1281,28 @@ var _42TitleLayer = cc.Layer.extend({
 	        return item;
 		}
 		
-		var buttonImage = cc.spriteFrameCache.getSpriteFrame("start"),
-			buttonImage2 = cc.spriteFrameCache.getSpriteFrame("start2");
+		var buttonImage = cc.spriteFrameCache.getSpriteFrame("start.png"),
+			buttonImage2 = cc.spriteFrameCache.getSpriteFrame("start2.png");
         var item1 = cc.MenuItemImage.create(buttonImage, buttonImage2, function() {
         	// start game layer
         	self.getParent().addChild(new _42GameLayer(), 1, $42.TAG_GAME_LAYER);
-        	
-        	titleBg.stopAllActions();
-    		titleGrid.runAction(
-    			cc.spawn(
-	    			cc.sequence(
-						cc.EaseSineIn.create(
-							cc.moveBy(3.0,cc.p(1280,0))
-						),
-						cc.callFunc(function() {
-			    			self.exitTitle(); // release sprites
-							// copy title sprites to game layer
-							var ml = self.getParent().getChildByTag($42.TAG_GAME_LAYER);
-							self.removeChild(title4); ml.addChild(title4);
-							self.removeChild(title2); ml.addChild(title2);
-							self.removeChild(orange_leaf_left); ml.addChild(orange_leaf_left);
-							self.removeChild(orange_leaf_right); ml.addChild(orange_leaf_right);
-							self.removeChild(red_leaf_left); ml.addChild(red_leaf_left);
-							self.removeChild(red_leaf_right); ml.addChild(red_leaf_right);
-							self.removeChild(yellow_leaf_left); ml.addChild(yellow_leaf_left);
-							self.removeChild(yellow_leaf_right); ml.addChild(yellow_leaf_right);
-							self.removeChild(word); ml.addChild(word);
-							self.getParent().removeChild(self);
-						})
-	    			),
-	    			cc.waves3D(5, cc.size(15,10), 5, 25 )
-	    		)
-    		);
-    		
-    		title4.runAction(
-				cc.EaseSineIn.create(
-					cc.spawn(
-						cc.fadeTo(2,20),
-						cc.tintTo(2,100,100,100)
-					)
-				)
-			);
-    		title2.runAction(
-				cc.EaseSineIn.create(
-					cc.spawn(
-						cc.fadeTo(2,20),
-						cc.tintTo(2,100,100,100)
-					)
-				)
-			);
-    		orange_leaf_left.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
-    		orange_leaf_right.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
-    		red_leaf_left.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
-    		red_leaf_right.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
-    		yellow_leaf_left.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
-    		yellow_leaf_right.runAction(cc.EaseSineIn.create(cc.spawn(cc.fadeTo(2,15),cc.tintTo(2,100,100,100))));
-    		
-    		for( var i=0 ; i<letters.length ; i++ ) {
-    			letters[i].runAction(
-    				cc.EaseSineIn.create(
-    					cc.fadeTo(2,20)    			
-    				)
-    			);			
-    		}
-    		
-        	menu.stopAllActions();
-        	menu.setEnabled(false);
-            menu.runAction(cc.EaseSineOut.create(cc.fadeOut(0.3)));
+
+            titleBg.runAction(
+                cc.sequence(
+                    cc.fadeOut(2),
+                    cc.callFunc(function() {
+                        titleBg.removeChild(menu);
+                        self.removeChild(titleBg);
+                    })
+                )
+            );
+
+            menu.runAction(
+                cc.fadeOut(2)
+            );
+
         }, self);
-        
+	
         item1.setScale(0.7);
 
         var ls = cc.sys.localStorage;
@@ -1546,10 +1323,10 @@ var _42TitleLayer = cc.Layer.extend({
         menu.x = size.width/2;
         menu.y = 200;
         menu.setOpacity(0);
-        self.addChild(menu, 1);       
+        titleBg.addChild(menu, 10);       
         menu.alignItemsVerticallyWithPadding(20);
         menu.runAction(cc.EaseSineIn.create(cc.fadeIn(4)));
-        
+
         return true;
     },
     
