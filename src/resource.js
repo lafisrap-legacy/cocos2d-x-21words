@@ -28,18 +28,21 @@ var res = {
     murbiks_plist : 'res/images/murbiks/murbiks.plist',
     
     // particles
-    particle_lavaflow: "res/particles/LavaFlow.plist"
+    particle_lavaflow: "res/particles/LavaFlow.plist",
+
+    // language resources
+    language_pack:      "res/i18n/language-pack-de_DE.json",
+    language_words:     "res/words/derewo57000.txt.words.json",
+    language_letters:   "res/words/derewo57000.txt.letters.json",
+    language_prefixes:  "res/words/derewo57000.txt.prefixes.json",
+
+    //language_pack: "language-pack-en_US.json",
+    //language_pack: "language-pack-ee_EE.json",
+    //language_pack: "language-pack-se_SE.json"
 };
 
 var g_resources = [];
 for (var r in res) {
     g_resources.push(res[r]);
 }
-
-var i18n_language_packs = [
- 	"language-pack-de_DE.json",
-    "language-pack-en_US.json",
-    "language-pack-ee_EE.json",
-    "language-pack-se_SE.json"
-];
 

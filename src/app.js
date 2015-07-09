@@ -1390,9 +1390,49 @@ var _42_getId = _42_IdFactory();
 var _42Scene = cc.Scene.extend({
 	
     onEnter:function () {
+        var self = this;
+
         this._super();
 
-        this.addChild(new _42TitleLayer(), 2, $42.TAG_TITLE_LAYER);
+        this.loadWords(function() {
+            self.addChild(new _42TitleLayer(), 2, $42.TAG_TITLE_LAYER);
+        });
+    },
+
+    loadWords: function(cb) {
+        
+        var lg = $42.languagePack = cc.loader.getRes(res.language_pack),
+            lv = $42.letterValues = cc.loader.getRes(res.language_letters),
+            pv = $42.prefixValues = cc.loader.getRes(res.language_prefixes),
+            w  = $42.words = cc.loader.getRes(res.language_words),
+            letters = $42.LETTERS;
+
+        $42.t = lg.apptext;
+
+        // Prepare letters (order them, calculate frequency out of letter value)
+        var max=0;
+        for( letter in lv ) max=Math.max(max,lv[letter].value);
+        $42.letterOccurences = [];
+        $42.letterOrder = [];
+        for( var i=0 ; i<letters.length ; i++ ) {
+            var occ = lv[letters[i]] && parseInt(1/lv[letters[i]].value*max),
+                order = lv[letters[i]] && lv[letters[i]].order;
+            $42.letterOccurences[i] = occ || 0; 
+            if( order !== undefined ) $42.letterOrder[order] = letters[i];
+        }
+
+        // check if word file is patible
+        for( var prefix in w ) {
+            var words = w[prefix];
+
+            cc.assert(words[0] && words[0].word, "42words, json loader: Prefix "+prefix+" has no words.");
+            for( var j=0 ; j<words.length ; j++ ) {
+                cc.assert(words[j].word.length >=4 && words[j].word.length <= $42.BOXES_PER_ROW, 
+                        "42words, json loader: Word '"+words[j].word+"' has wrong length.");	
+            }
+        }
+
+        if( typeof cb === "function" ) cb();
     }
 });
 
