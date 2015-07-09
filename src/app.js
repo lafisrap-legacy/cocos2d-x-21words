@@ -73,8 +73,6 @@ var _42_GLOBALS = {
 		[{x:-1.0*64,y: 0.5*64},{x: 0.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
 		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64},{x: 1.0*64,y: 0.5*64}],
 		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64}],
-//  		[{x:0,y:0}],
-//	    [{x:-1.0*64,y: 0.0*64},{x: 0.0*64,y: 0.0*64},{x: 1.0*64,y: 0.0*64}],
 	],
 	TILE_OCCURANCES : [10,5,7,7,2,2,7,0,0], // How often the tiles appear, when selected randomly
 };
@@ -734,7 +732,7 @@ var _42GameLayer = cc.Layer.extend({
 				}
 				
 				// play sound
-				cc.audioEngine.playEffect(res.klack_mp3);
+				//cc.audioEngine.playEffect(res.klack_mp3);
 
 				t.sprite.runAction(cc.sequence( 
 						cc.rotateTo($42.MOVE_SPEED*2,t.rotation),
@@ -1369,7 +1367,8 @@ var _42_retain = function(obj,name) {
 };
 
 var _42_release = function(obj) {
-
+    
+    if( !obj ) debugger;
 	cc.assert(obj && _42_retained[obj.__retainId], "_42_release: Object '"+obj.__retainId+"' not valid or not in retained array...");
 	if( obj && _42_retained[obj.__retainId] ) {
         obj.release();

@@ -1179,8 +1179,8 @@ var MURBIKS_MODULE = function(layer) {
     ml.wordsForTiles = {
         index: 0,
         words: [
-            "EISEN",
             "EISTEE",
+            "EISEN",
             "ERINNERN",
             "INSERAT",
             "INTERNET",
@@ -1313,8 +1313,6 @@ var MURBIKS_MODULE = function(layer) {
                     wft.words.splice(0,1);
                     return ml.hookGetProgrammedTile();
                 }
-
-                cc.log("New tile is grounded at: "+JSON.stringify(fittingTile.groundedAt));
             }
 
             var tile = { 
@@ -1341,8 +1339,6 @@ var MURBIKS_MODULE = function(layer) {
                         nextX = box.x + direction.x,
                         nextY = box.y + direction.y;
 
-                    cc.log("ml.hookGetProgrammedTile, tile: "+tile.tile+", boxIndex: "+boxIndex+", nextX: "+nextX+", nextY: "+nextY+", cnt: "+cnt+", direction: "+JSON.stringify(direction));
-                    
                     found = false;
                     for( var i=0 ; i<tileBoxes.length ; i++ ) {
                         if( !tile.letters[i] && tileBoxes[i].x === nextX && tileBoxes[i].y === nextY ) {
@@ -1350,7 +1346,6 @@ var MURBIKS_MODULE = function(layer) {
                             boxIndex = i;
                             found = true;
                             cnt++;
-                            cc.log("ml.hookGetProgrammedTile, FOUND! tile: "+tile.tile+", boxIndex: "+boxIndex+", nextX: "+nextX+", nextY: "+nextY+", cnt: "+cnt+", direction: "+JSON.stringify(direction));
                             break;
                         }
                     }
@@ -1402,7 +1397,7 @@ var MURBIKS_MODULE = function(layer) {
     		if( !fingerPos ) {
     			fingerPos = pos;
 
-	    		cc.log("42words, update ("+timer+"): onTouchesBegan to "+fingerPos.x+" / "+fingerPos.y);
+	    		//cc.log("42words, update ("+timer+"): onTouchesBegan to "+fingerPos.x+" / "+fingerPos.y);
     			ml._touchListener.onTouchesBegan(undefined, undefined, fingerPos);
     		} else {
     			fingerPos = pos;
@@ -1411,7 +1406,7 @@ var MURBIKS_MODULE = function(layer) {
     		}
     	} else {
     		if( fingerPos ) {
-	    		cc.log("42words, update ("+timer+"): onTouchesEnded to "+fingerPos.x+" / "+fingerPos.y);
+	    		//cc.log("42words, update ("+timer+"): onTouchesEnded to "+fingerPos.x+" / "+fingerPos.y);
     			ml._touchListener.onTouchesEnded(undefined, undefined, fingerPos);
     			fingerPos = null;
     		}
