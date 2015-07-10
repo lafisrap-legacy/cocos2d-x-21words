@@ -73,8 +73,6 @@ var _42_GLOBALS = {
 		[{x:-1.0*64,y: 0.5*64},{x: 0.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
 		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64},{x: 1.0*64,y: 0.5*64}],
 		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64}],
-//  		[{x:0,y:0}],
-//	    [{x:-1.0*64,y: 0.0*64},{x: 0.0*64,y: 0.0*64},{x: 1.0*64,y: 0.0*64}],
 	],
 	TILE_OCCURANCES : [10,5,7,7,2,2,7,0,0], // How often the tiles appear, when selected randomly
 };
@@ -734,7 +732,7 @@ var _42GameLayer = cc.Layer.extend({
 				}
 				
 				// play sound
-				cc.audioEngine.playEffect(res.klack_mp3);
+				//cc.audioEngine.playEffect(res.klack_mp3);
 
 				t.sprite.runAction(cc.sequence( 
 						cc.rotateTo($42.MOVE_SPEED*2,t.rotation),
@@ -1369,7 +1367,8 @@ var _42_retain = function(obj,name) {
 };
 
 var _42_release = function(obj) {
-
+    
+    if( !obj ) debugger;
 	cc.assert(obj && _42_retained[obj.__retainId], "_42_release: Object '"+obj.__retainId+"' not valid or not in retained array...");
 	if( obj && _42_retained[obj.__retainId] ) {
         obj.release();
@@ -1391,9 +1390,49 @@ var _42_getId = _42_IdFactory();
 var _42Scene = cc.Scene.extend({
 	
     onEnter:function () {
+        var self = this;
+
         this._super();
 
-        this.addChild(new _42TitleLayer(), 2, $42.TAG_TITLE_LAYER);
+        this.loadWords(function() {
+            self.addChild(new _42TitleLayer(), 2, $42.TAG_TITLE_LAYER);
+        });
+    },
+
+    loadWords: function(cb) {
+        
+        var lg = $42.languagePack = cc.loader.getRes(res.language_pack),
+            lv = $42.letterValues = cc.loader.getRes(res.language_letters),
+            pv = $42.prefixValues = cc.loader.getRes(res.language_prefixes),
+            w  = $42.words = cc.loader.getRes(res.language_words),
+            letters = $42.LETTERS;
+
+        $42.t = lg.apptext;
+
+        // Prepare letters (order them, calculate frequency out of letter value)
+        var max=0;
+        for( letter in lv ) max=Math.max(max,lv[letter].value);
+        $42.letterOccurences = [];
+        $42.letterOrder = [];
+        for( var i=0 ; i<letters.length ; i++ ) {
+            var occ = lv[letters[i]] && parseInt(1/lv[letters[i]].value*max),
+                order = lv[letters[i]] && lv[letters[i]].order;
+            $42.letterOccurences[i] = occ || 0; 
+            if( order !== undefined ) $42.letterOrder[order] = letters[i];
+        }
+
+        // check if word file is patible
+        for( var prefix in w ) {
+            var words = w[prefix];
+
+            cc.assert(words[0] && words[0].word, "42words, json loader: Prefix "+prefix+" has no words.");
+            for( var j=0 ; j<words.length ; j++ ) {
+                cc.assert(words[j].word.length >=4 && words[j].word.length <= $42.BOXES_PER_ROW, 
+                        "42words, json loader: Word '"+words[j].word+"' has wrong length.");	
+            }
+        }
+
+        if( typeof cb === "function" ) cb();
     }
 });
 

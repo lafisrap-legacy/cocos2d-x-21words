@@ -69,7 +69,6 @@ letterValues.german = {
 	"Ä":6,
 	"Ö":8,
 	"Ü":6,
-    " ":0
 };
 
 letterValues.english = {
@@ -99,7 +98,6 @@ letterValues.english = {
 		"X":7,
 		"Y":5,
 		"Z":7,
-        " ":0
 	};
 
 letterValues.estonian = {
@@ -127,7 +125,6 @@ letterValues.estonian = {
 		"Ö":8,
 		"Ü":6,
 		"Õ":6,
-        " ":0
 	};
 
 letterValues.swedish = {
@@ -160,7 +157,6 @@ letterValues.swedish = {
 		"Ä":4,
 		"Ö":5,
 		"Å":7,
-        " ":0
 	};
 
 var letterCounts = {};
