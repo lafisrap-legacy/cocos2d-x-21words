@@ -2,9 +2,9 @@
     "name": "deutsch",
     "wordlist": "derewo57000.txt",
     "apptext": {
-    	"title_words":			"WORTE",
-    	"title_start_game":		"SPIEL STARTEN",
-		"title_score":			"Wortwert",
+    	"title_words":		    "Gesammelte Worte",
+		"title_hiscore":		"Höchste Punktzahl",
+		"title_besttime":		"Beste Zeit",
         "reached_top_continue": "WEITER SPIELEN",
         "reached_top_end_game": "SPIEL BEENDEN",
         "won_continue": 		"WEITER SPIELEN",

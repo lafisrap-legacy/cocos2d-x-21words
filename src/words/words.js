@@ -1,12 +1,59 @@
 ////////////////////////////////////////////////////////////////////
-// Main app holding a plain vanilla tetris game
-//
-//  LAYERS
-//
-//  _42_GLOBALS: Global variables (added to alias $42) 
+// words.js contains the basic code for the 42words game, built upon the plain vanilla tetris app
 //
 //
+//  Level 1:  3 given words, length 4              
+//  Level 2:  4 given words, length 5-6            
+//  Level 3:  5 given words, length 7-9           
+//  Level 4:  5 prefixed words, length 5+         
+//  Level 5:  5 prefixed words, length 6+       
+//  Level 6:  5 prefixed words, value 10+      
+//  Level 7:  5 free words, length 4+     
+//  Level 8:  5 free words, value 10+
+//  Level 9:  4 free words, value 12, 15, 20, 25
+//  Level 10: 1 free word, value 42 
 //
+//  PLAN
+//
+//  Level system
+//  - define levels
+//      - number of words
+//      - conditions per word
+//          - min value
+//          - min length
+//          - max length
+//      - given/prefix/free
+//
+//  Select given words:
+//
+//      Make pool by searching all 50000+ words for words of
+//
+//      1. Group system
+//          - verbs
+//          - nouns
+//          - adjectives
+//          - names
+//          - cities
+//
+//      2. Current letter profile
+//
+//      3. word conditions from 
+//
+//  Select prefixed words:
+//
+//      Make pool by searching all extensions and checking all words of an extension of
+//
+//      1. current letter profile
+//
+//      2. word conditions
+//
+//      3. number of possible words with this condition
+//
+//
+//  Persistence:
+//      - wordTreasure (all collected words of one round)
+//      - level
+//  
 //
 //
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
@@ -328,7 +375,6 @@ var _42_MODULE = function(_42Layer) {
                         // Cypherpunk special treatment
 						if( group == 2 ) {
 							cc.log("CYPHERPUNK: Cypherpunk word detected: Adding playing time and blow ...");
-							ml.playingTime += 5;
 							blowLevelAndWordValue({info:$42.t.moretime_message,color:cc.color(0,128,0)});
 							wordMul *= $42.WORD_MULTIPLIER_CYPHERPUNKS;
 							cc.log("CYPHERPUNK: ... after blow.");
@@ -397,6 +443,18 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
     ////////////////////////////////////////////////////////////////////////////////////////
+    // startNewLevel prepares for level set in ml.currentLevel 
+    //
+    //
+    var startNewLevel = function() {
+        var level = cc.loader.getRes("");
+        // 1. get level definition from list
+        // 2. prepare word pool
+        // 3. display background
+        // 4. write words into background
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////////////
     // Game end
     // TODO: Word selection tool and the twitter send button
     //
@@ -407,8 +465,6 @@ var _42_MODULE = function(_42Layer) {
 	       
         ml.pause();
         ml.unscheduleUpdate();
-        $42.bestTime = ml.timeCounter;
-        ls.setItem("bestTime",$42.bestTime);
 
 		showAllWordsFlyingIn(function() {
 			var menuItems = [{
@@ -422,8 +478,7 @@ var _42_MODULE = function(_42Layer) {
             ml.getParent().addChild(
             	new _42MenuLayer([
             	    $42.t.won_congrats,
-            	    $42.t.won_word_value+": "+$42.wordTreasureValue+($42.wordTreasureValue === $42.maxPoints?" ("+$42.t.won_highscore+")":""),
-            	    $42.t.won_time+": "+(ml.timeCounter/3600>>>0)+":"+("0"+(ml.timeCounter/60>>>0)%60).substr(-2,2)+" "+$42.t.won_minutes
+            	    $42.t.won_word_value+": "+$42.wordTreasureValue+($42.wordTreasureValue === $42.maxPoints?" ("+$42.t.won_highscore+")":"")
             	],menuItems), 1
             );
 		});		
@@ -1349,9 +1404,32 @@ var _42_MODULE = function(_42Layer) {
 	    
         // global data init
         var ls = cc.sys.localStorage,
-        	wt = $42.wordTreasure = [];
+        	wt = $42.wordTreasure = ls.getItem("wordTreasure") || [],
+            lv = $42.currentLevel = ls.getItem("currentLevel") || 1,
+		    wp = $42.wordProfile = ls.getItem("wordProfile") || 127, // 127 == first 7 letters in the letter order
+            lo = $42.letterOrder;
+
+		for( var i=1,tw=0,bw=0 ; i<wt.length ; i++,tw+=wt[i].value ) if( wt[i].value > wt[bw].value ) bw = i;
+        $42.wordTreasureValue = tw;
+		$42.wordTreasureBestWord = bw;
         
-        $42.wordTreasureValue = 0;
+		// remove all words that are already in the treasure
+        for( var i=0 ; i<wt.length ; i++ ) {
+            var prefix = wt[i].word.substr(0,3),
+                index = $42.words[prefix].indexOf(wt[i].word);
+
+            if( index > -1 ) $42.words[prefix][index].deleted = true;
+            else cc.log("_42Layer.hookStartGame: Word '"+wt[i].word+"' not found in main word list. Did word list change?");
+        }
+				
+		// prepare for which letters can be used (word profile), and what
+		// letters will be next
+		$42.wordProfileLetters = [];
+		for( var i=0 ; i<lo[i].length ; i++ ) if( wp | 1<<i === wp ) $42.wordProfileLetters.push(lo[i]);
+		$42.displayedProfileLetters = ls.getItem("displayedProfileLetters") || [];
+		$42.displayedProfileLettersMini = ls.getItem("displayedProfileLettersMini") || [];
+		getNextProfileLetters();
+
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
 		
 // ml.hookStartProgram( 2 , false );
@@ -1360,38 +1438,14 @@ var _42_MODULE = function(_42Layer) {
 //		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
 		// ml.hookStartProgram( 2 , false );
 		
-		ml.levelsToBlow = [];
-		ml.add1and3s = [];
 		ml.lettersForNextTile = [];
 		ml.totalPoints = 0;
 		ml.rollingLayerStage = 0;
 		ml.nextMultiplier = 0;
 		ml.multipliers = [];
 		ml.dontAutoSelectWord = false;
-		ml.timeCounter = 0;
-		ml.nextTimeoutWarning = 0;
-		ml.playingTime = $42.MAX_PLAYING_TIME;
-		
-		for( var i=1,bw=0 ; i<wt.length ; i++ ) if( wt[i].value > wt[bw].value ) bw = i;
-		$42.wordTreasureBestWord = wt[bw] || null;
-// $42.maxWordValue = $42.wordTreasureBestWord? $42.wordTreasureBestWord.value :
-// 4;
-
-		// prepare for which letters can be used (word profile), and what
-		// letters will be next
-		$42.wordProfile = (1<<0) + (1<<1) + (1<<2) + (1<<3) + (1<<4) + (1<<5) + (1<<6); // start
-		$42.wordProfileLetters = [];
-		$42.displayedProfileLetters = [];
-		$42.displayedProfileLettersMini = [];
-		for( var i=0 ; i<7 ; i++ ) $42.wordProfileLetters.push($42.letterOrder[i]);
-		getNextProfileLetters();
-		
-		// remove all words that are already in the treasure
-		for( var prefix in $42.words ) {
-			var words = $42.words[prefix];
-			for( var j=0 ; j<words.length ; j++ ) $42.words[prefix][j].deleted = false;
-		}
-				
+	
+        startNewLevel();    
 		drawScoreBar();
 	};
 	
@@ -1638,41 +1692,6 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookUpdate = function(dt) {
-		var minutes = ++ml.timeCounter / 3600,
-			warning = $42.t.timeout_warning[ml.nextTimeoutWarning],
-			m = ml.playingTime - (ml.timeCounter/3600>>>0),
-			s = 60 - (ml.timeCounter/60>>>0)%60;
-		
-		// display time
-		ml.score_time_left.setString(m != 1? m.toString(): s.toString());
-		
-		if( warning && minutes > ml.playingTime - warning.time ) {
-			blowLevelAndWordValue({info:[warning.text]});
-			ml.nextTimeoutWarning++;
-		}
-		
-		if( !ml.timeIsUp && minutes > ml.playingTime ) {
-			ml.timeIsUp = true;
-	        ml.pause();
-	        ml.unscheduleUpdate();
-			blowLevelAndWordValue({info:$42.t.timeout_text,scale:4}, function() {
-				var menuItems = [{
-					label: $42.t.won_end_game, 
-					cb: function(sender) {
-						if( ml.hookEndGame ) ml.hookEndGame();
-						/* must be tested */ ml.endGame();
-			        	cc.director.runScene(new _42Scene());
-			        }
-				}];
-	            ml.getParent().addChild(
-	            	new _42MenuLayer([
-	            	    $42.t.timeout_message,
-	            	    $42.t.won_word_value+": "+$42.wordTreasureValue+($42.wordTreasureValue === $42.maxPoints?" ("+$42.t.won_highscore+")":""),
-	            	    $42.t.won_word_treasure+": "+$42.wordTreasureWords
-	            	],menuItems), 1
-	            );
-			});
-		}
 		
 		if( ml.hookDrawScoreBar && ml.hookDrawScoreBar() ) {
 			drawScoreBar();

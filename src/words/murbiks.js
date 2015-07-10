@@ -1179,6 +1179,9 @@ var MURBIKS_MODULE = function(layer) {
     ml.wordsForTiles = {
         index: 0,
         words: [
+            "STARTSEITE",
+            "ESSEN",
+            "SANIEREN",
             "EISTEE",
             "EISEN",
             "ERINNERN",
@@ -1189,7 +1192,6 @@ var MURBIKS_MODULE = function(layer) {
             "RASIEREN",
             "RATTEN",
             "REISEN",
-            "SANIEREN"
         ]
     };
 

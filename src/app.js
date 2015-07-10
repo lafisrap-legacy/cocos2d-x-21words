@@ -27,10 +27,6 @@
 // Global variables
 //
 var _42_GLOBALS = { 
-    TITLE_WORDS : "TETRIS",                 // Todo: Should be loaded as resource
-	TITLE_START_GAME : "SPIEL STARTEN",     //   ""
-	TITLE_SCORE : " ",                      //   ""
-	TITLE_MENU_COLOR: cc.color(0,40,0,255), //   ""
 	TAG_SPRITE_MANAGER : 1,                 // Sprite Ids
 	TAG_GAME_LAYER : 3,                     //
 	TAG_TITLE_LAYER : 4,                    //
@@ -1307,13 +1303,13 @@ var _42TitleLayer = cc.Layer.extend({
         $42.wordTreasureWords = ls.getItem("wordTreasureWords") || 0;
         $42.maxPoints = ls.getItem("maxPoints") || 0;
         $42.bestTime = ls.getItem("bestTime") || null;
-        var item2 = addMenu($42.maxPoints? $42.TITLE_SCORE+": "+$42.maxPoints : " ", 36 , function() {
+        var item2 = addMenu($42.maxPoints? $42.t.title_hiscore+": "+$42.maxPoints : " ", 36 , function() {
         	cc.director.runScene(new _42Scene());
         });
-        var item3 = addMenu($42.wordTreasureWords? $42.TITLE_TREASURE+": "+$42.wordTreasureWords : " ", 36 , function() {
+        var item3 = addMenu($42.wordTreasureWords? $42.t.title_words+": "+$42.wordTreasureWords : " ", 36 , function() {
         	// can be filled
         });
-        var item4 = addMenu($42.bestTime? $42.TITLE_BEST_TIME+": "+($42.bestTime/3600>>>0)+":"+("0"+($42.bestTime/60>>>0)%60).substr(-2,2) : " ", 36 , function() {
+        var item4 = addMenu($42.bestTime? $42.t.title_besttime+": "+($42.bestTime/3600>>>0)+":"+("0"+($42.bestTime/60>>>0)%60).substr(-2,2) : " ", 36 , function() {
         	// can be filled
         });
 
