@@ -447,11 +447,89 @@ var _42_MODULE = function(_42Layer) {
     //
     //
     var startNewLevel = function() {
-        var level = cc.loader.getRes("");
-        // 1. get level definition from list
-        // 2. prepare word pool
+
+        $42.currentLevel=6;
+        $42.wordProfile=0x7FFF;
+
+        var level = $42.LEVEL_DEVS[$42.currentLevel-1],
+            wp = $42.wordProfile,
+            tmpPool = [],
+            pool = [],
+            prefixes = [],
+            minLength = Math.min.apply(Math, level.minLength),
+            maxLength = Math.max.apply(Math, level.maxLength),
+            minValue = Math.min.apply(Math, level.minValue);
+
+        // filter conditions
+        for( var p in $42.words ) {
+            var prefix = $42.words[p],
+                levelWords = [];
+
+            for( var i=0 ; prefix && i<prefix.length ; i++ ) {
+                var word = prefix[i];
+
+                if( minValue && word.value < minValue ) continue;
+                if( minLength && word.word.length < minLength ) continue;
+                if( maxLength && word.word.length > maxLength ) continue;
+                if( (wp & word.profile) < word.profile ) continue; 
+
+                levelWords.push(word);
+            }
+
+            if( levelWords.length ) { 
+                tmpPool[p] = levelWords;
+                // place prefixes in random order
+                prefixes.splice(Math.floor(Math.random()*prefixes.length),0,p);
+            }
+        }
+        
+        for( var i=0 ; i<level.words ; i++ ) {
+            var minLength = level.minLength[i%level.minLength.length],
+                maxLength = level.maxLength[i%level.maxLength.length],
+                minValue =  level.minValue[i%level.minValue.length],
+                found = false;
+
+            for( var j=0 ; j<prefixes.length ; j++ ) {
+                var prefix = tmpPool[prefixes[j]],
+                    cand = [];
+
+                for( var k=0; k<prefix.length ; k++ ) {
+                    var word = prefix[k];
+                    
+                    if( minValue && word.value < minValue ) continue;
+                    if( minLength && word.word.length < minLength ) continue;
+                    if( maxLength && word.word.length > maxLength ) continue;
+
+                    cand.push(word);
+                }
+
+                switch(level.type) {
+                    case $42.LEVEL_TYPE_GIVEN:
+                        if( cand.length > 0 ) {
+                            pool[prefixes[j]] = [cand[Math.floor(Math.random()*cand.length)]];
+                        } else continue;
+                        break;
+                    case $42.LEVEL_TYPE_PREFIX:
+                        if( cand.length >= $42.LEVEL_MIN_PREFIX_CANDIDATES ) {
+                            pool[prefixes[j]] = prefix;
+                        } else continue;
+                        break;
+                    case $42.LEVEL_TYPE_FREE:
+                        if( !cand.length ) continue;
+                        break;
+                }
+
+                break;
+            }
+
+            cc.assert(j<prefixes.length, "startNewLevel: Not enough candidates found. Stopping in round "+i);
+            prefixes.splice(j,1);
+        }
+
         // 3. display background
         // 4. write words into background
+
+        return pool;
     };
 
     ////////////////////////////////////////////////////////////////////////////////////////
