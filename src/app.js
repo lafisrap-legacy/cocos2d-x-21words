@@ -27,6 +27,7 @@
 // Global variables
 //
 var _42_GLOBALS = { 
+    TITLE_MENU_COLOR: cc.color(0,40,0,255), // 
 	TAG_SPRITE_MANAGER : 1,                 // Sprite Ids
 	TAG_GAME_LAYER : 3,                     //
 	TAG_TITLE_LAYER : 4,                    //
