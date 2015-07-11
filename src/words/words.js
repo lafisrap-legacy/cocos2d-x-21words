@@ -53,7 +53,9 @@
 //  Persistence:
 //      - wordTreasure (all collected words of one round)
 //      - level
-//  
+// 
+//  - in GIVEN and PREFIX mode select allways new word 
+//  - top most word is not moving right
 //
 //
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
@@ -191,13 +193,14 @@ var _42_MODULE = function(_42Layer) {
 			words = [];
 		
 		// copy word object
-		for( var i=0 ; $42.words[prefix] && i<$42.words[prefix].length ; i++ ) {
+        var pref = ml.levelPool[prefix];
+		for( var i=0 ; pref && i<pref.length ; i++ ) {
 			words.push({
-				word: $42.words[prefix][i].word,
-				value: $42.words[prefix][i].value,
-				group: $42.words[prefix][i].group,
-				profile: $42.words[prefix][i].profile,
-				deleted: $42.words[prefix][i].deleted
+				word: pref[i].word,
+				value: pref[i].value,
+				group: pref[i].group,
+				profile: pref[i].profile,
+				deleted: pref[i].deleted
 			});
 		}
 
@@ -346,7 +349,7 @@ var _42_MODULE = function(_42Layer) {
 				showFullWordAndAsk( sw.brc , word , group, options && options.rowsDeleted || 0 , function( takeWord ) {	
 					ml.wordIsBeingSelected = false;
                     //////////////////////////////////
-                    // Was the word taken?
+                    // Was the word taken, or ok pressed?
 					if( takeWord ) {
                         /////////////////////////
 						// calculate word value
@@ -370,6 +373,10 @@ var _42_MODULE = function(_42Layer) {
 							
 							value += val;
 						}
+
+                        ////////////////////////////////7
+                        // Handle level things
+                        deleteWordForTiles(word); 
 					
                         //////////////////////////////////////
                         // Cypherpunk special treatment
@@ -448,7 +455,7 @@ var _42_MODULE = function(_42Layer) {
     //
     var startNewLevel = function() {
 
-        $42.currentLevel=1;
+        $42.currentLevel=2;
         $42.wordProfile=0x7FFF;
 
         var level = $42.LEVEL_DEVS[$42.currentLevel-1];
@@ -551,17 +558,84 @@ var _42_MODULE = function(_42Layer) {
 
             ///////////////////////////////77
             // Draw word on screen
-			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, "SourceCodePro-Light" , 96);
+			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 96);
 			label.setPosition(cc.width/2,cc.height/2+(level.words/2-i)*cc.height/2/level.words);
 			label.setColor(cc.color(0,0,0));
 			label.setOpacity(0);
 			_42_retain(label, "Level label ("+i+")");	
 			background.addChild(label, 5);
 
-            label.runAction(cc.fadeTo(10,20));
+            label.runAction(cc.fadeTo(10,30));
         }
 
-        return pool;
+        ml.levelPool = level.type===$42.LEVEL_TYPE_FREE? tmpPool : pool;
+
+        ml.fillWordsForTiles();
+    };
+
+    ml.fillWordsForTiles = function() {
+
+        var wordList = ml.levelPool,
+            max = $42.LEVEL_DEVS[$42.currentLevel-1].words,
+            prefixes = [],
+            words = [];
+
+        for( prefix in wordList ) prefixes.splice(Math.floor(Math.random()*prefixes.length),0,prefix);
+        
+        ml.wordsForTiles = {
+            index: 0,
+            words: words
+        };
+        
+        for( var i=0 ; i<max ; i++ ) {
+            var prefix = wordList[prefixes[i%prefixes.length]],
+                word = prefix[Math.floor(Math.random()*prefix.length)];
+
+            words.push(word.word);
+        }
+    };
+
+    var deleteWordForTiles = function(word) {
+
+        var wordList = ml.levelPool,
+            prefix = wordList[word.substr(0,3)];
+
+        for( var i=0 ; i<prefix.length ; i++ ) {
+            var word2 = prefix[i].word;
+
+            if( word === word2 ) {
+
+                var labels = ml.levelLabels;
+
+                prefix.splice(i,1);
+                if( prefix.length === 0 ) delete wordList[word.substr(0,3)];
+
+                for( var i=0; i<labels.length ; i++ ) {
+                    var label = labels[i];
+
+                    if( label.getString() === word ) {
+                        label.runAction(
+                            cc.sequence(
+                                cc.fadeOut(2),
+                                cc.callFunc(function() {
+                                    label.getParent().removeChild(label);
+                                    _42_release(label);
+                                })
+                            )
+                        );
+                        labels.splice(i,1);
+
+                        for( var j=0 ; j<labels.length ; j++ ) {
+                            labels[j].runAction(
+                                cc.moveTo(2, cc.width/2 , cc.height/2+(labels.length/2-j)*cc.height/2/labels.length)
+                            );
+                        }
+
+                        return;
+                    }
+                }
+            }
+        }
     };
 
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -689,6 +763,8 @@ var _42_MODULE = function(_42Layer) {
 	
 	var deleteWordFromList = function(word) {
 		var prefix = word.substr(0,3);
+
+        ////////////////////////////
 		// delete word from full word list
 		var words = $42.words[prefix];
 		for( var i=0 ; i<words.length ; i++ ) {
@@ -699,7 +775,7 @@ var _42_MODULE = function(_42Layer) {
 		}
 		return false;
 	};
-	
+
 	var showFullWordAndAsk = function( brc , word , group , rowsDeleted , cb ) {
 		var width = word.length * $42.BS,
 			height = $42.BS,
@@ -777,6 +853,7 @@ var _42_MODULE = function(_42Layer) {
 					cc.audioEngine.playEffect(res.pling_mp3);
 					
 	   				var sprite = null,
+                        levelType = $42.LEVEL_DEVS[$42.currentLevel-1].type;
 	   					resume = function(menuLayer,takeWord) {
 					        ml.resume();
 					        ml.scheduleUpdate();
@@ -795,22 +872,26 @@ var _42_MODULE = function(_42Layer) {
 
 					        cb( takeWord );					        
 	   					},
-	   					menuItems = [{
+	   					menuItems = (levelType !== $42.LEVEL_TYPE_GIVEN? [{
 	    					label: $42.t.take_word_yes, 
 	    					cb: function(sender) {
-	    						var self = this;
-					            menuLayer.removeAllChildren();
+					            //menuLayer.removeAllChildren();
 	    						
-	    						resume(self,true);	    							
+	    						resume(this,true);	    							
 	    			        }
 	    				},{
 	    					label: $42.t.take_word_no, 
 	    					cb: function(sender) {
 	    						resume(this,false);
 	    			        }
-	    				}];
+	    				}] : [{
+	    					label: $42.t.take_word_ok, 
+	    					cb: function(sender) {
+	    						resume(this,true);	    							
+	    			        }
+	    				}]);
 	   				
-	   				var menuLayer = new _42MenuLayer($42.t.take_word_question,menuItems); 
+	   				var menuLayer = new _42MenuLayer(levelType !== $42.LEVEL_TYPE_GIVEN? $42.t.take_word_question: $42.t.take_word_congrats[Math.floor(Math.random()*$42.t.take_word_congrats.length)],menuItems); 
     	            ml.getParent().addChild( menuLayer , 2);
 
     	            if( ml.hookResumeAskForWord ) ml.hookResumeAskForWord( resume , menuLayer );
@@ -1555,6 +1636,7 @@ var _42_MODULE = function(_42Layer) {
 		ml.multipliers = [];
 		ml.dontAutoSelectWord = false;
         ml.levelLabels = [];
+        ml.levelPool = [];
 	
         startNewLevel();    
 		drawScoreBar();

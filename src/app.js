@@ -148,8 +148,6 @@ var _42GameLayer = cc.Layer.extend({
     ////////////////////////////////////////////////////////////////////////////
     // endGame cleans up after a game is finished
     endGame: function() {
-    	this.endAnimation();
-    	
     	// delete all boxes
 		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) this.deleteRow(i,true);		
     },
@@ -1370,6 +1368,15 @@ var _42_IdFactory = function() {
 	}
 }
 var _42_getId = _42_IdFactory();
+
+var _42_getFontName = function(resource) {
+    if (cc.sys.isNative) {
+        return resource.srcs[0];
+    } else {
+        return resource.name;
+    }
+}
+
 
 var _42Scene = cc.Scene.extend({
 	

@@ -30,6 +30,8 @@ var res = {
 	amtype24_fnt : "res/fonts/amtype24.fnt",
 	amtype72_fnt : "res/fonts/amtype72.fnt",
 	american_typewriter_ttf: "res/fonts/American Typewriter.ttf",
+	//exo_bold_ttf: {type:"font", name:"Exo", srcs:["res/fonts/Exo-Bold.ttf"]},
+	exo_regular_ttf: {type:"font", name:"Exo", srcs:["res/fonts/Exo-Regular.ttf"]},
 	
 	// murbiks / tutorial
     murbiks_single_png : "res/images/murbiks/mostafa_fly01.png",

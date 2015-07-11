@@ -1174,27 +1174,6 @@ var MURBIKS_MODULE = function(layer) {
 		programs[program]();
 	};
 	
-
-    // tmp ..................
-    ml.wordsForTiles = {
-        index: 0,
-        words: [
-            "STARTSEITE",
-            "ESSEN",
-            "SANIEREN",
-            "EISTEE",
-            "EISEN",
-            "ERINNERN",
-            "INSERAT",
-            "INTERNET",
-            "IRRSINN",
-            "NIERE",
-            "RASIEREN",
-            "RATTEN",
-            "REISEN",
-        ]
-    };
-
 	ml.hookGetProgrammedTile = function() {
 		if( curTileProgram && curTileProgramCnt < curTileProgram.length ) {
 		    return curTileProgram[curTileProgramCnt++];
@@ -1313,6 +1292,7 @@ var MURBIKS_MODULE = function(layer) {
                 if( !fittingTile ) {
                     wft.index = 0;
                     wft.words.splice(0,1);
+                    if( wft.words.length === 0 ) ml.fillWordsForTiles();
                     return ml.hookGetProgrammedTile();
                 }
             }
@@ -1362,6 +1342,7 @@ var MURBIKS_MODULE = function(layer) {
             if( wft.index === word.length ) {
                 wft.index = 0;
                 wft.words.splice(0,1);
+                if( wft.words.length === 0 ) ml.fillWordsForTiles();
             }
             for( var i=0 ; i<tileBoxes.length ; i++ ) if( !tile.letters[i] ) tile.letters[i] = " ";
             return tile;
