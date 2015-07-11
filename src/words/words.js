@@ -143,6 +143,12 @@ var _42_MODULE = function(_42Layer) {
                     /////////////////////////////////////////
 					// don't highlight possible selections in the row of the selected word
 					if( sw && sw.brc.row === i ) return;
+
+                    var brcs = ml.lastBrcs || [];
+                    for( var k=0 ; k<brcs.length ; k++ ) if( brcs[k].row == i && (brcs[k].col == j || brcs[k].col == j+1 || brcs[k].col == j+2) ) {
+                        moveSelectedWord(brcs[i]);
+                        break;
+                    }
 					
 					var newPrefix = words[0].word.substring(0,3);
 
@@ -1775,11 +1781,6 @@ var _42_MODULE = function(_42Layer) {
 
 		if( !ml.selectedWord && !ml.dontAutoSelectWord ) selectBestWord();
 
-		var ls = cc.sys.localStorage;
-		
-		if( ml.boxes[0][8] ) ml.score_time_left.runAction(cc.fadeTo(1,80)); 
-		else ml.score_time_left.runAction(cc.fadeTo(1,40)); 
-		
 		updateMultipliers();
 	}
 
