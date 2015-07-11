@@ -448,11 +448,26 @@ var _42_MODULE = function(_42Layer) {
     //
     var startNewLevel = function() {
 
-        $42.currentLevel=6;
+        $42.currentLevel=1;
         $42.wordProfile=0x7FFF;
 
-        var level = $42.LEVEL_DEVS[$42.currentLevel-1],
-            wp = $42.wordProfile,
+        var level = $42.LEVEL_DEVS[$42.currentLevel-1];
+
+        ////////////////////////////
+        // Introduce new background
+        var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]);
+        background.attr({
+            x: cc.width / 2,
+            y: cc.height / 2,
+            scale: 1,
+            rotation: 0
+        });
+        ml.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
+        _42_retain(background, "startAnimation: background");
+        
+        /////////////////////////////
+        // Calculate pool of possible words
+        var wp = $42.wordProfile,
             tmpPool = [],
             pool = [],
             prefixes = [],
@@ -506,15 +521,24 @@ var _42_MODULE = function(_42Layer) {
                 switch(level.type) {
                     case $42.LEVEL_TYPE_GIVEN:
                         if( cand.length > 0 ) {
-                            pool[prefixes[j]] = [cand[Math.floor(Math.random()*cand.length)]];
+                            var word = cand[Math.floor(Math.random()*cand.length)],
+                                text = word.word;
+                            pool[prefixes[j]] = [word];
                         } else continue;
                         break;
                     case $42.LEVEL_TYPE_PREFIX:
                         if( cand.length >= $42.LEVEL_MIN_PREFIX_CANDIDATES ) {
+                            var text = prefixes[j];
+                            if( minLength ) text += "-------".substr(0,minLength-3); 
+                            if( minValue )  text += "---- ("+minValue+"+)";
+
                             pool[prefixes[j]] = prefix;
                         } else continue;
                         break;
                     case $42.LEVEL_TYPE_FREE:
+                        var text = "----?";
+                        if( minLength ) text = "----------".substr(0,minLength)+"?"; 
+                        if( minValue )  text += " ("+minValue+"+)";
                         if( !cand.length ) continue;
                         break;
                 }
@@ -524,10 +548,18 @@ var _42_MODULE = function(_42Layer) {
 
             cc.assert(j<prefixes.length, "startNewLevel: Not enough candidates found. Stopping in round "+i);
             prefixes.splice(j,1);
-        }
 
-        // 3. display background
-        // 4. write words into background
+            ///////////////////////////////77
+            // Draw word on screen
+			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, "SourceCodePro-Light" , 96);
+			label.setPosition(cc.width/2,cc.height/2+(level.words/2-i)*cc.height/2/level.words);
+			label.setColor(cc.color(0,0,0));
+			label.setOpacity(0);
+			_42_retain(label, "Level label ("+i+")");	
+			background.addChild(label, 5);
+
+            label.runAction(cc.fadeTo(10,20));
+        }
 
         return pool;
     };
@@ -1522,6 +1554,7 @@ var _42_MODULE = function(_42Layer) {
 		ml.nextMultiplier = 0;
 		ml.multipliers = [];
 		ml.dontAutoSelectWord = false;
+        ml.levelLabels = [];
 	
         startNewLevel();    
 		drawScoreBar();

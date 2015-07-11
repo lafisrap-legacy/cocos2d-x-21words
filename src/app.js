@@ -112,7 +112,7 @@ var _42GameLayer = cc.Layer.extend({
         // Look if there is a plugin module
         if( typeof _42_MODULE === 'function' ) _42_MODULE(this);
 
-        this.startAnimation();
+        this.showLogOnScreen();
         this.initBoxSpace();
         this.loadImages();
         
@@ -129,9 +129,10 @@ var _42GameLayer = cc.Layer.extend({
 
 		this.initListeners();
 		
+		if( self.hookStartGame ) self.hookStartGame();
+
 		setTimeout(function() {
 		    self.scheduleUpdate();
-		    if( self.hookStartGame ) self.hookStartGame();
 		},2500);
     },
     
@@ -154,21 +155,11 @@ var _42GameLayer = cc.Layer.extend({
     },
     
     ////////////////////////////////////////////////////////////////////////////
-    // startAnimation introduces the background and log text (currently wrongly named)
-	startAnimation: function() {
+    // 
+	showLogOnScreen: function() {
 		
         var size = this.size;
 
-        var background = cc.Sprite.create(res.background_png);
-        background.attr({
-            x: size.width / 2,
-            y: size.height / 2,
-            scale: 1,
-            rotation: 0
-        });
-        this.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
-        _42_retain(background, "startAnimation: background");
-        
         // tmp Errormessage layer
         var logMsg = cc.Node.create();
         
@@ -183,13 +174,6 @@ var _42GameLayer = cc.Layer.extend({
 		logMsg.addChild($42.msg2, 1);        	
         this.addChild(logMsg, 100);
         
-	},
-	
-    ////////////////////////////////////////////////////////////////////////////
-    // endAnimation frees the background
-	endAnimation: function() {
-		var background = this.getChildByTag($42.TAG_BACKGROUND_SPRITE);
-		if( background ) _42_release(background);
 	},
 	
     ////////////////////////////////////////////////////////////////////////////
@@ -1242,6 +1226,9 @@ var _42TitleLayer = cc.Layer.extend({
         	size = this.size = cc.director.getWinSize();
 
 		cc.spriteFrameCache.addSpriteFrames(res.title_plist);
+
+        cc.width  = cc.director.getWinSize().width;
+        cc.height = cc.director.getWinSize().height;
 
 		var addImage = function(options) {
 			var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(options.image));
