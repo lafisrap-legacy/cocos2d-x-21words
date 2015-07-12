@@ -53,9 +53,12 @@
 //  Persistence:
 //      - wordTreasure (all collected words of one round)
 //      - level
-// 
-//  - in GIVEN and PREFIX mode select allways new word 
-//  - top most word is not moving right
+//
+//
+//  - In given mode word should just fly away without asking
+//  - All words captured --> go to next level
+//  - score bar 
+//  - prefixed words are not deleted from list 
 //
 //
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
@@ -78,15 +81,6 @@ $42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);  // same for bright
 $42.SCORE_COLOR_WHITE = cc.color(255,255,255);  // same for white
 $42.NEXT_PROFILE_LETTERS = 5;               // Number of next new letter candidates
 $42.NEXT_PROFILE_LETTER_CNT = 3;            // A new letter after n words
-//$42.PLUS1_BUTTON_X = 130;
-//$42.PLUS1_BUTTON_Y = 1200;
-//$42.PLUS1_BUTTON_COST = 1000;
-//$42.PLUS1_BUTTON_TOPROW = 10;
-//$42.PLUS1_BUTTON_OPACITY = 170;
-//$42.PLUS3_BUTTON_X = 490;
-//$42.PLUS3_BUTTON_Y = 1200;
-//$42.PLUS3_BUTTON_COST = 10000;
-//$42.PLUS3_BUTTON_OPACITY = 170;
 $42.SCOREBAR_LETTERS_PER_ROW = 8;           // Show n small letters in the score bar per row
 $42.SCOREBAR_LETTERS_PER_COL = 2;           // Show max n columns
 $42.SCOREBAR_LETTERS_PADDING = 16;          // Padding of small letters
@@ -139,17 +133,12 @@ var _42_MODULE = function(_42Layer) {
                 //////////////////////////////
                 // Check if a prefix starts a current box (checkForPrefixes callback return a list of all possible words)
 				checkForPrefixes({row:i,col:j}, function(brc, words) {
-					box.words = words;
+					
+                    box.words = words;
                     /////////////////////////////////////////
 					// don't highlight possible selections in the row of the selected word
 					if( sw && sw.brc.row === i ) return;
 
-                    var brcs = ml.lastBrcs || [];
-                    for( var k=0 ; k<brcs.length ; k++ ) if( brcs[k].row == i && (brcs[k].col == j || brcs[k].col == j+1 || brcs[k].col == j+2) ) {
-                        moveSelectedWord(brcs[i]);
-                        break;
-                    }
-					
 					var newPrefix = words[0].word.substring(0,3);
 
                     /////////////////////////////////
@@ -380,10 +369,23 @@ var _42_MODULE = function(_42Layer) {
 							value += val;
 						}
 
-                        ////////////////////////////////7
-                        // Handle level things
-                        deleteWordForTiles(word); 
-					
+                        ////////////////////////////////////
+                        // Check level conditions
+                        if( checkLevelConditions(word, value) ) {
+                            var level = $42.LEVEL_DEVS[$42.currentLevel-1];
+                            
+                            if( ++$42.currentLevel > level.length+1 ) {
+                                debugger;
+                            }
+
+                            $42.wordProfile = $42.wordProfile * 8 + 7; // three new characters
+
+                            endLevel();
+                            startNewLevel();
+							
+                            blowLevelAndWordValue({info:[$42.t.next_level,$42.currentLevel],color:cc.color(0,0,128)});
+                        } 
+
                         //////////////////////////////////////
                         // Cypherpunk special treatment
 						if( group == 2 ) {
@@ -461,10 +463,14 @@ var _42_MODULE = function(_42Layer) {
     //
     var startNewLevel = function() {
 
-        $42.currentLevel=2;
-        $42.wordProfile=0x7FFF;
-
         var level = $42.LEVEL_DEVS[$42.currentLevel-1];
+
+        //////////////////////////
+        // Set globals ...
+		ml.lettersForNextTile = [];
+        ml.levelLabels = [];
+        ml.levelPool = [];
+        ml.selections = [];
 
         ////////////////////////////
         // Introduce new background
@@ -483,11 +489,9 @@ var _42_MODULE = function(_42Layer) {
         var wp = $42.wordProfile,
             tmpPool = [],
             pool = [],
-            prefixes = [],
-            minLength = Math.min.apply(Math, level.minLength),
-            maxLength = Math.max.apply(Math, level.maxLength),
-            minValue = Math.min.apply(Math, level.minValue);
+            prefixes = [];
 
+        /////////////////////////////
         // filter conditions
         for( var p in $42.words ) {
             var prefix = $42.words[p],
@@ -496,9 +500,9 @@ var _42_MODULE = function(_42Layer) {
             for( var i=0 ; prefix && i<prefix.length ; i++ ) {
                 var word = prefix[i];
 
-                if( minValue && word.value < minValue ) continue;
-                if( minLength && word.word.length < minLength ) continue;
-                if( maxLength && word.word.length > maxLength ) continue;
+                if( level.minValue && word.value < level.minValue ) continue;
+                if( level.minLength && word.word.length < level.minLength ) continue;
+                if( level.maxLength && word.word.length > level.maxLength ) continue;
                 if( (wp & word.profile) < word.profile ) continue; 
 
                 levelWords.push(word);
@@ -506,16 +510,21 @@ var _42_MODULE = function(_42Layer) {
 
             if( levelWords.length ) { 
                 tmpPool[p] = levelWords;
+
                 // place prefixes in random order
-                prefixes.splice(Math.floor(Math.random()*prefixes.length),0,p);
+
+ //               if( p === "ZIV" ) var ziv = p;
+ //               else 
+                    prefixes.splice(Math.floor(Math.random()*prefixes.length),0,p);
+
             }
         }
-        
+
+//        prefixes.splice(0,0,ziv);
+
+        /////////////////////////////////
+        // Look for specific words and prefixes 
         for( var i=0 ; i<level.words ; i++ ) {
-            var minLength = level.minLength[i%level.minLength.length],
-                maxLength = level.maxLength[i%level.maxLength.length],
-                minValue =  level.minValue[i%level.minValue.length],
-                found = false;
 
             for( var j=0 ; j<prefixes.length ; j++ ) {
                 var prefix = tmpPool[prefixes[j]],
@@ -524,9 +533,9 @@ var _42_MODULE = function(_42Layer) {
                 for( var k=0; k<prefix.length ; k++ ) {
                     var word = prefix[k];
                     
-                    if( minValue && word.value < minValue ) continue;
-                    if( minLength && word.word.length < minLength ) continue;
-                    if( maxLength && word.word.length > maxLength ) continue;
+                    if( level.minValue && word.value < level.minValue ) continue;
+                    if( level.minLength && word.word.length < level.minLength ) continue;
+                    if( level.maxLength && word.word.length > level.maxLength ) continue;
 
                     cand.push(word);
                 }
@@ -542,17 +551,18 @@ var _42_MODULE = function(_42Layer) {
                     case $42.LEVEL_TYPE_PREFIX:
                         if( cand.length >= $42.LEVEL_MIN_PREFIX_CANDIDATES ) {
                             var text = prefixes[j];
-                            if( minLength ) text += "-------".substr(0,minLength-3); 
-                            if( minValue )  text += "---- ("+minValue+"+)";
+                            if( level.minLength ) text += "-------".substr(0,level.minLength-3); 
+                            if( level.minValue )  text += "---- ("+level.minValue+"+)";
 
                             pool[prefixes[j]] = prefix;
                         } else continue;
                         break;
                     case $42.LEVEL_TYPE_FREE:
-                        var text = "----?";
-                        if( minLength ) text = "----------".substr(0,minLength)+"?"; 
-                        if( minValue )  text += " ("+minValue+"+)";
                         if( !cand.length ) continue;
+
+                        var text = "----?";
+                        if( level.minLength ) text = "----------".substr(0,level.minLength)+"?"; 
+                        if( level.minValue )  text += " ("+level.minValue+"+)";
                         break;
                 }
 
@@ -564,7 +574,7 @@ var _42_MODULE = function(_42Layer) {
 
             ///////////////////////////////77
             // Draw word on screen
-			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 96);
+			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 72);
 			label.setPosition(cc.width/2,cc.height/2+(level.words/2-i)*cc.height/2/level.words);
 			label.setColor(cc.color(0,0,0));
 			label.setOpacity(0);
@@ -601,47 +611,79 @@ var _42_MODULE = function(_42Layer) {
         }
     };
 
-    var deleteWordForTiles = function(word) {
-
-        var wordList = ml.levelPool,
-            prefix = wordList[word.substr(0,3)];
-
-        for( var i=0 ; i<prefix.length ; i++ ) {
-            var word2 = prefix[i].word;
-
-            if( word === word2 ) {
-
-                var labels = ml.levelLabels;
-
-                prefix.splice(i,1);
-                if( prefix.length === 0 ) delete wordList[word.substr(0,3)];
-
-                for( var i=0; i<labels.length ; i++ ) {
-                    var label = labels[i];
-
-                    if( label.getString() === word ) {
-                        label.runAction(
-                            cc.sequence(
-                                cc.fadeOut(2),
-                                cc.callFunc(function() {
-                                    label.getParent().removeChild(label);
-                                    _42_release(label);
-                                })
-                            )
-                        );
-                        labels.splice(i,1);
-
-                        for( var j=0 ; j<labels.length ; j++ ) {
-                            labels[j].runAction(
-                                cc.moveTo(2, cc.width/2 , cc.height/2+(labels.length/2-j)*cc.height/2/labels.length)
-                            );
-                        }
-
-                        return;
-                    }
-                }
-            }
+    var endLevel = function() {
+        /////////////////////////////
+        // Remove all boxes and background
+        var background = ml.getChildByTag($42.TAG_BACKGROUND_SPRITE);
+        if( background ) {
+            ml.removeChild(background);
+            _42_release(background);
         }
+
+		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		 
+    };
+
+    var checkLevelConditions = function(word, value) {
+
+        var ll = ml.levelLabels,
+            lp = ml.levelPool,
+            level = $42.LEVEL_DEVS[$42.currentLevel-1],
+            prefix = lp[word.substr(0,3)];
+
+        /////////////////////////////
+        // Find word in level pool and remove it from there
+        for( var i=0; i<prefix.length ; i++ ) if( prefix[i].word === word ) break;
+        cc.assert( i<prefix.length, "Solved word was not found in level pool.");
+        prefix.splice(i,1);
+        if( prefix.length === 0 || level.type === $42.LEVEL_TYPE_PREFIX ) delete lp[word.substr(0,3)];
+
+        //////////////////////////////
+        // Find corresponding label
+        var found = false;
+        for( var i=0 ; i<ll.length ; i++ ) {
+            switch( level.type ) {
+                case $42.LEVEL_TYPE_GIVEN:
+                    if( ll[i].getString() === word ) found = true;
+                    break; 
+                case $42.LEVEL_TYPE_PREFIX:
+                    if( ll[i].getString().substr(0,3) === word.substr(0,3) &&
+                        (!level.minLength || word.length >= level.minLength) &&
+                        (!level.maxLength || word.length <= level.maxLength) &&
+                        (!level.minValue  || value >= level.minValue )) found = true;
+                    break; 
+                case $42.LEVEL_TYPE_FREE:
+                    if( (!level.minLength || word.length >= level.minLength) &&
+                        (!level.maxLength || word.length <= level.maxLength) &&
+                        (!level.minValue  || value >= level.minValue )) found = true;
+                    break; 
+            }
+
+            if( found ) break;
+        }
+
+        cc.assert(found, "Found word is not in the pool!");
+
+        var label = ll[i];
+        label.runAction(
+            cc.sequence(
+                cc.fadeOut(2),
+                cc.callFunc(function() {
+                    label.getParent().removeChild(label);
+                    _42_release(label);
+                })
+            )
+        );
+
+        ll.splice(i,1)
+    
+        for( var j=0 ; j<ll.length ; j++ ) {
+            ll[j].runAction(
+                cc.moveTo(2, cc.width/2 , cc.height/2+(ll.length/2-j)*cc.height/2/ll.length)
+            );
+        }
+
+        if( ll.length === 0 ) return true;
+        else return false;
     };
 
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -1635,14 +1677,11 @@ var _42_MODULE = function(_42Layer) {
 //		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
 		// ml.hookStartProgram( 2 , false );
 		
-		ml.lettersForNextTile = [];
 		ml.totalPoints = 0;
 		ml.rollingLayerStage = 0;
 		ml.nextMultiplier = 0;
 		ml.multipliers = [];
 		ml.dontAutoSelectWord = false;
-        ml.levelLabels = [];
-        ml.levelPool = [];
 	
         startNewLevel();    
 		drawScoreBar();
@@ -1779,7 +1818,29 @@ var _42_MODULE = function(_42Layer) {
 
 	_42Layer.hookTileFixedAfterRowsDeleted = function( ) {
 
-		if( !ml.selectedWord && !ml.dontAutoSelectWord ) selectBestWord();
+        var moveToNewWord = function() {
+            var s = ml.selections,
+                level = $42.LEVEL_DEVS[$42.currentLevel-1];
+
+            if( level.type === $42.LEVEL_TYPE_GIVEN || level.type === $42.LEVEL_TYPE_PREFIX ) {
+                var brcs = ml.lastBrcs || [];
+                for( var i=0 ; brcs && i<brcs.length ; i++ ) {
+                    for( var j=0 ; s && j<s.length ; j++ ) {
+                        var brc1 = brcs[i],
+                            brc2 = s[j].brc;
+
+                        if( brc1.row == brc2.row && (brc1.col == brc2.col || brc1.col == brc2.col+1 || brc1.col == brc2.col+2) ) {
+                            moveSelectedWord(brc2);
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+		
+		if( !moveToNewWord() && !ml.selectedWord && !ml.dontAutoSelectWord ) selectBestWord();
 
 		updateMultipliers();
 	}

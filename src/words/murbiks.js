@@ -1289,6 +1289,7 @@ var MURBIKS_MODULE = function(layer) {
 
             if( wft.index > 0 ) {
                 var fittingTile = getFittingTile(word, wft.index);
+
                 if( !fittingTile ) {
                     wft.index = 0;
                     wft.words.splice(0,1);
@@ -1296,6 +1297,13 @@ var MURBIKS_MODULE = function(layer) {
                     return ml.hookGetProgrammedTile();
                 }
             }
+                
+//            fittingTile = {
+//                tile: 0,
+//                boxIndex: 0,
+//                dir: 0
+//            };
+
 
             var tile = { 
                     tile: fittingTile? fittingTile.tile : Math.floor(Math.random()*7),

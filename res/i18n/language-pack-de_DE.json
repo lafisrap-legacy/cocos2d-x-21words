@@ -28,6 +28,7 @@
         "scorebar_words":		["Wort","Worte"],
         "scorebar_highscore": 	"Bestwert",
         "scorebar_mvw": 		"Wertvollstes Wort",
+        "next_level":           "NEXT LEVEL",
         "new_level_level": 		"Level",
         "new_level_value": 		"Wortwert",
         "new_level_win": 		"GEWONNEN!",
