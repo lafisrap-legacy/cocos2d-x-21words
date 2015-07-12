@@ -575,11 +575,11 @@ var _42_MODULE = function(_42Layer) {
             ///////////////////////////////77
             // Draw word on screen
 			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 72);
-			label.setPosition(cc.width/2,cc.height/2+(level.words/2-i)*cc.height/2/level.words);
+			label.setPosition(cc.width/2,cc.height*0.8-i*150);
 			label.setColor(cc.color(0,0,0));
 			label.setOpacity(0);
 			_42_retain(label, "Level label ("+i+")");	
-			background.addChild(label, 5);
+			background.addChild(label, 0);
 
             label.runAction(cc.fadeTo(10,30));
         }
@@ -678,7 +678,7 @@ var _42_MODULE = function(_42Layer) {
     
         for( var j=0 ; j<ll.length ; j++ ) {
             ll[j].runAction(
-                cc.moveTo(2, cc.width/2 , cc.height/2+(ll.length/2-j)*cc.height/2/ll.length)
+                cc.moveTo(2, cc.width/2 , cc.height*0.8-j*150)
             );
         }
 
@@ -1419,14 +1419,8 @@ var _42_MODULE = function(_42Layer) {
 			// draw most valuable word
 			ml.bestWordValue = drawText($42.t.scorebar_mvw,cc.p(300,111),24,$42.SCORE_COLOR_BRIGHT,rl,true);
 			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);	
-			
-			// draw remaining time
-			cc.log("drawScoreBar: STEP3");
-			ml.score_time_left = drawText("no time",cc.p(558,135) , 72 , $42.SCORE_COLOR_BRIGHT , ml , true);
-			ml.score_time_left.setColor(cc.color(0,0,0));
-			ml.score_time_left.setOpacity(40);
-
-		} else {
+		
+        } else {
 			ml.score_words_label.setString($42.t.scorebar_words[wt.length===1?0:1]);
 			ml.score_words.setString(wt.length);
 			ml.score_points.setString(tv.toString());
