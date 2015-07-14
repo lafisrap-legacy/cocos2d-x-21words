@@ -85,7 +85,7 @@ $42.NEXT_PROFILE_LETTERS = 5;               // Number of next new letter candida
 $42.NEXT_PROFILE_LETTER_CNT = 3;            // A new letter after n words
 $42.SCOREBAR_LETTERS_PER_ROW = 8;           // Show n small letters in the score bar per row
 $42.SCOREBAR_LETTERS_PER_COL = 2;           // Show max n columns
-$42.SCOREBAR_LETTERS_PADDING = 16;          // Padding of small letters
+$42.SCOREBAR_LETTERS_PADDING = 20;          // Padding of small letters
 $42.SCOREBAR_LETTERS_SCALE = 0.45;          // Size difference to real normal letters
 $42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;     // Seconds till the next score bar roll
 $42.MAX_MULTIPLIERS = 5;                    // Maximum number of multipliers
@@ -405,7 +405,7 @@ var _42_MODULE = function(_42Layer) {
 						ml.unselectWord();
 						ml.checkForAndRemoveCompleteRows(sw.brc.row);
 						setSelections();
-						drawScoreBar();
+						ml.drawScorebar(false);
 					} else {
 						ml.checkForAndRemoveCompleteRows();
 						ml.unselectWord();
@@ -1164,66 +1164,6 @@ var _42_MODULE = function(_42Layer) {
 		}
 	};
 		
-	var drawText = function(text,pos,size,color,parent,retain) {
-		
-		var label = new cc.LabelBMFont( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT );
-		cc.log("drawText: text = "+text+", label = "+label );
-		label.setPosition(pos);
-		if( retain ) {
-			_42_retain(label, "label "+text);
-		}
-		label.setColor(color);
-		parent.addChild(label, 5, $42.TAG_NONE);	
-		
-		return label;
-	};
-	
-	var drawWordSprite = function(word,pos,wordSprite,scale,parent,retain) {
-		cc.assert(word !== undefined,"42words, drawWordSprite: No word to draw as a sprite.")
-		
-		if( !wordSprite ) {
-			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
-				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
-				rect = wordFrameSprite.getTextureRect();
-			if( retain ) {
-				_42_retain(wordFrameSprite,"wordFrameSprite "+word);	
-			}
-			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
-			rect.height = word.length? $42.BS + $42.WORD_FRAME_WIDTH * 2 : 8;
-			wordFrameSprite.setTextureRect(rect);
-			wordFrameSprite.setPosition(pos.x,pos.y);
-			wordFrameSprite.setScale(scale);
-			parent.addChild(wordFrameSprite,4);
-		} else {
-			var wordFrameSprite = wordSprite,
-				rect = wordFrameSprite.getTextureRect();
-			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
-			rect.height = word.length? $42.BS + $42.WORD_FRAME_WIDTH * 2 : 8;
-			wordFrameSprite.setTextureRect(rect);
-
-			// release and remove old letters
-			var ch = wordFrameSprite.getChildren();
-			for( var i=0; i<ch.length ; i++ ) {
-				_42_release(ch[i]);
-			}
-			wordFrameSprite.removeAllChildren(true);
-		}
-		// add sprites of word
-		for( var i=0 ; i<word.length ; i++) {
-			
-			var file = $42.LETTER_NAMES[$42.LETTERS.indexOf(word[i])],
-				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
-				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
-			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
-			if( retain ) {
-				_42_retain(sprite, "wordFrameSprite sprite "+word[i]);	
-			}
-			wordFrameSprite.addChild( sprite );
-		}		
-		
-		return wordFrameSprite;
-	}
-
 	var drawLetterBoxes = function(options) {
 
         if( !$42.newWordProfileLetters && $42.displayedProfileLetters.length !== 0  ) return;
@@ -1232,7 +1172,8 @@ var _42_MODULE = function(_42Layer) {
         // first delete old boxes if there some
         var wpl = $42.wordProfileLetters,
             dpl = $42.displayedProfileLetters,
-            boxes = options.boxesPerRow * options.boxesPerCol;
+            boxes = options.boxesPerRow * options.boxesPerCol,
+		    rl = $42._rollingLayer;
         
         for( var i=0 ; i<dpl.length ; i++ ) {
             _42_release(dpl[i]);
@@ -1254,12 +1195,12 @@ var _42_MODULE = function(_42Layer) {
             rect.width  = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
             rect.height = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
             letterFrameSprite.setTextureRect(rect);
-            options.parent.addChild(letterFrameSprite,4);
+            rl.addChild(letterFrameSprite,4);
             dpl.push(letterFrameSprite);
             
             ////////////////////////////
             // draw letter
-            var letter = wpl[i+Math.max(0,wpl.length-boxes)],
+            var letter = wpl[i],
                 file = $42.LETTER_NAMES[$42.LETTERS.indexOf(letter)],
                 spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
                 sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS)),
@@ -1272,21 +1213,21 @@ var _42_MODULE = function(_42Layer) {
             letterFrameSprite.addChild( sprite );
             
             /////////////////////////////
-            // draw value
-            var label = new cc.LabelBMFont( $42.letterValues[letter] && $42.letterValues[letter].value || "0" , "res/fonts/amtype24.fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT );
-            label.setPosition(pos.x+30,pos.y);
-            label.setColor(cc.color(255,255,255,255));
-            letterFrameSprite.addChild(label, 5);	
-            
-            /////////////////////////////
             // Find position and scale (mini or normal letters)
             if( i<normalSizeStart ) {
-                letterFrameSprite.setPosition(options.pos.x - $42.BS/2*options.scale + i*($42.BS+options.padding*2)/2*options.scale,
+                letterFrameSprite.setPosition(options.pos.x + i*($42.BS+options.padding*2)/2*options.scale,
                                               options.pos.y + $42.BS*options.scale);	
-                dplm[i].setScale(0.5);
+                letterFrameSprite.setScale(0.5);
             } else {
-                letterFrameSprite.setPosition(options.pos.x + ((i%options.boxesPerRow>>>0)*($42.BS+options.padding*4))*options.scale,
-                                              options.pos.y - ((i/options.boxesPerRow>>>0)*($42.BS+options.padding))*options.scale);
+                letterFrameSprite.setPosition(options.pos.x + (((i-normalSizeStart)%options.boxesPerRow>>>0)*($42.BS+options.padding*4))*options.scale,
+                                              options.pos.y - (((i-normalSizeStart)/options.boxesPerRow>>>0)*($42.BS+options.padding))*options.scale);
+
+                /////////////////////////////
+                // draw value
+                var label = new cc.LabelBMFont( $42.letterValues[letter] && $42.letterValues[letter].value || "0" , "res/fonts/amtype24.fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT );
+                label.setPosition(pos.x+30,pos.y);
+                label.setColor(cc.color(255,255,255,255));
+                letterFrameSprite.addChild(label, 5); 
             }
         }		
         
@@ -1296,150 +1237,6 @@ var _42_MODULE = function(_42Layer) {
         }
 
         $42.displayedProfileLetters = dpl;
-	}
-	
-	var drawScoreBar = function(highlight) {
-		var sb = ml.scoreBar,
-			wt = $42.wordTreasure,
-            lw = ml.levelWords,
-			wpl = $42.wordProfileLetters,
-			rl = $42.rollingLayer;
-		
-        ///////////////////////////////////
-        // Add values of word treasure and level words
-        for( var i=0,tv=0,bw=null ; i<wt.length ; i++ ) {
-            tv += wt[i].value;
-            if( !bw || bw.value <= wt[i].value ) bw = wt[i];
-        }
-        for( var i=0; i<lw.length ; i++ ) {
-            tv += lw[i].value;
-            if( !bw || bw.value <= lw[i].value ) bw = lw[i];
-        }
-
-		cc.log("drawScoreBar: STEP1");
-		if( !sb ) {
-			
-			cc.log("drawScoreBar: STEP2");
-		    // create score bar
-		    var sb = ml.scoreBar = new cc.LayerColor(cc.color(128,0,0,0),ml.size.width,$42.BOXES_Y_OFFSET),
-				len = bw? bw.word.length : 0;
-
-		    sb.setPosition(0,0);
-		    sb.setOpacity(0);
-			_42_retain(sb, "scorebar");	
-			ml.addChild(sb, 5);
-			
-			// draw clipping rect with stencil and rolling layer
-	        var clipper = cc.ClippingNode.create();
-	        clipper.width = 640;
-		    clipper.height = $42.BOXES_Y_OFFSET;
-	        clipper.anchorX = 0.5;
-	        clipper.anchorY = 0.5;
-	        clipper.x = 320;
-	        clipper.y = $42.BOXES_Y_OFFSET / 2;
-	        // stencil
-	        var stencil = cc.DrawNode.create(),
-	        	rectangle = [
-	        	    cc.p(0, 0),
-	        	    cc.p(clipper.width, 0),
-		            cc.p(clipper.width, clipper.height),
-		            cc.p(0, clipper.height)
-		        ],
-		        white = cc.color(255, 255, 0, 0);
-	        
-	        stencil.drawPoly(rectangle, white, 1, white);
-	        clipper.stencil = stencil;
-	        sb.addChild(clipper);
-	        // rolling layer
-			rl = $42.rollingLayer = new cc.Layer();
-			rl.setPosition(0,0);
-			_42_retain(rl, "rolling layer");	
-			clipper.addChild(rl, 5);
-
-			drawLetterBoxes({
-				pos : cc.p(
-					20,
-					wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
-				),
-				scale : $42.SCOREBAR_LETTERS_SCALE,
-				padding : $42.SCOREBAR_LETTERS_PADDING,
-				boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
-				boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL,
-				parent : rl
-			});
-			
-			// draw points, left, back side
-			ml.score_words_mini = drawText("(0 "+$42.t.scorebar_words[1]+")", cc.p(50,111) , 24 , $42.SCORE_COLOR_BRIGHT , rl , true);
-			ml.score_points = drawText(tv.toString(), cc.p(50,151) , tv>=1000?56:72 , $42.SCORE_COLOR_BRIGHT , rl , true);
-
-			// draw total words, right, front side
-			ml.score_words_label = drawText($42.t.scorebar_words[1] , cc.p(558,15) , 24 , $42.SCORE_COLOR_DIMM , rl , true);
-			ml.score_words = drawText((wt.length+lw.length).toString(),cc.p(558,60) , 72 , $42.SCORE_COLOR_BRIGHT , rl , true);
-			
-			// draw most valuable word
-			ml.bestWordValue = drawText($42.t.scorebar_mvw,cc.p(300,111),24,$42.SCORE_COLOR_BRIGHT,rl,true);
-			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);	
-		
-        } else {
-			ml.score_words_label.setString($42.t.scorebar_words[wt.length===1?0:1]);
-			ml.score_words.setString(wt.length+lw.length);
-			ml.score_points.setString(tv.toString());
-			ml.score_words_mini.setString("("+wt.length+" "+$42.t.scorebar_words[wt.length===1?0:1]+")");
-
-			ml.bestWordValue.setString($42.t.scorebar_mvw+ (bw?": "+bw.value:""));
-			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);
-
-			drawLetterBoxes({
-				pos : cc.p(
-					20,
-					wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
-				),
-				scale : $42.SCOREBAR_LETTERS_SCALE,
-				padding : $42.SCOREBAR_LETTERS_PADDING,
-				boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
-				boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL,
-				delay: highlight? $42.SCOREBAR_ROLLING_LAYER_DELAY-0.5 : 0,
-				parent : rl
-			});
-			
-			// highlight things
-			switch(highlight) {
-			case "bestWord": 
-				ml.bestWordSprite.runAction(cc.blink($42.SCOREBAR_ROLLING_LAYER_DELAY - 0.5,3));
-				break;
-			}
-		}
-	};
-
-	var moveRollingLayer = function(stage, delay) {
-
-		if( !ml.layerIsRolling ) {
-			if( stage === ml.rollingLayerStage ) return;
-			if( stage != undefined ) ml.rollingLayerStage = stage;
-			else {
-				ml.rollingLayerStage = 1-ml.rollingLayerStage;
-			}
-		
-			ml.layerIsRolling = true;
-			$42.rollingLayer.runAction(
-				cc.EaseSineOut.create(
-					cc.moveTo(1,cc.p(0,-ml.rollingLayerStage*$42.BOXES_Y_OFFSET))
-				)
-			);
-			if( ml.rollingLayerDelay ) {
-				$42.rollingLayer.stopAction(ml.rollingLayerDelay);
-			}
-			ml.rollingLayerDelay = $42.rollingLayer.runAction(
-				cc.sequence( 
-					cc.delayTime(delay || 1),
-					cc.callFunc(function() {
-						ml.layerIsRolling = false;
-						ml.rollingLayerDelay = null;
-					})
-				)
-			);
-			
-		}
 	}
 	
 	var getNextProfileLetters = function() {
@@ -1486,7 +1283,7 @@ var _42_MODULE = function(_42Layer) {
 
 			var npl = $42.nextProfileLetters;
 			if( npl.length > 1 ) npl.splice(npl.length-1,1);
-			cc.log("42words, getNextProfileCandidate: New next letter: "+npl[npl.length-1].letter);			
+			cc.log("42words, getNextProfileCandidate: New next letter: "+(npl[npl.length-1] && npl[npl.length-1].letter));			
 		}
 	};
 	
@@ -1596,7 +1393,7 @@ var _42_MODULE = function(_42Layer) {
             wtJSON = ls.getItem("wordTreasure"),
         	wt = $42.wordTreasure = wtJSON? JSON.parse(wtJSON) : [],
             lv = $42.currentLevel = ls.getItem("currentLevel") || 1,
-		    wp = $42.wordProfile = parseInt(ls.getItem("wordProfile")) || 127, // 127 == first 7 letters in the letter order
+		    wp = $42.wordProfile = parseInt(ls.getItem("wordProfile")) || 0x3fffffff, // 127 == first 7 letters in the letter order
             lo = $42.letterOrder;
 
 		// remove all words that are already in the treasure
@@ -1632,7 +1429,6 @@ var _42_MODULE = function(_42Layer) {
 //$42.currentLevel = 4;
 
         startNewLevel();    
-		drawScoreBar();
 	};
 	
 	_42Layer.hookEndGame = function() {
@@ -1844,7 +1640,100 @@ var _42_MODULE = function(_42Layer) {
 		// switch to next profile letter candidate
 		getNextProfileCandidate();
 	};
+    
+    _42Layer.hookInitScorebar = function() {
+		var sb = $42._scoreBar,
+			rl = $42._rollingLayer,
+			wt = $42.wordTreasure || [],
+            lw = ml.levelWords || [],
+			wpl = $42.wordProfileLetters;
+
+        ///////////////////////////////////
+        // Add values of word treasure and level words
+        for( var i=0,tv=0,bw=null ; i<wt.length ; i++ ) {
+            tv += wt[i].value;
+            if( !bw || bw.value <= wt[i].value ) bw = wt[i];
+        }
+        for( var i=0; i<lw.length ; i++ ) {
+            tv += lw[i].value;
+            if( !bw || bw.value <= lw[i].value ) bw = lw[i];
+        }
+
+        drawLetterBoxes({
+            pos : cc.p(
+                20,
+                wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
+            ),
+            scale : $42.SCOREBAR_LETTERS_SCALE,
+            padding : $42.SCOREBAR_LETTERS_PADDING,
+            boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
+            boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL
+        });
+        
+        // draw points, left, back side
+        ml.score_words_mini = ml.drawScorebarText("(0 "+$42.t.scorebar_words[1]+")", cc.p(50,111) , 24 , $42.SCORE_COLOR_BRIGHT );
+        ml.score_points = ml.drawScorebarText(tv.toString(), cc.p(50,151) , tv>=1000?56:72 , $42.SCORE_COLOR_BRIGHT );
+
+        // draw total words, right, front side
+        ml.score_words_label = ml.drawScorebarText($42.t.scorebar_words[1] , cc.p(588,15) , 24 , $42.SCORE_COLOR_DIMM );
+        ml.score_words = ml.drawScorebarText((wt.length+lw.length).toString(),cc.p(588,60) , 72 , $42.SCORE_COLOR_BRIGHT );
+        
+        // draw most valuable word
+        ml.bestWordValue = ml.drawScorebarText($42.t.scorebar_mvw,cc.p(300,111),24,$42.SCORE_COLOR_BRIGHT);
+        ml.bestWordSprite = ml.drawScorebarWord(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60);	
+    
+        return true;
+    };
 	
+	_42Layer.hookDrawScorebar = function(highlight) {
+		var sb = ml._scoreBar,
+			wt = $42.wordTreasure,
+            lw = ml.levelWords,
+			wpl = $42.wordProfileLetters,
+			rl = $42.rollingLayer;
+	
+        ///////////////////////////////////
+        // Add values of word treasure and level words
+        for( var i=0,tv=0,bw=null ; i<wt.length ; i++ ) {
+            tv += wt[i].value;
+            if( !bw || bw.value <= wt[i].value ) bw = wt[i];
+        }
+        for( var i=0; i<lw.length ; i++ ) {
+            tv += lw[i].value;
+            if( !bw || bw.value <= lw[i].value ) bw = lw[i];
+        }
+
+        ml.score_words_label.setString($42.t.scorebar_words[wt.length===1?0:1]);
+        ml.score_words.setString(wt.length+lw.length);
+        ml.score_points.setString(tv.toString());
+        ml.score_words_mini.setString("("+wt.length+" "+$42.t.scorebar_words[wt.length===1?0:1]+")");
+
+        ml.bestWordValue.setString($42.t.scorebar_mvw+ (bw?": "+bw.value:""));
+        ml.bestWordSprite = ml.drawScorebarWord(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60);
+
+        drawLetterBoxes({
+            pos : cc.p(
+                20,
+                wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
+            ),
+            scale : $42.SCOREBAR_LETTERS_SCALE,
+            padding : $42.SCOREBAR_LETTERS_PADDING,
+            boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
+            boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL,
+            delay: highlight? $42.SCOREBAR_ROLLING_LAYER_DELAY-0.5 : 0,
+            parent : rl
+        });
+        
+        // highlight things
+        switch(highlight) {
+        case "bestWord": 
+            ml.bestWordSprite.runAction(cc.blink($42.SCOREBAR_ROLLING_LAYER_DELAY - 0.5,3));
+				break;
+		}
+
+        return true;
+	};
+
 	_42Layer.hookOnTap = function(tapPos) {
 		var sw = ml.selectedWord;
 		if( sw ) {
@@ -1874,8 +1763,6 @@ var _42_MODULE = function(_42Layer) {
 				setSelections();
 				ml.dontAutoSelectWord = true;
 			}
-		} else if( tapPos.y < $42.BOXES_Y_OFFSET ) {
-			moveRollingLayer(undefined,3);
 		} else {
 			for( var i=ml.selections.length-1 ; i>=0 ; i--) {
 				var s = ml.selections[i];
@@ -1898,14 +1785,8 @@ var _42_MODULE = function(_42Layer) {
 	
 	_42Layer.hookUpdate = function(dt) {
 		
-		if( ml.hookDrawScoreBar && ml.hookDrawScoreBar() ) {
-			drawScoreBar();
-		}
-
 		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);
-					
-		if( !ml.layerIsRolling && ml.rollingLayerStage != 0 ) moveRollingLayer(0);
-		
+						
 		// tutorial 2 starts >= 750
 		if( ml.totalPoints >= 750 && !ml.wordIsBeingSelected && ml.hookStartProgram && $42.tutorialsDone < 2 ) {
 			$42.tutorialsDone = 2;
