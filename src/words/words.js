@@ -539,7 +539,7 @@ var _42_MODULE = function(_42Layer) {
 
             ///////////////////////////////77
             // Draw word on screen
-			var label = this.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 72);
+			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 72);
 			label.setPosition(cc.width/2,cc.height*0.8-i*150);
 			label.setColor(cc.color(0,0,0));
 			label.setOpacity(0);
