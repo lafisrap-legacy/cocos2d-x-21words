@@ -35,31 +35,33 @@
 //          - names
 //          - cities
 //
-//      2. Current letter profile
-//
-//      3. word conditions from 
-//
-//  Select prefixed words:
-//
-//      Make pool by searching all extensions and checking all words of an extension of
-//
-//      1. current letter profile
-//
-//      2. word conditions
-//
-//      3. number of possible words with this condition
-//
-//
-//  Persistence:
-//      - wordTreasure (all collected words of one round)
-//      - level
-//
 //
 //  - In given mode word should just fly away without asking
-//  - All words captured --> go to next level
 //  - score bar 
-//  - prefixed words are not deleted from list 
 //
+//  GIVEN
+//  - new tile should fit to current selection first, then search freely
+//  - if seletion doesn't contain a possible word, deselect it
+//
+//  PREFIXED
+//  - new letters should reflect the selection words
+//  - if no word is possible, deselect it
+//  - autoselect if no word is selected
+//  - prefixed words are not deleted from list 
+//  - Small text: "min/max. 6 Buchstaben", "Wortwert min. 10 Punkte"
+//  
+//  FREE
+//  - as always
+//
+// GOT WORD!
+//
+// - More animations
+// - pimp word
+//
+//  Don't release words while one is evaluated
+//
+//  displayedProfileLetters ... make persistent ...
+//  solve error with minis
 //
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
 $42.LETTER_NAMES = ["space","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao"];
@@ -71,7 +73,7 @@ $42.START_MARKER_X_OFFSET = -18;            // X offset of start marker on scree
 $42.START_MARKER_Y_OFFSET = $42.BS/2;       // Y offset 
 $42.MARKER_X_OFFSET = $42.BS/2;             // X offset of markers under letters
 $42.MARKER_Y_OFFSET = -25;                  // Y offset
-$42.UNSELECTED_BOX_OPACITY = 100;           // Opacity of an unselected box (not part of a chosen word)
+$42.UNSELECTED_BOX_OPACITY = 120;           // Opacity of an unselected box (not part of a chosen word)
 $42.NEEDED_LETTERS_PROBABILITY = 0.15;      // additional probability that a needed letter appear (needed for the currently possible words)
 $42.MAX_WORDS_BLOWN = 1;                    // How many words are blown up after a row is deleted
 $42.WORD_FRAME_WIDTH = 4;                   // Weight of the frame of a completed word 
@@ -83,7 +85,7 @@ $42.NEXT_PROFILE_LETTERS = 5;               // Number of next new letter candida
 $42.NEXT_PROFILE_LETTER_CNT = 3;            // A new letter after n words
 $42.SCOREBAR_LETTERS_PER_ROW = 8;           // Show n small letters in the score bar per row
 $42.SCOREBAR_LETTERS_PER_COL = 2;           // Show max n columns
-$42.SCOREBAR_LETTERS_PADDING = 16;          // Padding of small letters
+$42.SCOREBAR_LETTERS_PADDING = 20;          // Padding of small letters
 $42.SCOREBAR_LETTERS_SCALE = 0.45;          // Size difference to real normal letters
 $42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;     // Seconds till the next score bar roll
 $42.MAX_MULTIPLIERS = 5;                    // Maximum number of multipliers
@@ -369,79 +371,41 @@ var _42_MODULE = function(_42Layer) {
 							value += val;
 						}
 
+                        ////////////////////
+                        // Remember the word
+                        ml.levelWords.push({ 
+                            word: word,
+                            value: value
+                        });
+
                         ////////////////////////////////////
                         // Check level conditions
                         if( checkLevelConditions(word, value) ) {
-                            var level = $42.LEVEL_DEVS[$42.currentLevel-1];
+                            var level = $42.LEVEL_DEVS[$42.currentLevel-1],
+						        ls = cc.sys.localStorage;
                             
                             if( ++$42.currentLevel > level.length+1 ) {
                                 debugger;
                             }
 
-                            $42.wordProfile = $42.wordProfile * 8 + 7; // three new characters
+							setNextProfileLetter();
+							setNextProfileLetter();
 
+                            $42.wordTreasure = $42.wordTreasure.concat(ml.levelWords);
+                            ls.setItem("wordTreasure",JSON.stringify($42.wordTreasure));
+                            ls.setItem("currentLevel",$42.currentLevel);
+                            ls.setItem("wordProfile",$42.wordProfile);
+                            
                             endLevel();
                             startNewLevel();
 							
                             blowLevelAndWordValue({info:[$42.t.next_level,$42.currentLevel],color:cc.color(0,0,128)});
                         } 
 
-                        //////////////////////////////////////
-                        // Cypherpunk special treatment
-						if( group == 2 ) {
-							cc.log("CYPHERPUNK: Cypherpunk word detected: Adding playing time and blow ...");
-							blowLevelAndWordValue({info:$42.t.moretime_message,color:cc.color(0,128,0)});
-							wordMul *= $42.WORD_MULTIPLIER_CYPHERPUNKS;
-							cc.log("CYPHERPUNK: ... after blow.");
-						}
-					
-                        ////////////////////////////    
-						// put word into treasure
-						var ls = cc.sys.localStorage,
-							w = { 
-								word: word,
-								value: value
-							};
-						$42.wordTreasure.push(w);
-						$42.wordTreasureWords++;
-						ls.setItem("wordTreasureWords",$42.wordTreasureWords);
-						$42.wordTreasureValue += w.value * wordMul;
-						
-						var wtl = $42.wordTreasure.length;
-						if( $42.wordTreasureValue > $42.maxPoints ) {
-							$42.maxPoints = $42.wordTreasureValue;
-							moveRollingLayer(1,$42.SCOREBAR_ROLLING_LAYER_DELAY);
-							
-							var highlight = "maxPoints";
-							ls.setItem("maxPoints",$42.maxPoints);
-						}
-						if( !$42.wordTreasureBestWord || $42.wordTreasureBestWord.value < w.value ){							
-							$42.wordTreasureBestWord = w;
-							moveRollingLayer(1,$42.SCOREBAR_ROLLING_LAYER_DELAY);
-							var highlight = "bestWord";
-							if( wtl >= 7 ) setNextProfileLetter();
-						}
-						
-						
-//						if( wtl == 4 && ml.hookStartProgram && $42.tutorialsDone < 2 ) ml.hookStartProgram( 1 , true );	
-						if( wtl >= 42 ) youWonTheGame();
-
 						ml.unselectWord();
 						ml.checkForAndRemoveCompleteRows(sw.brc.row);
-
-						// add new profile letters
-						if( !(wtl%3) ) {
-							if( wtl >=  9 ) setNextProfileLetter();
-						}
-						
-						// add new multiplieres
-						if( wtl >= 21 && wtl%2 ) {
-							setNextMultiplier();							
-						}
-						
 						setSelections();
-						drawScoreBar(highlight);
-						cc.log("CYPHERPUNK: score bar is drawn!");
+						ml.drawScorebar(false);
 					} else {
 						ml.checkForAndRemoveCompleteRows();
 						ml.unselectWord();
@@ -458,7 +422,7 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
     ////////////////////////////////////////////////////////////////////////////////////////
-    // startNewLevel prepares for level set in ml.currentLevel 
+    // startNewLevel prepares for level set in $42.currentLevel 
     //
     //
     var startNewLevel = function() {
@@ -470,6 +434,7 @@ var _42_MODULE = function(_42Layer) {
 		ml.lettersForNextTile = [];
         ml.levelLabels = [];
         ml.levelPool = [];
+        ml.levelWords = []; 
         ml.selections = [];
 
         ////////////////////////////
@@ -575,11 +540,11 @@ var _42_MODULE = function(_42Layer) {
             ///////////////////////////////77
             // Draw word on screen
 			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 72);
-			label.setPosition(cc.width/2,cc.height/2+(level.words/2-i)*cc.height/2/level.words);
+			label.setPosition(cc.width/2,cc.height*0.8-i*150);
 			label.setColor(cc.color(0,0,0));
 			label.setOpacity(0);
 			_42_retain(label, "Level label ("+i+")");	
-			background.addChild(label, 5);
+			background.addChild(label, 0);
 
             label.runAction(cc.fadeTo(10,30));
         }
@@ -613,13 +578,14 @@ var _42_MODULE = function(_42Layer) {
 
     var endLevel = function() {
         /////////////////////////////
-        // Remove all boxes and background
+        // Remove all boxes, selection and background
         var background = ml.getChildByTag($42.TAG_BACKGROUND_SPRITE);
         if( background ) {
             ml.removeChild(background);
             _42_release(background);
         }
 
+        ml.unselectWord();
 		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		 
     };
 
@@ -678,7 +644,7 @@ var _42_MODULE = function(_42Layer) {
     
         for( var j=0 ; j<ll.length ; j++ ) {
             ll[j].runAction(
-                cc.moveTo(2, cc.width/2 , cc.height/2+(ll.length/2-j)*cc.height/2/ll.length)
+                cc.moveTo(2, cc.width/2 , cc.height*0.8-j*150)
             );
         }
 
@@ -1198,298 +1164,79 @@ var _42_MODULE = function(_42Layer) {
 		}
 	};
 		
-	var drawText = function(text,pos,size,color,parent,retain) {
-		
-		var label = new cc.LabelBMFont( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT );
-		cc.log("drawText: text = "+text+", label = "+label );
-		label.setPosition(pos);
-		if( retain ) {
-			_42_retain(label, "label "+text);
-		}
-		label.setColor(color);
-		parent.addChild(label, 5, $42.TAG_NONE);	
-		
-		return label;
-	};
-	
-	var drawWordSprite = function(word,pos,wordSprite,scale,parent,retain) {
-		cc.assert(word !== undefined,"42words, drawWordSprite: No word to draw as a sprite.")
-		
-		if( !wordSprite ) {
-			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
-				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
-				rect = wordFrameSprite.getTextureRect();
-			if( retain ) {
-				_42_retain(wordFrameSprite,"wordFrameSprite "+word);	
-			}
-			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
-			rect.height = word.length? $42.BS + $42.WORD_FRAME_WIDTH * 2 : 8;
-			wordFrameSprite.setTextureRect(rect);
-			wordFrameSprite.setPosition(pos.x,pos.y);
-			wordFrameSprite.setScale(scale);
-			parent.addChild(wordFrameSprite,4);
-		} else {
-			var wordFrameSprite = wordSprite,
-				rect = wordFrameSprite.getTextureRect();
-			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
-			rect.height = word.length? $42.BS + $42.WORD_FRAME_WIDTH * 2 : 8;
-			wordFrameSprite.setTextureRect(rect);
-
-			// release and remove old letters
-			var ch = wordFrameSprite.getChildren();
-			for( var i=0; i<ch.length ; i++ ) {
-				_42_release(ch[i]);
-			}
-			wordFrameSprite.removeAllChildren(true);
-		}
-		// add sprites of word
-		for( var i=0 ; i<word.length ; i++) {
-			
-			var file = $42.LETTER_NAMES[$42.LETTERS.indexOf(word[i])],
-				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
-				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
-			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
-			if( retain ) {
-				_42_retain(sprite, "wordFrameSprite sprite "+word[i]);	
-			}
-			wordFrameSprite.addChild( sprite );
-		}		
-		
-		return wordFrameSprite;
-	}
-
 	var drawLetterBoxes = function(options) {
-		// first delete old boxes if there some
-		var wpl = $42.wordProfileLetters,
-			dpl = $42.displayedProfileLetters,
-			dplm = $42.displayedProfileLettersMini,
-			boxes = options.boxesPerRow * options.boxesPerCol;
-		
-		for( var i=0 ; i<dpl.length ; i++ ) {
-			var children = dpl[i].getChildren();
-			_42_release(children[0]);			
-			_42_release(children[1]);		
-			
-//			D/cocos2d-x debug info(20625): JS: 42words, getNextProfileCandidate: New next letter: V
-//			D/cocos2d-x debug info(20625): JS: 42words, updateSelectedWord, takeWord = true: setSelection()
-//			D/cocos2d-x debug info(20625): Assert failed: Node still marked as running on node destruction! Was base class onExit() called in derived class onExit() implementations?
-//			E/cocos2d-x assert(20625): /Applications/MAMP/htdocs/42words-js/frameworks/runtime-src/proj.android/../../js-bindings/cocos2d-x/cocos/./2d/CCNode.cpp function:~Node line:205
-//			D/cocos2d-x debug info(20625): JS: assets/src/words/words.js:953:TypeError: children[1] is undefined
-//			Fehler: Ö wurde nicht in der Scorebar angezeigt, stattdessen (?) ein gelbes Quadrat?
-			
-			_42_release(dpl[i]);
-			if( i==0 && wpl.length - dplm.length > boxes ) {
-				cc.assert(dpl.length === boxes, "42words, drawLetterBoxes: Cannot take out box when display is not full.")
-				dplm.push(dpl[0]);
-				dpl[0].removeChild(children[1]);
-				continue;
-			}
-			options.parent.removeChild(dpl[i]);
-		}
-		dpl = [];
-		
-		// fill display with letter boxes (two rows)
-		for( var i=0 ; i<Math.min(boxes,wpl.length) ; i++ ) {
-			// create sprite frame
-			var letterFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
-				letterFrameSprite = cc.Sprite.create(letterFrameFrame),
-				rect = letterFrameSprite.getTextureRect();
-			_42_retain(letterFrameSprite, "letterFrameSprite (i="+i+": "+wpl[i+Math.max(0,wpl.length-boxes)]+")");	
-			rect.width  = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
-			rect.height = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
-			letterFrameSprite.setTextureRect(rect);
-			letterFrameSprite.setPosition(options.pos.x + ((i%options.boxesPerRow>>>0)*($42.BS+options.padding*4))*options.scale,
-										  options.pos.y - ((i/options.boxesPerRow>>>0)*($42.BS+options.padding))*options.scale);
-			options.parent.addChild(letterFrameSprite,4);
-			dpl.push(letterFrameSprite);
-			
-			// draw letter
-			var letter = wpl[i+Math.max(0,wpl.length-boxes)],
-				file = $42.LETTER_NAMES[$42.LETTERS.indexOf(letter)],
-				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
-				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS)),
-				pos = cc.p(($42.BS/2+$42.WORD_FRAME_WIDTH)*options.scale,
-						   ($42.BS/2+$42.WORD_FRAME_WIDTH)*options.scale);
-			
-			cc.assert(spriteFrame,"42Words, drawLetterBoxes: Couldn't load sprite for letter '"+letter+"', file: "+file+", spriteFrame: "+spriteFrame);
-			sprite.setPosition(pos);
-			sprite.setScale(options.scale);
-			_42_retain(sprite, "letterFrameSprite sprite "+letter);	
-			letterFrameSprite.addChild( sprite );
-			
-			// draw value
-			var label = new cc.LabelBMFont( $42.letterValues[letter] && $42.letterValues[letter].value || "0" , "res/fonts/amtype24.fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT );
-			label.setPosition(pos.x+30,pos.y);
-			_42_retain(label, "label "+($42.letterValues[letter] && $42.letterValues[letter].value || "0"));
-			label.setColor(cc.color(255,255,255,255));
-			letterFrameSprite.addChild(label, 5);	
-		}		
-		
-		// move mini letter boxes
-		for( var i=0 ; i<dplm.length ; i++ ) {
-			var posX = options.pos.x + i*($42.BS+options.padding*2)/2*options.scale;
-			var posY = options.pos.y + $42.BS/2*options.scale;	
-			dplm[i].setPosition(options.pos.x - $42.BS/2*options.scale + i*($42.BS+options.padding*2)/2*options.scale,
-		  			options.pos.y + $42.BS*options.scale);	
-			dplm[i].setScale(0.5);
-		}
-		
-		// let the last box blink when it changed
-		while( $42.newWordProfileLetter ) {
-			dpl[dpl.length-$42.newWordProfileLetter--].runAction(cc.sequence(cc.delayTime(options.delay),cc.blink(3.5,5)));
-		}
-			
-		$42.displayedProfileLetters = dpl;
-		
-		return letterFrameSprite;
-	}
-	
-	var drawScoreBar = function(highlight) {
-		var sb = ml.scoreBar,
-			wt = $42.wordTreasure,
-			tv = $42.wordTreasureValue,
-			bw = $42.wordTreasureBestWord,
-			wpl = $42.wordProfileLetters,
-			rl = $42.rollingLayer;
-		
-		cc.log("drawScoreBar: STEP1");
-		if( !sb ) {
-			
-			cc.log("drawScoreBar: STEP2");
-		    // create score bar
-		    var sb = ml.scoreBar = new cc.LayerColor(cc.color(128,0,0,0),ml.size.width,$42.BOXES_Y_OFFSET),
-				len = bw? bw.word.length : 0;
 
-		    sb.setPosition(0,0);
-		    sb.setOpacity(0);
-			_42_retain(sb, "scorebar");	
-			ml.addChild(sb, 5);
-			
-			// draw clipping rect with stencil and rolling layer
-	        var clipper = cc.ClippingNode.create();
-	        clipper.width = 640;
-		    clipper.height = $42.BOXES_Y_OFFSET;
-	        clipper.anchorX = 0.5;
-	        clipper.anchorY = 0.5;
-	        clipper.x = 320;
-	        clipper.y = $42.BOXES_Y_OFFSET / 2;
-	        // stencil
-	        var stencil = cc.DrawNode.create(),
-	        	rectangle = [
-	        	    cc.p(0, 0),
-	        	    cc.p(clipper.width, 0),
-		            cc.p(clipper.width, clipper.height),
-		            cc.p(0, clipper.height)
-		        ],
-		        white = cc.color(255, 255, 0, 0);
-	        
-	        stencil.drawPoly(rectangle, white, 1, white);
-	        clipper.stencil = stencil;
-	        sb.addChild(clipper);
-	        // rolling layer
-			rl = $42.rollingLayer = new cc.Layer();
-			rl.setPosition(0,0);
-			_42_retain(rl, "rolling layer");	
-			clipper.addChild(rl, 5);
+        if( !$42.newWordProfileLetters && $42.displayedProfileLetters.length !== 0  ) return;
 
-			drawLetterBoxes({
-				pos : cc.p(
-					20,
-					wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
-				),
-				scale : $42.SCOREBAR_LETTERS_SCALE,
-				padding : $42.SCOREBAR_LETTERS_PADDING,
-				boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
-				boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL,
-				parent : rl
-			});
-			
-			// draw points, right, front side
-			ml.score_words_mini = drawText("(0 "+$42.t.scorebar_words[1]+")", cc.p(558,15) , 24 , $42.SCORE_COLOR_BRIGHT , rl , true);
-			ml.score_points = drawText(tv.toString(), cc.p(558,60) , tv>=1000?56:72 , $42.SCORE_COLOR_BRIGHT , rl , true);
+        ///////////////////////////////////
+        // first delete old boxes if there some
+        var wpl = $42.wordProfileLetters,
+            dpl = $42.displayedProfileLetters,
+            boxes = options.boxesPerRow * options.boxesPerCol,
+		    rl = $42._rollingLayer;
+        
+        for( var i=0 ; i<dpl.length ; i++ ) {
+            _42_release(dpl[i]);
+            dpl[i].getParent().removeChild(dpl[i]);
+        }
+        dpl = [];
+        
+        ////////////////////////////////////////
+        // fill display with letter boxes (two rows normal size, one row small size)
+        for( var i=0 ; i<wpl.length ; i++ ) {
+            var normalSizeStart = Math.max(wpl.length - boxes, 0);
 
-			// draw total words, left, back side
-			ml.score_words_label = drawText($42.t.scorebar_words[1] , cc.p(50,111) , 24 , $42.SCORE_COLOR_DIMM , rl , true);
-			ml.score_words = drawText(wt.length.toString(),cc.p(50,151) , 72 , $42.SCORE_COLOR_BRIGHT , rl , true);
-			
-			// draw highscore into clipper
-			drawText($42.t.scorebar_highscore,cc.p(558,111),24,$42.SCORE_COLOR_DIMM,rl,false);			
-			ml.highscore = drawText($42.maxPoints.toString(),cc.p(553,151),$42.maxPoints>=1000?56:72,$42.SCORE_COLOR_BRIGHT,rl,true);	
-			
-			// draw most valuable word
-			ml.bestWordValue = drawText($42.t.scorebar_mvw,cc.p(300,111),24,$42.SCORE_COLOR_BRIGHT,rl,true);
-			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);	
-			
-			// draw remaining time
-			cc.log("drawScoreBar: STEP3");
-			ml.score_time_left = drawText("no time",cc.p(558,135) , 72 , $42.SCORE_COLOR_BRIGHT , ml , true);
-			ml.score_time_left.setColor(cc.color(0,0,0));
-			ml.score_time_left.setOpacity(40);
+            ///////////////////////////
+            // create frame around letter
+            var letterFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
+                letterFrameSprite = cc.Sprite.create(letterFrameFrame),
+                rect = letterFrameSprite.getTextureRect();
+            _42_retain(letterFrameSprite, "letterFrameSprite ("+i+")");	
+            rect.width  = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
+            rect.height = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
+            letterFrameSprite.setTextureRect(rect);
+            rl.addChild(letterFrameSprite,4);
+            dpl.push(letterFrameSprite);
+            
+            ////////////////////////////
+            // draw letter
+            var letter = wpl[i],
+                file = $42.LETTER_NAMES[$42.LETTERS.indexOf(letter)],
+                spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
+                sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS)),
+                pos = cc.p(($42.BS/2+$42.WORD_FRAME_WIDTH)*options.scale,
+                           ($42.BS/2+$42.WORD_FRAME_WIDTH)*options.scale);
+            
+            cc.assert(spriteFrame,"42Words, drawLetterBoxes: Couldn't load sprite for letter '"+letter+"', file: "+file+", spriteFrame: "+spriteFrame);
+            sprite.setPosition(pos);
+            sprite.setScale(options.scale);
+            letterFrameSprite.addChild( sprite );
+            
+            /////////////////////////////
+            // Find position and scale (mini or normal letters)
+            if( i<normalSizeStart ) {
+                letterFrameSprite.setPosition(options.pos.x + i*($42.BS+options.padding*2)/2*options.scale,
+                                              options.pos.y + $42.BS*options.scale);	
+                letterFrameSprite.setScale(0.5);
+            } else {
+                letterFrameSprite.setPosition(options.pos.x + (((i-normalSizeStart)%options.boxesPerRow>>>0)*($42.BS+options.padding*4))*options.scale,
+                                              options.pos.y - (((i-normalSizeStart)/options.boxesPerRow>>>0)*($42.BS+options.padding))*options.scale);
 
-		} else {
-			ml.score_words_label.setString($42.t.scorebar_words[wt.length===1?0:1]);
-			ml.score_words.setString(wt.length);
-			ml.score_points.setString(tv.toString());
-			ml.score_words_mini.setString("("+wt.length+" "+$42.t.scorebar_words[wt.length===1?0:1]+")");
+                /////////////////////////////
+                // draw value
+                var label = new cc.LabelBMFont( $42.letterValues[letter] && $42.letterValues[letter].value || "0" , "res/fonts/amtype24.fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT );
+                label.setPosition(pos.x+30,pos.y);
+                label.setColor(cc.color(255,255,255,255));
+                letterFrameSprite.addChild(label, 5); 
+            }
+        }		
+        
+        // let the last box blink when it changed
+        while( $42.newWordProfileLetters > 0 ) {
+            dpl[dpl.length-$42.newWordProfileLetters--].runAction(cc.sequence(cc.delayTime(options.delay),cc.blink(3.5,5)));
+        }
 
-			ml.highscore.setString($42.maxPoints.toString());
-			ml.bestWordValue.setString($42.t.scorebar_mvw+ (bw?": "+bw.value:""));
-			ml.bestWordSprite = drawWordSprite(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60,rl,true);
-
-			drawLetterBoxes({
-				pos : cc.p(
-					20,
-					wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
-				),
-				scale : $42.SCOREBAR_LETTERS_SCALE,
-				padding : $42.SCOREBAR_LETTERS_PADDING,
-				boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
-				boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL,
-				delay: highlight? $42.SCOREBAR_ROLLING_LAYER_DELAY-0.5 : 0,
-				parent : rl
-			});
-			
-			// highlight things
-			switch(highlight) {
-			case "maxPoints": 
-				ml.highscore.runAction(cc.blink($42.SCOREBAR_ROLLING_LAYER_DELAY - 0.5,3));
-				break;
-			case "bestWord": 
-				ml.bestWordSprite.runAction(cc.blink($42.SCOREBAR_ROLLING_LAYER_DELAY - 0.5,3));
-				break;
-			}
-		}
-	};
-
-	var moveRollingLayer = function(stage, delay) {
-
-		if( !ml.layerIsRolling ) {
-			if( stage === ml.rollingLayerStage ) return;
-			if( stage != undefined ) ml.rollingLayerStage = stage;
-			else {
-				ml.rollingLayerStage = 1-ml.rollingLayerStage;
-			}
-		
-			ml.layerIsRolling = true;
-			$42.rollingLayer.runAction(
-				cc.EaseSineOut.create(
-					cc.moveTo(1,cc.p(0,-ml.rollingLayerStage*$42.BOXES_Y_OFFSET))
-				)
-			);
-			if( ml.rollingLayerDelay ) {
-				$42.rollingLayer.stopAction(ml.rollingLayerDelay);
-			}
-			ml.rollingLayerDelay = $42.rollingLayer.runAction(
-				cc.sequence( 
-					cc.delayTime(delay || 1),
-					cc.callFunc(function() {
-						ml.layerIsRolling = false;
-						ml.rollingLayerDelay = null;
-					})
-				)
-			);
-			
-		}
+        $42.displayedProfileLetters = dpl;
 	}
 	
 	var getNextProfileLetters = function() {
@@ -1520,8 +1267,8 @@ var _42_MODULE = function(_42Layer) {
 			$42.wordProfile |= (1<<pl.order);	
 			$42.wordProfileLetters.push($42.letterOrder[pl.order]);
 			cc.log("42words, setNextProfileLetter: New letter: "+$42.letterOrder[pl.order]);
-			if( !$42.newWordProfileLetter ) $42.newWordProfileLetter = 0; 
-			$42.newWordProfileLetter++;
+			if( !$42.newWordProfileLetters ) $42.newWordProfileLetters = 0; 
+			$42.newWordProfileLetters++;
 			getNextProfileLetters();
 
 			ml.lettersForNextTile.push(pl.letter);
@@ -1536,7 +1283,7 @@ var _42_MODULE = function(_42Layer) {
 
 			var npl = $42.nextProfileLetters;
 			if( npl.length > 1 ) npl.splice(npl.length-1,1);
-			cc.log("42words, getNextProfileCandidate: New next letter: "+npl[npl.length-1].letter);			
+			cc.log("42words, getNextProfileCandidate: New next letter: "+(npl[npl.length-1] && npl[npl.length-1].letter));			
 		}
 	};
 	
@@ -1643,15 +1390,12 @@ var _42_MODULE = function(_42Layer) {
 	    
         // global data init
         var ls = cc.sys.localStorage,
-        	wt = $42.wordTreasure = ls.getItem("wordTreasure") || [],
+            wtJSON = ls.getItem("wordTreasure"),
+        	wt = $42.wordTreasure = wtJSON? JSON.parse(wtJSON) : [],
             lv = $42.currentLevel = ls.getItem("currentLevel") || 1,
-		    wp = $42.wordProfile = ls.getItem("wordProfile") || 127, // 127 == first 7 letters in the letter order
+		    wp = $42.wordProfile = parseInt(ls.getItem("wordProfile")) || 0x3fffffff, // 127 == first 7 letters in the letter order
             lo = $42.letterOrder;
 
-		for( var i=1,tw=0,bw=0 ; i<wt.length ; i++,tw+=wt[i].value ) if( wt[i].value > wt[bw].value ) bw = i;
-        $42.wordTreasureValue = tw;
-		$42.wordTreasureBestWord = bw;
-        
 		// remove all words that are already in the treasure
         for( var i=0 ; i<wt.length ; i++ ) {
             var prefix = wt[i].word.substr(0,3),
@@ -1663,10 +1407,9 @@ var _42_MODULE = function(_42Layer) {
 				
 		// prepare for which letters can be used (word profile), and what
 		// letters will be next
-		$42.wordProfileLetters = [];
-		for( var i=0 ; i<lo[i].length ; i++ ) if( wp | 1<<i === wp ) $42.wordProfileLetters.push(lo[i]);
-		$42.displayedProfileLetters = ls.getItem("displayedProfileLetters") || [];
-		$42.displayedProfileLettersMini = ls.getItem("displayedProfileLettersMini") || [];
+		$42.wordProfileLetters = []; 
+		for( var i=0 ; i<lo.length ; i++ ) if( (wp | 1<<i) === wp ) $42.wordProfileLetters.push(lo[i]); 
+		$42.displayedProfileLetters = [];
 		getNextProfileLetters();
 
 		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
@@ -1683,8 +1426,9 @@ var _42_MODULE = function(_42Layer) {
 		ml.multipliers = [];
 		ml.dontAutoSelectWord = false;
 	
+//$42.currentLevel = 4;
+
         startNewLevel();    
-		drawScoreBar();
 	};
 	
 	_42Layer.hookEndGame = function() {
@@ -1753,7 +1497,8 @@ var _42_MODULE = function(_42Layer) {
 	 */
 	_42Layer.hookSetTileImages = function(tileBoxes, pos, userData) {
 
-		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0));
+		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
+            levelType = $42.LEVEL_DEVS[$42.currentLevel-1].type;
 				
 		_42_retain(tileSprite, "words: tileSprite");
 		tileSprite.setPosition(pos);
@@ -1763,10 +1508,12 @@ var _42_MODULE = function(_42Layer) {
         for( var i=0 ; i<tileBoxes.length ; i++) {
         	
         	var sw = ml.selectedWord,
-        		lnt = ml.lettersForNextTile;
+        		lnt = ml.lettersForNextTile,
+                ntLetter = this._nextTile.letters[i];
+
         	if( lnt && lnt.length > 0 ) {
         		var val = $42.LETTERS.indexOf(lnt.splice(0,1)[0]);
-        	} else if( this._nextTile !== null ) {
+        	} else if( this._nextTile !== null && (levelType === $42.LEVEL_TYPE_GIVEN || ntLetter !== " " || Math.random()>0.5)) {
         		var val = $42.LETTERS.indexOf(this._nextTile.letters[i]);
         	} else {
 	         	var len = sw && sw.missingLetters && sw.missingLetters.length || 0,
@@ -1782,7 +1529,6 @@ var _42_MODULE = function(_42Layer) {
 	        	    if( double > 1 ) continue;
 	        	    
                     cc.log("_42Layer.hookSetTileImages, val: "+val+", $42.LETTERS[val]: "+$42.LETTERS[val]+"$42.letterValues[$42.LETTERS[val]]: ", $42.letterValues[$42.LETTERS[val]]);
-	         		if( $42.letterValues[$42.LETTERS[val]] && $42.letterValues[$42.LETTERS[val]].value <= $42.maxWordValue - 3 ) break;		
 	         		if( $42.wordProfileLetters.indexOf($42.LETTERS[val]) > -1 ) break;	
 	         		
 	         		cc.log("42words, hookSetTileImages: Got a not allowed letter: "+$42.LETTERS[val]+" for box "+i+". Skipping it ...");
@@ -1822,7 +1568,7 @@ var _42_MODULE = function(_42Layer) {
             var s = ml.selections,
                 level = $42.LEVEL_DEVS[$42.currentLevel-1];
 
-            if( level.type === $42.LEVEL_TYPE_GIVEN || level.type === $42.LEVEL_TYPE_PREFIX ) {
+            if( level.type === $42.LEVEL_TYPE_GIVEN ) {
                 var brcs = ml.lastBrcs || [];
                 for( var i=0 ; brcs && i<brcs.length ; i++ ) {
                     for( var j=0 ; s && j<s.length ; j++ ) {
@@ -1894,7 +1640,100 @@ var _42_MODULE = function(_42Layer) {
 		// switch to next profile letter candidate
 		getNextProfileCandidate();
 	};
+    
+    _42Layer.hookInitScorebar = function() {
+		var sb = $42._scoreBar,
+			rl = $42._rollingLayer,
+			wt = $42.wordTreasure || [],
+            lw = ml.levelWords || [],
+			wpl = $42.wordProfileLetters;
+
+        ///////////////////////////////////
+        // Add values of word treasure and level words
+        for( var i=0,tv=0,bw=null ; i<wt.length ; i++ ) {
+            tv += wt[i].value;
+            if( !bw || bw.value <= wt[i].value ) bw = wt[i];
+        }
+        for( var i=0; i<lw.length ; i++ ) {
+            tv += lw[i].value;
+            if( !bw || bw.value <= lw[i].value ) bw = lw[i];
+        }
+
+        drawLetterBoxes({
+            pos : cc.p(
+                20,
+                wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
+            ),
+            scale : $42.SCOREBAR_LETTERS_SCALE,
+            padding : $42.SCOREBAR_LETTERS_PADDING,
+            boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
+            boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL
+        });
+        
+        // draw points, left, back side
+        ml.score_words_mini = ml.drawScorebarText("(0 "+$42.t.scorebar_words[1]+")", cc.p(50,111) , 24 , $42.SCORE_COLOR_BRIGHT );
+        ml.score_points = ml.drawScorebarText(tv.toString(), cc.p(50,151) , tv>=1000?56:72 , $42.SCORE_COLOR_BRIGHT );
+
+        // draw total words, right, front side
+        ml.score_words_label = ml.drawScorebarText($42.t.scorebar_words[1] , cc.p(588,15) , 24 , $42.SCORE_COLOR_DIMM );
+        ml.score_words = ml.drawScorebarText((wt.length+lw.length).toString(),cc.p(588,60) , 72 , $42.SCORE_COLOR_BRIGHT );
+        
+        // draw most valuable word
+        ml.bestWordValue = ml.drawScorebarText($42.t.scorebar_mvw,cc.p(300,111),24,$42.SCORE_COLOR_BRIGHT);
+        ml.bestWordSprite = ml.drawScorebarWord(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60);	
+    
+        return true;
+    };
 	
+	_42Layer.hookDrawScorebar = function(highlight) {
+		var sb = ml._scoreBar,
+			wt = $42.wordTreasure,
+            lw = ml.levelWords,
+			wpl = $42.wordProfileLetters,
+			rl = $42.rollingLayer;
+	
+        ///////////////////////////////////
+        // Add values of word treasure and level words
+        for( var i=0,tv=0,bw=null ; i<wt.length ; i++ ) {
+            tv += wt[i].value;
+            if( !bw || bw.value <= wt[i].value ) bw = wt[i];
+        }
+        for( var i=0; i<lw.length ; i++ ) {
+            tv += lw[i].value;
+            if( !bw || bw.value <= lw[i].value ) bw = lw[i];
+        }
+
+        ml.score_words_label.setString($42.t.scorebar_words[wt.length===1?0:1]);
+        ml.score_words.setString(wt.length+lw.length);
+        ml.score_points.setString(tv.toString());
+        ml.score_words_mini.setString("("+wt.length+" "+$42.t.scorebar_words[wt.length===1?0:1]+")");
+
+        ml.bestWordValue.setString($42.t.scorebar_mvw+ (bw?": "+bw.value:""));
+        ml.bestWordSprite = ml.drawScorebarWord(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60);
+
+        drawLetterBoxes({
+            pos : cc.p(
+                20,
+                wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
+            ),
+            scale : $42.SCOREBAR_LETTERS_SCALE,
+            padding : $42.SCOREBAR_LETTERS_PADDING,
+            boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
+            boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL,
+            delay: highlight? $42.SCOREBAR_ROLLING_LAYER_DELAY-0.5 : 0,
+            parent : rl
+        });
+        
+        // highlight things
+        switch(highlight) {
+        case "bestWord": 
+            ml.bestWordSprite.runAction(cc.blink($42.SCOREBAR_ROLLING_LAYER_DELAY - 0.5,3));
+				break;
+		}
+
+        return true;
+	};
+
 	_42Layer.hookOnTap = function(tapPos) {
 		var sw = ml.selectedWord;
 		if( sw ) {
@@ -1924,8 +1763,6 @@ var _42_MODULE = function(_42Layer) {
 				setSelections();
 				ml.dontAutoSelectWord = true;
 			}
-		} else if( tapPos.y < $42.BOXES_Y_OFFSET ) {
-			moveRollingLayer(undefined,3);
 		} else {
 			for( var i=ml.selections.length-1 ; i>=0 ; i--) {
 				var s = ml.selections[i];
@@ -1948,14 +1785,8 @@ var _42_MODULE = function(_42Layer) {
 	
 	_42Layer.hookUpdate = function(dt) {
 		
-		if( ml.hookDrawScoreBar && ml.hookDrawScoreBar() ) {
-			drawScoreBar();
-		}
-
 		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);
-					
-		if( !ml.layerIsRolling && ml.rollingLayerStage != 0 ) moveRollingLayer(0);
-		
+						
 		// tutorial 2 starts >= 750
 		if( ml.totalPoints >= 750 && !ml.wordIsBeingSelected && ml.hookStartProgram && $42.tutorialsDone < 2 ) {
 			$42.tutorialsDone = 2;

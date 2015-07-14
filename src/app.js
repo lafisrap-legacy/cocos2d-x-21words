@@ -23,6 +23,14 @@
 //  hookDeleteBox 
 //  hookUpdate
 //  hookEndGame
+//
+//
+//  Todo:
+//
+//  - make wordFrame sprite bleong to app.js
+//
+//  
+//
 ////////////////////////////
 // Global variables
 //
@@ -62,6 +70,8 @@ var _42_GLOBALS = {
 	KEY_UP_CODE : 38,                       //
 	KEY_RIGHT_CODE : 39,                    //
 	KEY_DOWN_CODE : 40,                     //
+    SCOREBAR_SETBACK : 3,                   // time after score shows level 0 again
+    SCOREBAR_MAX_LAYER_SCROLL: 2,           // Maximum levels of score bar
 	TILE_BOXES : [                          // Tetris forms
 	    [{x:-1.5*64,y: 0.0*64},{x:-0.5*64,y: 0.0*64},{x: 0.5*64,y: 0.0*64},{x: 1.5*64,y: 0.0*64}],
 		[{x:-0.5*64,y:-0.5*64},{x:-0.5*64,y: 0.5*64},{x: 0.5*64,y:-0.5*64},{x: 0.5*64,y: 0.5*64}],
@@ -115,7 +125,7 @@ var _42GameLayer = cc.Layer.extend({
         this.showLogOnScreen();
         this.initBoxSpace();
         this.loadImages();
-        
+
 	    this.tiles = [];
 	    
         return true;
@@ -130,6 +140,8 @@ var _42GameLayer = cc.Layer.extend({
 		this.initListeners();
 		
 		if( self.hookStartGame ) self.hookStartGame();
+        
+        this.initScorebar();
 
 		setTimeout(function() {
 		    self.scheduleUpdate();
@@ -198,16 +210,161 @@ var _42GameLayer = cc.Layer.extend({
 		    	this.boxes[i][j] = null;		    	
 		    }		    	
 	    }
+	},
+    
+    /////////////////////////////////////////////////////////////////////////////
+    // initScorebar initializes the score bar below the play field
+    initScorebar: function() {
 
+        ///////////////////////////////
 	    // draw score bar background
 	    this.drawNode = cc.DrawNode.create();
         this.addChild(this.drawNode,1);
         this.drawNode.clear();
-        this.drawNode.drawPoly([cc.p(0,0),cc.p(size.width,0),cc.p(size.width,$42.BOXES_Y_OFFSET ),cc.p(0,$42.BOXES_Y_OFFSET )],
+        this.drawNode.drawPoly([cc.p(0,0),cc.p(cc.width,0),cc.p(cc.width,$42.BOXES_Y_OFFSET ),cc.p(0,$42.BOXES_Y_OFFSET )],
         						new cc.Color(0,0,0,255), 
         						1, 
         						new cc.Color(0,0,0,255));
+
+        ////////////////////////////////
+        // create score bar
+        var sb = $42.scoreBar = new cc.LayerColor(cc.color(128,0,0,0),cc.width,$42.BOXES_Y_OFFSET);
+
+        sb.setPosition(0,0);
+        sb.setOpacity(0);
+        _42_retain(sb, "scorebar");	
+        this.addChild(sb, 5);
+
+        //////////////////////////////////////        
+        // create clipping clipping rect with stencil
+        var clipper = cc.ClippingNode.create();
+        clipper.width = 640;
+        clipper.height = $42.BOXES_Y_OFFSET;
+        clipper.anchorX = 0.5;
+        clipper.anchorY = 0.5;
+        clipper.x = 320;
+        clipper.y = $42.BOXES_Y_OFFSET / 2;
+        // stencil
+        var stencil = cc.DrawNode.create(),
+            rectangle = [
+                cc.p(0, 0),
+                cc.p(clipper.width, 0),
+                cc.p(clipper.width, clipper.height),
+                cc.p(0, clipper.height)
+            ],
+            white = cc.color(255, 255, 0, 0);
         
+        stencil.drawPoly(rectangle, white, 1, white);
+        clipper.stencil = stencil;
+        sb.addChild(clipper);
+
+        ////////////////////////////
+        // create rolling layer
+        rl = $42._rollingLayer = new cc.Layer();
+        rl.setPosition(0,0);
+        _42_retain(rl, "rolling layer");	
+        clipper.addChild(rl, 5);
+
+        /////////////////////////////
+        // call hook and eventually write initial score
+        if( !this.hookInitScorebar || !this.hookInitScorebar() ) {
+            this._scorebarScore = this.drawScorebarText("Hello World!",cc.p(cc.width/2,50),72,$42.SCORE_COLOR_BRIGHT);
+        }
+    },
+
+    drawScorebar: function(highlight) {
+        /////////////////////////////
+        // call hook and eventually write initial score
+        if( !this.hookDrawScorebar || !this.hookDrawScorebar(highlight) ) {
+            this._scorebarScore.setString("Hello World++");
+        } 
+    },
+	
+    drawScorebarText: function(text,pos,size,color) {
+		
+		var label = new cc.LabelBMFont( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT ),
+            rl = $42._rollingLayer;
+
+		cc.log("drawText: text = "+text+", label = "+label );
+		label.setPosition(pos);
+        _42_retain(label, "label "+text);
+		label.setColor(color);
+		rl.addChild(label, 5);	
+		
+		return label;
+	},
+	
+    drawScorebarWord: function(word,pos,wordSprite,scale) {
+        var rl = $42._rollingLayer;
+
+		if( !wordSprite ) {
+			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
+				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
+				rect = wordFrameSprite.getTextureRect();
+            _42_retain(wordFrameSprite,"wordFrameSprite "+word);	
+			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
+			rect.height = word.length? $42.BS + $42.WORD_FRAME_WIDTH * 2 : 8;
+			wordFrameSprite.setTextureRect(rect);
+			wordFrameSprite.setPosition(pos.x,pos.y);
+			wordFrameSprite.setScale(scale);
+			rl.addChild(wordFrameSprite,4);
+		} else {
+			var wordFrameSprite = wordSprite,
+				rect = wordFrameSprite.getTextureRect();
+			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
+			rect.height = word.length? $42.BS + $42.WORD_FRAME_WIDTH * 2 : 8;
+			wordFrameSprite.setTextureRect(rect);
+
+			// remove old letters
+			wordFrameSprite.removeAllChildren(true);
+		}
+		// add sprites of word
+		for( var i=0 ; i<word.length ; i++) {
+			
+			var file = $42.LETTER_NAMES[$42.LETTERS.indexOf(word[i])],
+				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
+				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
+			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
+			wordFrameSprite.addChild( sprite );
+		}		
+		
+		return wordFrameSprite;
+	},
+
+    moveRollingLayer: function(stage, delay) {
+
+        var self = this,
+            rls = this._rollingLayerStage || 0;
+
+		if( !this._layerIsRolling ) {
+			
+            if( stage && stage === rls ) return;
+
+			if( stage !== undefined ) rls = stage;
+			else rls = Math.min(++rls, $42.SCOREBAR_MAX_LAYER_SCROLL);
+		
+			this._layerIsRolling = true;
+			$42._rollingLayer.runAction(
+                cc.sequence(
+                    cc.EaseSineOut.create(
+                        cc.moveTo(1,cc.p(0,-rls*$42.BOXES_Y_OFFSET))
+                    ),
+					cc.callFunc(function() {
+						self._layerIsRolling = false;
+					})
+                )
+			);
+
+            if( this._rollingTimeout ) clearTimeout(this._rollingTimeout);
+            if( rls !== 0 ) {
+                this._rollingTimeout = setTimeout( function() {
+                    self.moveRollingLayer(0);
+                    self._rollingTimeout = null;
+                }, $42.SCOREBAR_SETBACK*1000 );
+            }
+		}
+
+        this._rollingLayerStage = rls;
 	},
 	
     /////////////////////////////////////////////////////////////////////////////
@@ -332,6 +489,10 @@ var _42GameLayer = cc.Layer.extend({
 	                	} else {
 		                	self.isTap = true;
 		                	if( self.hookOnTap ) self.hookOnTap(loc);
+
+		                    if( loc.y < $42.BOXES_Y_OFFSET ) {
+			                    self.moveRollingLayer(undefined,3);
+                            }
 	                	}
 	                } else {
 		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
