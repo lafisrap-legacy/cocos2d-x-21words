@@ -382,21 +382,20 @@ var _42_MODULE = function(_42Layer) {
                         // Check level conditions
                         if( checkLevelConditions(word, value) ) {
                             var level = $42.LEVEL_DEVS[$42.currentLevel-1],
-						        ls = cc.sys.localStorage,
-                                wt = $42.wordTreasure;
+						        ls = cc.sys.localStorage;
                             
                             if( ++$42.currentLevel > level.length+1 ) {
                                 debugger;
                             }
 
-                            wt.concat(wt, ml.levelWords);
-                            ls.setItem("wordTreasure",JSON.stringify(wt));
-                            ls.setItem("currentLevel",$42.currentLevel);
-                            ls.setItem("wordProfile",$42.wordProfile);
-                            
 							setNextProfileLetter();
 							setNextProfileLetter();
 
+                            $42.wordTreasure = $42.wordTreasure.concat(ml.levelWords);
+                            ls.setItem("wordTreasure",JSON.stringify($42.wordTreasure));
+                            ls.setItem("currentLevel",$42.currentLevel);
+                            ls.setItem("wordProfile",$42.wordProfile);
+                            
                             endLevel();
                             startNewLevel();
 							
@@ -1597,7 +1596,7 @@ var _42_MODULE = function(_42Layer) {
             wtJSON = ls.getItem("wordTreasure"),
         	wt = $42.wordTreasure = wtJSON? JSON.parse(wtJSON) : [],
             lv = $42.currentLevel = ls.getItem("currentLevel") || 1,
-		    wp = $42.wordProfile = ls.getItem("wordProfile") || 127, // 127 == first 7 letters in the letter order
+		    wp = $42.wordProfile = parseInt(ls.getItem("wordProfile")) || 127, // 127 == first 7 letters in the letter order
             lo = $42.letterOrder;
 
 		// remove all words that are already in the treasure
