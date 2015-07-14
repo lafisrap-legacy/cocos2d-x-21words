@@ -1431,7 +1431,7 @@ var _42TitleLayer = cc.Layer.extend({
             pos: cc.p(310, 870),
             color: cc.color(59,136,134),
             size: 390,
-            opacity: 255,
+            opacity: 0,
             parent: titleBg
         });
 
@@ -1446,6 +1446,10 @@ var _42TitleLayer = cc.Layer.extend({
 
         titleBg.runAction(
             cc.fadeIn(2)
+        );
+
+        _42.runAction(
+            cc.fadeIn(5)
         );
 
         titleTitle.runAction(
@@ -1474,6 +1478,14 @@ var _42TitleLayer = cc.Layer.extend({
                         self.removeChild(titleBg);
                     })
                 )
+            );
+
+            _42.runAction(
+                cc.fadeOut(2)
+            );
+
+            titleTitle.runAction(
+                cc.fadeOut(2)
             );
 
             menu.runAction(
