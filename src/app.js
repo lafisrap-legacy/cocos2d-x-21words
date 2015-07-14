@@ -1426,9 +1426,18 @@ var _42TitleLayer = cc.Layer.extend({
             scale: 1.1,
 		});
 
+        var _42 = addText({
+            text: "42",
+            pos: cc.p(310, 870),
+            color: cc.color(59,136,134),
+            size: 390,
+            opacity: 255,
+            parent: titleBg
+        });
+
         var titleTitle = addText({
             text: $42.t.title_title,
-            pos: cc.p(cc.width/2, 650),
+            pos: cc.p(cc.width/2, 635),
             color: cc.color(215,173,10),
             size: 130,
             opacity: 0,
@@ -1446,7 +1455,7 @@ var _42TitleLayer = cc.Layer.extend({
         // Show menu items
 		var addMenu = function(name, fontSize, color, cb) {
 	        var item = new cc.MenuItemFont(name, cb, self);
-	        item.setFontName("Arial");        	
+	        item.setFontName(_42_getFontName(res.exo_regular_ttf));        	
 	        item.setFontSize(fontSize);  
 	        item.setColor(color);
 	        
