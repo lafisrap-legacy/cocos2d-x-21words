@@ -160,8 +160,17 @@ var _42GameLayer = cc.Layer.extend({
     ////////////////////////////////////////////////////////////////////////////
     // endGame cleans up after a game is finished
     endGame: function() {
+        ///////////////////
     	// delete all boxes
-		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) this.deleteRow(i,true);		
+		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) this.deleteRow(i,true);
+
+        ///////////////////
+        // delete scoreBar
+        _42_release( $42._scoreBar );
+		_42_release( $42._rollingLayer );
+
+		$42._scoreBar.removeAllChildren(true);
+        this.removeChild($42._scoreBar);
     },
     
     ////////////////////////////////////////////////////////////////////////////
@@ -228,7 +237,7 @@ var _42GameLayer = cc.Layer.extend({
 
         ////////////////////////////////
         // create score bar
-        var sb = $42.scoreBar = new cc.LayerColor(cc.color(128,0,0,0),cc.width,$42.BOXES_Y_OFFSET);
+        var sb = $42._scoreBar = new cc.LayerColor(cc.color(128,0,0,0),cc.width,$42.BOXES_Y_OFFSET);
 
         sb.setPosition(0,0);
         sb.setOpacity(0);
@@ -1384,47 +1393,67 @@ var _42TitleLayer = cc.Layer.extend({
         var self = this,
         	size = this.size = cc.director.getWinSize();
 
-		cc.spriteFrameCache.addSpriteFrames(res.title_plist);
-
         cc.width  = cc.director.getWinSize().width;
         cc.height = cc.director.getWinSize().height;
 
 		var addImage = function(options) {
-			var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(options.image));
+			var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(options.image) || options.image);
 			sprite.setPosition(options.pos || cc.p(size.width/2,size.height/2));
 			sprite.setOpacity(options.opacity !== undefined? options.opacity : 255);
-			sprite.setScale(options.scale || 1);
+			sprite.setScale(options.scale !== undefined? options.scale : 1);
 			sprite.setRotation(options.rotation || 0);
-			_42_retain(sprite, "title sprite "+options.tag);
-			cc.log("Trying to add sprite: "+options.image+" / "+options.tag);
-	        (options.parent || self).addChild(sprite, 0, options.tag);
+			_42_retain(sprite, "Title sprite ");
+	        (options.parent || self).addChild(sprite, 0);
 	        return sprite;
 		};
 		
+		var addText = function(options) {
+			var label = cc.LabelTTF.create(options.text, _42_getFontName(res.exo_regular_ttf) , options.size);
+			label.setPosition(options.pos || cc.p(size.width/2,size.height/2));
+			label.setColor(options.color || cc.color(0,0,0));
+			label.setOpacity(options.opacity !== undefined? options.opacity : 255);
+			label.setRotation(options.rotation || 0);
+			label.setScale(options.scale !== undefined? options.scale : 1);
+			_42_retain(label, "Title text label");	
+	        (options.parent || self).addChild(label, 0);
+	        return label;
+		};
+		
+        var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]);
 		var titleBg = addImage({
-			image: "42background.png", 
+			image: res["title_png"], 
 			opacity: 0,
-			parent: self,
-			tag:	$42.TAG_NONE
+            scale: 1.1,
 		});
 
+        var titleTitle = addText({
+            text: $42.t.title_title,
+            pos: cc.p(cc.width/2, 650),
+            color: cc.color(215,173,10),
+            size: 130,
+            opacity: 0,
+            parent: titleBg
+        });
+
         titleBg.runAction(
-            cc.fadeIn(3)
+            cc.fadeIn(2)
+        );
+
+        titleTitle.runAction(
+            cc.fadeIn(5)
         );
 		
         // Show menu items
-		var addMenu = function(name, fontSize, cb) {
+		var addMenu = function(name, fontSize, color, cb) {
 	        var item = new cc.MenuItemFont(name, cb, self);
 	        item.setFontName("Arial");        	
 	        item.setFontSize(fontSize);  
-	        item.setColor($42.TITLE_MENU_COLOR);
+	        item.setColor(color);
 	        
 	        return item;
 		}
 		
-		var buttonImage = cc.spriteFrameCache.getSpriteFrame("start.png"),
-			buttonImage2 = cc.spriteFrameCache.getSpriteFrame("start2.png");
-        var item1 = cc.MenuItemImage.create(buttonImage, buttonImage2, function() {
+        var item1 = addMenu($42.t.title_start, 60 , cc.color(115,63,78) ,  function() {
         	// start game layer
         	self.getParent().addChild(new _42GameLayer(), 1, $42.TAG_GAME_LAYER);
 
@@ -1444,25 +1473,23 @@ var _42TitleLayer = cc.Layer.extend({
 
         }, self);
 	
-        item1.setScale(0.7);
-
         var ls = cc.sys.localStorage;
         $42.wordTreasureWords = ls.getItem("wordTreasureWords") || 0;
         $42.maxPoints = ls.getItem("maxPoints") || 0;
         $42.bestTime = ls.getItem("bestTime") || null;
-        var item2 = addMenu($42.maxPoints? $42.t.title_hiscore+": "+$42.maxPoints : " ", 36 , function() {
+        var item2 = addMenu($42.maxPoints? $42.t.title_hiscore+": "+$42.maxPoints : " ", 36 , cc.color(173,141,93) , function() {
         	cc.director.runScene(new _42Scene());
         });
-        var item3 = addMenu($42.wordTreasureWords? $42.t.title_words+": "+$42.wordTreasureWords : " ", 36 , function() {
+        var item3 = addMenu($42.wordTreasureWords? $42.t.title_words+": "+$42.wordTreasureWords : " ", 36 , cc.color(173,141,93) , function() {
         	// can be filled
         });
-        var item4 = addMenu($42.bestTime? $42.t.title_besttime+": "+($42.bestTime/3600>>>0)+":"+("0"+($42.bestTime/60>>>0)%60).substr(-2,2) : " ", 36 , function() {
+        var item4 = addMenu($42.bestTime? $42.t.title_besttime+": "+($42.bestTime/3600>>>0)+":"+("0"+($42.bestTime/60>>>0)%60).substr(-2,2) : " ", 36 , cc.color(173,141,93) , function() {
         	// can be filled
         });
 
         var menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
         menu.x = size.width/2;
-        menu.y = 200;
+        menu.y = 290;
         menu.setOpacity(0);
         titleBg.addChild(menu, 10);       
         menu.alignItemsVerticallyWithPadding(20);

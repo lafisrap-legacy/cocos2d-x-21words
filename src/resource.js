@@ -6,7 +6,6 @@ var res = {
     letters_png : "res/images/letters/letters.png",
     letters_plist : 'res/images/letters/letters.plist',
     title_png : "res/images/title/title.png",
-    title_plist : 'res/images/title/title.plist',
 	background01_png : "res/images/backgrounds/level01.png",
 	background02_png : "res/images/backgrounds/level02.png",
 	background03_png : "res/images/backgrounds/level03.png",

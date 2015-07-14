@@ -539,14 +539,14 @@ var _42_MODULE = function(_42Layer) {
 
             ///////////////////////////////77
             // Draw word on screen
-			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 72);
+			var label = this.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 72);
 			label.setPosition(cc.width/2,cc.height*0.8-i*150);
 			label.setColor(cc.color(0,0,0));
 			label.setOpacity(0);
 			_42_retain(label, "Level label ("+i+")");	
 			background.addChild(label, 0);
 
-            label.runAction(cc.fadeTo(10,30));
+            label.runAction(cc.fadeTo(5,30));
         }
 
         ml.levelPool = level.type===$42.LEVEL_TYPE_FREE? tmpPool : pool;
@@ -1393,7 +1393,7 @@ var _42_MODULE = function(_42Layer) {
             wtJSON = ls.getItem("wordTreasure"),
         	wt = $42.wordTreasure = wtJSON? JSON.parse(wtJSON) : [],
             lv = $42.currentLevel = ls.getItem("currentLevel") || 1,
-		    wp = $42.wordProfile = parseInt(ls.getItem("wordProfile")) || 0x3fffffff, // 127 == first 7 letters in the letter order
+		    wp = $42.wordProfile = parseInt(ls.getItem("wordProfile")) || 0x7f, // 127 == first 7 letters in the letter order
             lo = $42.letterOrder;
 
 		// remove all words that are already in the treasure
@@ -1435,40 +1435,21 @@ var _42_MODULE = function(_42Layer) {
 		// deselect word
 		this.unselectWord();
 
-		// delete scorebar
-		var releaseChildren = function(sprite) {
-			if( sprite ) {
-				var ch = sprite.getChildren();
-				for( var i=0 ; i<ch.length ; i++ ) {
-					_42_release(ch[i]);
-				}			
-			}
-		};
-		
 		var releaseSprite = function(sprite) {
 			if( !sprite ) debugger;
 			_42_release(sprite);
 		};
 		
-		var sb = this.scoreBar,
-			rl = $42.rollingLayer,
-			dpl = $42.displayedProfileLetters;
-		releaseChildren( ml.bestWordSprite );
+		var dpl = $42.displayedProfileLetters;
 		releaseSprite( ml.bestWordSprite );
 		for( var i=0 ; i<dpl.length ; i++ ) {
-			releaseChildren( dpl[i] );
 			releaseSprite( dpl[i] );
 		}
-		releaseSprite(ml.highscore);
 		releaseSprite(ml.bestWordValue);
 		releaseSprite(ml.score_words_mini);
 		releaseSprite(ml.score_points);
 		releaseSprite(ml.score_words_label);
 		releaseSprite(ml.score_words);
-		releaseSprite(rl);
-		releaseSprite(sb);
-
-		sb.removeAllChildren(true);
 	};
 
 	/*
