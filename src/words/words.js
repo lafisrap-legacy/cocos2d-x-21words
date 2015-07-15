@@ -223,7 +223,11 @@ var _42_MODULE = function(_42Layer) {
 	var updateSelectedWord = function(options) {
 		var sw = ml.selectedWord;
 		
-		if( !sw || ml.wordIsBeingSelected ) return false;
+		if( ml.wordIsBeingSelected ) return false;
+        if( !sw ) {
+            ml.pauseBuildingTiles = false;
+            return false;
+        }
 		
 		// Define sprites and show word start sprite
 		var setMarkerFrame = [],
@@ -345,6 +349,7 @@ var _42_MODULE = function(_42Layer) {
 				ml.wordIsBeingSelected = true;
 				showFullWordAndAsk( sw.brc , word , group, options && options.rowsDeleted || 0 , function( takeWord ) {	
 					ml.wordIsBeingSelected = false;
+                    ml.pauseBuildingTiles = false;
                     //////////////////////////////////
                     // Was the word taken, or ok pressed?
 					if( takeWord ) {
@@ -418,7 +423,9 @@ var _42_MODULE = function(_42Layer) {
 			}
 		}
 		
-		return false; // no word was found
+        ml.pauseBuildingTiles = false;
+		
+        return false; // no word was found
 	};
 	
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -436,6 +443,7 @@ var _42_MODULE = function(_42Layer) {
         ml.levelPool = [];
         ml.levelWords = []; 
         ml.selections = [];
+        ml.wordsForTilesCnt = level.wordFreq-1;
 
         ////////////////////////////
         // Introduce new background
@@ -1479,7 +1487,10 @@ var _42_MODULE = function(_42Layer) {
 	_42Layer.hookSetTileImages = function(tileBoxes, pos, userData) {
 
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
-            levelType = $42.LEVEL_DEVS[$42.currentLevel-1].type;
+            levelType = $42.LEVEL_DEVS[$42.currentLevel-1].type,
+            sw = ml.selectedWord,
+        	lnt = ml.lettersForNextTile,
+            nt = this._nextTile;
 				
 		_42_retain(tileSprite, "words: tileSprite");
 		tileSprite.setPosition(pos);
@@ -1488,14 +1499,12 @@ var _42_MODULE = function(_42Layer) {
         // add single boxes with letters to the tile
         for( var i=0 ; i<tileBoxes.length ; i++) {
         	
-        	var sw = ml.selectedWord,
-        		lnt = ml.lettersForNextTile,
-                ntLetter = this._nextTile.letters[i];
+        	var ntLetter = nt && nt.letters[i] || null;
 
         	if( lnt && lnt.length > 0 ) {
         		var val = $42.LETTERS.indexOf(lnt.splice(0,1)[0]);
-        	} else if( this._nextTile !== null && (levelType === $42.LEVEL_TYPE_GIVEN || ntLetter !== " " || Math.random()>0.5)) {
-        		var val = $42.LETTERS.indexOf(this._nextTile.letters[i]);
+        	} else if( nt !== null && (levelType === $42.LEVEL_TYPE_GIVEN || ntLetter !== " " || Math.random()>0.5)) {
+        		var val = $42.LETTERS.indexOf(ntLetter);
         	} else {
 	         	var len = sw && sw.missingLetters && sw.missingLetters.length || 0,
          			prob = len <= 3? $42.NEEDED_LETTERS_PROBABILITY / (5-len) : $42.NEEDED_LETTERS_PROBABILITY; 

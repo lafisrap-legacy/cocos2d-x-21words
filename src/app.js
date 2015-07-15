@@ -990,6 +990,8 @@ var _42GameLayer = cc.Layer.extend({
     		
     		var tileRet = false;
     		if( self.hookTileFixed ) tileRet = self.hookTileFixed(newBrcs);
+            else self.pauseBuildingTiles = false;
+
     		if( !tileRet ) {
     			self.checkForAndRemoveCompleteRows();
         		if( self.hookTileFixedAfterRowsDeleted ) self.hookTileFixedAfterRowsDeleted();
@@ -1161,7 +1163,7 @@ var _42GameLayer = cc.Layer.extend({
         /////////////////////////////////////
     	// if there is no tile flying right now, build a new one
         var tilesFlying = self.tiles.filter(function(value) { return value !== undefined }).length;
-        if( !tilesFlying ) {
+        if( !tilesFlying && !this.pauseBuildingTiles ) {
             self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, size.height)); 
         }
         
@@ -1258,6 +1260,7 @@ var _42GameLayer = cc.Layer.extend({
             //////////////////////////////
             // Check for bottom
     		var ret;
+            self.pauseBuildingTiles = true;
     		if( ret = checkForBottom(t, lp) ) {
                 //////////////////////////////////////////
     			// tile landed, release and delete it ...
@@ -1481,15 +1484,15 @@ var _42TitleLayer = cc.Layer.extend({
             );
 
             _42.runAction(
-                cc.fadeOut(2)
+                cc.fadeOut(2.2)
             );
 
             titleTitle.runAction(
-                cc.fadeOut(2)
+                cc.fadeOut(2.2)
             );
 
             menu.runAction(
-                cc.fadeOut(2)
+                cc.fadeOut(2.2)
             );
 
         }, self);

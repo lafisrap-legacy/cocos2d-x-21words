@@ -1184,9 +1184,15 @@ var MURBIKS_MODULE = function(layer) {
         
         ////////////////////////////////
         // Fit in words from wordsForTiles list
-        var wft = ml.wordsForTiles;
+        var wft = ml.wordsForTiles,
+            level = $42.LEVEL_DEVS[$42.currentLevel-1];
 
-        if( wft.index === undefined ) wft.index = 0;
+        /////////////////////////////////
+        // Only return letters in a specified frequency
+        if( ++ml.wordsForTilesCnt < level.wordFreq ) return {letters: [" "," "," "," "]};
+        else ml.wordsForTilesCnt -= level.wordFreq;
+
+        wft.index = wft.index || 0;
         if( wft.words.length > 0 ) {
             var word = wft.words[0].toUpperCase(),
                 directions = [{x: $42.BS, y:0}, {x:0, y:$42.BS}, {x:-$42.BS, y:0}, {x:0, y:-$42.BS}];
@@ -1213,7 +1219,8 @@ var MURBIKS_MODULE = function(layer) {
                         for( var j=0 ; j<rb.length ; j++ ) {
                             var clear = true,
                                 grounded = false,
-                                groundedAt = [];
+                                groundedAt = [],
+                                letters = 0;
                             for( var k=0 ; k<rb.length ; k++ ) {
                                 var rowOff = (rb[k].y - rb[j].y) / $42.BS,
                                     colOff = (rb[k].x - rb[j].x) / $42.BS;
@@ -1241,9 +1248,13 @@ var MURBIKS_MODULE = function(layer) {
                                         box: row? ml.boxes[row-1][col].userData:null
                                     });
                                 }
+
+                                ////////////////////////
+                                // Count how many letters can be placed in current line
+                                if( rb[j].y === rb[k].y ) letters++;
                             }
 
-                            if( clear && grounded ) {
+                            if( clear && grounded && letters < 3 ) {
                                 fittingTiles.push({
                                     tile:       i,
                                     boxIndex:   j,
@@ -1317,31 +1328,32 @@ var MURBIKS_MODULE = function(layer) {
             
             tile.letters[boxIndex] = word[wft.index++];
 
-            var cnt = 1,
-                index = wft.index;
+            ////////////////////////////////
+            // Look if there is a second letter possible, in any rotation of the tile
+            var box = tileBoxes[boxIndex];
 
-            while( wft.index < word.length && cnt < 2 ) {
-                var found = true;
-                wft.index = index;
+            for( var i=0 ; wft.index<word.length && i<4 ; i++ ) {
+                var second = null,
+                    third  = null;
 
-                while( wft.index < word.length && found === true ) {
-                    var box = tileBoxes[boxIndex],
-                        nextX = box.x + direction.x,
-                        nextY = box.y + direction.y;
-
-                    found = false;
-                    for( var i=0 ; i<tileBoxes.length ; i++ ) {
-                        if( !tile.letters[i] && tileBoxes[i].x === nextX && tileBoxes[i].y === nextY ) {
-                            tile.letters[i] = word[wft.index++];
-                            boxIndex = i;
-                            found = true;
-                            cnt++;
-                            break;
-                        }
-                    }
+                for( var j=0 ; j<tileBoxes.length ; j++ ) {
+                    if( tileBoxes[j].y === box.y + direction.y   && tileBoxes[j].x === box.x + direction.x ) second = j;
+                    if( tileBoxes[j].y === box.y + direction.y*2 && tileBoxes[j].x === box.x + direction.x*2 ) third = j;
                 }
-                if( dirFixed ) break;
 
+                // Are the exactly two fitting letters? 
+                if( second && !third ) {
+                    tile.letters[second] = word[wft.index++];
+                    break;
+                }
+
+                // Is there only one letter and the direction is fixed
+                if( dirFixed ) {
+                    cc.assert(!third, "In fixed direction mode there should be no third letter.");
+                    break;
+                }
+
+                // change direction and try again (only one or three letters fitting)
                 direction = directions[++dir%directions.length];
             }
 
