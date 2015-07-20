@@ -257,26 +257,27 @@ fs.readFile(filename, 'utf8', function(err, data) {
 				src=="estonian"? /^(\S+)\s+([^èéêóâôíç\s]+)\s*$/: 
 				src=="english"? /^\d{8} \d\d \w \d\d ([^_èéêóâôíç\-'.\(\/\d\s]+)\s/ : 
 				src=="swedish"? /^([^èéêóâôíç\s]+)$/ : null;
+    var groupSearch = /\d+/g;
 	
 	console.log("Processing "+allWords.length+" words ...");
 	for( var i=0 ; i<(test? 20 : allWords.length) ; i++ ) {
 		// make all uppercase
 		var match = entry.exec(allWords[i]);
-		if( !match ) continue;	
+		if( allWords[i][0] === "#" || !match ) continue;	
 
-		// get word and frequency
+		// get word and groups 
 		switch(src) {
 		case "eesti":
 			var word = match[2].toUpperCase();
-			var freq = match[1];			
+			var groups = match[1];			
 			break;
 		case "english":
 			var word = match[1].toUpperCase();
-			var freq = 0;						
+			var groups = 0;						
 			break;
 		default:
 			var word = match[1].toUpperCase();
-			var freq = match[2];			
+			var groups = match[2];			
 		}
 
 		if( word.length < 4 || word.length > 10) continue;
@@ -320,12 +321,21 @@ fs.readFile(filename, 'utf8', function(err, data) {
 		
 		if( searchProfile && (letterProfile | searchProfile) > searchProfile ) continue;
 		else if( searchProfile ) searchProfileCnt++;
-		
+	
+        var groupProfile = 0,
+            match;
+
+        while( match = groupSearch.exec(groups) ) {
+            groupProfile += (1 << parseInt(match[0]) >>> 0);
+            if( groupProfile > 1 ) console.log("Group profile: Adding group "+JSON.stringify(match)+", result: "+groupProfile);
+        }
+
 		// prepare word entry
 		var wordEntry = {
 			word: word,
 			value: wordValue,
-			profile: letterProfile
+			profile: letterProfile,
+            groups: groupProfile
 		}
 		if( verbose ) console.log("Found word '"+wordEntry.word+"' with a value of "+wordEntry.value);
 		

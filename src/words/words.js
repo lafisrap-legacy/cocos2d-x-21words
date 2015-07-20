@@ -40,8 +40,7 @@
 //  - score bar 
 //
 //  GIVEN
-//  - new tile should fit to current selection first, then search freely
-//  - if seletion doesn't contain a possible word, deselect it
+//  - make selectFreeWord behave like 
 //
 //  PREFIXED
 //  - new letters should reflect the selection words
@@ -58,10 +57,7 @@
 // - More animations
 // - pimp word
 //
-//  Don't release words while one is evaluated
 //
-//  displayedProfileLetters ... make persistent ...
-//  solve error with minis
 //
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
 $42.LETTER_NAMES = ["space","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao"];
@@ -73,7 +69,8 @@ $42.START_MARKER_X_OFFSET = -18;            // X offset of start marker on scree
 $42.START_MARKER_Y_OFFSET = $42.BS/2;       // Y offset 
 $42.MARKER_X_OFFSET = $42.BS/2;             // X offset of markers under letters
 $42.MARKER_Y_OFFSET = -25;                  // Y offset
-$42.UNSELECTED_BOX_OPACITY = 120;           // Opacity of an unselected box (not part of a chosen word)
+$42.UNSELECTED_BOX_OPACITY = 150;           // Opacity of an unselected box (not part of a chosen word)
+$42.GIVEN_WORDS_OPACITY = 70;               // Opacity of word displayed on the background
 $42.NEEDED_LETTERS_PROBABILITY = 0.15;      // additional probability that a needed letter appear (needed for the currently possible words)
 $42.MAX_WORDS_BLOWN = 1;                    // How many words are blown up after a row is deleted
 $42.WORD_FRAME_WIDTH = 4;                   // Weight of the frame of a completed word 
@@ -407,6 +404,10 @@ var _42_MODULE = function(_42Layer) {
                             blowLevelAndWordValue({info:[$42.t.next_level,$42.currentLevel],color:cc.color(0,0,128)});
                         } 
 
+                        var level = $42.LEVEL_DEVS[$42.currentLevel-1];
+                        
+                        ml.wordsForTilesCnt = level.wordFreq-1;
+                        ml.fillWordsForTiles();
 						ml.unselectWord();
 						ml.checkForAndRemoveCompleteRows(sw.brc.row);
 						setSelections();
@@ -466,6 +467,7 @@ var _42_MODULE = function(_42Layer) {
 
         /////////////////////////////
         // filter conditions
+        for( var i=0,prefGroups=0 ; level.prefGroups && i<level.prefGroups.length ; i++ ) prefGroups += (1 << parseInt(level.prefGroups[i]) >>> 0);
         for( var p in $42.words ) {
             var prefix = $42.words[p],
                 levelWords = [];
@@ -477,6 +479,7 @@ var _42_MODULE = function(_42Layer) {
                 if( level.minLength && word.word.length < level.minLength ) continue;
                 if( level.maxLength && word.word.length > level.maxLength ) continue;
                 if( (wp & word.profile) < word.profile ) continue; 
+                if( prefGroups && (prefGroups & word.groups === 0)) continue; 
 
                 levelWords.push(word);
             }
@@ -524,8 +527,8 @@ var _42_MODULE = function(_42Layer) {
                     case $42.LEVEL_TYPE_PREFIX:
                         if( cand.length >= $42.LEVEL_MIN_PREFIX_CANDIDATES ) {
                             var text = prefixes[j];
-                            if( level.minLength ) text += "-------".substr(0,level.minLength-3); 
-                            if( level.minValue )  text += "---- ("+level.minValue+"+)";
+                            if( level.minLength ) text += " - - - - - - -".substr(0,(level.minLength-3)*2); 
+                            if( level.minValue )  text += " - - - -";
 
                             pool[prefixes[j]] = prefix;
                         } else continue;
@@ -545,7 +548,7 @@ var _42_MODULE = function(_42Layer) {
             cc.assert(j<prefixes.length, "startNewLevel: Not enough candidates found. Stopping in round "+i);
             prefixes.splice(j,1);
 
-            ///////////////////////////////77
+            /////////////////////////////////
             // Draw word on screen
 			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 72);
 			label.setPosition(cc.width/2,cc.height*0.8-i*150);
@@ -553,8 +556,21 @@ var _42_MODULE = function(_42Layer) {
 			label.setOpacity(0);
 			_42_retain(label, "Level label ("+i+")");	
 			background.addChild(label, 0);
+            label.runAction(cc.fadeTo(5,$42.GIVEN_WORDS_OPACITY));
 
-            label.runAction(cc.fadeTo(5,30));
+            //////////////////////////////////
+            // Add condition
+            if( level.type !== $42.LEVEL_TYPE_GIVEN && (level.minValue || level.minLength) ) { 
+                if( level.minValue ) var cond = cc.LabelTTF.create($42.t.level_min_value.replace(/\%d/,level.minValue), _42_getFontName(res.exo_regular_ttf) , 36);
+                else if( level.minLength ) var cond = cc.LabelTTF.create($42.t.level_min_length.replace(/\%d/,level.minLength), _42_getFontName(res.exo_regular_ttf) , 36);
+
+                cond.setPosition(label.getContentSize().width/2, 0);
+                cond.setColor(cc.color(0,0,0));
+                cond.setOpacity(0);
+                _42_retain(cond, "Level cond ("+i+")");	
+                label.addChild(cond, 0);
+                cond.runAction(cc.fadeTo(5,$42.GIVEN_WORDS_OPACITY+20));
+            }
         }
 
         ml.levelPool = level.type===$42.LEVEL_TYPE_FREE? tmpPool : pool;
@@ -1060,9 +1076,51 @@ var _42_MODULE = function(_42Layer) {
 			y = $42.BOXES_Y_OFFSET + nsw.brc.row*$42.BS + 1.5*$42.BS;
 		
 		updateSelectedWord();
-		
 	};
-	
+
+    var selectFreeWord = function() {
+		var s = ml.selections,
+			sw = ml.selectedWord,
+			nsw = null;
+
+		if( !s.length ) return false;
+		if( sw ) ml.unselectWord();
+       
+		for( var i=s.length-1 ; i>=0 ; i-- ) {
+			var words = s[i].words,
+                brc = s[i].brc;
+
+			for( var j=0,max=0 ; j<words.length ; j++ ) {
+                var word = words[j].word,
+                    max = Math.max(max, words[j].value);
+
+                for( var k=word.length-1 ; k>=3 ; k-- ) {
+                    var box = ml.boxes[brc.row][brc.col+k];
+                    if( box && box.userData !== word[k] ) break;
+                    if( !box ) var index = k;
+                }
+                if( k < 3 ) {
+                    ////////////////////
+                    // free space around?
+                    for( var k=0, fs=0; k<6; k++ ) if( ml.boxes[brc.row+Math.floor(k/3)][brc.col+index+k%3] ) fs++;
+
+                    if( fs <= 2 || !ml.boxes[brc.row+1][brc.col+index] ) break;
+                }
+            }
+            if( j<words.length ) {
+                ml.selectedWord = {
+                    brc: brc,
+                    words: words,
+                    markers: [],
+                    sprites: [],
+                    maxValue: max
+                } 
+		        updateSelectedWord();
+                return
+            }
+		}
+    };
+
 	var moveSelectedWord = function(brc) {
 		var sw = ml.selectedWord;
 		
@@ -1434,8 +1492,6 @@ var _42_MODULE = function(_42Layer) {
 		ml.multipliers = [];
 		ml.dontAutoSelectWord = false;
 	
-//$42.currentLevel = 4;
-
         startNewLevel();    
 	};
 	
@@ -1554,6 +1610,8 @@ var _42_MODULE = function(_42Layer) {
 
 	_42Layer.hookTileFixedAfterRowsDeleted = function( ) {
 
+        //////////////////////////////////
+        // Move to a new selection that came with the last tile
         var moveToNewWord = function() {
             var s = ml.selections,
                 level = $42.LEVEL_DEVS[$42.currentLevel-1];
@@ -1576,7 +1634,7 @@ var _42_MODULE = function(_42Layer) {
             return false;
         }
 		
-		if( !moveToNewWord() && !ml.selectedWord && !ml.dontAutoSelectWord ) selectBestWord();
+		if( !moveToNewWord() && !ml.selectedWord && !ml.dontAutoSelectWord ) selectFreeWord(); // selectBestWord();
 
 		updateMultipliers();
 	}
