@@ -56,7 +56,7 @@ var _42_GLOBALS = {
 	TAG_START_BUTTON : 115,                 //
 	BS : 64, 			                    // box size in pixel
 	BOXES_PER_COL : 22,	                    // lines of playground 
-	GAME_OVER_ROW : 16,	                    // game over row
+	GAME_OVER_ROW : 15,	                    // game over row
 	BOXES_PER_ROW : 10,	                    // cols in playgound
 	BOXES_X_OFFSET : 0,                     // position of the playground: x
 	BOXES_Y_OFFSET : 96,                    // y
@@ -294,7 +294,6 @@ var _42GameLayer = cc.Layer.extend({
 		var label = new cc.LabelBMFont( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT ),
             rl = $42._rollingLayer;
 
-		cc.log("drawText: text = "+text+", label = "+label );
 		label.setPosition(pos);
         _42_retain(label, "label "+text);
 		label.setColor(color);
@@ -733,8 +732,8 @@ var _42GameLayer = cc.Layer.extend({
     	// Internal function: get current row / col of a box
     	var getRowCol = function(box, lp) {
     		return {
-    			col: Math.round((lp.x + box.x - $42.BOXES_X_OFFSET - $42.BS/2) / $42.BS),
-    			row: Math.round((lp.y + box.y - $42.BOXES_Y_OFFSET - $42.BS) / $42.BS),
+    			col: Math.floor((lp.x + box.x - $42.BOXES_X_OFFSET) / $42.BS),
+    			row: Math.floor((lp.y + box.y - $42.BOXES_Y_OFFSET - $42.BS/2) / $42.BS),
     		};
     	};
     	
@@ -748,12 +747,13 @@ var _42GameLayer = cc.Layer.extend({
     		for( var i=0 ; i<b.length ; i++ ) {
     			var bx = lp.x + b[i].x,		// x pos of box
     				by = lp.y + b[i].y,		// y pos of box
-    				brc1 = getRowCol(b[i], { x: lp.x + $42.BS/2 - 5, y: lp.y}), 
-					brc2 = getRowCol(b[i], { x: lp.x - $42.BS/2 + 5, y: lp.y});
+    				brc1 = getRowCol(b[i], { x: lp.x + $42.BS/2 - 1, y: lp.y}), 
+    				brc2 = getRowCol(b[i], { x: lp.x - $42.BS/2 + 1, y: lp.y}); 
     			if( by - $42.BS/2 <= $42.BOXES_Y_OFFSET ||    // bottom reached? 
     				(brc1.row < $42.BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
 
     				// align y to box border
+                    cc.log("checkForBottom --- brc1.col: "+brc1.col+", brc2.col: "+brc2.col);
     				lp.y = Math.round((lp.y - $42.BOXES_Y_OFFSET)/($42.BS/2))*($42.BS/2) + $42.BOXES_Y_OFFSET;
     				
     				// fix tile
@@ -795,25 +795,27 @@ var _42GameLayer = cc.Layer.extend({
     				
     				// box on the left side?
     				if( self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col] ) {
-        				if( i==0 ) cc.log("_42, moveHorizontalyAndCheckForBarrier: Correcting box!");
+        				cc.log("_42, moveHorizontalyAndCheckForBarrier: Correcting box! brc1: "+JSON.stringify(brc1)+
+                                                                                     ", brc2: "+JSON.stringify(brc2));
     					var x = (brc1.col+1) * $42.BS - t.rotatedBoxes[i].x + $42.BS/2 + $42.BOXES_X_OFFSET;
-    					newX = (newX === null)? x : Math.max(newX , brc1.col * $42.BS - t.rotatedBoxes[i].x - $42.BS/2 + $42.BOXES_X_OFFSET);
+    					newX = (newX === null)? x : Math.max(newX , x);
     				}
     			} else {
     				if (lp.x + t.rotatedBoxes[i].x + $42.BS/2 - $42.BOXES_X_OFFSET >= $42.BOXES_PER_ROW * $42.BS ) {
     					var x = $42.BOXES_PER_ROW * $42.BS - t.rotatedBoxes[i].x - $42.BS/2 + $42.BOXES_X_OFFSET;
-    					newX = (newX === null)? x : Math.min(newX , $42.BOXES_PER_ROW * $42.BS - t.rotatedBoxes[i].x - $42.BS/2 + $42.BOXES_X_OFFSET);
+    					newX = (newX === null)? x : Math.min(newX , x);
     				}
 
     				if( self.boxes[brc1.row][brc1.col+1] || self.boxes[brc2.row][brc2.col+1]  ) {
     					var x = brc1.col * $42.BS - t.rotatedBoxes[i].x + $42.BS/2 + $42.BOXES_X_OFFSET;
-    					newX = (newX === null)? x : Math.min(newX , brc1.col * $42.BS - t.rotatedBoxes[i].x + $42.BS/2 + $42.BOXES_X_OFFSET);
+    					newX = (newX === null)? x : Math.min(newX, x);
     				}
     			}
     		}
     		
     		if( newX ) {
     			lp.x = newX;
+                cc.log("New x: "+lp.x);
     		}
     		
     		return true;
@@ -954,19 +956,36 @@ var _42GameLayer = cc.Layer.extend({
     			ret = "ok";
     		
     		// check if a tile is too high
-    		for( var i=0 ; i<b.length ; i++ ) {
+    		for( var i=0,minRow ; i<b.length ; i++ ) {
 				var brc = getRowCol(b[i], lp);
-				if( brc.row >= $42.GAME_OVER_ROW ) {
-					ret = "gameover";
-				}
-				if( brc.row < 0 || self.boxes[brc.row][brc.col] != null ) {
+
+                minRow = Math.min(minRow || brc.row, brc.row);
+				if( brc.row < 0 /*|| self.boxes[brc.row][brc.col] != null*/ ) {
 					// if a box is occupied already, move tile one up 
 					return fixTileFn(t, {x:lp.x,y:lp.y+$42.BS});
 				}
-    		}
+
+                if( self.boxes[brc.row][brc.col] ) {
+                    var boxesMod = [];
+                    for( var i=0; i<$42.BOXES_PER_COL ; i++ ) {
+                        boxesMod.push([]);
+                        for( var j=0; j<$42.BOXES_PER_ROW ; j++ ) {
+                            var box = self.boxes[i][j];
+                            boxesMod[i][j] = box? {
+                                words: box.words,
+                                userData: box.userData
+                            }: null;
+                        }
+                    }
+                    cc.log(!self.boxes[brc.row][brc.col], "fixTile: Problem fixing tile at pos "+JSON.stringify(lp)+" at brc "+JSON.stringify(brc)+" with "+JSON.stringify(boxesMod));
+                }
+            }
+
+            if( minRow >= $42.GAME_OVER_ROW ) ret = "gameover";
     		
     		// fix single boxes of tile
     		if( ret !== "gameover" ) {
+                cc.log("minRow = "+minRow);
         		for( var i=0 ; i<b.length ; i++) {
             		// create a new sprite from the old child sprite
         			var sprite = t.sprite.children[i],
@@ -986,10 +1005,14 @@ var _42GameLayer = cc.Layer.extend({
             			userData: t.userData && typeof t.userData === "object" && t.userData[i] || t.userData
             		};     					
         		}    			
-    		}
+    		} else {
+                cc.log("GAME OVER! Row = "+minRow);
+            }
     		
     		var tileRet = false;
     		if( self.hookTileFixed ) tileRet = self.hookTileFixed(newBrcs);
+            else self.pauseBuildingTiles = false;
+
     		if( !tileRet ) {
     			self.checkForAndRemoveCompleteRows();
         		if( self.hookTileFixedAfterRowsDeleted ) self.hookTileFixedAfterRowsDeleted();
@@ -1161,8 +1184,8 @@ var _42GameLayer = cc.Layer.extend({
         /////////////////////////////////////
     	// if there is no tile flying right now, build a new one
         var tilesFlying = self.tiles.filter(function(value) { return value !== undefined }).length;
-        if( !tilesFlying ) {
-            self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, size.height)); 
+        if( !tilesFlying && !this.pauseBuildingTiles ) {
+            self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, size.height+$42.BS)); 
         }
         
     	/////////////////////////////////////
@@ -1258,6 +1281,7 @@ var _42GameLayer = cc.Layer.extend({
             //////////////////////////////
             // Check for bottom
     		var ret;
+            self.pauseBuildingTiles = true;
     		if( ret = checkForBottom(t, lp) ) {
                 //////////////////////////////////////////
     			// tile landed, release and delete it ...
@@ -1472,7 +1496,7 @@ var _42TitleLayer = cc.Layer.extend({
 
             titleBg.runAction(
                 cc.sequence(
-                    cc.fadeOut(2),
+                    cc.fadeOut(1),
                     cc.callFunc(function() {
                         titleBg.removeChild(menu);
                         self.removeChild(titleBg);
@@ -1481,15 +1505,15 @@ var _42TitleLayer = cc.Layer.extend({
             );
 
             _42.runAction(
-                cc.fadeOut(2)
+                cc.fadeOut(1.2)
             );
 
             titleTitle.runAction(
-                cc.fadeOut(2)
+                cc.fadeOut(1.2)
             );
 
             menu.runAction(
-                cc.fadeOut(2)
+                cc.fadeOut(1.2)
             );
 
         }, self);
