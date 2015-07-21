@@ -116,7 +116,6 @@ var _42GameLayer = cc.Layer.extend({
         	res = cc.director.getOpenGLView().getFrameSize();
         
         $42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD * size.height / res.height;
-        cc.log();
         
         /////////////////////////
         // Look if there is a plugin module
@@ -480,7 +479,6 @@ var _42GameLayer = cc.Layer.extend({
 	            },
 	            	
 	            onTouchesEnded: function(touches, event, pos){
-	            	//cc.log("onTouchesEnded!");
 	
 	            	if( !pos || !pos.x === undefined ) {
 		            	var touch = touches[0],
@@ -509,10 +507,8 @@ var _42GameLayer = cc.Layer.extend({
 	        });
 		    	
 	    	cc.eventManager.addListener(this._touchListener, this);
-	    } else {
-	        cc.log("TOUCH_ALL_AT_ONCE is not supported");
-	    }
-       
+	    } 
+
 		/*
 		 * KEYBOARD EVENTS
 		 */ 
@@ -753,7 +749,7 @@ var _42GameLayer = cc.Layer.extend({
     				(brc1.row < $42.BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
 
     				// align y to box border
-                    cc.log("checkForBottom --- brc1.col: "+brc1.col+", brc2.col: "+brc2.col);
+                    //cc.log("checkForBottom --- brc1.col: "+brc1.col+", brc2.col: "+brc2.col);
     				lp.y = Math.round((lp.y - $42.BOXES_Y_OFFSET)/($42.BS/2))*($42.BS/2) + $42.BOXES_Y_OFFSET;
     				
     				// fix tile
@@ -795,8 +791,8 @@ var _42GameLayer = cc.Layer.extend({
     				
     				// box on the left side?
     				if( self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col] ) {
-        				cc.log("_42, moveHorizontalyAndCheckForBarrier: Correcting box! brc1: "+JSON.stringify(brc1)+
-                                                                                     ", brc2: "+JSON.stringify(brc2));
+        				//cc.log("_42, moveHorizontalyAndCheckForBarrier: Correcting box! brc1: "+JSON.stringify(brc1)+
+                        //                                                             ", brc2: "+JSON.stringify(brc2));
     					var x = (brc1.col+1) * $42.BS - t.rotatedBoxes[i].x + $42.BS/2 + $42.BOXES_X_OFFSET;
     					newX = (newX === null)? x : Math.max(newX , x);
     				}
@@ -815,7 +811,7 @@ var _42GameLayer = cc.Layer.extend({
     		
     		if( newX ) {
     			lp.x = newX;
-                cc.log("New x: "+lp.x);
+                //cc.log("New x: "+lp.x);
     		}
     		
     		return true;
@@ -985,7 +981,7 @@ var _42GameLayer = cc.Layer.extend({
     		
     		// fix single boxes of tile
     		if( ret !== "gameover" ) {
-                cc.log("minRow = "+minRow);
+                //cc.log("minRow = "+minRow);
         		for( var i=0 ; i<b.length ; i++) {
             		// create a new sprite from the old child sprite
         			var sprite = t.sprite.children[i],
@@ -1118,7 +1114,7 @@ var _42GameLayer = cc.Layer.extend({
     							self.boxes[k][i] = self.boxes[j][i];
     							self.boxes[j][i] = null;
     							
-    							cc.log("42Words, checkForAndRemoveCompleteRows: Move box from ("+i+","+j+") to ("+i+","+k+")");
+    							//cc.log("42Words, checkForAndRemoveCompleteRows: Move box from ("+i+","+j+") to ("+i+","+k+")");
     						}
     					}
     				}
