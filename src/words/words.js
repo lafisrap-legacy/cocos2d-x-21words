@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////
-// words.js contains the basic code for the 42words game, built upon the plain vanilla tetris app
+// words.js contains the basic code for the 42words game, built upon the plain vanilla tetris app in app.js
 //
 //
 //  Level 1:  3 given words, length 4              
@@ -390,8 +390,7 @@ var _42_MODULE = function(_42Layer) {
                                 debugger;
                             }
 
-							setNextProfileLetter();
-							setNextProfileLetter();
+                            for( var i=0 ; level.newLetters && i<level.newLetters ; i++ ) setNextProfileLetter();
 
                             $42.wordTreasure = $42.wordTreasure.concat(ml.levelWords);
                             ls.setItem("wordTreasure",JSON.stringify($42.wordTreasure));

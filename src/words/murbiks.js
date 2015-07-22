@@ -1193,7 +1193,7 @@ var MURBIKS_MODULE = function(layer) {
         cc.log("ml.hookGetProgrammedTile (1): ml.wordsForTilesCnt: "+ml.wordsForTilesCnt+", level.wordFreq: "+level.wordFreq);
         if( ++ml.wordsForTilesCnt < level.wordFreq ) return {letters: [" "," "," "," "]};
         else ml.wordsForTilesCnt -= level.wordFreq;
-        cc.log("ml.hookGetProgrammedTile (2): Getting tile ... ml.wordsForTilesCnt: "+ml.wordsForTilesCnt);
+        cc.log("ml.hookGetProgrammedTile (2): Getting tile ... ml.wordsForTiles: "+JSON.stringify(ml.wordsForTiles));
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
         // Word is selected: Look if word is still possible, put one entry into ml.wordsForTiles
@@ -1254,10 +1254,14 @@ var MURBIKS_MODULE = function(layer) {
                     fittingTiles = [],
                     ret;
 
-                cc.log("ml.hookGetProgrammedTile (3a): isWordPossible?: word '"+word);
+                cc.log("ml.hookGetProgrammedTile (3a): isWordPossible?: wft: "+JSON.stringify(wft));
                 if( !(ret = isWordPossible(word) )) return null;
                 
-                wft.index = ret.index;
+                if( wft.lastIndex === ret.index ) {
+                    wft.repeat = (wft.repeat || 0) + 1;
+                    if( wft.repeat >= 3 ) return null;
+                }
+                wft.lastIndex = wft.index = ret.index;
                 brc = {row: ret.brc.row, col: ret.brc.col+wft.index};
                 for( var i=0 ; i<tb.length ; i++ ) {
                     var t = {
@@ -1309,7 +1313,7 @@ var MURBIKS_MODULE = function(layer) {
                             }
 
                             if( clear && grounded && letters < 3 ) {
-                                cc.log("getFittingTile: Found new fitting tile. tile: "+i+", boxIndex: "+j+", dir: "+r );
+                                //cc.log("getFittingTile: Found new fitting tile. tile: "+i+", boxIndex: "+j+", dir: "+r );
                                 fittingTiles.push({
                                     tile:       i,
                                     boxIndex:   j,
@@ -1321,32 +1325,39 @@ var MURBIKS_MODULE = function(layer) {
                     }
                 }
 
-                cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",JSON.stringify(fittingTiles));
+                //cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",JSON.stringify(fittingTiles));
+                cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",fittingTiles.length);
                 if( fittingTiles.length ) return fittingTiles[Math.floor(Math.random()*fittingTiles.length)];
                 else return null;
             };
 
             var isWordPossible = function(word) {
+                var maxIndex = 0;
                 for( var i=$42.BOXES_PER_COL-1 ; i>=0 ; i-- ) {
                     for( var j=0 ; j<$42.BOXES_PER_ROW ; j++ ) {
                         if( ml.boxes[i][j] && ml.boxes[i][j].userData === word[0] ) {
                             var index = 1,
                                 k = 0;
                             while( j+index<$42.BOXES_PER_ROW && ml.boxes[i][j+index] && ml.boxes[i][j+index].userData === word[index] && index<word.length ) index++; 
+                            cc.log("ml.hookGetProgrammedTile (3a-1): isWordPossible: index: "+index+", row/col: "+i+"/"+j);
                             while( j+index+k<$42.BOXES_PER_ROW && !ml.boxes[i][j+index+k] && index+k<word.length ) k++;
+                            cc.log("ml.hookGetProgrammedTile (3a-1): isWordPossible: k: "+k+", row/col: "+i+"/"+j);
 
-                            if( index+k === word.length ) return {
-                                index: index,
-                                brc: {
-                                    row: i,
-                                    col: j
-                                }
+                            if( index+k === word.length && index > maxIndex ) {
+                                var ret = {
+                                    index: index,
+                                    brc: {
+                                        row: i,
+                                        col: j
+                                    }
+                                };
+                                maxIndex = index;
                             }
                         }
                     }
                 }
     
-                return false;
+                return ret;
             };
 
             if( wft.index > 0 ) {
@@ -1356,6 +1367,8 @@ var MURBIKS_MODULE = function(layer) {
 
                 if( !fittingTile ) {
                     wft.index = 0;
+                    wft.repeat = 0;
+                    wft.lastIndex = null;
                     wft.words.splice(0,1);
                     if( wft.words.length === 0 ) ml.fillWordsForTiles();
                     return ml.hookGetProgrammedTile();
@@ -1410,13 +1423,6 @@ var MURBIKS_MODULE = function(layer) {
                 direction = directions[++dir%directions.length];
             }
 
-            // Look if word is complete and delete it then ...
-            cc.assert( wft.index <= word.length, "ml.hookGetProgrammedTile: index out of range.");
-            if( wft.index === word.length ) {
-                wft.index = 0;
-                wft.words.splice(0,1);
-                if( wft.words.length === 0 ) ml.fillWordsForTiles();
-            }
             for( var i=0 ; i<tileBoxes.length ; i++ ) if( !tile.letters[i] ) tile.letters[i] = " ";
             return tile;
         } 
