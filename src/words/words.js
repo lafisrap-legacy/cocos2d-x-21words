@@ -40,10 +40,8 @@
 //  - score bar 
 //
 //  GIVEN
-//  - make selectFreeWord behave like 
 //
 //  PREFIXED
-//  - new letters should reflect the selection words
 //  - if no word is possible, deselect it
 //  - autoselect if no word is selected
 //  - prefixed words are not deleted from list 
@@ -88,6 +86,8 @@ $42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;     // Seconds till the next score bar r
 $42.MAX_MULTIPLIERS = 5;                    // Maximum number of multipliers
 $42.MAX_PLAYING_TIME = 45;                  // Normal length of a full game in minutes
 $42.WORD_MULTIPLIER_CYPHERPUNKS = 3;        // Multiplier for Cypherpunk words
+$42.BACKGROUND_MOVEMENTS = [cc.p(0,-1136), cc.p(0,1136), cc.p(-640, 0), cc.p(640, 0)];
+$42.BACKGROUND_SPEED = 1.7;
 
 // Order of multipliers
 $42.MULTIPLIER = [[2,"letter"],[2,"letter"],[2,"letter"],[3,"letter"],[2,"word"],[3,"letter"],[5,"letter"],[3,"word"],[3,"letter"],[5,"letter"],[10,"letter"]];
@@ -346,7 +346,6 @@ var _42_MODULE = function(_42Layer) {
 				ml.wordIsBeingSelected = true;
 				showFullWordAndAsk( sw.brc , word , group, options && options.rowsDeleted || 0 , function( takeWord ) {	
 					ml.wordIsBeingSelected = false;
-                    ml.pauseBuildingTiles = false;
                     //////////////////////////////////
                     // Was the word taken, or ok pressed?
 					if( takeWord ) {
@@ -398,23 +397,27 @@ var _42_MODULE = function(_42Layer) {
                             ls.setItem("wordProfile",$42.wordProfile);
                             
                             endLevel();
-                            startNewLevel();
-							
-                            blowLevelAndWordValue({info:[$42.t.next_level,$42.currentLevel],color:cc.color(0,0,128)});
-                        } 
+                            setTimeout(function() {
+                                setTimeout( function() {
+                                    ml.pauseBuildingTiles = false;
+                                }, $42.BACKGROUND_SPEED * 1000 );
+                                startNewLevel();	
+                                blowLevelAndWordValue({info:[$42.t.next_level,$42.currentLevel],color:cc.color(0,0,128)});
+                            },667);
+                        } else {
+                            var level = $42.LEVEL_DEVS[$42.currentLevel-1];
 
-                        var level = $42.LEVEL_DEVS[$42.currentLevel-1];
-                        
-                        ml.wordsForTilesCnt = level.wordFreq-1;
-                        ml.fillWordsForTiles();
-						ml.unselectWord();
-						ml.checkForAndRemoveCompleteRows(sw.brc.row);
-						setSelections();
-						ml.drawScorebar(false);
+                            ml.pauseBuildingTiles = false; 
+                            ml.wordsForTilesCnt = level.wordFreq-1;
+                            ml.fillWordsForTiles();
+                            ml.unselectWord(false);
+                            ml.checkForAndRemoveCompleteRows(sw.brc.row);
+                            setSelections();
+                            ml.drawScorebar(false);
+                        }
 					} else {
 						ml.checkForAndRemoveCompleteRows();
-						ml.unselectWord();
-						setSelections();
+						ml.unselectWord(true);
 						moveSelectedWord(sw.brc);
 					}
 				});
@@ -445,18 +448,6 @@ var _42_MODULE = function(_42Layer) {
         ml.selections = [];
         ml.wordsForTilesCnt = level.wordFreq-1;
 
-        ////////////////////////////
-        // Introduce new background
-        var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]);
-        background.attr({
-            x: cc.width / 2,
-            y: cc.height / 2,
-            scale: 1,
-            rotation: 0
-        });
-        ml.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
-        _42_retain(background, "startAnimation: background");
-        
         /////////////////////////////
         // Calculate pool of possible words
         var wp = $42.wordProfile,
@@ -478,7 +469,7 @@ var _42_MODULE = function(_42Layer) {
                 if( level.minLength && word.word.length < level.minLength ) continue;
                 if( level.maxLength && word.word.length > level.maxLength ) continue;
                 if( (wp & word.profile) < word.profile ) continue; 
-                if( prefGroups && (prefGroups & word.groups === 0)) continue; 
+                if( prefGroups && (prefGroups & word.groups) === 0) continue; 
 
                 levelWords.push(word);
             }
@@ -496,6 +487,41 @@ var _42_MODULE = function(_42Layer) {
         }
 
 //        prefixes.splice(0,0,ziv);
+
+        /////////////////////////////
+        // Remove old background if there is one
+        var oldBackground = ml.getChildByTag($42.TAG_BACKGROUND_SPRITE),
+            movement = $42.BACKGROUND_MOVEMENTS[($42.currentLevel-1)%$42.BACKGROUND_MOVEMENTS.length];
+        if( oldBackground ) {
+            oldBackground.runAction(
+                cc.sequence( 
+                    cc.EaseSineOut.create(
+                        cc.moveBy($42.BACKGROUND_SPEED,movement)
+                    ),
+                    cc.callFunc(function() {
+                        ml.removeChild(oldBackground);
+                        _42_release(oldBackground);
+                    })
+                )
+            );
+        }
+
+        ////////////////////////////
+        // Introduce new background
+        var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]);
+        background.attr({
+            x: cc.width/2 - movement.x,
+            y: cc.height/2 - movement.y,
+            scale: 1,
+            rotation: 0
+        });
+        ml.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
+        _42_retain(background, "startAnimation: background");
+        background.runAction(
+            cc.EaseSineOut.create(
+                cc.moveBy($42.BACKGROUND_SPEED,movement)
+            )
+        );
 
         /////////////////////////////////
         // Look for specific words and prefixes 
@@ -592,22 +618,16 @@ var _42_MODULE = function(_42Layer) {
         };
         
         for( var i=0 ; i<max ; i++ ) {
-            var prefix = wordList[prefixes[i%prefixes.length]],
+            var prefix = wordList[prefixes[i%prefixes.length]];
+           
+            if( prefix ) {
                 word = prefix[Math.floor(Math.random()*prefix.length)];
-
-            words.push(word.word);
+                words.push(word.word);
+            } 
         }
     };
 
     var endLevel = function() {
-        /////////////////////////////
-        // Remove all boxes, selection and background
-        var background = ml.getChildByTag($42.TAG_BACKGROUND_SPRITE);
-        if( background ) {
-            ml.removeChild(background);
-            _42_release(background);
-        }
-
         ml.unselectWord();
 		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		 
     };
@@ -1120,8 +1140,9 @@ var _42_MODULE = function(_42Layer) {
 		}
     };
 
-	var moveSelectedWord = function(brc) {
-		var sw = ml.selectedWord;
+	var moveSelectedWord = function(brc, selectedByUser) {
+		var sw = ml.selectedWord,
+            sbu = selectedByUser === undefined && sw? sw.selectedByUser : selectedByUser;
 		
 		if( sw ) {
 			ml.boxes[sw.brc.row][sw.brc.col].markers = sw.markers;
@@ -1151,7 +1172,8 @@ var _42_MODULE = function(_42Layer) {
 						brc: brc,
 						words: words,
 						markers: markers || [],
-						sprites: []
+						sprites: [],
+                        selectedByUser: sbu
 				};
 				
 				updateSelectedWord();
@@ -1166,8 +1188,10 @@ var _42_MODULE = function(_42Layer) {
 		updateMultipliers();
 	};
 	
-	ml.unselectWord = function() {
+	ml.unselectWord = function(refresh) {
 		moveSelectedWord(null);
+
+	    if( refresh ) setSelections();
 	}
 	
 	var blowWords = function(pos, words) {
@@ -1623,7 +1647,7 @@ var _42_MODULE = function(_42Layer) {
                             brc2 = s[j].brc;
 
                         if( brc1.row == brc2.row && (brc1.col == brc2.col || brc1.col == brc2.col+1 || brc1.col == brc2.col+2) ) {
-                            moveSelectedWord(brc2);
+                            moveSelectedWord(brc2, false);
                             return true;
                         }
                     }
@@ -1633,7 +1657,8 @@ var _42_MODULE = function(_42Layer) {
             return false;
         }
 		
-		if( !moveToNewWord() && !ml.selectedWord && !ml.dontAutoSelectWord ) selectFreeWord(); // selectBestWord();
+        var sw = ml.selectedWord;
+		if( (!sw || !sw.selectedByUser) && !moveToNewWord() && !ml.selectedWord && !ml.dontAutoSelectWord ) selectFreeWord(); // selectBestWord();
 
 		updateMultipliers();
 	}
@@ -1806,8 +1831,7 @@ var _42_MODULE = function(_42Layer) {
 				updateSelectedWord();
 				updateMultipliers();
 			} else {
-				ml.unselectWord();
-				setSelections();
+				ml.unselectWord(true);
 				ml.dontAutoSelectWord = true;
 			}
 		} else {
@@ -1815,7 +1839,7 @@ var _42_MODULE = function(_42Layer) {
 				var s = ml.selections[i];
 
 				if( s && tapPos.x >= s.pos.x && tapPos.x <= s.pos.x+s.width && tapPos.y >= s.pos.y && tapPos.y <= s.pos.y+s.height ) {
-					moveSelectedWord(s.brc);
+					moveSelectedWord(s.brc, true);
 					ml.dontAutoSelectWord = false;
 					setSelections();
 					updateSelectedWord();

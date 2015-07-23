@@ -1219,8 +1219,8 @@ var MURBIKS_MODULE = function(layer) {
                 }
             }
 
-            if( !words.length ) {
-                ml.unselectWord();
+            if( !words.length ) { 
+                if( !sw.selectedByUser ) ml.unselectWord(true);
                 ml.fillWordsForTiles();
             } else {
                 var word = words[Math.floor(Math.random(words.length))];
