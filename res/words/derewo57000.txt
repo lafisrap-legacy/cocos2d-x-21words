@@ -3016,8 +3016,8 @@ Artefakte 0
 Artemis 0
 Arten 0,8
 Arterien 0,8
-artet 0,8
-artete 0,8
+artet 0
+artete 0
 artgerecht 0
 Arthritis 0
 Arthrose 0
@@ -10963,7 +10963,7 @@ Eidechsen 0
 Eidgenosse 0
 Eier 2,8
 Eierkuchen 0
-Eiern 0,8
+Eiern 0
 Eierstöcke 0
 Eiertanz 0
 Eifel 0

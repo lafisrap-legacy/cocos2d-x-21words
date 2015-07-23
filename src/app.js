@@ -1154,7 +1154,7 @@ var _42GameLayer = cc.Layer.extend({
 			            		cc.callFunc(function() {
 			            			this.stopSystem();
 			            		},emitter),
-			            		cc.delayTime(3.0),
+			            		//cc.delayTime(3.0),
 			            		cc.callFunc(function() {
 			            			_42_release(this);
 			            			self.removeChild(this);
