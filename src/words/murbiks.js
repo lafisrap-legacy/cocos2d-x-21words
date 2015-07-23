@@ -1174,7 +1174,7 @@ var MURBIKS_MODULE = function(layer) {
 		programs[program]();
 	};
 	
-	ml.hookGetProgrammedTile = function() {
+	ml.hookGetProgrammedTile = function(isCalledAgain) {
 		if( curTileProgram && curTileProgramCnt < curTileProgram.length ) {
 		    return curTileProgram[curTileProgramCnt++];
         }
@@ -1231,7 +1231,7 @@ var MURBIKS_MODULE = function(layer) {
                     if( !box || box.userData !== word[i] ) break;
                 }
                 cc.assert(i>=3,"At least the prefix must be equal!");
-                cc.assert(i<word.length, "The word cannot be complete already!");                    
+                if(i>=word.length) return null; // word is already complete. User is probably searching for something else.                    
                 
                 wft = ml.wordsForTiles = {
                     words: [word],
@@ -1371,7 +1371,8 @@ var MURBIKS_MODULE = function(layer) {
                     wft.lastIndex = null;
                     wft.words.splice(0,1);
                     if( wft.words.length === 0 ) ml.fillWordsForTiles();
-                    return ml.hookGetProgrammedTile();
+
+                    if( !isCalledAgain ) return ml.hookGetProgrammedTile(true);
                 }
             }
                 

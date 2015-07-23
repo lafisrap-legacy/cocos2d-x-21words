@@ -581,7 +581,12 @@ var _42_MODULE = function(_42Layer) {
 			label.setOpacity(0);
 			_42_retain(label, "Level label ("+i+")");	
 			background.addChild(label, 0);
-            label.runAction(cc.fadeTo(5,$42.GIVEN_WORDS_OPACITY));
+            label.runAction(
+                cc.sequence(
+                    cc.delayTime(2+i*0.50),
+                    cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY)
+                )
+            );
 
             //////////////////////////////////
             // Add condition
