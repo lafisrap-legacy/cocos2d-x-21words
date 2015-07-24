@@ -1220,7 +1220,7 @@ var MURBIKS_MODULE = function(layer) {
             }
 
             if( !words.length ) { 
-                if( !sw.selectedByUser ) ml.unselectWord(true);
+                if( !sw.selectedByUser && level.type === $42.LEVEL_TYPE_GIVEN ) ml.unselectWord(true);
                 ml.fillWordsForTiles();
             } else {
                 var word = words[Math.floor(Math.random(words.length))];

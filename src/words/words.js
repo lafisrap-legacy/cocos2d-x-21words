@@ -404,7 +404,6 @@ var _42_MODULE = function(_42Layer) {
 
                             ml.pauseBuildingTiles = false; 
                             ml.wordsForTilesCnt = level.wordFreq-1;
-                            ml.fillWordsForTiles();
                             ml.unselectWord(false);
                             ml.checkForAndRemoveCompleteRows(sw.brc.row);
                             setSelections();
@@ -489,6 +488,7 @@ var _42_MODULE = function(_42Layer) {
             sun.setPosition(cc.p(cc.width/2,cc.height/2));
             sun.setOpacity(0);
             sun.setScale(0.7);
+            sun.setCascadeOpacityEnabled(true);
             ml.addChild(sun,5);
             _42_retain(sun,"Background sun");
             sun.runAction(
@@ -509,6 +509,13 @@ var _42_MODULE = function(_42Layer) {
                     })
                 )
             );
+
+			var label = cc.LabelTTF.create($42.currentLevel, "SourceCodePro-Light" , 150),
+                size = sun.getContentSize();
+            label.setPosition(cc.p(size.width/2, size.height/2));
+            label.setOpacity(128);
+            label.setColor(cc.color(0,0,0));
+            sun.addChild(label);
 
             var beams = cc.Sprite.create(res.background_beams_png);
             beams.setPosition(cc.p(cc.width/2,cc.height/2));
@@ -584,6 +591,16 @@ var _42_MODULE = function(_42Layer) {
                     var prefix = tmpPool[prefixes[j]],
                         cand = [];
 
+                    // look if there is another prefix with the first two letters swaped?
+                    var swaped = false;
+                    for( var p in pool ) {
+                        if( prefix[j] && p[0] === prefix[j].word[1] && p[1] === prefix[j].word[0] ) {
+                            swaped = true;
+                            break;
+                        }
+                    }
+                    if( swaped ) continue;
+
                     for( var k=0; k<prefix.length ; k++ ) {
                         var word = prefix[k];
                         
@@ -637,7 +654,10 @@ var _42_MODULE = function(_42Layer) {
                 label.runAction(
                     cc.sequence(
                         cc.delayTime(2+i*0.50),
-                        cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY)
+                        cc.spawn(
+				    	    cc.blink(0.66,3),
+                            cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY)
+                        )
                     )
                 );
 
@@ -652,7 +672,15 @@ var _42_MODULE = function(_42Layer) {
                     cond.setOpacity(0);
                     _42_retain(cond, "Level cond ("+i+")");	
                     label.addChild(cond, 0);
-                    cond.runAction(cc.fadeTo(5,$42.GIVEN_WORDS_OPACITY+20));
+                    cond.runAction(
+                        cc.sequence(
+                            cc.delayTime(2+i*0.50),
+                            cc.spawn(
+                                cc.blink(0.66,3),
+                                cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY+45)
+                            )
+                        )
+                    );
                 }
             }
 
@@ -661,7 +689,7 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
-            }, $42.BACKGROUND_NEXT_TILE * 1000 );
+            }, (2.5+i*0.50) * 1000 );
         };
     };
 
@@ -734,7 +762,8 @@ var _42_MODULE = function(_42Layer) {
 
         cc.assert(found, "Found word is not in the pool!");
 
-        var label = ll[i];
+        var label = ll[i],
+            cond = label.getChildren()[0];
         label.runAction(
             cc.sequence(
                 cc.fadeOut(2),
@@ -745,6 +774,8 @@ var _42_MODULE = function(_42Layer) {
             )
         );
 
+        if( cond ) cond.runAction(cc.fadeOut(2));
+        
         ll.splice(i,1)
     
         for( var j=0 ; j<ll.length ; j++ ) {
@@ -1046,7 +1077,7 @@ var _42_MODULE = function(_42Layer) {
         				}
         				sum += value;
 
-        				var valueSprite = cc.LabelTTF.create(value, "Arial", 32);
+        				var valueSprite = cc.LabelTTF.create(value, _42_getFontName(res.exo_regular_ttf), 32);
         				valueSprite.setPosition(pos.x + $42.BS*i , pos.y + $42.BS + 10);
         				_42_retain(valueSprite, "words: value "+i);	
     			        valueSprite.setColor(cc.color(200,160,0));
@@ -1063,7 +1094,7 @@ var _42_MODULE = function(_42Layer) {
 						wordMul *= $42.WORD_MULTIPLIER_CYPHERPUNKS;
 					};
 
-    				var value = cc.LabelTTF.create($42.t.take_word_wordvalue+": "+sum*wordMul, "Arial", 48);
+    				var value = cc.LabelTTF.create($42.t.take_word_wordvalue+": "+sum*wordMul, _42_getFontName(res.exo_regular_ttf), 48);
 					value.setPosition(sprite.getTextureRect().width/2 , pos.y + $42.BS * 2 + 10);
 					_42_retain(value,"words: value ("+sum+", "+wordMul+", "+value+")");	
 					value.setColor(cc.color(200,160,0));
@@ -1108,7 +1139,7 @@ var _42_MODULE = function(_42Layer) {
 		var ch = sprite.getChildren();
 		
 		// show new word as sprite
-		var newWord = cc.LabelTTF.create(word, "Arial", 72);
+		var newWord = cc.LabelTTF.create(word, _42_getFontName(res.exo_regular_ttf), 72);
 		newWord.setPosition(cc.p(ml.size.width/2,ml.size.height-300));
 		newWord.setColor(cc.color(160,0,0,255));
 		ml.getParent().addChild(newWord,1);
@@ -1260,7 +1291,7 @@ var _42_MODULE = function(_42Layer) {
 
 		var angle = Math.random() * 360;
 		for( var i=0 ; i<Math.min(words.length,$42.MAX_WORDS_BLOWN) ; i++ ) {
-			var word = cc.LabelTTF.create(words[i].word, "Arial", 38),
+			var word = cc.LabelTTF.create(words[i].word, _42_getFontName(res.exo_regular_ttf), 38),
 	        	x = pos.x + Math.sin(cc.degreesToRadians(angle))*100,
 	        	y = pos.y + Math.cos(cc.degreesToRadians(angle))*100;
 			
@@ -1503,7 +1534,7 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	var blowMultiplier = function(value, pos) {
-		var coin = cc.LabelTTF.create(value, "Arial", 40),
+		var coin = cc.LabelTTF.create(value, _42_getFontName(res.exo_regular_ttf), 40),
 			time = 0.5;
 
 		coin.setPosition(pos.x,pos.y);
@@ -1576,7 +1607,8 @@ var _42_MODULE = function(_42Layer) {
 		ml.nextMultiplier = 0;
 		ml.multipliers = [];
 		ml.dontAutoSelectWord = false;
-	
+	    
+        ml.pauseBuildingTiles = true;
         startNewLevel();    
 	};
 	
@@ -1628,7 +1660,8 @@ var _42_MODULE = function(_42Layer) {
 	_42Layer.hookSetTileImages = function(tileBoxes, pos, userData) {
 
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
-            levelType = $42.LEVEL_DEVS[$42.currentLevel-1].type,
+            level = $42.LEVEL_DEVS[$42.currentLevel-1],
+            nlp = level.neededLettersProb || $42.NEEDED_LETTERS_PROBABILITY,
             sw = ml.selectedWord,
         	lnt = ml.lettersForNextTile,
             nt = this._nextTile;
@@ -1641,14 +1674,15 @@ var _42_MODULE = function(_42Layer) {
         for( var i=0 ; i<tileBoxes.length ; i++) {
         	
         	var ntLetter = nt && nt.letters[i] || null;
+            cc.assert(level.type !== $42.LEVEL_TYPE_FREE || !ntLetter, "Free level type should not have programmed tiles." );
 
         	if( lnt && lnt.length > 0 ) {
         		var val = $42.LETTERS.indexOf(lnt.splice(0,1)[0]);
-        	} else if( nt !== null && (levelType === $42.LEVEL_TYPE_GIVEN || ntLetter !== " " || Math.random()>0.5)) {
+        	} else if( nt !== null && (level.type === $42.LEVEL_TYPE_GIVEN || ntLetter !== " " || Math.random()>(level.fillInRate || 0.5))) {
         		var val = $42.LETTERS.indexOf(ntLetter);
         	} else {
 	         	var len = sw && sw.missingLetters && sw.missingLetters.length || 0,
-         			prob = len <= 3? $42.NEEDED_LETTERS_PROBABILITY / (5-len) : $42.NEEDED_LETTERS_PROBABILITY; 
+         			prob = len <= 3? nlp / (5-len) : nlp; 
         		while( true ) {
 	         		val = (Math.random()>prob || !sw || !len)?  
 	         					Math.floor(this.getRandomValue($42.letterOccurences)):
@@ -1914,6 +1948,7 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookOnLongTap = function(tapPos) {
+        if( tapPos.y < $42.BOXES_Y_OFFSET ) _42Layer.hookKeyPressed(78);
 	};
 
     _42Layer.hookKeyPressed = function(key) {

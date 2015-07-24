@@ -181,8 +181,8 @@ var _42GameLayer = cc.Layer.extend({
         // tmp Errormessage layer
         var logMsg = cc.Node.create();
         
-        $42.msg1 = cc.LabelTTF.create("TEST1", "Arial", 24),
-        $42.msg2 = cc.LabelTTF.create(" ", "Arial", 24);
+        $42.msg1 = cc.LabelTTF.create("TEST1", "Arial", 12),
+        $42.msg2 = cc.LabelTTF.create(" ", "Arial", 12);
         
         $42.msg1.setPosition(0,0);
         $42.msg2.setPosition(0,-20);
@@ -723,9 +723,6 @@ var _42GameLayer = cc.Layer.extend({
     	
     	var self = this,
 			size = this.size;
-    	
-    	// tmp log
-    	$42.msg1.setString("Nodes: "+this.getChildren().length);
 
     	/////////////////////////////////////
     	// Internal function: get current row / col of a box
@@ -746,8 +743,8 @@ var _42GameLayer = cc.Layer.extend({
     		for( var i=0 ; i<b.length ; i++ ) {
     			var bx = lp.x + b[i].x,		// x pos of box
     				by = lp.y + b[i].y,		// y pos of box
-    				brc1 = getRowCol(b[i], { x: lp.x + $42.BS/2 - 1, y: lp.y}), 
-    				brc2 = getRowCol(b[i], { x: lp.x - $42.BS/2 + 1, y: lp.y}); 
+    				brc1 = getRowCol(b[i], { x: lp.x + $42.BS/2 - 3, y: lp.y}), 
+    				brc2 = getRowCol(b[i], { x: lp.x - $42.BS/2 + 3, y: lp.y}); 
     			if( by - $42.BS/2 <= $42.BOXES_Y_OFFSET ||    // bottom reached? 
     				(brc1.row < $42.BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
 
@@ -959,12 +956,12 @@ var _42GameLayer = cc.Layer.extend({
 				var brc = getRowCol(b[i], lp);
 
                 minRow = Math.min(minRow || brc.row, brc.row);
-				if( brc.row < 0 /*|| self.boxes[brc.row][brc.col] != null*/ ) {
+				//if( brc.row < 0 /*|| self.boxes[brc.row][brc.col] != null*/ ) {
 					// if a box is occupied already, move tile one up 
-					return fixTileFn(t, {x:lp.x,y:lp.y+$42.BS});
-				}
+				//	return fixTileFn(t, {x:lp.x,y:lp.y+$42.BS});
+				//}
 
-                if( self.boxes[brc.row][brc.col] ) {
+                if( brc.row < 0 || self.boxes[brc.row][brc.col] ) {
                     var boxesMod = [];
                     for( var i=0; i<$42.BOXES_PER_COL ; i++ ) {
                         boxesMod.push([]);
@@ -976,7 +973,7 @@ var _42GameLayer = cc.Layer.extend({
                             }: null;
                         }
                     }
-                    cc.log(!self.boxes[brc.row][brc.col], "fixTile: Problem fixing tile at pos "+JSON.stringify(lp)+" at brc "+JSON.stringify(brc)+" with "+JSON.stringify(boxesMod));
+                    cc.log("fixTile: Problem fixing tile at pos "+JSON.stringify(lp)+" at brc "+JSON.stringify(brc)+" with "+JSON.stringify(boxesMod));
                 }
             }
 
@@ -988,7 +985,7 @@ var _42GameLayer = cc.Layer.extend({
         		for( var i=0 ; i<b.length ; i++) {
             		// create a new sprite from the old child sprite
         			var sprite = t.sprite.children[i],
-        				newSprite = cc.Sprite.create(sprite.getTexture(), sprite.getTextureRect());
+        				newSprite = cc.Sprite.create(sprite.getSpriteFrame(), cc.rect(0,0,$42.BS,$42.BS));
 
         			_42_retain(newSprite, "box sprite"+i);
         			
@@ -1004,6 +1001,9 @@ var _42GameLayer = cc.Layer.extend({
             			userData: t.userData && typeof t.userData === "object" && t.userData[i] || t.userData
             		};     					
         		}    			
+
+    	        $42.msg1.setString($42.msg2.getString());
+    	        $42.msg2.setString("userData: "+JSON.stringify(t.userData)+", brcs: "+JSON.stringify(newBrcs));
     		} else {
                 cc.log("GAME OVER! Row = "+minRow);
             }
@@ -1373,7 +1373,7 @@ var _42MenuLayer = cc.LayerColor.extend({
         // Show question
         if( typeof questions === "string") questions = [questions];
         for( var i=0 ; i<questions.length ; i++ ) {
-    		var q = cc.LabelTTF.create(questions[i], "Arial", 36),
+    		var q = cc.LabelTTF.create(questions[i], _42_getFontName(res.exo_regular_ttf), 36),
 	    	x = size.width/2,
 	    	y = size.height/2 + menuItems.length * 96 + (questions.length-i-1) * 64;
 	
@@ -1521,15 +1521,19 @@ var _42TitleLayer = cc.Layer.extend({
         $42.wordTreasureWords = ls.getItem("wordTreasureWords") || 0;
         $42.maxPoints = ls.getItem("maxPoints") || 0;
         $42.bestTime = ls.getItem("bestTime") || null;
-        var item2 = addMenu($42.maxPoints? $42.t.title_hiscore+": "+$42.maxPoints : " ", 36 , cc.color(173,141,93) , function() {
-        	cc.director.runScene(new _42Scene());
-        });
-        var item3 = addMenu($42.wordTreasureWords? $42.t.title_words+": "+$42.wordTreasureWords : " ", 36 , cc.color(173,141,93) , function() {
-        	// can be filled
-        });
-        var item4 = addMenu($42.bestTime? $42.t.title_besttime+": "+($42.bestTime/3600>>>0)+":"+("0"+($42.bestTime/60>>>0)%60).substr(-2,2) : " ", 36 , cc.color(173,141,93) , function() {
-        	// can be filled
-        });
+        var gameStarted = false,
+            item2 = addMenu($42.maxPoints? $42.t.title_hiscore+": "+$42.maxPoints : " ", 36 , cc.color(173,141,93) , function() {
+                if( !gameStarted ) {
+                    gameStarted = true;
+                    cc.director.runScene(new _42Scene());
+                }
+            }),
+            item3 = addMenu($42.wordTreasureWords? $42.t.title_words+": "+$42.wordTreasureWords : " ", 36 , cc.color(173,141,93) , function() {
+                // can be filled
+            }),
+            item4 = addMenu($42.bestTime? $42.t.title_besttime+": "+($42.bestTime/3600>>>0)+":"+("0"+($42.bestTime/60>>>0)%60).substr(-2,2) : " ", 36 , cc.color(173,141,93) , function() {
+                // can be filled
+            });
 
         var menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
         menu.x = size.width/2;

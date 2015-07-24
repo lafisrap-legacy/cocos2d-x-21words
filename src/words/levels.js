@@ -42,7 +42,9 @@ $42.LEVEL_DEVS = [{             // Level 1
     minLength:  5,
     maxLength:  0,
     newLetters: 2,
-    wordFreq: 1.0
+    wordFreq: 1.0,
+    fillInRate: 0.3,
+    neededLettersProb: 0.4
 },{                             // Level 5
     type: $42.LEVEL_TYPE_PREFIX,
     words: 3,
@@ -51,7 +53,9 @@ $42.LEVEL_DEVS = [{             // Level 1
     minLength:  6,
     maxLength:  7,
     newLetters: 2,
-    wordFreq: 1.8
+    wordFreq: 1.8,
+    fillInRate: 0.5,
+    neededLettersProb: 0.3
 },{                             // Level 6
     type: $42.LEVEL_TYPE_PREFIX,
     words: 4,
@@ -60,7 +64,9 @@ $42.LEVEL_DEVS = [{             // Level 1
     minLength:  7,
     maxLength:  8,
     newLetters: 2,
-    wordFreq: 2
+    wordFreq: 2,
+    fillInRate: 0.8,
+    neededLettersProb: 0.25
 },{                             // Level 7
     type: $42.LEVEL_TYPE_PREFIX,
     words: 4,
@@ -69,16 +75,19 @@ $42.LEVEL_DEVS = [{             // Level 1
     minLength:  0,
     maxLength:  0,
     newLetters: 2,
-    wordFreq: 2
+    wordFreq: 2,
+    fillInRate: 1.0,
+    neededLettersProb: 0.2
 },{                             // Level 8
     type: $42.LEVEL_TYPE_PREFIX,
     words: 3,
-    minValue:   20,
-    minDemand:  20,
+    minValue:   15,
+    minDemand:  15,
     minLength:  0,
     maxLength:  0,
     newLetters: 2,
-    wordFreq: 2
+    wordFreq: 2,
+    fillInRate: 1.0
 },{                             // Level 9
     type: $42.LEVEL_TYPE_FREE,
     words: 3,
