@@ -87,8 +87,9 @@ $42.MAX_MULTIPLIERS = 5;                    // Maximum number of multipliers
 $42.MAX_PLAYING_TIME = 45;                  // Normal length of a full game in minutes
 $42.WORD_MULTIPLIER_CYPHERPUNKS = 3;        // Multiplier for Cypherpunk words
 $42.BACKGROUND_MOVEMENTS = [cc.p(0,-1136), cc.p(0,1136), cc.p(-640, 0), cc.p(640, 0)];
-$42.BACKGROUND_SPEED = 1.7;
-
+$42.BACKGROUND_SPEED = 1.33;
+$42.BACKGROUND_MOVE = 0.66;
+$42.BACKGROUND_NEXT_TILE = 2.5;
 // Order of multipliers
 $42.MULTIPLIER = [[2,"letter"],[2,"letter"],[2,"letter"],[3,"letter"],[2,"word"],[3,"letter"],[5,"letter"],[3,"word"],[3,"letter"],[5,"letter"],[10,"letter"]];
 
@@ -397,13 +398,7 @@ var _42_MODULE = function(_42Layer) {
                             ls.setItem("wordProfile",$42.wordProfile);
                             
                             endLevel();
-                            setTimeout(function() {
-                                setTimeout( function() {
-                                    ml.pauseBuildingTiles = false;
-                                }, $42.BACKGROUND_SPEED * 1000 );
-                                startNewLevel();	
-                                blowLevelAndWordValue({info:[$42.t.next_level,$42.currentLevel],color:cc.color(0,0,128)});
-                            },667);
+                            startNewLevel();
                         } else {
                             var level = $42.LEVEL_DEVS[$42.currentLevel-1];
 
@@ -458,154 +453,216 @@ var _42_MODULE = function(_42Layer) {
         /////////////////////////////
         // filter conditions
         for( var i=0,prefGroups=0 ; level.prefGroups && i<level.prefGroups.length ; i++ ) prefGroups += (1 << parseInt(level.prefGroups[i]) >>> 0);
+        var cnt = 0;
         for( var p in $42.words ) {
-            var prefix = $42.words[p],
-                levelWords = [];
+            cnt++;
+            setTimeout( function(p) {
+                var prefix = $42.words[p],
+                    levelWords = [];
 
-            for( var i=0 ; prefix && i<prefix.length ; i++ ) {
-                var word = prefix[i];
+                for( var i=0 ; prefix && i<prefix.length ; i++ ) {
+                    var word = prefix[i];
 
-                if( level.minValue && word.value < level.minValue ) continue;
-                if( level.minLength && word.word.length < level.minLength ) continue;
-                if( level.maxLength && word.word.length > level.maxLength ) continue;
-                if( (wp & word.profile) < word.profile ) continue; 
-                if( prefGroups && (prefGroups & word.groups) === 0) continue; 
-
-                levelWords.push(word);
-            }
-
-            if( levelWords.length ) { 
-                tmpPool[p] = levelWords;
-
-                // place prefixes in random order
-
- //               if( p === "ZIV" ) var ziv = p;
- //               else 
-                    prefixes.splice(Math.floor(Math.random()*prefixes.length),0,p);
-
-            }
-        }
-
-//        prefixes.splice(0,0,ziv);
-
-        /////////////////////////////
-        // Remove old background if there is one
-        var oldBackground = ml.getChildByTag($42.TAG_BACKGROUND_SPRITE),
-            movement = $42.BACKGROUND_MOVEMENTS[($42.currentLevel-1)%$42.BACKGROUND_MOVEMENTS.length];
-        if( oldBackground ) {
-            oldBackground.runAction(
-                cc.sequence( 
-                    cc.EaseSineOut.create(
-                        cc.moveBy($42.BACKGROUND_SPEED,movement)
-                    ),
-                    cc.callFunc(function() {
-                        ml.removeChild(oldBackground);
-                        _42_release(oldBackground);
-                    })
-                )
-            );
-        }
-
-        ////////////////////////////
-        // Introduce new background
-        var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]);
-        background.attr({
-            x: cc.width/2 - movement.x,
-            y: cc.height/2 - movement.y,
-            scale: 1,
-            rotation: 0
-        });
-        ml.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
-        _42_retain(background, "startAnimation: background");
-        background.runAction(
-            cc.EaseSineOut.create(
-                cc.moveBy($42.BACKGROUND_SPEED,movement)
-            )
-        );
-
-        /////////////////////////////////
-        // Look for specific words and prefixes 
-        for( var i=0 ; i<level.words ; i++ ) {
-
-            for( var j=0 ; j<prefixes.length ; j++ ) {
-                var prefix = tmpPool[prefixes[j]],
-                    cand = [];
-
-                for( var k=0; k<prefix.length ; k++ ) {
-                    var word = prefix[k];
-                    
                     if( level.minValue && word.value < level.minValue ) continue;
                     if( level.minLength && word.word.length < level.minLength ) continue;
                     if( level.maxLength && word.word.length > level.maxLength ) continue;
+                    if( (wp & word.profile) < word.profile ) continue; 
+                    if( prefGroups && (prefGroups & word.groups) === 0) continue; 
 
-                    cand.push(word);
+                    levelWords.push(word);
                 }
 
-                switch(level.type) {
-                    case $42.LEVEL_TYPE_GIVEN:
-                        if( cand.length > 0 ) {
-                            var word = cand[Math.floor(Math.random()*cand.length)],
-                                text = word.word;
-                            pool[prefixes[j]] = [word];
-                        } else continue;
-                        break;
-                    case $42.LEVEL_TYPE_PREFIX:
-                        if( cand.length >= $42.LEVEL_MIN_PREFIX_CANDIDATES ) {
-                            var text = prefixes[j];
-                            if( level.minLength ) text += " - - - - - - -".substr(0,(level.minLength-3)*2); 
-                            if( level.minValue )  text += " - - - -";
+                if( levelWords.length ) { 
+                    tmpPool[p] = levelWords;
 
-                            pool[prefixes[j]] = prefix;
-                        } else continue;
-                        break;
-                    case $42.LEVEL_TYPE_FREE:
-                        if( !cand.length ) continue;
-
-                        var text = "----?";
-                        if( level.minLength ) text = "----------".substr(0,level.minLength)+"?"; 
-                        if( level.minValue )  text += " ("+level.minValue+"+)";
-                        break;
+                    prefixes.splice(Math.floor(Math.random()*prefixes.length),0,p);
                 }
 
-                break;
-            }
+                if( --cnt === 0 ) prepareLevel();
+            },1,p);
+        }
 
-            cc.assert(j<prefixes.length, "startNewLevel: Not enough candidates found. Stopping in round "+i);
-            prefixes.splice(j,1);
-
-            /////////////////////////////////
-            // Draw word on screen
-			var label = ml.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 72);
-			label.setPosition(cc.width/2,cc.height*0.8-i*150);
-			label.setColor(cc.color(0,0,0));
-			label.setOpacity(0);
-			_42_retain(label, "Level label ("+i+")");	
-			background.addChild(label, 0);
-            label.runAction(
+        var prepareLevel = function() {
+            /////////////////////////////
+            // Draw sun
+            var sun = cc.Sprite.create(res.background_sun_png);
+            sun.setPosition(cc.p(cc.width/2,cc.height/2));
+            sun.setOpacity(0);
+            sun.setScale(0.7);
+            ml.addChild(sun,5);
+            _42_retain(sun,"Background sun");
+            sun.runAction(
                 cc.sequence(
-                    cc.delayTime(2+i*0.50),
-                    cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY)
+                    cc.EaseSineOut.create(
+                        cc.spawn(
+                            cc.scaleTo($42.BACKGROUND_SPEED*0.67, 0.8),
+                            cc.fadeIn($42.BACKGROUND_SPEED*0.67)
+                        )
+                    ),
+                    cc.delayTime($42.BACKGROUND_SPEED*0.33),
+                    cc.EaseSineIn.create(
+                        cc.fadeOut($42.BACKGROUND_SPEED*0.67)
+                    ),
+                    cc.callFunc(function() {
+                        ml.removeChild(sun);
+                        _42_release(sun);
+                    })
                 )
             );
 
-            //////////////////////////////////
-            // Add condition
-            if( level.type !== $42.LEVEL_TYPE_GIVEN && (level.minValue || level.minLength) ) { 
-                if( level.minValue ) var cond = cc.LabelTTF.create($42.t.level_min_value.replace(/\%d/,level.minValue), _42_getFontName(res.exo_regular_ttf) , 36);
-                else if( level.minLength ) var cond = cc.LabelTTF.create($42.t.level_min_length.replace(/\%d/,level.minLength), _42_getFontName(res.exo_regular_ttf) , 36);
+            var beams = cc.Sprite.create(res.background_beams_png);
+            beams.setPosition(cc.p(cc.width/2,cc.height/2));
+            beams.setOpacity(0);
+            beams.setScale(0.7);
+            ml.addChild(beams,5);
+            _42_retain(beams,"Background beams");
+            beams.runAction(
+                cc.sequence(
+                    cc.EaseSineOut.create(
+                        cc.spawn(
+                            cc.scaleTo($42.BACKGROUND_SPEED*0.67, 0.8),
+                            cc.fadeIn($42.BACKGROUND_SPEED*0.67)
+                        )
+                    ),
+                    cc.delayTime($42.BACKGROUND_SPEED*0.33),
+                    cc.EaseSineIn.create(
+                        cc.fadeOut($42.BACKGROUND_SPEED*0.67)
+                    ),
+                    cc.callFunc(function() {
+                        ml.removeChild(beams);
+                        _42_release(beams);
+                    })
+                )
+            );
 
-                cond.setPosition(label.getContentSize().width/2, 0);
-                cond.setColor(cc.color(0,0,0));
-                cond.setOpacity(0);
-                _42_retain(cond, "Level cond ("+i+")");	
-                label.addChild(cond, 0);
-                cond.runAction(cc.fadeTo(5,$42.GIVEN_WORDS_OPACITY+20));
+            beams.runAction(cc.rotateBy($42.BACKGROUND_SPEED*2,270));
+            
+            /////////////////////////////
+            // Remove old background if there is one
+            var oldBackground = ml.getChildByTag($42.TAG_BACKGROUND_SPRITE),
+                movement = $42.BACKGROUND_MOVEMENTS[($42.currentLevel-1)%$42.BACKGROUND_MOVEMENTS.length];
+            if( oldBackground ) {
+                oldBackground.runAction(
+                    cc.sequence( 
+                        cc.delayTime($42.BACKGROUND_SPEED/4),
+                        cc.EaseSineOut.create(
+                            cc.moveBy($42.BACKGROUND_SPEED,movement)
+                        ),
+                        cc.callFunc(function() {
+                            ml.removeChild(oldBackground);
+                            _42_release(oldBackground);
+                        })
+                    )
+                );
             }
-        }
 
-        ml.levelPool = level.type===$42.LEVEL_TYPE_FREE? tmpPool : pool;
+            ////////////////////////////
+            // Introduce new background
+            var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]);
+            background.attr({
+                x: cc.width/2 - movement.x,
+                y: cc.height/2 - movement.y,
+                scale: 1,
+                rotation: 0
+            });
+            ml.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
+            _42_retain(background, "startAnimation: background");
+            background.runAction(
+                cc.sequence(
+                    cc.delayTime($42.BACKGROUND_SPEED/4),
+                    cc.EaseSineOut.create(
+                        cc.moveBy($42.BACKGROUND_SPEED,movement)
+                    )
+                )
+            );
 
-        ml.fillWordsForTiles();
+            /////////////////////////////////
+            // Look for specific words and prefixes 
+            for( var i=0 ; i<level.words ; i++ ) {
+
+                for( var j=0 ; j<prefixes.length ; j++ ) {
+                    var prefix = tmpPool[prefixes[j]],
+                        cand = [];
+
+                    for( var k=0; k<prefix.length ; k++ ) {
+                        var word = prefix[k];
+                        
+                        if( level.minValue && word.value < level.minValue ) continue;
+                        if( level.minLength && word.word.length < level.minLength ) continue;
+                        if( level.maxLength && word.word.length > level.maxLength ) continue;
+
+                        cand.push(word);
+                    }
+
+                    switch(level.type) {
+                        case $42.LEVEL_TYPE_GIVEN:
+                            if( cand.length > 0 ) {
+                                var word = cand[Math.floor(Math.random()*cand.length)],
+                                    text = word.word;
+                                pool[prefixes[j]] = [word];
+                            } else continue;
+                            break;
+                        case $42.LEVEL_TYPE_PREFIX:
+                            if( cand.length >= $42.LEVEL_MIN_PREFIX_CANDIDATES ) {
+                                var text = prefixes[j];
+                                if( level.minLength ) text += " - - - - - - -".substr(0,(level.minLength-3)*2); 
+                                if( level.minValue )  text += " - - - -";
+
+                                pool[prefixes[j]] = prefix;
+                            } else continue;
+                            break;
+                        case $42.LEVEL_TYPE_FREE:
+                            if( !cand.length ) continue;
+
+                            var text = "----?";
+                            if( level.minLength ) text = "----------".substr(0,level.minLength)+"?"; 
+                            if( level.minValue )  text += " ("+level.minValue+"+)";
+                            break;
+                    }
+
+                    break;
+                }
+
+                cc.assert(j<prefixes.length, "startNewLevel: Not enough candidates found. Stopping in round "+i);
+                prefixes.splice(j,1);
+
+                /////////////////////////////////
+                // Draw word on screen
+                var label = ml.levelLabels[i] = cc.LabelTTF.create(text, _42_getFontName(res.exo_regular_ttf) , 72);
+                label.setPosition(cc.width/2,cc.height*0.8-i*150);
+                label.setColor(cc.color(0,0,0));
+                label.setOpacity(0);
+                _42_retain(label, "Level label ("+i+")");	
+                background.addChild(label, 0);
+                label.runAction(
+                    cc.sequence(
+                        cc.delayTime(2+i*0.50),
+                        cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY)
+                    )
+                );
+
+                //////////////////////////////////
+                // Add condition
+                if( level.type !== $42.LEVEL_TYPE_GIVEN && (level.minValue || level.minLength) ) { 
+                    if( level.minValue ) var cond = cc.LabelTTF.create($42.t.level_min_value.replace(/\%d/,level.minValue), _42_getFontName(res.exo_regular_ttf) , 36);
+                    else if( level.minLength ) var cond = cc.LabelTTF.create($42.t.level_min_length.replace(/\%d/,level.minLength), _42_getFontName(res.exo_regular_ttf) , 36);
+
+                    cond.setPosition(label.getContentSize().width/2, 0);
+                    cond.setColor(cc.color(0,0,0));
+                    cond.setOpacity(0);
+                    _42_retain(cond, "Level cond ("+i+")");	
+                    label.addChild(cond, 0);
+                    cond.runAction(cc.fadeTo(5,$42.GIVEN_WORDS_OPACITY+20));
+                }
+            }
+
+            ml.levelPool = level.type===$42.LEVEL_TYPE_FREE? tmpPool : pool;
+
+            ml.fillWordsForTiles();
+            setTimeout( function() {
+                ml.pauseBuildingTiles = false;
+            }, $42.BACKGROUND_NEXT_TILE * 1000 );
+        };
     };
 
     ml.fillWordsForTiles = function() {
@@ -1858,6 +1915,17 @@ var _42_MODULE = function(_42Layer) {
 	
 	_42Layer.hookOnLongTap = function(tapPos) {
 	};
+
+    _42Layer.hookKeyPressed = function(key) {
+       
+        switch( key ) {
+        case 78:  
+            ++$42.currentLevel;
+            endLevel();
+            startNewLevel();	
+            break;
+        }
+    };
 	
 	_42Layer.hookUpdate = function(dt) {
 		

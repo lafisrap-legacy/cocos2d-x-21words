@@ -552,6 +552,9 @@ var _42GameLayer = cc.Layer.extend({
 	            	case $42.KEY_DOWN_CODE:
 	            		self.isSwipeDown = true;
 	            		break;
+                    default:
+                        if( self.hookKeyPressed ) self.hookKeyPressed(key);
+                        cc.log("Key pressed: "+key);
 	            	}
 	            },
 	            onKeyReleased:function(key, event) {
@@ -1141,7 +1144,7 @@ var _42GameLayer = cc.Layer.extend({
 				    	self.boxes[row][i] = null;		
 				    	
 			            // particle emitter
-			            var emitter = new cc.ParticleSystem( res.particle_lavaflow );
+			            var emitter = new cc.ParticleSystem( res.particle_flowers );
 			            emitter.x = $42.BOXES_Y_OFFSET + i * $42.BS - $42.BS/2;
 			            emitter.y = $42.BOXES_Y_OFFSET + row * $42.BS + $42.BS/2;
 			            _42_retain(emitter, "Emitter");
@@ -1150,7 +1153,7 @@ var _42GameLayer = cc.Layer.extend({
 			            
 			            emitter.runAction(
 			            	cc.sequence(
-			            		cc.delayTime(0.15 + Math.random()*0.05),
+			            		cc.delayTime(1 + Math.random()*0.25),
 			            		cc.callFunc(function() {
 			            			this.stopSystem();
 			            		},emitter),
