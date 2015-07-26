@@ -42,10 +42,7 @@
 //  GIVEN
 //
 //  PREFIXED
-//  - if no word is possible, deselect it
-//  - autoselect if no word is selected
 //  - prefixed words are not deleted from list 
-//  - Small text: "min/max. 6 Buchstaben", "Wortwert min. 10 Punkte"
 //  
 //  FREE
 //  - as always
@@ -398,7 +395,9 @@ var _42_MODULE = function(_42Layer) {
                             ls.setItem("wordProfile",$42.wordProfile);
                             
                             endLevel();
-                            startNewLevel();
+                            setTimeout(function() {
+                                startNewLevel();
+                            }, 1000);
                         } else {
                             var level = $42.LEVEL_DEVS[$42.currentLevel-1];
 
@@ -655,7 +654,7 @@ var _42_MODULE = function(_42Layer) {
                     cc.sequence(
                         cc.delayTime(2+i*0.50),
                         cc.spawn(
-				    	    cc.blink(0.66,3),
+				    	    cc.blink(1,3),
                             cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY)
                         )
                     )
@@ -676,7 +675,7 @@ var _42_MODULE = function(_42Layer) {
                         cc.sequence(
                             cc.delayTime(2+i*0.50),
                             cc.spawn(
-                                cc.blink(0.66,3),
+                                cc.blink(1.05,3),
                                 cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY+45)
                             )
                         )
@@ -689,7 +688,7 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
-            }, (2.5+i*0.50) * 1000 );
+            }, (3+i*0.50) * 1000 );
         };
     };
 
@@ -1722,6 +1721,7 @@ var _42_MODULE = function(_42Layer) {
 	_42Layer.hookTileFixed = function( brcs ) {
 		
 		ml.lastBrcs = brcs;
+        ml.pauseBuildingTiles = true;
 		
 		setSelections(); // OPTIMIZATION: Only look in current lines
 		return updateSelectedWord();
@@ -1733,9 +1733,10 @@ var _42_MODULE = function(_42Layer) {
         // Move to a new selection that came with the last tile
         var moveToNewWord = function() {
             var s = ml.selections,
+                sw = ml.selectedWord,
                 level = $42.LEVEL_DEVS[$42.currentLevel-1];
 
-            if( level.type === $42.LEVEL_TYPE_GIVEN ) {
+            if( level.type === $42.LEVEL_TYPE_GIVEN || !sw ) {
                 var brcs = ml.lastBrcs || [];
                 for( var i=0 ; brcs && i<brcs.length ; i++ ) {
                     for( var j=0 ; s && j<s.length ; j++ ) {
@@ -1754,7 +1755,7 @@ var _42_MODULE = function(_42Layer) {
         }
 		
         var sw = ml.selectedWord;
-		if( (!sw || !sw.selectedByUser) && !moveToNewWord() && !ml.selectedWord && !ml.dontAutoSelectWord ) selectFreeWord(); // selectBestWord();
+		if( (!sw || !sw.selectedByUser) && !ml.dontAutoSelectWord && !moveToNewWord() && !sw ) selectFreeWord(); // selectBestWord();
 
 		updateMultipliers();
 	}
@@ -1927,8 +1928,11 @@ var _42_MODULE = function(_42Layer) {
 				updateSelectedWord();
 				updateMultipliers();
 			} else {
-				ml.unselectWord(true);
-				ml.dontAutoSelectWord = true;
+                var level = $42.LEVEL_DEVS[$42.currentLevel-1];
+				
+                ml.unselectWord(true);
+                ml.fillWordsForTiles();
+                if( level.type === $42.LEVEL_TYPE_FREE ) ml.dontAutoSelectWord = true;
 			}
 		} else {
 			for( var i=ml.selections.length-1 ; i>=0 ; i--) {
