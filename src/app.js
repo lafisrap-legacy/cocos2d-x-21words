@@ -108,7 +108,7 @@ var _42GameLayer = cc.Layer.extend({
    
     //////////////////////////////////////////////////////////////////////////
     // ctor is the startup function of the game layer
-    ctor:function () {
+    ctor:function (mode) {
         this._super();
 
         var size = this.size = cc.director.getWinSize(),
@@ -126,6 +126,9 @@ var _42GameLayer = cc.Layer.extend({
 
 	    this._currentTile = null;
 	    
+        this._gameMode = mode;
+        cc.assert(mode==="easy" || mode==="intermediate" || mode==="expert", "Game mode '"+mode+"' not supported.");
+
         return true;
     },
 
@@ -991,7 +994,7 @@ var _42GameLayer = cc.Layer.extend({
     				newBrcs.push(brc);
         			
         			newSprite.setPosition($42.BOXES_X_OFFSET + brc.col*$42.BS + $42.BS/2 , $42.BOXES_Y_OFFSET + brc.row*$42.BS + $42.BS/2);
-        	        self.addChild(newSprite);
+        	        self.addChild(newSprite,5);
 
             		self.boxes[brc.row][brc.col] = {
             			sprite: newSprite,
@@ -1037,18 +1040,22 @@ var _42GameLayer = cc.Layer.extend({
         /////////////////////////////////////////
         // Layer function: Check if a row is complete and remove it     
     	self.checkForAndRemoveCompleteRows = function(rowToDelete) {
-    		
-    		// always check all rows (for now)
-    		var rowsDeleted = [];
-    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) {
-    			for( j=0 ; j<$42.BOXES_PER_ROW ; j++ ) {
-    				if(!self.boxes[i][j]) break;
-    			}
-    			if(j === $42.BOXES_PER_ROW || rowToDelete === i) {
-    				self.deleteRow(i);
-    				rowsDeleted.push(i);
-    			}
-    		}
+    	    
+            if( rowToDelete instanceof Array ) {
+                for( var i=0 ; i<rowToDelete.length ; i++ ) self.deleteRow(i);
+                var rowsDeleted = rowToDelete;
+            } else {
+                var rowsDeleted = [];
+                for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) {
+                    for( j=0 ; j<$42.BOXES_PER_ROW ; j++ ) {
+                        if(!self.boxes[i][j]) break;
+                    }
+                    if(j === $42.BOXES_PER_ROW || rowToDelete === i) {
+                        self.deleteRow(i);
+                        rowsDeleted.push(i);
+                    }
+                }
+            }
     		
     		// move rows above deleted rows down
     		if( rowsDeleted.length ) {
@@ -1505,7 +1512,7 @@ var _42TitleLayer = cc.Layer.extend({
                     cc.log("Game started!");
                     gameStarted = true;
                     // start game layer
-                    self.getParent().addChild(new _42GameLayer(), 1, $42.TAG_GAME_LAYER);
+                    self.getParent().addChild(new _42GameLayer("intermediate"), 1, $42.TAG_GAME_LAYER);
 
                     titleBg.runAction(
                         cc.sequence(

@@ -1184,7 +1184,7 @@ var MURBIKS_MODULE = function(layer) {
         
         ////////////////////////////////
         // Fit in words from wordsForTiles list
-        var level = $42.LEVEL_DEVS[$42.currentLevel-1],
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             sw = ml.selectedWord,
             wft = ml.wordsForTiles;
 

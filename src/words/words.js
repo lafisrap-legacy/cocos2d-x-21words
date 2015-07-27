@@ -38,6 +38,9 @@
 //  FREE
 //  - as always
 //
+//  ??? Give new random letters (remove old system)
+//  suggest words in the minimum length + 1 (line 691)
+//
 // GOT WORD!
 //
 // - More animations
@@ -66,9 +69,9 @@ $42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);  // same for bright
 $42.SCORE_COLOR_WHITE = cc.color(255,255,255);  // same for white
 $42.NEXT_PROFILE_LETTERS = 5;               // Number of next new letter candidates
 $42.NEXT_PROFILE_LETTER_CNT = 3;            // A new letter after n words
-$42.SCOREBAR_LETTERS_PER_ROW = 8;           // Show n small letters in the score bar per row
+$42.SCOREBAR_LETTERS_PER_ROW = 13;           // Show n small letters in the score bar per row
 $42.SCOREBAR_LETTERS_PER_COL = 2;           // Show max n columns
-$42.SCOREBAR_LETTERS_PADDING = 20;          // Padding of small letters
+$42.SCOREBAR_LETTERS_PADDING = 7;          // Padding of small letters
 $42.SCOREBAR_LETTERS_SCALE = 0.45;          // Size difference to real normal letters
 $42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;     // Seconds till the next score bar roll
 $42.MAX_MULTIPLIERS = 5;                    // Maximum number of multipliers
@@ -371,7 +374,7 @@ var _42_MODULE = function(_42Layer) {
                         ////////////////////////////////////
                         // Check level conditions
                         if( checkLevelConditions(word, value) ) {
-                            var level = $42.LEVEL_DEVS[$42.currentLevel-1],
+                            var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
 						        ls = cc.sys.localStorage;
                             
                             if( ++$42.currentLevel > level.length+1 ) {
@@ -385,13 +388,14 @@ var _42_MODULE = function(_42Layer) {
                             ls.setItem("currentLevel",$42.currentLevel);
                             ls.setItem("wordProfile",$42.wordProfile);
                             
-                            endLevel();
+                            startNewLevel();
+                            ml.drawScorebar(false);
+                            
                             setTimeout(function() {
-                                startNewLevel();
-                                ml.drawScorebar(false);
-                            }, 1000);
+                                endLevel();
+                            }, $42.BACKGROUND_SPEED*1.1*1000);
                         } else {
-                            var level = $42.LEVEL_DEVS[$42.currentLevel-1];
+                            var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
                             ml.pauseBuildingTiles = false; 
                             ml.wordsForTilesCnt = level.wordFreq-1;
@@ -423,7 +427,7 @@ var _42_MODULE = function(_42Layer) {
     //
     var startNewLevel = function() {
 
-        var level = $42.LEVEL_DEVS[$42.currentLevel-1];
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
         //////////////////////////
         // Set globals ...
@@ -616,7 +620,6 @@ var _42_MODULE = function(_42Layer) {
                             if( cand.length >= $42.LEVEL_MIN_PREFIX_CANDIDATES ) {
                                 var text = prefixes[j];
                                 if( level.minLength ) text += " - - - - - - -".substr(0,(level.minLength-3)*2); 
-                                if( level.minValue )  text += " - - - -";
 
                                 pool[prefixes[j]] = prefix;
                             } else continue;
@@ -625,8 +628,7 @@ var _42_MODULE = function(_42Layer) {
                             if( !cand.length ) continue;
 
                             var text = "----?";
-                            if( level.minLength ) text = "----------".substr(0,level.minLength)+"?"; 
-                            if( level.minValue )  text += " ("+level.minValue+"+)";
+                            if( level.minLength ) text = " - - - - - - - - - -".substr(0,level.minLength*2)+"?"; 
                             break;
                     }
 
@@ -689,7 +691,7 @@ var _42_MODULE = function(_42Layer) {
     ml.fillWordsForTiles = function() {
 
         var wordList = ml.levelPool,
-            max = $42.LEVEL_DEVS[$42.currentLevel-1].words,
+            max = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1].words,
             prefixes = [],
             words = [];
 
@@ -711,15 +713,25 @@ var _42_MODULE = function(_42Layer) {
     };
 
     var endLevel = function() {
-        ml.unselectWord();
-		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		 
+        switch( ml._gameMode ) {
+        case "easy":
+            ml.unselectWord();
+            for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		 
+            break;
+        case "intermediate":
+            ml.unselectWord();
+            ml.checkForAndRemoveCompleteRows([0,1,2,3,4]);
+            break;
+        case "expert":
+            break;
+        }
     };
 
     var checkLevelConditions = function(word, value) {
 
         var ll = ml.levelLabels,
             lp = ml.levelPool,
-            level = $42.LEVEL_DEVS[$42.currentLevel-1],
+            level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             prefix = lp[word.substr(0,3)];
 
         /////////////////////////////
@@ -996,7 +1008,7 @@ var _42_MODULE = function(_42Layer) {
 					cc.audioEngine.playEffect(res.pling_mp3);
 					
 	   				var sprite = null,
-                        levelType = $42.LEVEL_DEVS[$42.currentLevel-1].type;
+                        levelType = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1].type;
 	   					resume = function(menuLayer,takeWord) {
 					        ml.resume();
 					        ml.scheduleUpdate();
@@ -1399,10 +1411,10 @@ var _42_MODULE = function(_42Layer) {
 
                 /////////////////////////////
                 // draw value
-                var label = new cc.LabelBMFont( $42.letterValues[letter] && $42.letterValues[letter].value || "0" , "res/fonts/amtype24.fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT );
-                label.setPosition(pos.x+30,pos.y);
-                label.setColor(cc.color(255,255,255,255));
-                letterFrameSprite.addChild(label, 5); 
+                //var label = new cc.LabelBMFont( $42.letterValues[letter] && $42.letterValues[letter].value || "0" , "res/fonts/amtype24.fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT );
+                //label.setPosition(pos.x+30,pos.y);
+                //label.setColor(cc.color(255,255,255,255));
+                //letterFrameSprite.addChild(label, 5); 
             }
         }		
         
@@ -1652,7 +1664,7 @@ var _42_MODULE = function(_42Layer) {
 	_42Layer.hookSetTileImages = function(tileBoxes, pos, userData) {
 
 		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
-            level = $42.LEVEL_DEVS[$42.currentLevel-1],
+            level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             nlp = level.neededLettersProb || $42.NEEDED_LETTERS_PROBABILITY,
             sw = ml.selectedWord,
         	lnt = ml.lettersForNextTile,
@@ -1727,7 +1739,7 @@ var _42_MODULE = function(_42Layer) {
         var moveToNewWord = function() {
             var s = ml.selections,
                 sw = ml.selectedWord,
-                level = $42.LEVEL_DEVS[$42.currentLevel-1];
+                level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
             if( level.type === $42.LEVEL_TYPE_GIVEN || !sw ) {
                 var brcs = ml.lastBrcs || [];
@@ -1921,7 +1933,7 @@ var _42_MODULE = function(_42Layer) {
 				updateSelectedWord();
 				updateMultipliers();
 			} else {
-                var level = $42.LEVEL_DEVS[$42.currentLevel-1];
+                var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 				
                 ml.unselectWord(true);
                 ml.fillWordsForTiles();
@@ -1938,7 +1950,7 @@ var _42_MODULE = function(_42Layer) {
 					updateSelectedWord();
 					
 					var x = $42.BOXES_X_OFFSET + s.brc.col*$42.BS + 1.5*$42.BS,
-					y = $42.BOXES_Y_OFFSET + s.brc.row*$42.BS + 1.5*$42.BS;
+					    y = $42.BOXES_Y_OFFSET + s.brc.row*$42.BS + 1.5*$42.BS;
 				}
 			}
 		}
