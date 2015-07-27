@@ -1219,9 +1219,17 @@ var MURBIKS_MODULE = function(layer) {
                 }
             }
 
+            //////////////////////////////////////////
+            // No words found that fit to selection
             if( !words.length ) { 
-                if( !sw.selectedByUser && level.type === $42.LEVEL_TYPE_GIVEN ) ml.unselectWord(true);
-                ml.fillWordsForTiles();
+                if( !sw.selectedByUser && level.type === $42.LEVEL_TYPE_GIVEN ) { 
+                    ml.unselectWord(true);
+                    ml.fillWordsForTiles();
+                } else {
+                    return null; // no tile returned
+                }
+            /////////////////////////////////////////
+            // One or more words found that fit 
             } else {
                 var word = words[Math.floor(Math.random(words.length))];
 
@@ -1242,8 +1250,6 @@ var MURBIKS_MODULE = function(layer) {
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
         // Looking for fitting tiles 
-        cc.log("ml.hookGetProgrammedTile (3): ml.wordsForTiles: "+JSON.stringify(wft));
-
         wft.index = wft.index || 0;
         if( wft.words.length > 0 ) {
             var word = wft.words[0].toUpperCase(),
@@ -1254,7 +1260,6 @@ var MURBIKS_MODULE = function(layer) {
                     fittingTiles = [],
                     ret;
 
-                cc.log("ml.hookGetProgrammedTile (3a): isWordPossible?: wft: "+JSON.stringify(wft));
                 if( !(ret = isWordPossible(word) )) return null;
                 
                 if( wft.lastIndex === ret.index ) {
@@ -1326,7 +1331,6 @@ var MURBIKS_MODULE = function(layer) {
                 }
 
                 //cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",JSON.stringify(fittingTiles));
-                cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",fittingTiles.length);
                 if( fittingTiles.length ) return fittingTiles[Math.floor(Math.random()*fittingTiles.length)];
                 else return null;
             };
@@ -1339,9 +1343,7 @@ var MURBIKS_MODULE = function(layer) {
                             var index = 1,
                                 k = 0;
                             while( j+index<$42.BOXES_PER_ROW && ml.boxes[i][j+index] && ml.boxes[i][j+index].userData === word[index] && index<word.length ) index++; 
-                            cc.log("ml.hookGetProgrammedTile (3a-1): isWordPossible: index: "+index+", row/col: "+i+"/"+j);
                             while( j+index+k<$42.BOXES_PER_ROW && !ml.boxes[i][j+index+k] && index+k<word.length ) k++;
-                            cc.log("ml.hookGetProgrammedTile (3a-1): isWordPossible: k: "+k+", row/col: "+i+"/"+j);
 
                             if( index+k === word.length && index > maxIndex ) {
                                 var ret = {
@@ -1362,8 +1364,6 @@ var MURBIKS_MODULE = function(layer) {
 
             if( wft.index > 0 ) {
                 var fittingTile = getFittingTile(word);
-
-                cc.log("ml.hookGetProgrammedTile (4): fittingTile: "+JSON.stringify(fittingTile));
 
                 if( !fittingTile ) {
                     wft.index = 0;

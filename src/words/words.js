@@ -16,13 +16,6 @@
 //  PLAN
 //
 //  Level system
-//  - define levels
-//      - number of words
-//      - conditions per word
-//          - min value
-//          - min length
-//          - max length
-//      - given/prefix/free
 //
 //  Select given words:
 //
@@ -37,12 +30,10 @@
 //
 //
 //  - In given mode word should just fly away without asking
-//  - score bar 
 //
 //  GIVEN
 //
 //  PREFIXED
-//  - prefixed words are not deleted from list 
 //  
 //  FREE
 //  - as always
@@ -397,6 +388,7 @@ var _42_MODULE = function(_42Layer) {
                             endLevel();
                             setTimeout(function() {
                                 startNewLevel();
+                                ml.drawScorebar(false);
                             }, 1000);
                         } else {
                             var level = $42.LEVEL_DEVS[$42.currentLevel-1];
@@ -409,6 +401,7 @@ var _42_MODULE = function(_42Layer) {
                             ml.drawScorebar(false);
                         }
 					} else {
+                        ml.pauseBuildingTiles = false; 
 						ml.checkForAndRemoveCompleteRows();
 						ml.unselectWord(true);
 						moveSelectedWord(sw.brc);
@@ -564,7 +557,8 @@ var _42_MODULE = function(_42Layer) {
 
             ////////////////////////////
             // Introduce new background
-            var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]);
+            var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]) ||
+                             cc.Sprite.create(res.background01_png);
             background.attr({
                 x: cc.width/2 - movement.x,
                 y: cc.height/2 - movement.y,
@@ -652,7 +646,7 @@ var _42_MODULE = function(_42Layer) {
                 background.addChild(label, 0);
                 label.runAction(
                     cc.sequence(
-                        cc.delayTime(2+i*0.50),
+                        cc.delayTime(2+i),
                         cc.spawn(
 				    	    cc.blink(1,3),
                             cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY)
@@ -673,10 +667,10 @@ var _42_MODULE = function(_42Layer) {
                     label.addChild(cond, 0);
                     cond.runAction(
                         cc.sequence(
-                            cc.delayTime(2+i*0.50),
+                            cc.delayTime(2+i*1.1),
                             cc.spawn(
-                                cc.blink(1.05,3),
-                                cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY+45)
+                                cc.blink(1.1,3),
+                                cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY+60)
                             )
                         )
                     );
@@ -1583,7 +1577,6 @@ var _42_MODULE = function(_42Layer) {
                 index = $42.words[prefix].indexOf(wt[i].word);
 
             if( index > -1 ) $42.words[prefix][index].deleted = true;
-            else cc.log("_42Layer.hookStartGame: Word '"+wt[i].word+"' not found in main word list. Did word list change?");
         }
 				
 		// prepare for which letters can be used (word profile), and what
@@ -1677,7 +1670,7 @@ var _42_MODULE = function(_42Layer) {
 
         	if( lnt && lnt.length > 0 ) {
         		var val = $42.LETTERS.indexOf(lnt.splice(0,1)[0]);
-        	} else if( nt !== null && (level.type === $42.LEVEL_TYPE_GIVEN || ntLetter !== " " || Math.random()>(level.fillInRate || 0.5))) {
+        	} else if( nt !== null && level.type !== $42.LEVEL_TYPE_FREE && (level.type === $42.LEVEL_TYPE_GIVEN || ntLetter !== " " || Math.random()>(level.fillInRate || 0.5))) {
         		var val = $42.LETTERS.indexOf(ntLetter);
         	} else {
 	         	var len = sw && sw.missingLetters && sw.missingLetters.length || 0,
