@@ -1190,10 +1190,13 @@ var MURBIKS_MODULE = function(layer) {
 
         /////////////////////////////////
         // Only return letters in a specified frequency
-        cc.log("ml.hookGetProgrammedTile (1): ml.wordsForTilesCnt: "+ml.wordsForTilesCnt+", level.wordFreq: "+level.wordFreq);
-        if( ++ml.wordsForTilesCnt < level.wordFreq ) return {letters: [" "," "," "," "]};
+        //cc.log("ml.hookGetProgrammedTile (1): ml.wordsForTilesCnt: "+ml.wordsForTilesCnt+", level.wordFreq: "+level.wordFreq);
+        if( ++ml.wordsForTilesCnt < level.wordFreq ) {
+    	    $42.msg2.setString("Sending empty tile.");
+            return {letters: [" "," "," "," "]};
+        }
         else ml.wordsForTilesCnt -= level.wordFreq;
-        cc.log("ml.hookGetProgrammedTile (2): Getting tile ... ml.wordsForTiles: "+JSON.stringify(ml.wordsForTiles));
+        //cc.log("ml.hookGetProgrammedTile (2): Getting tile ... ml.wordsForTiles: "+JSON.stringify(ml.wordsForTiles));
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
         // Word is selected: Look if word is still possible, put one entry into ml.wordsForTiles
@@ -1250,6 +1253,7 @@ var MURBIKS_MODULE = function(layer) {
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
         // Looking for fitting tiles 
+
         wft.index = wft.index || 0;
         if( wft.words.length > 0 ) {
             var word = wft.words[0].toUpperCase(),
@@ -1425,6 +1429,7 @@ var MURBIKS_MODULE = function(layer) {
             }
 
             for( var i=0 ; i<tileBoxes.length ; i++ ) if( !tile.letters[i] ) tile.letters[i] = " ";
+    	    $42.msg2.setString("wft: "+JSON.stringify(wft));
             return tile;
         } 
 
