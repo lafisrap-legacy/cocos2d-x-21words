@@ -16,6 +16,8 @@ var res = {
 	background08_png : "res/images/backgrounds/level08.png",
 	background09_png : "res/images/backgrounds/level09.png",
 	background10_png : "res/images/backgrounds/level10.png",
+	background_sun_png : "res/images/backgrounds/sun.png",
+	background_beams_png : "res/images/backgrounds/beams.png",
 	empty_png : "res/empty.png",
 	amtype24_png : "res/fonts/amtype24.png",
 	amtype72_png : "res/fonts/amtype72.png",
@@ -38,7 +40,7 @@ var res = {
     murbiks_plist : 'res/images/murbiks/murbiks.plist',
     
     // particles
-    particle_lavaflow: "res/particles/LavaFlow.plist",
+    particle_flowers: "res/particles/Flower.plist",
 
     // language resources
     language_pack:      "res/i18n/language-pack-de_DE.json",
