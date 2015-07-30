@@ -704,6 +704,8 @@ var _42_MODULE = function(_42Layer) {
             prefixes = [],
             words = [];
 
+        if( level.type === $42.LEVEL_TYPE_FREE ) return;
+
         //////////////////////////////////
         // Get all available prefixes in random order
         for( prefix in wordList ) prefixes.splice(Math.floor(Math.random()*prefixes.length),0,prefix);

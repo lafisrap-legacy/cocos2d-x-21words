@@ -826,10 +826,11 @@ var _42GameLayer = cc.Layer.extend({
 		var alignToColumn = function(t, lp, doneFn) {
 			var tileOffset = $42.BS/2 - Math.abs(t.rotatedBoxes[0].x%$42.BS),
 				offset = (lp.x-$42.BOXES_X_OFFSET-tileOffset)%$42.BS;
-				
-			offset = offset < $42.BS/2? -offset : $42.BS - offset;
 			
-			if( t.isRotating && t.rotation%180 ) offset = -offset;
+            //offset = offset < $42.BS/2? -offset : $42.BS - offset;    
+			offset = offset < $42.BS/2? offset : offset - $42.BS;
+			
+			if( t.isRotating && !(t.rotation%180) ) offset = -offset;
 				
 			var targetX = lp.x + offset;
 			
@@ -857,18 +858,19 @@ var _42GameLayer = cc.Layer.extend({
 			self.rotateBoxes(t);
 	
 			// shift Tile if it needs to be align to column after rotation
-			var check = checkRotation(t, lp);
+			var ret = checkRotation(t, lp);
 			
-			if( check != "collision" ) {
+			if( ret !== "collision" ) {
 				// shift tile, if it would not fit into playground after rotation
-				var shiftTile = -(parseInt(check) || 0);
+				var shiftTile = -(parseInt(ret.offset) || 0);
 				
 				if(shiftTile != 0) {
 					var targetX = lp.x + shiftTile;
 					t.direction = Math.sign(shiftTile);
 					if( t.direction ) {
 						t.isAligning = true;
-						t.sprite.runAction(cc.sequence( 
+						t.sprite.runAction(
+                            cc.sequence( 
 								cc.moveBy($42.MOVE_SPEED*2,cc.p(shiftTile,0)),
 								cc.callFunc(function() {
 					    			var lp = t.sprite.getPosition();
@@ -876,7 +878,8 @@ var _42GameLayer = cc.Layer.extend({
 					    			t.direction = 0;
 									t.isAligning = false;
 								}, self)
-						));						
+						    )
+                        );						
 					}
 				} else {
 					alignToColumn(t, lp);
@@ -912,7 +915,8 @@ var _42GameLayer = cc.Layer.extend({
     		
     		var b = t.rotatedBoxes,
     			minOffset = 0,
-    			maxOffset = 0;
+    			maxOffset = 0,
+                rotationBottom = 0;
     		
     		// check if tile could be in the new position
     		for( var i=0 ; i<b.length ; i++) {
@@ -922,16 +926,23 @@ var _42GameLayer = cc.Layer.extend({
         		minOffset = Math.min(minOffset, lp.x + b[i].x - $42.BOXES_X_OFFSET - $42.BS/2);
         		maxOffset = Math.max(maxOffset, lp.x + b[i].x - $42.BOXES_X_OFFSET + $42.BS/2);
         		
-        		// check if other tiles are at the play
+        		// check if other tiles are at new tile position
         		if( brc.row < 0 || self.boxes[brc.row][brc.col] ) {
-        			var offset,move;
+        			var ret,move;
         			if( !evade && 
-        				((move = -$42.BS/2, offset = checkRotation( t , {x:lp.x + move , y:lp.y}  , true )) !== "collision" || 
-        				 (move =  $42.BS/2, offset = checkRotation( t , {x:lp.x + move , y:lp.y}  , true )) !== "collision") )
-        				 return (offset==="ok"?0:offset)-move;
+        				((move = -$42.BS/2, ret = checkRotation( t , {x:lp.x + move , y:lp.y}  , true )) !== "collision" || 
+        				 (move =  $42.BS/2, ret = checkRotation( t , {x:lp.x + move , y:lp.y}  , true )) !== "collision") )
+        				 return {
+                            offset: (ret==="ok"?0:ret.offset)-move,
+                            rotationBottom: ret.rotationBottom
+                        };
         			
         			else return "collision";
         		}
+
+                if( brc.row < 1 || self.boxes[brc.row-1][brc.col] ) {
+                    rotationBottom = brc.row * $42.BS - b[i].y + $42.BOXES_Y_OFFSET + $42.BS/2;
+                }
     		}
     		
     		if( minOffset < 0 || maxOffset > $42.BOXES_PER_ROW * $42.BS ) {
@@ -941,11 +952,17 @@ var _42GameLayer = cc.Layer.extend({
     					y: lp.y
         			};
     				
-    			if( checkRotation(t , newLp , true ) === "ok" ) return offset;
+    			if( checkRotation(t , newLp , true ) === "ok" ) return {
+                    offset: offset,
+                    rotationBottom: rotationBottom
+                };
     			else return "collision";
     		} 
     			
-    		return "ok";
+    		return !rotationBottom? "ok": {
+                offset: 0,
+                rotationBottom: rotationBottom
+            };
     	};
     	
     	//////////////////////////////////
