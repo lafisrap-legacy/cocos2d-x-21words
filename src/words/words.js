@@ -62,7 +62,7 @@ $42.UNSELECTED_BOX_OPACITY = 150;           // Opacity of an unselected box (not
 $42.GIVEN_WORDS_OPACITY = 70;               // Opacity of word displayed on the background
 $42.NEEDED_LETTERS_PROBABILITY = 0.15;      // additional probability that a needed letter appear (needed for the currently possible words)
 $42.MAX_WORDS_BLOWN = 1;                    // How many words are blown up after a row is deleted
-$42.WORD_FRAME_WIDTH = 4;                   // Weight of the frame of a completed word 
+$42.WORD_FRAME_WIDTH = 4;                   // Weight of the frame of a completed word
 $42.WORD_FRAME_MOVE_TIME = 0.8;             // Animation time of a completed word
 $42.SCORE_COLOR_DIMM = cc.color(160,120,55);    // Score color when not bright
 $42.SCORE_COLOR_BRIGHT = cc.color(240,170,70);  // same for bright
@@ -214,7 +214,6 @@ var _42_MODULE = function(_42Layer) {
 		
 		if( ml.wordIsBeingSelected ) return false;
         if( !sw ) {
-            ml.pauseBuildingTiles = false;
             return false;
         }
 		
@@ -247,7 +246,7 @@ var _42_MODULE = function(_42Layer) {
 		for( var i=sw.brc.col ; i<$42.BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
 			if( sw.markers[col] === $42.MARKER_SEL ) {
-                cc.log("updateSelectedWord, col: "+col+", i: "+i+", row: "+sw.brc.row);
+                //cc.log("updateSelectedWord, col: "+col+", i: "+i+", row: "+sw.brc.row);
 				var letter = ml.boxes[sw.brc.row][i].userData;
 				// take out all words that don't match the letters where markers
 				// are set
@@ -325,6 +324,13 @@ var _42_MODULE = function(_42Layer) {
             ///////////////////////////////////////////////
             // Full word found?
 			if( j === word.length ) {
+
+                if( word === ml.tmpLastWordFound ) {
+                    cc.log("ERROR: Word '"+word+"' found twice.");
+                    debugger;
+                }
+                ml.tmpLastWordFound = word;
+
                 ////////////////////////////////////
                 // FULL WORD FOUND!
 				// First delete word from global word list and selected word list
@@ -389,21 +395,22 @@ var _42_MODULE = function(_42Layer) {
                             ls.setItem("wordProfile",$42.wordProfile);
                             
                             startNewLevel();
-                            ml.drawScorebar(false);
                             
                             setTimeout(function() {
                                 endLevel();
-                            }, $42.BACKGROUND_SPEED*1.1*1000);
+                            }, $42.BACKGROUND_SPEED*1.2*1000);
                         } else {
                             var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
                             ml.pauseBuildingTiles = false; 
                             ml.wordsForTilesCnt = level.wordFreq-1;
-                            ml.unselectWord(false);
-                            ml.checkForAndRemoveCompleteRows(sw.brc.row);
-                            setSelections();
-                            ml.drawScorebar(false);
+                            ml.fillWordsForTiles();
                         }
+
+                        ml.unselectWord(false);
+                        ml.checkForAndRemoveCompleteRows(sw.brc.row);
+                        setSelections();
+                        ml.drawScorebar(false);
 					} else {
                         ml.pauseBuildingTiles = false; 
 						ml.checkForAndRemoveCompleteRows();
@@ -644,14 +651,15 @@ var _42_MODULE = function(_42Layer) {
                 label.setPosition(cc.width/2,cc.height*0.8-i*150);
                 label.setColor(cc.color(0,0,0));
                 label.setOpacity(0);
+                label.setScale(0.8);
                 _42_retain(label, "Level label ("+i+")");	
                 background.addChild(label, 0);
                 label.runAction(
                     cc.sequence(
-                        cc.delayTime(2+i),
+                        cc.delayTime(2+i*0.33),
                         cc.spawn(
-				    	    cc.blink(1,3),
-                            cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY)
+                            cc.scaleTo(1,1),
+                            cc.fadeTo(1,$42.GIVEN_WORDS_OPACITY)
                         )
                     )
                 );
@@ -665,14 +673,15 @@ var _42_MODULE = function(_42Layer) {
                     cond.setPosition(label.getContentSize().width/2, 0);
                     cond.setColor(cc.color(0,0,0));
                     cond.setOpacity(0);
+                    cond.setScale(0.8);
                     _42_retain(cond, "Level cond ("+i+")");	
                     label.addChild(cond, 0);
                     cond.runAction(
                         cc.sequence(
-                            cc.delayTime(2+i*1.1),
+                            cc.delayTime(2.16+i*0.33),
                             cc.spawn(
-                                cc.blink(1.1,3),
-                                cc.fadeTo(0.66,$42.GIVEN_WORDS_OPACITY+60)
+                                cc.scaleTo(1,1),
+                                cc.fadeTo(1,$42.GIVEN_WORDS_OPACITY+60)
                             )
                         )
                     );
@@ -684,17 +693,19 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
-            }, (3+i*0.50) * 1000 );
+            }, (3.5+i*0.50) * 1000 );
         };
     };
 
     ml.fillWordsForTiles = function() {
 
         var wordList = ml.levelPool,
-            max = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1].words,
+            level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             prefixes = [],
             words = [];
 
+        //////////////////////////////////
+        // Get all available prefixes in random order
         for( prefix in wordList ) prefixes.splice(Math.floor(Math.random()*prefixes.length),0,prefix);
         
         ml.wordsForTiles = {
@@ -702,27 +713,48 @@ var _42_MODULE = function(_42Layer) {
             words: words
         };
         
-        for( var i=0 ; i<max ; i++ ) {
+        for( var i=0 ; i<level.words ; i++ ) {
             var prefix = wordList[prefixes[i%prefixes.length]];
            
             if( prefix ) {
-                word = prefix[Math.floor(Math.random()*prefix.length)];
-                words.push(word.word);
+                var index = Math.floor(Math.random()*prefix.length);
+                for( var j=0 ; j<prefix.length ; j++ ) {
+                    word = prefix[(index+j)%prefix.length];
+                    if( !level.minLength ||  word.word.length <= level.minLength+1 ) {
+                        words.push(word.word);
+                        break;
+                    }
+                }
+                // if nothing found, take the last ...
+                if( j === prefix.length ) words.push(prefix[prefix.length-1].word);
             } 
         }
+
+    	$42.msg1.setString("ml.wordForTiles: "+JSON.stringify(words));
     };
 
     var endLevel = function() {
         switch( ml._gameMode ) {
         case "easy":
             ml.unselectWord();
-            for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		 
+            ml.checkForAndRemoveCompleteRows([4,5,6]);
+            setTimeout(function() {
+                ml.checkForAndRemoveCompleteRows([0,1,2,3]); 
+            }, $42.MOVE_SPEED * 2 * 1000);
             break;
         case "intermediate":
             ml.unselectWord();
-            ml.checkForAndRemoveCompleteRows([0,1,2,3,4]);
+            ml.checkForAndRemoveCompleteRows([3,4]);
+            setTimeout(function() {
+                ml.checkForAndRemoveCompleteRows([0,1,2]); 
+            }, $42.MOVE_SPEED * 2 * 1000);
             break;
         case "expert":
+            ml.unselectWord();
+            ml.checkForAndRemoveCompleteRows([2]);
+            setTimeout(function() {
+                ml.checkForAndRemoveCompleteRows([0,1]); 
+            }, $42.MOVE_SPEED * 2 * 1000);
             break;
         }
     };
@@ -1442,7 +1474,6 @@ var _42_MODULE = function(_42Layer) {
 		}
 
 		$42.nextProfileLetters = next;
-		cc.log("42words, getNextProfileLetters: "+tmp);
 	};
 	
 	var setNextProfileLetter = function() {
@@ -1453,7 +1484,6 @@ var _42_MODULE = function(_42Layer) {
 		if( pl ) {
 			$42.wordProfile |= (1<<pl.order);	
 			$42.wordProfileLetters.push($42.letterOrder[pl.order]);
-			cc.log("42words, setNextProfileLetter: New letter: "+$42.letterOrder[pl.order]);
 			if( !$42.newWordProfileLetters ) $42.newWordProfileLetters = 0; 
 			$42.newWordProfileLetters++;
 			getNextProfileLetters();
@@ -1470,7 +1500,6 @@ var _42_MODULE = function(_42Layer) {
 
 			var npl = $42.nextProfileLetters;
 			if( npl.length > 1 ) npl.splice(npl.length-1,1);
-			cc.log("42words, getNextProfileCandidate: New next letter: "+(npl[npl.length-1] && npl[npl.length-1].letter));			
 		}
 	};
 	
@@ -1673,6 +1702,8 @@ var _42_MODULE = function(_42Layer) {
 		_42_retain(tileSprite, "words: tileSprite");
 		tileSprite.setPosition(pos);
 		ml.addChild(tileSprite,2);
+        
+        if( sw ) $42.msg2.setString("missingLetters: "+JSON.stringify(sw.missingLetters));
 
         // add single boxes with letters to the tile
         for( var i=0 ; i<tileBoxes.length ; i++) {
@@ -1697,10 +1728,7 @@ var _42_MODULE = function(_42Layer) {
 	        	    	if( userData[k] === $42.LETTERS[val] ) double++;
 	        	    if( double > 1 ) continue;
 	        	    
-                    cc.log("_42Layer.hookSetTileImages, val: "+val+", $42.LETTERS[val]: "+$42.LETTERS[val]+"$42.letterValues[$42.LETTERS[val]]: ", $42.letterValues[$42.LETTERS[val]]);
 	         		if( $42.wordProfileLetters.indexOf($42.LETTERS[val]) > -1 ) break;	
-	         		
-	         		cc.log("42words, hookSetTileImages: Got a not allowed letter: "+$42.LETTERS[val]+" for box "+i+". Skipping it ...");
         		}
         	}
        					
@@ -1708,7 +1736,6 @@ var _42_MODULE = function(_42Layer) {
     			sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
     		
     		cc.assert(sprite, "42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
-    		if( !sprite ) cc.log("42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
     		_42_retain(sprite, "words: sprite");
         	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
         	sprite.setRotation(-$42.INITIAL_TILE_ROTATION);
@@ -1725,10 +1752,14 @@ var _42_MODULE = function(_42Layer) {
 	
 	_42Layer.hookTileFixed = function( brcs ) {
 		
+        var sw = ml.selectedWord;
+
 		ml.lastBrcs = brcs;
         ml.pauseBuildingTiles = true;
 		
 		setSelections(); // OPTIMIZATION: Only look in current lines
+      
+        if( !sw ) ml.pauseBuildingTiles = false;
 		return updateSelectedWord();
 	};	
 

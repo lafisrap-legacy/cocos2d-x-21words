@@ -183,8 +183,8 @@ var _42GameLayer = cc.Layer.extend({
         // tmp Errormessage layer
         var logMsg = cc.Node.create();
         
-        $42.msg1 = cc.LabelTTF.create("TEST1", "Arial", 12),
-        $42.msg2 = cc.LabelTTF.create(" ", "Arial", 12);
+        $42.msg1 = cc.LabelTTF.create("TEST1", "Arial", 20),
+        $42.msg2 = cc.LabelTTF.create(" ", "Arial", 20);
         
         $42.msg1.setPosition(0,0);
         $42.msg2.setPosition(0,-20);
@@ -556,7 +556,7 @@ var _42GameLayer = cc.Layer.extend({
 	            		break;
                     default:
                         if( self.hookKeyPressed ) self.hookKeyPressed(key);
-                        cc.log("Key pressed: "+key);
+                        //cc.log("Key pressed: "+key);
 	            	}
 	            },
 	            onKeyReleased:function(key, event) {
@@ -580,7 +580,7 @@ var _42GameLayer = cc.Layer.extend({
 	        }, this);
 	        cc.eventManager.addListener(this._keyboardListener, this);
 	    } else {
-	         cc.log("KEYBOARD is not supported");
+	         //cc.log("KEYBOARD is not supported");
 	    }
     },
     
@@ -1002,8 +1002,8 @@ var _42GameLayer = cc.Layer.extend({
             		};     					
         		}    			
 
-    	        $42.msg1.setString($42.msg2.getString());
-    	        $42.msg2.setString("userData: "+JSON.stringify(t.userData)+", brcs: "+JSON.stringify(newBrcs));
+    	        //$42.msg1.setString($42.msg2.getString());
+    	        //$42.msg2.setString("userData: "+JSON.stringify(t.userData)+", brcs: "+JSON.stringify(newBrcs));
     		} else {
                 cc.log("GAME OVER! Row = "+minRow);
             }
@@ -1068,6 +1068,7 @@ var _42GameLayer = cc.Layer.extend({
     			// play sound
     			cc.audioEngine.playEffect(res.ritsch_mp3);
 
+                var tmpColBlocked = [];
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
     				var rd = [];
     				for( var j=0 ; j<rowsDeleted.length ; j++) {
@@ -1078,8 +1079,9 @@ var _42GameLayer = cc.Layer.extend({
     					}
     				}
     				
-    				// mark transitions between blocked and non blocked columns
+    				// mark transitions between blocked and non blocked columns for detection of single boxes later
     				curColBlocked = rowsDeleted.length != rd.length;
+                    tmpColBlocked.push(curColBlocked);
     				if( i !== 0 && curColBlocked !== prevColBlocked ) colsToCorrect[i-1] = colsToCorrect[i] = true;
     				else colsToCorrect[i] = false;    			
     				prevColBlocked = curColBlocked; 
@@ -1110,7 +1112,10 @@ var _42GameLayer = cc.Layer.extend({
 	    			}
     			}
 
-    			// move boxes down caused by having no neighbor boxes any more
+                cc.log("checkForAndRemoveCompleteRows, tmpColBlocked: "+JSON.stringify(tmpColBlocked));
+                cc.log("checkForAndRemoveCompleteRows, colsToCorrect: "+JSON.stringify(colsToCorrect));
+
+    			// move single boxes down 
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
     				if( colsToCorrect[i] ) {
     					for( var j=rowsDeleted[0] ; j < $42.BOXES_PER_COL ; j++ ) {
@@ -1151,11 +1156,14 @@ var _42GameLayer = cc.Layer.extend({
     	self.deleteRow = function(row, deleteAnyway) {
 
         	// delete row ... 
+            var tmpBoxes = [];
         	for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
 		    	if( deleteAnyway || !self.hookDeleteBox || self.hookDeleteBox({row:row,col:i}) ) {
 		    		
+                    var tmpBox = {}; tmpBoxes.push(tmpBox);
 	        		// destroy sprite and box  
 		    		if( self.boxes[row][i] ) {
+                        tmpBox.userData = self.boxes[row][i].userData;
 		    			_42_release(self.boxes[row][i].sprite);
 	    				
 		            	self.removeChild(self.boxes[row][i].sprite);
@@ -1187,7 +1195,9 @@ var _42GameLayer = cc.Layer.extend({
 		    		}
 		    	}
     		}           	
-    	};
+    	
+            cc.log("deleteRow, rows deleted: "+JSON.stringify(tmpBoxes));
+        };
 
         /////////////////////////////
         // Internal function: 
@@ -1504,7 +1514,32 @@ var _42TitleLayer = cc.Layer.extend({
 	        item.setColor(color);
 	        
 	        return item;
-		}
+		};
+
+        var hideTitle = function() {
+
+            titleBg.runAction(
+                cc.sequence(
+                    cc.fadeOut(1),
+                    cc.callFunc(function() {
+                        titleBg.removeChild(menu);
+                        self.removeChild(titleBg);
+                    })
+                )
+            );
+
+            _42.runAction(
+                cc.fadeOut(1.2)
+            );
+
+            titleTitle.runAction(
+                cc.fadeOut(1.2)
+            );
+
+            menu.runAction(
+                cc.fadeOut(1.2)
+            );
+        };
 		
         var gameStarted = false,
             item1 = addMenu($42.t.title_start, 60 , cc.color(115,63,78) ,  function() {
@@ -1513,28 +1548,7 @@ var _42TitleLayer = cc.Layer.extend({
                     gameStarted = true;
                     // start game layer
                     self.getParent().addChild(new _42GameLayer("intermediate"), 1, $42.TAG_GAME_LAYER);
-
-                    titleBg.runAction(
-                        cc.sequence(
-                            cc.fadeOut(1),
-                            cc.callFunc(function() {
-                                titleBg.removeChild(menu);
-                                self.removeChild(titleBg);
-                            })
-                        )
-                    );
-
-                    _42.runAction(
-                        cc.fadeOut(1.2)
-                    );
-
-                    titleTitle.runAction(
-                        cc.fadeOut(1.2)
-                    );
-
-                    menu.runAction(
-                        cc.fadeOut(1.2)
-                    );
+                    hideTitle();
                 }
             }, self);
 	
@@ -1542,14 +1556,32 @@ var _42TitleLayer = cc.Layer.extend({
         $42.wordTreasureWords = ls.getItem("wordTreasureWords") || 0;
         $42.maxPoints = ls.getItem("maxPoints") || 0;
         $42.bestTime = ls.getItem("bestTime") || null;
-        var item2 = addMenu($42.maxPoints? $42.t.title_hiscore+": "+$42.maxPoints : " ", 36 , cc.color(173,141,93) , function() {
-                cc.director.runScene(new _42Scene());
+        var item2 = addMenu("Leicht", 36 , cc.color(173,141,93) , function() {
+                if( !gameStarted ) {
+                    cc.log("Game started!");
+                    gameStarted = true;
+                    // start game layer
+                    self.getParent().addChild(new _42GameLayer("easy"), 1, $42.TAG_GAME_LAYER);
+                    hideTitle();
+                }
             }),
-            item3 = addMenu($42.wordTreasureWords? $42.t.title_words+": "+$42.wordTreasureWords : " ", 36 , cc.color(173,141,93) , function() {
-                // can be filled
+            item3 = addMenu("Mittel", 36 , cc.color(173,141,93) , function() {
+                if( !gameStarted ) {
+                    cc.log("Game started!");
+                    gameStarted = true;
+                    // start game layer
+                    self.getParent().addChild(new _42GameLayer("intermediate"), 1, $42.TAG_GAME_LAYER);
+                    hideTitle();
+                }
             }),
-            item4 = addMenu($42.bestTime? $42.t.title_besttime+": "+($42.bestTime/3600>>>0)+":"+("0"+($42.bestTime/60>>>0)%60).substr(-2,2) : " ", 36 , cc.color(173,141,93) , function() {
-                // can be filled
+            item4 = addMenu("Schwer", 36 , cc.color(173,141,93) , function() {
+                if( !gameStarted ) {
+                    cc.log("Game started!");
+                    gameStarted = true;
+                    // start game layer
+                    self.getParent().addChild(new _42GameLayer("expert"), 1, $42.TAG_GAME_LAYER);
+                    hideTitle();
+                }
             });
 
         var menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
