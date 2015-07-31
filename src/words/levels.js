@@ -61,7 +61,7 @@ $42.LEVEL_DEVS = {
         minValue:   0,
         minDemand:  0,
         minLength:  4,
-        maxLength:  4,
+        maxLength:  0,
         newLetters: 1,
         prefGroups: null,
         wordFreq: 1.0
@@ -71,7 +71,7 @@ $42.LEVEL_DEVS = {
         minValue:   0,
         minDemand:  0,
         minLength:  5,
-        maxLength:  5,
+        maxLength:  0,
         newLetters: 1,
         prefGroups: null,
         wordFreq: 1.0

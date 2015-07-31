@@ -1188,6 +1188,8 @@ var MURBIKS_MODULE = function(layer) {
             sw = ml.selectedWord,
             wft = ml.wordsForTiles;
 
+        if( level.type === $42.LEVEL_TYPE_FREE ) return {letters: [" "," "," "," "]};
+        
         /////////////////////////////////
         // Only return letters in a specified frequency
         //cc.log("ml.hookGetProgrammedTile (1): ml.wordsForTilesCnt: "+ml.wordsForTilesCnt+", level.wordFreq: "+level.wordFreq);

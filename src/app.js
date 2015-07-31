@@ -35,7 +35,8 @@
 // Global variables
 //
 var _42_GLOBALS = { 
-    TITLE_MENU_COLOR: cc.color(0,40,0,255), // 
+    TITLE_MENU_COLOR_1: cc.color(44,18,44,255), // 
+    TITLE_MENU_COLOR_2: cc.color(109,36,76,255), // 
 	TAG_SPRITE_MANAGER : 1,                 // Sprite Ids
 	TAG_GAME_LAYER : 3,                     //
 	TAG_TITLE_LAYER : 4,                    //
@@ -556,7 +557,6 @@ var _42GameLayer = cc.Layer.extend({
 	            		break;
                     default:
                         if( self.hookKeyPressed ) self.hookKeyPressed(key);
-                        //cc.log("Key pressed: "+key);
 	            	}
 	            },
 	            onKeyReleased:function(key, event) {
@@ -580,7 +580,6 @@ var _42GameLayer = cc.Layer.extend({
 	        }, this);
 	        cc.eventManager.addListener(this._keyboardListener, this);
 	    } else {
-	         //cc.log("KEYBOARD is not supported");
 	    }
     },
     
@@ -749,6 +748,8 @@ var _42GameLayer = cc.Layer.extend({
     				by = lp.y + b[i].y,		// y pos of box
     				brc1 = getRowCol(b[i], { x: lp.x + $42.BS/2 - 3, y: lp.y}), 
     				brc2 = getRowCol(b[i], { x: lp.x - $42.BS/2 + 3, y: lp.y}); 
+                
+                //cc.log("Looking for bottom at columns "+JSON.stringify(brc1)+" and "+JSON.stringify(brc2));
     			if( by - $42.BS/2 <= $42.BOXES_Y_OFFSET ||    // bottom reached? 
     				(brc1.row < $42.BOXES_PER_COL && (self.boxes[brc1.row][brc1.col] || self.boxes[brc2.row][brc2.col])) ) { // is there a fixed box under the moving box?
 
@@ -827,11 +828,13 @@ var _42GameLayer = cc.Layer.extend({
 			var tileOffset = $42.BS/2 - Math.abs(t.rotatedBoxes[0].x%$42.BS),
 				offset = (lp.x-$42.BOXES_X_OFFSET-tileOffset)%$42.BS;
 			
-            //offset = offset < $42.BS/2? -offset : $42.BS - offset;    
-			offset = offset < $42.BS/2? offset : offset - $42.BS;
+            offset = offset < $42.BS/2? -offset : $42.BS - offset;    
+			//offset = offset < $42.BS/2? offset : offset - $42.BS;
 			
-			if( t.isRotating && !(t.rotation%180) ) offset = -offset;
-				
+			if( t.isRotating && !(t.rotation%180) && checkRotation( t , {x:lp.x - offset , y:lp.y} ) === "ok" ) offset = -offset;
+		
+            cc.log("Aligning by "+offset+" from "+JSON.stringify(lp)+". tileOffset: "+tileOffset+", rotation = "+t.rotation);
+
 			var targetX = lp.x + offset;
 			
 			if( offset ) {
@@ -972,6 +975,7 @@ var _42GameLayer = cc.Layer.extend({
     			newBrcs = [],
     			ret = "ok";
     		
+            cc.log("Fixing tile at "+JSON.stringify(lp));
     		// check if a tile is too high
     		for( var i=0,minRow ; i<b.length ; i++ ) {
 				var brc = getRowCol(b[i], lp);
@@ -1059,7 +1063,7 @@ var _42GameLayer = cc.Layer.extend({
     	self.checkForAndRemoveCompleteRows = function(rowToDelete) {
     	    
             if( rowToDelete instanceof Array ) {
-                for( var i=0 ; i<rowToDelete.length ; i++ ) self.deleteRow(i);
+                for( var i=0 ; i<rowToDelete.length ; i++ ) self.deleteRow(rowToDelete[i],true);
                 var rowsDeleted = rowToDelete;
             } else {
                 var rowsDeleted = [];
@@ -1492,7 +1496,7 @@ var _42TitleLayer = cc.Layer.extend({
 			opacity: 0,
             scale: 1.1,
 		});
-
+/*
         var _42 = addText({
             text: "42",
             pos: cc.p(310, 870),
@@ -1510,11 +1514,11 @@ var _42TitleLayer = cc.Layer.extend({
             opacity: 0,
             parent: titleBg
         });
-
+*/
         titleBg.runAction(
             cc.fadeIn(2)
         );
-
+/*
         _42.runAction(
             cc.fadeIn(5)
         );
@@ -1522,7 +1526,7 @@ var _42TitleLayer = cc.Layer.extend({
         titleTitle.runAction(
             cc.fadeIn(5)
         );
-		
+*/		
         // Show menu items
 		var addMenu = function(name, fontSize, color, cb) {
 	        var item = new cc.MenuItemFont(name, cb, self);
@@ -1544,7 +1548,7 @@ var _42TitleLayer = cc.Layer.extend({
                     })
                 )
             );
-
+/*
             _42.runAction(
                 cc.fadeOut(1.2)
             );
@@ -1552,19 +1556,18 @@ var _42TitleLayer = cc.Layer.extend({
             titleTitle.runAction(
                 cc.fadeOut(1.2)
             );
-
+*/
             menu.runAction(
                 cc.fadeOut(1.2)
             );
         };
 		
         var gameStarted = false,
-            item1 = addMenu($42.t.title_start, 60 , cc.color(115,63,78) ,  function() {
+            item1 = addMenu($42.t.title_start, 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
                 if( !gameStarted ) {
-                    cc.log("Game started!");
                     gameStarted = true;
                     // start game layer
-                    self.getParent().addChild(new _42GameLayer("intermediate"), 1, $42.TAG_GAME_LAYER);
+                    self.getParent().addChild(new _42GameLayer($42.currentMode || "easy"), 1, $42.TAG_GAME_LAYER);
                     hideTitle();
                 }
             }, self);
@@ -1573,28 +1576,31 @@ var _42TitleLayer = cc.Layer.extend({
         $42.wordTreasureWords = ls.getItem("wordTreasureWords") || 0;
         $42.maxPoints = ls.getItem("maxPoints") || 0;
         $42.bestTime = ls.getItem("bestTime") || null;
-        var item2 = addMenu("Leicht", 36 , cc.color(173,141,93) , function() {
+        var item2 = addMenu("Leicht", 36 , $42.TITLE_MENU_COLOR_2 , function() {
                 if( !gameStarted ) {
-                    cc.log("Game started!");
                     gameStarted = true;
+                    $42.currentLevel = 1;
+                    $42.currentMode = "easy";
                     // start game layer
                     self.getParent().addChild(new _42GameLayer("easy"), 1, $42.TAG_GAME_LAYER);
                     hideTitle();
                 }
             }),
-            item3 = addMenu("Mittel", 36 , cc.color(173,141,93) , function() {
+            item3 = addMenu("Mittel", 36 , $42.TITLE_MENU_COLOR_2 , function() {
                 if( !gameStarted ) {
-                    cc.log("Game started!");
                     gameStarted = true;
+                    $42.currentLevel = 1;
+                    $42.currentMode = "intermediate";
                     // start game layer
                     self.getParent().addChild(new _42GameLayer("intermediate"), 1, $42.TAG_GAME_LAYER);
                     hideTitle();
                 }
             }),
-            item4 = addMenu("Schwer", 36 , cc.color(173,141,93) , function() {
+            item4 = addMenu("Schwer", 36 , $42.TITLE_MENU_COLOR_2 , function() {
                 if( !gameStarted ) {
-                    cc.log("Game started!");
                     gameStarted = true;
+                    $42.currentLevel = 1;
+                    $42.currentMode = "expert";
                     // start game layer
                     self.getParent().addChild(new _42GameLayer("expert"), 1, $42.TAG_GAME_LAYER);
                     hideTitle();

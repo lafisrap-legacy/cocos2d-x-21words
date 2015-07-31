@@ -36,10 +36,15 @@
 //  PREFIXED
 //  
 //  FREE
-//  - as always
+//  
 //
-//  ??? Give new random letters (remove old system)
-//  suggest words in the minimum length + 1 (line 691)
+// Make a word with new introduced letters
+// 
+// MOSTAFA
+//
+// Bring new letters
+//
+//
 //
 // GOT WORD!
 //
@@ -383,22 +388,27 @@ var _42_MODULE = function(_42Layer) {
                             var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
 						        ls = cc.sys.localStorage;
                             
-                            if( ++$42.currentLevel > level.length+1 ) {
-                                debugger;
-                            }
-
                             for( var i=0 ; level.newLetters && i<level.newLetters ; i++ ) setNextProfileLetter();
 
-                            $42.wordTreasure = $42.wordTreasure.concat(ml.levelWords);
-                            ls.setItem("wordTreasure",JSON.stringify($42.wordTreasure));
-                            ls.setItem("currentLevel",$42.currentLevel);
-                            ls.setItem("wordProfile",$42.wordProfile);
-                            
-                            startNewLevel();
-                            
-                            setTimeout(function() {
-                                endLevel();
-                            }, $42.BACKGROUND_SPEED*1.2*1000);
+                            if( ++$42.currentLevel > $42.LEVEL_DEVS[ml._gameMode].length ) {
+                                ml.drawScorebar(false);
+                                ls.setItem("wordTreasure",null);
+                                ls.setItem("currentLevel",null);
+                                ls.setItem("wordProfile",null);
+                                youWonTheGame();
+                                return
+                            } else {
+                                $42.wordTreasure = $42.wordTreasure.concat(ml.levelWords);
+                                ls.setItem("wordTreasure",JSON.stringify($42.wordTreasure));
+                                ls.setItem("currentLevel",$42.currentLevel);
+                                ls.setItem("wordProfile",$42.wordProfile);
+                                
+                                startNewLevel();
+                                
+                                setTimeout(function() {
+                                    endLevel();
+                                }, $42.BACKGROUND_SPEED*1.2*1000);
+                            }
                         } else {
                             var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
@@ -443,7 +453,7 @@ var _42_MODULE = function(_42Layer) {
         ml.levelPool = [];
         ml.levelWords = []; 
         ml.selections = [];
-        ml.wordsForTilesCnt = level.wordFreq-1;
+        ml.wordsForTilesCnt = level.wordFreq && level.wordFreq-1 || 1;
 
         /////////////////////////////
         // Calculate pool of possible words
@@ -739,25 +749,27 @@ var _42_MODULE = function(_42Layer) {
         switch( ml._gameMode ) {
         case "easy":
             ml.unselectWord();
-            ml.checkForAndRemoveCompleteRows([4,5,6]);
-            setTimeout(function() {
-                ml.checkForAndRemoveCompleteRows([0,1,2,3]); 
-            }, $42.MOVE_SPEED * 2 * 1000);
+            for( var i=0 ; i<7 ; i++ ) {
+                setTimeout( function() {
+                    ml.checkForAndRemoveCompleteRows([0]);
+                }, $42.MOVE_SPEED * i * 1.1 * 1000);
+            }
             break;
         case "intermediate":
             ml.unselectWord();
-            ml.checkForAndRemoveCompleteRows([3,4]);
-            setTimeout(function() {
-                ml.checkForAndRemoveCompleteRows([0,1,2]); 
-            }, $42.MOVE_SPEED * 2 * 1000);
+            for( var i=0 ; i<5 ; i++ ) {
+                setTimeout( function() {
+                    ml.checkForAndRemoveCompleteRows([0]);
+                }, $42.MOVE_SPEED * i * 1.1 * 1000);
+            }
             break;
         case "expert":
             ml.unselectWord();
-            ml.checkForAndRemoveCompleteRows([2]);
-            setTimeout(function() {
-                ml.checkForAndRemoveCompleteRows([0,1]); 
-            }, $42.MOVE_SPEED * 2 * 1000);
-            break;
+            for( var i=0 ; i<2 ; i++ ) {
+                setTimeout( function() {
+                    ml.checkForAndRemoveCompleteRows([0]);
+                }, $42.MOVE_SPEED * i * 1.1 * 1000);
+            }
         }
     };
 
@@ -863,7 +875,7 @@ var _42_MODULE = function(_42Layer) {
 	var showAllWordsFlyingIn = function(cb) {
 		var wt = $42.wordTreasure;
 		
-		for( var i=41 ; i>=0 /* wt.length */ ; i-- ) {
+		for( var i=20 ; i>=0 /* wt.length */ ; i-- ) {
 			var label = cc.LabelTTF.create(wt[i%wt.length].word, "SourceCodePro-Light" , 32);
 			label.setPosition(ml.size.width/2,0);
 			label.setColor(cc.color(0,0,0));
@@ -878,7 +890,7 @@ var _42_MODULE = function(_42Layer) {
 					cc.spawn(
 						cc.moveTo(2.6,ml.size.width/2,600),
 						cc.EaseSineOut.create(
-							cc.scaleTo(2.6,2.1)
+							cc.scaleTo(2.6,2.8)
 						),
 						cc.EaseSineIn.create(
 							cc.fadeTo(2.6,255)
@@ -898,7 +910,7 @@ var _42_MODULE = function(_42Layer) {
 					cc.callFunc(function() {
 				        _42_release(this);
 						ml.removeChild(this);
-						if( cb && this.i === 41 ) cb();
+						if( cb && this.i === 20 ) cb();
 					}, label)
 				)
 			);
@@ -1441,7 +1453,7 @@ var _42_MODULE = function(_42Layer) {
                 letterFrameSprite.setScale(0.5);
             } else {
                 letterFrameSprite.setPosition(options.pos.x + (((i-normalSizeStart)%options.boxesPerRow>>>0)*($42.BS+options.padding*4))*options.scale,
-                                              options.pos.y - (((i-normalSizeStart)/options.boxesPerRow>>>0)*($42.BS+options.padding))*options.scale);
+                                              options.pos.y - (((i-normalSizeStart)/options.boxesPerRow>>>0)*($42.BS+options.padding*1.3))*options.scale);
 
                 /////////////////////////////
                 // draw value
@@ -1811,6 +1823,7 @@ var _42_MODULE = function(_42Layer) {
 					break;
 			if( i<lb.length ) newBox = true;
 		}
+        if( sw && sw.brc.row === brc.row ) cc.log("hookDeleteBox: Box in col "+brc.col+" is marked "+sw.markers[brc.col-sw.brc.col]);
 		if( sw && sw.brc.row === brc.row && (
 				sw.markers[brc.col-sw.brc.col] === $42.MARKER_SET || 
 				sw.markers[brc.col-sw.brc.col] === $42.MARKER_SEL || 
@@ -1818,11 +1831,6 @@ var _42_MODULE = function(_42Layer) {
 			)
 		) return false;
 
-		// 1 and 3 tiles
-		if( box && (box.userData === "1" || box.userData === "3") ) {
-			ml.add1and3s.push(box.userData);
-		}
-		
 		// check if selection is deleted, and blow words if it is so
 		for( var i=0 ; i<s.length ; i++ ) if( s[i].brc.row === brc.row && s[i].brc.col === brc.col ) break;			
 		if( i<s.length )
@@ -1878,16 +1886,16 @@ var _42_MODULE = function(_42Layer) {
         });
         
         // draw points, left, back side
-        ml.score_words_mini = ml.drawScorebarText("(0 "+$42.t.scorebar_words[1]+")", cc.p(50,111) , 24 , $42.SCORE_COLOR_BRIGHT );
-        ml.score_points = ml.drawScorebarText(tv.toString(), cc.p(50,151) , tv>=1000?56:72 , $42.SCORE_COLOR_BRIGHT );
+        ml.score_words_mini = ml.drawScorebarText("(0 "+$42.t.scorebar_words[1]+")", cc.p(100,111) , 24 , $42.SCORE_COLOR_BRIGHT );
+        ml.score_points = ml.drawScorebarText(tv.toString(), cc.p(100,151) , tv>=1000?56:72 , $42.SCORE_COLOR_BRIGHT );
 
         // draw total words, right, front side
         ml.score_words_label = ml.drawScorebarText($42.t.scorebar_words[1] , cc.p(588,15) , 24 , $42.SCORE_COLOR_DIMM );
         ml.score_words = ml.drawScorebarText((wt.length+lw.length).toString(),cc.p(588,60) , 72 , $42.SCORE_COLOR_BRIGHT );
         
         // draw most valuable word
-        ml.bestWordValue = ml.drawScorebarText($42.t.scorebar_mvw,cc.p(300,111),24,$42.SCORE_COLOR_BRIGHT);
-        ml.bestWordSprite = ml.drawScorebarWord(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60);	
+        ml.bestWordValue = ml.drawScorebarText($42.t.scorebar_mvw,cc.p(400,111),24,$42.SCORE_COLOR_BRIGHT);
+        ml.bestWordSprite = ml.drawScorebarWord(bw? bw.word:"",cc.p(400,157),ml.bestWordSprite,0.60);	
     
         return true;
     };
@@ -1913,10 +1921,10 @@ var _42_MODULE = function(_42Layer) {
         ml.score_words_label.setString($42.t.scorebar_words[wt.length===1?0:1]);
         ml.score_words.setString(wt.length+lw.length);
         ml.score_points.setString(tv.toString());
-        ml.score_words_mini.setString("("+wt.length+" "+$42.t.scorebar_words[wt.length===1?0:1]+")");
+        ml.score_words_mini.setString("("+(wt.length+lw.length)+" "+$42.t.scorebar_words[wt.length===1?0:1]+")");
 
         ml.bestWordValue.setString($42.t.scorebar_mvw+ (bw?": "+bw.value:""));
-        ml.bestWordSprite = ml.drawScorebarWord(bw? bw.word:"",cc.p(300,157),ml.bestWordSprite,0.60);
+        ml.bestWordSprite = ml.drawScorebarWord(bw? bw.word:"",cc.p(400,157),ml.bestWordSprite,0.60);
 
         drawLetterBoxes({
             pos : cc.p(
@@ -1990,7 +1998,7 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookOnLongTap = function(tapPos) {
-        if( tapPos.y < $42.BOXES_Y_OFFSET ) _42Layer.hookKeyPressed(78);
+        //if( tapPos.y < $42.BOXES_Y_OFFSET ) _42Layer.hookKeyPressed(78);
 	};
 
     _42Layer.hookKeyPressed = function(key) {
