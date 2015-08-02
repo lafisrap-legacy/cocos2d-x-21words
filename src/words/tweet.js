@@ -28,6 +28,18 @@ var TWEET_MODULE = function(layer) {
         selectableWords = [],
         shortiesWidth = null,
         shortiesXPos = null,
+        touchListener = null,
+        touchStartPoint = null,
+        touchLastPoint = null,
+        touchStartPoint = null,
+        touchStartTime = null,
+        touchStartPoint = null,
+        touchMovingLabel = null,
+        touchMovingOffset = null,
+        touchMovingVisible = false,
+        touchShortiesXPos = null,
+        touchRubberBand = null,
+
         tmp = 0;
 
     ml.hookTweet = function(cb) {
@@ -55,6 +67,8 @@ var TWEET_MODULE = function(layer) {
         shLayer.setPosition($42.TWEET_SHORTIES_POS);
         _42_retain(shLayer, "Tweet shorties layer");
         putWordsIntoShortiesLayer();
+
+        initListeners();
     };
 
     var putWordsIntoTextLayer = function() {
@@ -142,6 +156,7 @@ var TWEET_MODULE = function(layer) {
         // First: get total width
         for( var i=0,tWidth=0 ; i<sw.length ; i++ ) tWidth += sw[i].label.getContentSize().width + $42.TWEET_SHORTIES_SPACE_WIDTH;
         // Second: distribute shorties
+        yOffset = $42.TWEET_SHORTIES_HEIGHT - $42.TWEET_SHORTIES_PADDING - $42.TWEET_SHORTIES_LINEHEIGHT/2;
         for( var i=0,x=0,y=0 ; i<sw.length ; i++ ) {
             var width = sw[i].label.getContentSize().width;
             if( y === 0 && x + width/2 > tWidth/2 ) {
@@ -151,7 +166,7 @@ var TWEET_MODULE = function(layer) {
                 x = 0;
                 y = $42.TWEET_SHORTIES_LINEHEIGHT;
             }
-            sw[i].label.setPosition(cc.p(x+width/2,$42.TWEET_SHORTIES_HEIGHT - $42.TWEET_SHORTIES_PADDING - $42.TWEET_SHORTIES_LINEHEIGHT/2 - y));
+            sw[i].label.setPosition(cc.p(x+width/2,yOffset - y));
 
             x += width + $42.TWEET_SHORTIES_SPACE_WIDTH;
         }
@@ -161,11 +176,148 @@ var TWEET_MODULE = function(layer) {
         for( var i=0 ; i<sw.length ; i++ ) {
             var pos   = sw[i].label.getPosition();
 
-            pos.x += (pos.x<=half1? align1:align2) + $42.TWEET_SHORTIES_PADDING;
+            pos.x += (pos.y===yOffset? align1:align2) + $42.TWEET_SHORTIES_PADDING;
 
             sw[i].label.setPosition(pos);
         }
 
         return tWidth;
     };
+    
+    /////////////////////////////////////////////////////////////////////////////
+    // initListeners works on the touch and keyboard inputs
+    initListeners = function() {
+	
+        touchListener = cc.EventListener.create({
+            event: cc.EventListener.TOUCH_ALL_AT_ONCE,
+            onTouchesBegan: function(touches, event) {
+
+                ///////////////////////////////////
+                // Get position and time
+                var touch = touches[0],
+                    loc = touch.getLocation();	            		
+                
+                touchStartPoint = {
+                    x: loc.x,
+                    y: loc.y
+                };
+                touchLastPoint = {
+                    x: loc.x,
+                    y: loc.y
+                };	
+                touchStartTime = new Date().getTime();
+                
+                //////////////////////////////////
+                // Check for Shorties Box
+                if( cc.rectContainsPoint(shLayer.getBoundingBox(), loc) ) {
+                    var sw = selectableWords;
+
+                    for( var i=0,found=false ; i<sw.length ; i++ ) {
+                        var box = sw[i].label.getBoundingBox(),
+                            point = shLayer.convertToWorldSpace(box);
+                        box = {
+                            width: box.width,
+                            height: box.height,
+                            x: point.x,
+                            y: point.y
+                        };
+                        if( cc.rectContainsPoint(box, loc ) ) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if( found ) {
+                        var pos = shLayer.convertToWorldSpace(sw[i].label.getPosition());
+                        touchMovingLabel = cc.LabelTTF.create(sw[i].word, _42_getFontName(res.exo_regular_ttf) , 44);
+                        touchMovingOffset = {
+                            x: pos.x - loc.x,
+                            y: pos.y - loc.y
+                        }
+                        touchMovingLabel.setPosition(pos);
+                        tLayer.addChild(touchMovingLabel,10);
+                        _42_retain(touchMovingLabel,"moving label");
+
+                        touchMovingLabel.runAction(cc.scaleTo(0.16,1.5));
+                        touchMovingVisible = true;
+                    }
+
+                    touchShortiesXPos = shortiesXPos;
+                }
+            },
+                
+            onTouchesMoved: function(touches, event, pos) {
+                
+                var touch = touches[0],
+                    loc = touch.getLocation(),
+                    offset = {
+                        x: loc.x - touchStartPoint.x,
+                        y: loc.y - touchStartPoint.y
+                    };	            		
+                
+                touchLastPoint = {
+                    x: loc.x,
+                    y: loc.y
+                };
+
+                if( touchShortiesXPos !== null ) {
+                    if( Math.abs(offset.x) > Math.abs(offset.y) && cc.rectContainsPoint(shLayer.getBoundingBox(), loc) ) {
+                        ///////////////////////////////
+                        // Move direction left/right
+                        var rightBorder = $42.TWEET_SHORTIES_WIDTH - shortiesWidth - $42.TWEET_SHORTIES_PADDING;
+                        shortiesXPos = touchShortiesXPos + offset.x;
+                        if( shortiesXPos > 0 ) {
+                            touchRubberBand = Math.sqrt(shortiesXPos);
+                            shortiesXPos = 0;
+                        } else if( shortiesXPos < rightBorder ) {
+                            touchRubberBand = -Math.sqrt(rightBorder-shortiesXPos);
+                            shortiesXPos = rightBorder;
+                        } else {
+                            touchRubberBand = 0;
+                        }
+
+                        mvLayer.setPosition(shortiesXPos+touchRubberBand, 0);
+                        if( touchMovingVisible ) {
+                            touchMovingVisible = false;
+                            touchMovingLabel.runAction(cc.fadeOut(0.16));
+                        }
+                    } else {
+                        ///////////////////////////////
+                        // Move direction up/down (a shorty moves)
+                        if( !touchMovingVisible && touchMovingLabel ) {
+                            touchMovingVisible = true;
+                            touchMovingLabel.runAction(cc.fadeIn(0.16));
+                        }
+                    }
+                }
+            },
+                
+            onTouchesEnded: function(touches, event, pos){
+
+                var touch = touches[0],
+                    loc = touch.getLocation();	            		
+
+                if( touchShortiesXPos !== null ) {
+                    touchShortiesXPos = null;
+
+                    mvLayer.setPosition(shortiesXPos, 0);
+
+                    if( touchMovingLabel ) {
+                        touchMovingLabel.runAction(
+                            cc.sequence(
+                                cc.fadeOut(0.16),
+                                cc.callFunc(function() {
+                                    tLayer.removeChild(touchMovingLabel);
+                                    _42_release(touchMovingLabel);
+                                    touchMovingLabel = null;
+                                })
+                            )
+                        );
+                    }
+                }
+            }
+        });
+            
+        cc.eventManager.addListener(touchListener, tLayer);
+    }; 
 };    

@@ -391,7 +391,7 @@ var _42GameLayer = cc.Layer.extend({
 		            	var touch = touches[0],
 		            		loc = touch.getLocation();	            		
 	            	} else {
-	            		loc = pos;
+	            		var loc = pos;
 	            	}
 	                
 	                self.touchStartPoint = {
@@ -413,7 +413,7 @@ var _42GameLayer = cc.Layer.extend({
 		            	var touch = touches[0],
 		            		loc = touch.getLocation();	            		
 	            	} else {
-	            		loc = pos;
+	            		var loc = pos;
 	            	}
 	                
 	            	var start = self.touchStartPoint;
@@ -487,7 +487,7 @@ var _42GameLayer = cc.Layer.extend({
 		            	var touch = touches[0],
 		            		loc = touch.getLocation();	            		
 	            	} else {
-	            		loc = pos;
+	            		var loc = pos;
 	            	}
 	                
 	                self.touchStartPoint = null;
