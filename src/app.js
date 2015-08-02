@@ -184,15 +184,15 @@ var _42GameLayer = cc.Layer.extend({
         // tmp Errormessage layer
         var logMsg = cc.Node.create();
         
-        $42.msg1 = cc.LabelTTF.create("TEST1", "Arial", 20),
+        $42.msg1 = cc.LabelTTF.create(" ", "Arial", 20),
         $42.msg2 = cc.LabelTTF.create(" ", "Arial", 20);
         
         $42.msg1.setPosition(0,0);
         $42.msg2.setPosition(0,-20);
 		logMsg.setPosition(size.width/2,size.height-50);
 
-		logMsg.addChild($42.msg1, 1);        	
-		logMsg.addChild($42.msg2, 1);        	
+		//logMsg.addChild($42.msg1, 1);        	
+		//logMsg.addChild($42.msg2, 1);        	
         this.addChild(logMsg, 100);
         
 	},
@@ -655,7 +655,7 @@ var _42GameLayer = cc.Layer.extend({
 		rt = this.rotateBoxes(t);
 		
 		// play sound
-		cc.audioEngine.playEffect(res.plopp_mp3);
+		//cc.audioEngine.playEffect(res.plopp_mp3);
 
         return t;
 	},
@@ -1087,7 +1087,7 @@ var _42GameLayer = cc.Layer.extend({
     			colsToCorrect[0] = false;
 
     			// play sound
-    			cc.audioEngine.playEffect(res.ritsch_mp3);
+    			//cc.audioEngine.playEffect(res.ritsch_mp3);
 
                 var tmpColBlocked = [];
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
@@ -1613,7 +1613,7 @@ var _42TitleLayer = cc.Layer.extend({
         menu.setOpacity(0);
         titleBg.addChild(menu, 10);       
         menu.alignItemsVerticallyWithPadding(20);
-        menu.runAction(cc.EaseSineIn.create(cc.fadeIn(4)));
+        menu.runAction(cc.EaseSineIn.create(cc.fadeIn(2.5)));
 
         return true;
     },
@@ -1707,6 +1707,7 @@ var _42Scene = cc.Scene.extend({
             letters = $42.LETTERS;
 
         $42.t = lg.apptext;
+        $42.shorties = cc.loader.getRes(res.language_shorties);
 
         // Prepare letters (order them, calculate frequency out of letter value)
         var max=0;

@@ -817,7 +817,7 @@ var MURBIKS_MODULE = function(layer) {
         speechBubbleButton.x = bubbleX - 120;
         speechBubbleButton.y = bubbleY - 240 - speechBubble.getContentSize().height/2;
         
-        $42.msg2.setString("x: "+bubbleX+", y: "+bubbleY+", content size: "+speechBubble.getContentSize().height);
+        //$42.msg2.setString("x: "+bubbleX+", y: "+bubbleY+", content size: "+speechBubble.getContentSize().height);
 		
         mul.addChild(speechBubbleLine,5,$42.SPEECH_BUBBLE_LINE_TAG);
 		mul.addChild(speechBubbleCloud,5,$42.SPEECH_BUBBLE_CLOUD_TAG);
@@ -1194,7 +1194,7 @@ var MURBIKS_MODULE = function(layer) {
         // Only return letters in a specified frequency
         //cc.log("ml.hookGetProgrammedTile (1): ml.wordsForTilesCnt: "+ml.wordsForTilesCnt+", level.wordFreq: "+level.wordFreq);
         if( ++ml.wordsForTilesCnt < level.wordFreq ) {
-    	    $42.msg2.setString("Sending empty tile.");
+    	    //$42.msg2.setString("Sending empty tile.");
             return {letters: [" "," "," "," "]};
         }
         else ml.wordsForTilesCnt -= level.wordFreq;
@@ -1431,7 +1431,7 @@ var MURBIKS_MODULE = function(layer) {
             }
 
             for( var i=0 ; i<tileBoxes.length ; i++ ) if( !tile.letters[i] ) tile.letters[i] = " ";
-    	    $42.msg2.setString("wft: "+JSON.stringify(wft));
+    	    //$42.msg2.setString("wft: "+JSON.stringify(wft));
             return tile;
         } 
 

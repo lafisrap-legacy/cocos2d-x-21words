@@ -392,9 +392,10 @@ var _42_MODULE = function(_42Layer) {
 
                             if( ++$42.currentLevel > $42.LEVEL_DEVS[ml._gameMode].length ) {
                                 ml.drawScorebar(false);
-                                ls.setItem("wordTreasure",null);
-                                ls.setItem("currentLevel",null);
-                                ls.setItem("wordProfile",null);
+
+                                ls.removeItem("wordTreasure");
+                                ls.removeItem("currentLevel");
+                                ls.removeItem("wordProfile");
                                 youWonTheGame();
                                 return
                             } else {
@@ -497,19 +498,19 @@ var _42_MODULE = function(_42Layer) {
         var prepareLevel = function() {
             /////////////////////////////
             // Draw sun
-            var sun = cc.Sprite.create(res.background_sun_png);
-            sun.setPosition(cc.p(cc.width/2,cc.height/2));
-            sun.setOpacity(0);
-            sun.setScale(0.7);
-            sun.setCascadeOpacityEnabled(true);
-            ml.addChild(sun,5);
-            _42_retain(sun,"Background sun");
-            sun.runAction(
+            var element1 = cc.Sprite.create(res.background_element1_png);
+            element1.setPosition(cc.p(cc.width/2,cc.height*0.67));
+            element1.setOpacity(0);
+            element1.setScale(0.5);
+            element1.setCascadeOpacityEnabled(true);
+            ml.addChild(element1,5);
+            _42_retain(element1,"Background sun");
+            element1.runAction(
                 cc.sequence(
                     cc.EaseSineOut.create(
                         cc.spawn(
-                            cc.scaleTo($42.BACKGROUND_SPEED*0.67, 0.8),
-                            cc.fadeIn($42.BACKGROUND_SPEED*0.67)
+                            cc.scaleTo($42.BACKGROUND_SPEED*0.67, 0.6),
+                            cc.fadeTo($42.BACKGROUND_SPEED*0.67,128)
                         )
                     ),
                     cc.delayTime($42.BACKGROUND_SPEED*0.33),
@@ -517,31 +518,74 @@ var _42_MODULE = function(_42Layer) {
                         cc.fadeOut($42.BACKGROUND_SPEED*0.67)
                     ),
                     cc.callFunc(function() {
-                        ml.removeChild(sun);
-                        _42_release(sun);
+                        ml.removeChild(element1);
+                        _42_release(element1);
                     })
                 )
             );
 
-			var label = cc.LabelTTF.create($42.currentLevel, "SourceCodePro-Light" , 150),
-                size = sun.getContentSize();
-            label.setPosition(cc.p(size.width/2, size.height/2));
-            label.setOpacity(128);
-            label.setColor(cc.color(0,0,0));
-            sun.addChild(label);
-
-            var beams = cc.Sprite.create(res.background_beams_png);
-            beams.setPosition(cc.p(cc.width/2,cc.height/2));
-            beams.setOpacity(0);
-            beams.setScale(0.7);
-            ml.addChild(beams,5);
-            _42_retain(beams,"Background beams");
-            beams.runAction(
+            var oldLevelnr = ml._levelNr,
+			    levelnr = ml._levelNr = cc.LabelTTF.create($42.currentLevel, _42_getFontName(res.exo_regular_ttf) , 150);
+            levelnr.setPosition(cc.p(cc.width/2, cc.height*0.67));
+            levelnr.setOpacity(0);
+            levelnr.setColor(cc.color(44,18,44,255));
+            levelnr.setScale(0.7,1);
+            ml.addChild(levelnr,10);
+            _42_retain(levelnr,"Background level nr");
+            levelnr.runAction(
                 cc.sequence(
                     cc.EaseSineOut.create(
                         cc.spawn(
-                            cc.scaleTo($42.BACKGROUND_SPEED*0.67, 0.8),
                             cc.fadeIn($42.BACKGROUND_SPEED*0.67)
+                        )
+                    ),
+                    //cc.delayTime($42.BACKGROUND_SPEED*0.33),
+                    cc.spawn(
+                        cc.sequence(
+                            cc.scaleTo($42.BACKGROUND_SPEED*1, 2.1, 3),
+                            cc.scaleTo($42.BACKGROUND_SPEED*0.5, 0.28, 0.4)
+                        ),
+                        cc.sequence(
+                            cc.delayTime($42.BACKGROUND_SPEED*0.5),
+                            cc.EaseQuinticActionIn.create(
+                                cc.spawn(
+                                    cc.moveTo( $42.BACKGROUND_SPEED*1.0,cc.p(30,cc.height-41)),
+                                    cc.rotateBy($42.BACKGROUND_SPEED*1.0,1440)
+                                )
+                            )
+                        )
+                    ),
+                    cc.callFunc(function() {
+                        if( oldLevelnr ) oldLevelnr.runAction(
+                            cc.sequence(
+                                cc.delayTime($42.BACKGROUND_SPEED*0.05),
+                                cc.spawn(
+                                    cc.rotateBy($42.BACKGROUND_SPEED*0.33,720),
+                                    cc.moveBy($42.BACKGROUND_SPEED*0.33,cc.p(-100,50))
+                                ),
+                                cc.callFunc(function() {
+                                    ml.removeChild(oldLevelnr);
+                                    _42_release(oldLevelnr);
+                                })
+                            )
+                        );
+                        levelnr.setColor(cc.color(128,128,128));
+                    })
+                )
+            );
+
+            var element2 = cc.Sprite.create(res.background_element2_png);
+            element2.setPosition(cc.p(cc.width/2,cc.height*0.67));
+            element2.setOpacity(0);
+            element2.setScale(0.5);
+            ml.addChild(element2,5);
+            _42_retain(element2,"Background beams");
+            element2.runAction(
+                cc.sequence(
+                    cc.EaseSineOut.create(
+                        cc.spawn(
+                            cc.scaleTo($42.BACKGROUND_SPEED*0.67, 0.6),
+                            cc.fadeTo($42.BACKGROUND_SPEED*0.67,128)
                         )
                     ),
                     cc.delayTime($42.BACKGROUND_SPEED*0.33),
@@ -549,13 +593,14 @@ var _42_MODULE = function(_42Layer) {
                         cc.fadeOut($42.BACKGROUND_SPEED*0.67)
                     ),
                     cc.callFunc(function() {
-                        ml.removeChild(beams);
-                        _42_release(beams);
+                        ml.removeChild(element2);
+                        _42_release(element2);
                     })
                 )
             );
 
-            beams.runAction(cc.rotateBy($42.BACKGROUND_SPEED*2,270));
+            element1.runAction(cc.rotateBy($42.BACKGROUND_SPEED*2,-270));
+            element2.runAction(cc.rotateBy($42.BACKGROUND_SPEED*2,270));
             
             /////////////////////////////
             // Remove old background if there is one
@@ -586,6 +631,7 @@ var _42_MODULE = function(_42Layer) {
                 scale: 1,
                 rotation: 0
             });
+            background.setCascadeOpacityEnabled(true);
             ml.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
             _42_retain(background, "startAnimation: background");
             background.runAction(
@@ -596,6 +642,11 @@ var _42_MODULE = function(_42Layer) {
                     )
                 )
             );
+
+            var levelnrCorner  = cc.Sprite.create(res.background_levelnr_png);
+            levelnrCorner.setPosition(cc.p(46,cc.height-41));
+            levelnrCorner.setOpacity(180);
+            background.addChild(levelnrCorner,5);
 
             /////////////////////////////////
             // Look for specific words and prefixes 
@@ -666,7 +717,7 @@ var _42_MODULE = function(_42Layer) {
                 background.addChild(label, 0);
                 label.runAction(
                     cc.sequence(
-                        cc.delayTime(2+i*0.33),
+                        cc.delayTime(2.5+i*0.33),
                         cc.spawn(
                             cc.scaleTo(1,1),
                             cc.fadeTo(1,$42.GIVEN_WORDS_OPACITY)
@@ -702,7 +753,34 @@ var _42_MODULE = function(_42Layer) {
 
             ml.fillWordsForTiles();
             setTimeout( function() {
-                ml.pauseBuildingTiles = false;
+                //ml.pauseBuildingTiles = false;
+                
+                $42.wordTreasure = [
+                    {word: "HINDERNIS"},
+                    {word: "TROCKNET"},
+                    {word: "UMGEBENDEN"},
+                    {word: "REPORTERN"},
+                    {word: "REDETEXT"},
+                    {word: "GEBRAUCH"},
+                    {word: "POSE"},
+                    {word: "NÜCHTERNE"},
+                    {word: "LADUNGEN"},
+                    {word: "INTERNATE"},
+                    {word: "HILFREICH"},
+                    {word: "WIRKEN"},
+                    {word: "PLATTENSEE"},
+                    {word: "JAPANERN"},
+                    {word: "NEBENBEI"},
+                    {word: "WACHSE"},
+                    {word: "MALAWI"},
+                    {word: "AUFKLEBER"},
+                    {word: "ERSCHWEREN"},
+                    {word: "GASPROM"},
+                    {word: "GLÜCKT"}
+                ];
+                ml.hookTweet();
+                //showAllWordsFlyingIn();
+                
             }, (3.5+i*0.50) * 1000 );
         };
     };
@@ -742,7 +820,7 @@ var _42_MODULE = function(_42Layer) {
             } 
         }
 
-    	$42.msg1.setString("ml.wordForTiles: "+JSON.stringify(words));
+    	//$42.msg1.setString("ml.wordForTiles: "+JSON.stringify(words));
     };
 
     var endLevel = function() {
@@ -852,18 +930,26 @@ var _42_MODULE = function(_42Layer) {
         ml.unscheduleUpdate();
 
 		showAllWordsFlyingIn(function() {
-			var menuItems = [{
-				label: $42.t.won_end_game, 
-				cb: function(sender) {
-					if( self.hookEndGame ) self.hookEndGame();
-					/* must be tested */ ml.endGame();
-		        	cc.director.runScene(new _42Scene());
-		        }
-			}];
+            var self = this,
+                endGame = function() {
+                    if( self.hookEndGame ) self.hookEndGame();
+                    ml.endGame();
+                    cc.director.runScene(new _42Scene());
+                }, 
+            
+                menuItems = [{
+				    label: $42.t.won_tweet_yes, 
+				    cb: function(sender) {
+                        ml.hookTweet(endGame);
+		            }
+			    },{
+				    label: $42.t.won_tweet_no, 
+				    cb: endGame
+                }];
             ml.getParent().addChild(
             	new _42MenuLayer([
             	    $42.t.won_congrats,
-            	    $42.t.won_word_value+": "+$42.wordTreasureValue+($42.wordTreasureValue === $42.maxPoints?" ("+$42.t.won_highscore+")":"")
+                    $42.t.won_tweet,
             	],menuItems), 1
             );
 		});		
@@ -876,7 +962,7 @@ var _42_MODULE = function(_42Layer) {
 		var wt = $42.wordTreasure;
 		
 		for( var i=20 ; i>=0 /* wt.length */ ; i-- ) {
-			var label = cc.LabelTTF.create(wt[i%wt.length].word, "SourceCodePro-Light" , 32);
+			var label = cc.LabelTTF.create(wt[i%wt.length].word, _42_getFontName(res.exo_regular_ttf) , 32);
 			label.setPosition(ml.size.width/2,0);
 			label.setColor(cc.color(0,0,0));
 			label.setOpacity(50);
@@ -885,28 +971,28 @@ var _42_MODULE = function(_42Layer) {
 			label.i = i;
 			label.runAction(
 				cc.sequence(
-					cc.delayTime(i * 0.48),
-					cc.moveTo(2.2,ml.size.width/2,200),
+					cc.delayTime(i * 0.32),
+					cc.moveTo(1.5,ml.size.width/2,200),
 					cc.spawn(
-						cc.moveTo(2.6,ml.size.width/2,600),
+						cc.moveTo(1.8,ml.size.width/2,600),
 						cc.EaseSineOut.create(
-							cc.scaleTo(2.6,2.8)
+							cc.scaleTo(1.8,2.8)
 						),
 						cc.EaseSineIn.create(
-							cc.fadeTo(2.6,255)
+							cc.fadeTo(1.8,255)
 						),
-						cc.tintTo(2.6,84,13,143)
+						cc.tintTo(1.8,84,13,143)
 					),
 					cc.spawn(
-							cc.moveTo(2.6,ml.size.width/2,1000),
+							cc.moveTo(1.8,ml.size.width/2,1000),
 							cc.EaseSineIn.create(
-								cc.scaleTo(2.6,1)
+								cc.scaleTo(1.8,1)
 							),
 							cc.EaseSineOut.create(
-								cc.fadeTo(2.6,50)
+								cc.fadeTo(1.8,50)
 							)
 						),
-					cc.moveTo(2.2,ml.size.width/2,1200),
+					cc.moveTo(1.5,ml.size.width/2,1200),
 					cc.callFunc(function() {
 				        _42_release(this);
 						ml.removeChild(this);
@@ -1051,7 +1137,7 @@ var _42_MODULE = function(_42Layer) {
 				cc.callFunc(function() {
 					
 					// play sound
-					cc.audioEngine.playEffect(res.pling_mp3);
+					//cc.audioEngine.playEffect(res.pling_mp3);
 					
 	   				var sprite = null,
                         levelType = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1].type;
@@ -1717,7 +1803,7 @@ var _42_MODULE = function(_42Layer) {
 		tileSprite.setPosition(pos);
 		ml.addChild(tileSprite,2);
         
-        if( sw ) $42.msg2.setString("missingLetters: "+JSON.stringify(sw.missingLetters));
+        //if( sw ) $42.msg2.setString("missingLetters: "+JSON.stringify(sw.missingLetters));
 
         // add single boxes with letters to the tile
         for( var i=0 ; i<tileBoxes.length ; i++) {
@@ -2025,5 +2111,8 @@ var _42_MODULE = function(_42Layer) {
 	
 	// call tutorial module if available
 	if( typeof MURBIKS_MODULE === 'function' ) MURBIKS_MODULE(ml);
+	
+    // call tweet module if available
+	if( typeof TWEET_MODULE === 'function' ) TWEET_MODULE(ml);
 };
 
