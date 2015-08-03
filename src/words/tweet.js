@@ -56,10 +56,10 @@ var TWEET_MODULE = function(layer) {
 
         ////////////////////////////////////
         // init text layer
-        txlLayer = new cc.LayerColor($42.TWEET_TEXT_COLOR, $42.TWEET_TEXT_WIDTH, $42.TWEET_TEXT_HEIGHT);
-        txlLayer.setPosition($42.TWEET_TEXT_POS);
-        tLayer.addChild(txlLayer);
-        _42_retain(txlLayer, "Tweet text layer");
+        txLayer = new cc.LayerColor($42.TWEET_TEXT_COLOR, $42.TWEET_TEXT_WIDTH, $42.TWEET_TEXT_HEIGHT);
+        txLayer.setPosition($42.TWEET_TEXT_POS);
+        tLayer.addChild(txLayer);
+        _42_retain(txLayer, "Tweet text layer");
         putWordsIntoTextLayer();
 
         ////////////////////////////////////
@@ -102,7 +102,7 @@ var TWEET_MODULE = function(layer) {
 			label.setPosition(cc.p(padding + x + size.width/2, textHeight - padding - y - size.height/2));
 			label.setColor(cc.color(0,0,0));
 			_42_retain(label, "moveable word");	
-			txlLayer.addChild(label, 5);
+			txLayer.addChild(label, 5);
             label.runAction(
                 cc.repeatForever(
                     cc.sequence(
@@ -117,7 +117,7 @@ var TWEET_MODULE = function(layer) {
                 )
             );
 
-            movableWords.push({
+            movableWords.push(label);{
                 word: wt[i].word,
                 label: label
             });
@@ -220,42 +220,55 @@ var TWEET_MODULE = function(layer) {
                 };	
                 touchStartTime = new Date().getTime();
                 
-                //////////////////////////////////
-                // Check for Shorties Box
-                if( cc.rectContainsPoint(shLayer.getBoundingBox(), loc) ) {
-                    var sw = selectableWords;
+                var getLabel = function(box, words, layer, cb) {
 
-                    for( var i=0,found=false ; i<sw.length ; i++ ) {
-                        var box = sw[i].label.getBoundingBox(),
-                            pos = mvLayer.convertToWorldSpace(sw[i].label.getPosition());
+                    if( cc.rectContainsPoint(box, loc) ) {
 
-                        box = {
-                            width: box.width,
-                            height: box.height,
-                            x: pos.x - box.width/2,
-                            y: pos.y - box.height/2
-                        };
-                        if( cc.rectContainsPoint(box, loc) ) {
-                            found = true;
-                            break;
+                        for( var i=0,found=false ; i<words.length ; i++ ) {
+                            var box = words[i].label.getBoundingBox(),
+                                pos = layer.convertToWorldSpace(words[i].label.getPosition());
+
+                            box = {
+                                width: box.width,
+                                height: box.height,
+                                x: pos.x - box.width/2,
+                                y: pos.y - box.height/2
+                            };
+                            if( cc.rectContainsPoint(box, loc) ) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if( found ) {
+                            touchMovingLabel = cc.LabelTTF.create(words[i].word, _42_getFontName(res.exo_regular_ttf) , 44);
+                            touchMovingOffset = {
+                                x: pos.x - loc.x,
+                                y: pos.y - loc.y
+                            }
+                            touchMovingLabel.setPosition(pos);
+                            tLayer.addChild(touchMovingLabel,10);
+                            _42_retain(touchMovingLabel,"moving label");
+
+                            touchMovingLabel.runAction(cc.scaleTo(0.16,1.5));
+                            touchMovingVisible = true;
+
+                            if( typeof cb === "function" ) cb(true);
+                        } else {
+                            if( typeof cb === "function" ) cb(false);
                         }
                     }
+                };
 
-                    if( found ) {
-                        touchMovingLabel = cc.LabelTTF.create(sw[i].word, _42_getFontName(res.exo_regular_ttf) , 44);
-                        touchMovingOffset = {
-                            x: pos.x - loc.x,
-                            y: pos.y - loc.y
-                        }
-                        touchMovingLabel.setPosition(pos);
-                        tLayer.addChild(touchMovingLabel,10);
-                        _42_retain(touchMovingLabel,"moving label");
+                getLabel(shLayer.getBoundingBox(), selectableWords, mvLayer, function(newWord) { 
+                        touchShortiesXPos = shortiesXPos;
+                });
+                getLabel(txLayer.getBoundingBox(), movableWords, txLayer, function(newWord) {
 
-                        touchMovingLabel.runAction(cc.scaleTo(0.16,1.5));
-                        touchMovingVisible = true;
-                    }
+                });
 
-                    touchShortiesXPos = shortiesXPos;
+                if( cc.rectContainsPoint(txLayer.getBoundingBox(), loc) ) {
+                    
                 }
             },
                 
@@ -273,42 +286,32 @@ var TWEET_MODULE = function(layer) {
                     y: loc.y
                 };
 
-                if( touchShortiesXPos !== null ) {
-                    if( Math.abs(offset.x) > Math.abs(offset.y) && Math.abs(offset.x) > 6 && cc.rectContainsPoint(shLayer.getBoundingBox(), loc) ) {
-                        ///////////////////////////////
-                        // Move direction left/right
-                        var rightBorder = $42.TWEET_SHORTIES_WIDTH - shortiesWidth - $42.TWEET_SHORTIES_PADDING;
-                        shortiesXPos = touchShortiesXPos + offset.x;
-                        if( shortiesXPos > 0 ) {
-                            touchRubberBand = Math.sqrt(shortiesXPos)*3;
-                            shortiesXPos = 0;
-                        } else if( shortiesXPos < rightBorder ) {
-                            touchRubberBand = -Math.sqrt(rightBorder-shortiesXPos)*3;
-                            shortiesXPos = rightBorder;
-                        } else {
-                            touchRubberBand = 0;
-                        }
-
-                        mvLayer.setPosition(shortiesXPos+touchRubberBand, 0);
-
-                        if( touchMovingVisible ) {
-                            touchMovingVisible = false;
-                            touchMovingLabel.runAction(cc.fadeOut(0.16));
-                        }
+                if( touchShortiesXPos !== null && Math.abs(offset.x) > Math.abs(offset.y) && Math.abs(offset.x) > 6 && cc.rectContainsPoint(shLayer.getBoundingBox(), loc) ) {
+                    var rightBorder = $42.TWEET_SHORTIES_WIDTH - shortiesWidth - $42.TWEET_SHORTIES_PADDING;
+                    shortiesXPos = touchShortiesXPos + offset.x;
+                    if( shortiesXPos > 0 ) {
+                        touchRubberBand = Math.sqrt(shortiesXPos)*3;
+                        shortiesXPos = 0;
+                    } else if( shortiesXPos < rightBorder ) {
+                        touchRubberBand = -Math.sqrt(rightBorder-shortiesXPos)*3;
+                        shortiesXPos = rightBorder;
                     } else {
-                        ///////////////////////////////
-                        // Move direction up/down (a shorty moves)
-                        if( touchMovingLabel ) {
-                            if( !touchMovingVisible ) {
-                                touchMovingVisible = true;
-                                touchMovingLabel.runAction(cc.fadeIn(0.16));
-                            }
-
-                            touchMovingLabel.setPosition(cc.p(loc.x + touchMovingOffset.x, loc.y + touchMovingOffset.y));
-
-                            cc.log("Moving label to "+JSON.stringify(loc));
-                        }
+                        touchRubberBand = 0;
                     }
+
+                    mvLayer.setPosition(shortiesXPos+touchRubberBand, 0);
+
+                    if( touchMovingVisible ) {
+                        touchMovingVisible = false;
+                        touchMovingLabel.runAction(cc.fadeOut(0.16));
+                    }
+                } else if( touchMovingLabel ) {
+                    if( !touchMovingVisible ) {
+                        touchMovingVisible = true;
+                        touchMovingLabel.runAction(cc.fadeIn(0.16));
+                    }
+
+                    touchMovingLabel.setPosition(cc.p(loc.x + touchMovingOffset.x, loc.y + touchMovingOffset.y));
                 }
             },
                 
@@ -321,19 +324,19 @@ var TWEET_MODULE = function(layer) {
                     touchShortiesXPos = null;
 
                     mvLayer.setPosition(shortiesXPos, 0);
-
-                    if( touchMovingLabel ) {
-                        touchMovingLabel.runAction(
-                            cc.sequence(
-                                cc.fadeOut(0.16),
-                                cc.callFunc(function() {
-                                    tLayer.removeChild(touchMovingLabel);
-                                    _42_release(touchMovingLabel);
-                                    touchMovingLabel = null;
-                                })
-                            )
-                        );
-                    }
+                }
+                
+                if( touchMovingLabel ) {
+                    touchMovingLabel.runAction(
+                        cc.sequence(
+                            cc.fadeOut(0.16),
+                            cc.callFunc(function() {
+                                tLayer.removeChild(touchMovingLabel);
+                                _42_release(touchMovingLabel);
+                                touchMovingLabel = null;
+                            })
+                        )
+                    );
                 }
             }
         });
@@ -364,7 +367,7 @@ var TWEET_MODULE = function(layer) {
                 touchShortiesSpeed = 0;
             } else {
                 touchShortiesSpeed *= 0.99;
-                if( Math.abs(touchShortiesSpeed) < 1 ) touchShortiesSpeed = 0;
+                if( Math.abs(touchShortiesSpeed) < 0.5 ) touchShortiesSpeed = 0;
             }
 
             mvLayer.setPosition(shortiesXPos, 0);
