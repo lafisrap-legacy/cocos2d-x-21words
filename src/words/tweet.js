@@ -14,8 +14,8 @@ $42.TWEET_SHORTIES_HEIGHT = 160;
 $42.TWEET_SHORTIES_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT-$42.TWEET_SHORTIES_HEIGHT);
 $42.TWEET_SHORTIES_COLOR = cc.color(240,240,255,100);
 $42.TWEET_SHORTIES_LINEHEIGHT = 65;
-$42.TWEET_SHORTIES_SPACE_WIDTH = 15;
-$42.TWEET_SHORTIES_PADDING = 15;
+$42.TWEET_SHORTIES_SPACE_WIDTH = 40;
+$42.TWEET_SHORTIES_PADDING = 20;
 
 var TWEET_MODULE = function(layer) {
 	var ml = layer,
@@ -38,6 +38,8 @@ var TWEET_MODULE = function(layer) {
         touchMovingOffset = null,
         touchMovingVisible = false,
         touchShortiesXPos = null,
+        touchShortiesLastX = null,
+        touchShortiesSpeed = null,
         touchRubberBand = null,
 
         tmp = 0;
@@ -68,7 +70,17 @@ var TWEET_MODULE = function(layer) {
         _42_retain(shLayer, "Tweet shorties layer");
         putWordsIntoShortiesLayer();
 
+        /////////////////////////////////////
+        // Scheduler
+        tLayer.update = update;
+
         initListeners();
+        tLayer.scheduleUpdate();
+    };
+
+    var exit = function() {
+        stopListeners();
+        tLayer.unscheduleUpdate();
     };
 
     var putWordsIntoTextLayer = function() {
@@ -123,6 +135,7 @@ var TWEET_MODULE = function(layer) {
         mvLayer = new cc.LayerColor(cc.color(0,0,0,0), 0, $42.TWEET_SHORTIES_HEIGHT);
         shLayer.addChild(mvLayer);
         mvLayer.setPosition(shortiesXPos, 0);
+        mvLayer.setOpacity(0);
         _42_retain(mvLayer, "Tweet shorties moving layer");
         
         for( var i=0 ; i<sh.length ; i++ ) {
@@ -214,21 +227,21 @@ var TWEET_MODULE = function(layer) {
 
                     for( var i=0,found=false ; i<sw.length ; i++ ) {
                         var box = sw[i].label.getBoundingBox(),
-                            point = shLayer.convertToWorldSpace(box);
+                            pos = mvLayer.convertToWorldSpace(sw[i].label.getPosition());
+
                         box = {
                             width: box.width,
                             height: box.height,
-                            x: point.x,
-                            y: point.y
+                            x: pos.x - box.width/2,
+                            y: pos.y - box.height/2
                         };
-                        if( cc.rectContainsPoint(box, loc ) ) {
+                        if( cc.rectContainsPoint(box, loc) ) {
                             found = true;
                             break;
                         }
                     }
 
                     if( found ) {
-                        var pos = shLayer.convertToWorldSpace(sw[i].label.getPosition());
                         touchMovingLabel = cc.LabelTTF.create(sw[i].word, _42_getFontName(res.exo_regular_ttf) , 44);
                         touchMovingOffset = {
                             x: pos.x - loc.x,
@@ -253,30 +266,31 @@ var TWEET_MODULE = function(layer) {
                     offset = {
                         x: loc.x - touchStartPoint.x,
                         y: loc.y - touchStartPoint.y
-                    };	            		
+                    };
                 
-                touchLastPoint = {
+                    touchLastPoint = {
                     x: loc.x,
                     y: loc.y
                 };
 
                 if( touchShortiesXPos !== null ) {
-                    if( Math.abs(offset.x) > Math.abs(offset.y) && cc.rectContainsPoint(shLayer.getBoundingBox(), loc) ) {
+                    if( Math.abs(offset.x) > Math.abs(offset.y) && Math.abs(offset.x) > 6 && cc.rectContainsPoint(shLayer.getBoundingBox(), loc) ) {
                         ///////////////////////////////
                         // Move direction left/right
                         var rightBorder = $42.TWEET_SHORTIES_WIDTH - shortiesWidth - $42.TWEET_SHORTIES_PADDING;
                         shortiesXPos = touchShortiesXPos + offset.x;
                         if( shortiesXPos > 0 ) {
-                            touchRubberBand = Math.sqrt(shortiesXPos);
+                            touchRubberBand = Math.sqrt(shortiesXPos)*3;
                             shortiesXPos = 0;
                         } else if( shortiesXPos < rightBorder ) {
-                            touchRubberBand = -Math.sqrt(rightBorder-shortiesXPos);
+                            touchRubberBand = -Math.sqrt(rightBorder-shortiesXPos)*3;
                             shortiesXPos = rightBorder;
                         } else {
                             touchRubberBand = 0;
                         }
 
                         mvLayer.setPosition(shortiesXPos+touchRubberBand, 0);
+
                         if( touchMovingVisible ) {
                             touchMovingVisible = false;
                             touchMovingLabel.runAction(cc.fadeOut(0.16));
@@ -284,9 +298,15 @@ var TWEET_MODULE = function(layer) {
                     } else {
                         ///////////////////////////////
                         // Move direction up/down (a shorty moves)
-                        if( !touchMovingVisible && touchMovingLabel ) {
-                            touchMovingVisible = true;
-                            touchMovingLabel.runAction(cc.fadeIn(0.16));
+                        if( touchMovingLabel ) {
+                            if( !touchMovingVisible ) {
+                                touchMovingVisible = true;
+                                touchMovingLabel.runAction(cc.fadeIn(0.16));
+                            }
+
+                            touchMovingLabel.setPosition(cc.p(loc.x + touchMovingOffset.x, loc.y + touchMovingOffset.y));
+
+                            cc.log("Moving label to "+JSON.stringify(loc));
                         }
                     }
                 }
@@ -320,4 +340,34 @@ var TWEET_MODULE = function(layer) {
             
         cc.eventManager.addListener(touchListener, tLayer);
     }; 
+
+    var stopListeners = function() {
+        cc.eventManager.stopListener(touchListener); 
+    };
+   
+    var updateCnt = 0; 
+    var update = function(dt) {
+        if( touchShortiesXPos !== null ) {
+            touchShortiesSpeed = touchShortiesSpeed*0.8 + (shortiesXPos - touchShortiesLastX)*0.2;
+            touchShortiesLastX = shortiesXPos;
+        } else if( touchShortiesSpeed ) {
+            var rightBorder = $42.TWEET_SHORTIES_WIDTH - shortiesWidth - $42.TWEET_SHORTIES_PADDING;
+            
+            shortiesXPos += touchShortiesSpeed;
+
+            if( shortiesXPos > 0 ) {
+                shortiesXPos = 0;
+                touchShortiesSpeed = 0;
+            }
+            else if( shortiesXPos < rightBorder ) {
+                shortiesXPos = rightBorder;
+                touchShortiesSpeed = 0;
+            } else {
+                touchShortiesSpeed *= 0.99;
+                if( Math.abs(touchShortiesSpeed) < 1 ) touchShortiesSpeed = 0;
+            }
+
+            mvLayer.setPosition(shortiesXPos, 0);
+        }
+    };
 };    
