@@ -245,11 +245,11 @@ var TWEET_MODULE = function(layer) {
                                 y: pos.y - loc.y
                             }
                             touchMovingLabel.setPosition(pos);
-                            touchMovingLabel.setOpacity(128);
+                            touchMovingLabel.setOpacity(180);
                             tLayer.addChild(touchMovingLabel,10);
                             _42_retain(touchMovingLabel,"moving label");
 
-                            touchMovingLabel.runAction(cc.scaleTo(0.16,2.5));
+                            touchMovingLabel.runAction(cc.scaleTo(0.16,1.8));
                             touchMovingVisible = true;
 
                             if( typeof cb === "function" ) cb(i, words[i]);
@@ -267,7 +267,7 @@ var TWEET_MODULE = function(layer) {
                         cc.assert(touchMovingLabel,"I need a moving sprite at this point");
 
                         // hide word, but don't refresh list now, because word will probably be inserted in the next onTouchesMoved call 
-                        touchHidingWord = movableWords.splice(index,1)[0];
+                        touchHidingWord = movableWords.splice(index,1)[0];  // Is hiding word needed?
                         txLayer.removeChild(touchHidingWord);
                     }    
                 });
@@ -306,7 +306,7 @@ var TWEET_MODULE = function(layer) {
 
                     mvLayer.setPosition(shortiesXPos+touchRubberBand, 0);
 
-                    if( touchMovingVisible ) {
+                    if( touchMovingVisible && touchMovingLabel ) {
                         touchMovingVisible = false;
                         touchMovingLabel.runAction(cc.fadeOut(0.16));
                     }
@@ -315,6 +315,36 @@ var TWEET_MODULE = function(layer) {
                         touchMovingVisible = true;
                         touchMovingLabel.runAction(cc.fadeIn(0.16));
                     }
+
+                    var reorganizeWords = function(index) {
+                        ///////////////////////////////
+                        // Reorganize words
+                        var padding = $42.TWEET_TEXT_PADDING,
+                            textWidth = $42.TWEET_TEXT_WIDTH - padding * 2,
+                            lineHeight = $42.TWEET_TEXT_LINEHEIGHT;
+                        for( var i=index,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
+                            var formerWidth = mw[i-1].getContentSize().width,
+                                currentPos = mw[i].getPosition(),
+                                currentWidth = mw[i].getContentSize().width;
+
+                            if( formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth > textWidth ) {
+                                var newPos = cc.p(padding + currentWidth/2, formerPos.y - lineHeight);
+                            } else {
+                                var newPos = cc.p(formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth/2, formerPos.y); 
+                            }
+                            
+                            //if( newPos.x === currentPos.x && newPos.y === currentPos.y ) break;
+
+                            formerPos = newPos;
+
+                            touchMovingLabelTime = new Date().getTime();
+                            mw[i].runAction(
+                                cc.EaseSineIn.create(
+                                    cc.moveTo($42.TWEET_TEXT_MOVING_TIME,newPos)
+                                )
+                            );
+                        }
+                    };
 
                     var newPos = cc.p(loc.x + touchMovingOffset.x, loc.y + touchMovingOffset.y);
                     touchMovingLabel.setPosition(newPos);
@@ -365,34 +395,21 @@ var TWEET_MODULE = function(layer) {
                         touchMovingLabelInserted = i;
                         cc.log("touchMovingLabelInserted: "+touchMovingLabelInserted+" (i was "+i+")");
 
-                        ///////////////////////////////
-                        // Reorganize words
-                        var padding = $42.TWEET_TEXT_PADDING,
-                            textWidth = $42.TWEET_TEXT_WIDTH - padding * 2,
-                            lineHeight = $42.TWEET_TEXT_LINEHEIGHT;
-                        for( var i=j,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
-                        //for( var i=1,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
-                            var formerWidth = mw[i-1].getContentSize().width,
-                                currentPos = mw[i].getPosition(),
-                                currentWidth = mw[i].getContentSize().width;
+                        reorganizeWords(j);
+                    } else if( touchMovingLabelInserted !== null ) {
+                        var mw = movableWords,
+                            label = mw[touchMovingLabelInserted];
 
-                            if( formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth > textWidth ) {
-                                var newPos = cc.p(padding + currentWidth/2, formerPos.y - lineHeight);
-                            } else {
-                                var newPos = cc.p(formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth/2, formerPos.y); 
-                            }
-                            
-                            if( newPos.x === currentPos.x && newPos.y === currentPos.y ) break;
+                        //////////////////////////////////
+                        // Delete word
+                        txLayer.removeChild(label);
+                        _42_release(label);
+                        mw.splice(touchMovingLabelInserted,1);
+                        cc.log("Deleting word at pos ("+i+")"); 
 
-                            formerPos = newPos;
+                        reorganizeWords(touchMovingLabelInserted);
 
-                            touchMovingLabelTime = new Date().getTime();
-                            mw[i].runAction(
-                                cc.EaseSineIn.create(
-                                    cc.moveTo($42.TWEET_TEXT_MOVING_TIME,newPos)
-                                )
-                            );
-                        }
+                        touchMovingLabelInserted = null;
                     }
                 }
             },
