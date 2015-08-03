@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////
 // tweet.js contains the code for the tweet at the end of one round, input and sending
-//
+//  meie.
 
 $42.TWEET_TEXT_WIDTH = 640;
 $42.TWEET_TEXT_HEIGHT = 800;
@@ -35,8 +35,10 @@ var TWEET_MODULE = function(layer) {
         touchStartTime = null,
         touchStartPoint = null,
         touchMovingLabel = null,
+        touchMovingLabelInserted = null,
         touchMovingOffset = null,
         touchMovingVisible = false,
+        touchHidingWord = null,
         touchShortiesXPos = null,
         touchShortiesLastX = null,
         touchShortiesSpeed = null,
@@ -117,10 +119,7 @@ var TWEET_MODULE = function(layer) {
                 )
             );
 
-            movableWords.push(label);{
-                word: wt[i].word,
-                label: label
-            });
+            movableWords.push(label);
 
             x += size.width + $42.TWEET_TEXT_SPACE_WIDTH;
         }
@@ -143,10 +142,7 @@ var TWEET_MODULE = function(layer) {
 			var label = cc.LabelTTF.create(sh[i], _42_getFontName(res.exo_regular_ttf) , 44),
                 size = label.getContentSize();
             
-            selectableWords.push({
-                word: sh[i],
-                label: label
-            });
+            selectableWords.push(label);
 
             mvLayer.addChild(label);
         }
@@ -162,16 +158,16 @@ var TWEET_MODULE = function(layer) {
        
         ///////////////////////////////
         // Sort shorties
-        sw.sort(function(a,b) { return a.word < b.word? -1:1; });
+        sw.sort(function(a,b) { return a.getString() < b.getString()? -1:1; });
 
         ///////////////////////////////
         // Determine positions
         // First: get total width
-        for( var i=0,tWidth=0 ; i<sw.length ; i++ ) tWidth += sw[i].label.getContentSize().width + $42.TWEET_SHORTIES_SPACE_WIDTH;
+        for( var i=0,tWidth=0 ; i<sw.length ; i++ ) tWidth += sw[i].getContentSize().width + $42.TWEET_SHORTIES_SPACE_WIDTH;
         // Second: distribute shorties
         yOffset = $42.TWEET_SHORTIES_HEIGHT - $42.TWEET_SHORTIES_PADDING - $42.TWEET_SHORTIES_LINEHEIGHT/2;
         for( var i=0,x=0,y=0 ; i<sw.length ; i++ ) {
-            var width = sw[i].label.getContentSize().width;
+            var width = sw[i].getContentSize().width;
             if( y === 0 && x + width/2 > tWidth/2 ) {
                 var half1 = x,
                     half2 = tWidth-x;
@@ -179,7 +175,7 @@ var TWEET_MODULE = function(layer) {
                 x = 0;
                 y = $42.TWEET_SHORTIES_LINEHEIGHT;
             }
-            sw[i].label.setPosition(cc.p(x+width/2,yOffset - y));
+            sw[i].setPosition(cc.p(x+width/2,yOffset - y));
 
             x += width + $42.TWEET_SHORTIES_SPACE_WIDTH;
         }
@@ -187,11 +183,11 @@ var TWEET_MODULE = function(layer) {
         var align1 = tWidth-half1,
             align2 = tWidth-half2;
         for( var i=0 ; i<sw.length ; i++ ) {
-            var pos   = sw[i].label.getPosition();
+            var pos   = sw[i].getPosition();
 
             pos.x += (pos.y===yOffset? align1:align2) + $42.TWEET_SHORTIES_PADDING;
 
-            sw[i].label.setPosition(pos);
+            sw[i].setPosition(pos);
         }
 
         return tWidth;
@@ -225,8 +221,8 @@ var TWEET_MODULE = function(layer) {
                     if( cc.rectContainsPoint(box, loc) ) {
 
                         for( var i=0,found=false ; i<words.length ; i++ ) {
-                            var box = words[i].label.getBoundingBox(),
-                                pos = layer.convertToWorldSpace(words[i].label.getPosition());
+                            var box = words[i].getBoundingBox(),
+                                pos = layer.convertToWorldSpace(words[i].getPosition());
 
                             box = {
                                 width: box.width,
@@ -241,7 +237,7 @@ var TWEET_MODULE = function(layer) {
                         }
 
                         if( found ) {
-                            touchMovingLabel = cc.LabelTTF.create(words[i].word, _42_getFontName(res.exo_regular_ttf) , 44);
+                            touchMovingLabel = cc.LabelTTF.create(words[i].getString(), _42_getFontName(res.exo_regular_ttf) , 44);
                             touchMovingOffset = {
                                 x: pos.x - loc.x,
                                 y: pos.y - loc.y
@@ -253,23 +249,25 @@ var TWEET_MODULE = function(layer) {
                             touchMovingLabel.runAction(cc.scaleTo(0.16,1.5));
                             touchMovingVisible = true;
 
-                            if( typeof cb === "function" ) cb(true);
+                            if( typeof cb === "function" ) cb(i, words[i]);
                         } else {
-                            if( typeof cb === "function" ) cb(false);
+                            if( typeof cb === "function" ) cb(null);
                         }
                     }
                 };
 
-                getLabel(shLayer.getBoundingBox(), selectableWords, mvLayer, function(newWord) { 
-                        touchShortiesXPos = shortiesXPos;
+                getLabel(shLayer.getBoundingBox(), selectableWords, mvLayer, function(index, word) { 
+                    touchShortiesXPos = shortiesXPos;
                 });
-                getLabel(txLayer.getBoundingBox(), movableWords, txLayer, function(newWord) {
+                getLabel(txLayer.getBoundingBox(), movableWords, txLayer, function(index, word) {
+                    if( index !== null ) {
+                        cc.assert(touchMovingLabel,"I need a moving sprite at this point");
 
+                        // hide word, but don't refresh list now, because word will probably be inserted in the next onTouchesMoved call 
+                        touchHidingWord = movableWords.splice(index,1)[0];
+                        txLayer.removeChild(touchHidingWord);
+                    }    
                 });
-
-                if( cc.rectContainsPoint(txLayer.getBoundingBox(), loc) ) {
-                    
-                }
             },
                 
             onTouchesMoved: function(touches, event, pos) {
@@ -284,6 +282,10 @@ var TWEET_MODULE = function(layer) {
                     touchLastPoint = {
                     x: loc.x,
                     y: loc.y
+                };
+
+                var insertLabel = function(box, pos, words, layer, lineHeight) {
+                    
                 };
 
                 if( touchShortiesXPos !== null && Math.abs(offset.x) > Math.abs(offset.y) && Math.abs(offset.x) > 6 && cc.rectContainsPoint(shLayer.getBoundingBox(), loc) ) {
@@ -311,7 +313,77 @@ var TWEET_MODULE = function(layer) {
                         touchMovingLabel.runAction(cc.fadeIn(0.16));
                     }
 
-                    touchMovingLabel.setPosition(cc.p(loc.x + touchMovingOffset.x, loc.y + touchMovingOffset.y));
+                    var newPos = cc.p(loc.x + touchMovingOffset.x, loc.y + touchMovingOffset.y);
+                    touchMovingLabel.setPosition(newPos);
+                    
+                    ///////////////////////////////////////////////////////////////////////////////////
+                    // Insert label into text box, if applicable
+                    if( cc.rectContainsPoint(txLayer.getBoundingBox(), newPos) ) {
+                        var pos = txLayer.convertToNodeSpace(newPos),
+                            mw = movableWords;
+
+                        /////////////////////////////
+                        // Look which index the word would be
+                        for( var i=0 ; i<mw.length ; i++ ) {
+                            if( !mw[i] ) debugger; 
+                            var wPos = mw[i].getPosition(),
+                                distY = Math.abs(pos.y - wPos.y),
+                                lineHeight = $42.TWEET_TEXT_LINEHEIGHT;
+                            if( distY <= lineHeight/2 && pos.x < wPos.x || pos.y > wPos.y + lineHeight/2) break;
+                        }
+
+                        if( i===0 ) i=1; // first word is not movable!
+                        if( touchMovingLabelInserted === i || touchMovingLabelInserted === i-1 ) {
+                            return;
+                        } else if( touchMovingLabelInserted === null ) {
+                            //////////////////////////////////
+                            // Insert word
+			                var label = cc.LabelTTF.create(touchMovingLabel.getString(), _42_getFontName(res.exo_regular_ttf) , 44);    
+			                label.setColor(cc.color(255,255,255));
+                            label.setPosition(pos);
+                            txLayer.addChild(label);
+                            _42_retain(label,"inserted moving label");
+                            mw.splice(i,0,label);
+                            cc.log("Inserting word at pos ("+i+")");
+                        } else {
+                            //////////////////////////////////
+                            // Change the location of the word
+                            if( i>touchMovingLabelInserted ) i--;
+                            mw.splice(i,0,mw.splice(touchMovingLabelInserted,1)[0]);
+                            cc.log("Moving word from ("+touchMovingLabelInserted+") to ("+i+")");
+                        }
+                        var j = Math.min(touchMovingLabelInserted || i, i);
+                        touchMovingLabelInserted = i;
+                        cc.log("touchMovingLabelInserted: "+touchMovingLabelInserted+" (i was "+i+")");
+
+                        ///////////////////////////////
+                        // Reorganize words
+                        var padding = $42.TWEET_TEXT_PADDING,
+                            textWidth = $42.TWEET_TEXT_WIDTH - padding * 2,
+                            lineHeight = $42.TWEET_TEXT_LINEHEIGHT;
+                        for( var i=j,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
+                            var formerWidth = mw[i-1].getContentSize().width,
+                                currentPos = mw[i].getPosition(),
+                                currentWidth = mw[i].getContentSize().width;
+
+                            if( formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth > textWidth ) {
+                                var newPos = cc.p(padding + currentWidth/2, formerPos.y - lineHeight);
+                            } else {
+                                var newPos = cc.p(formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth/2, formerPos.y); 
+                            }
+                            
+                            if( newPos.x === currentPos.x && newPos.y === currentPos.y ) break;
+
+                            formerPos = newPos;
+
+                            mw[i].stopAllActions();
+                            mw[i].runAction(
+                                cc.EaseSineIn.create(
+                                    cc.moveTo(0.16,newPos)
+                                )
+                            );
+                        }
+                    }
                 }
             },
                 
@@ -327,6 +399,7 @@ var TWEET_MODULE = function(layer) {
                 }
                 
                 if( touchMovingLabel ) {
+                    touchMovingLabelInserted = null;
                     touchMovingLabel.runAction(
                         cc.sequence(
                             cc.fadeOut(0.16),
