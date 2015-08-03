@@ -9,6 +9,7 @@ $42.TWEET_TEXT_COLOR = cc.color(255,255,240,50);
 $42.TWEET_TEXT_PADDING = 30;
 $42.TWEET_TEXT_LINEHEIGHT = 65;
 $42.TWEET_TEXT_SPACE_WIDTH = 15;
+$42.TWEET_TEXT_MOVING_TIME = 0.11;
 $42.TWEET_SHORTIES_WIDTH = 640;
 $42.TWEET_SHORTIES_HEIGHT = 160;
 $42.TWEET_SHORTIES_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT-$42.TWEET_SHORTIES_HEIGHT);
@@ -36,6 +37,7 @@ var TWEET_MODULE = function(layer) {
         touchStartPoint = null,
         touchMovingLabel = null,
         touchMovingLabelInserted = null,
+        touchMovingLabelTime = null,
         touchMovingOffset = null,
         touchMovingVisible = false,
         touchHidingWord = null,
@@ -243,10 +245,11 @@ var TWEET_MODULE = function(layer) {
                                 y: pos.y - loc.y
                             }
                             touchMovingLabel.setPosition(pos);
+                            touchMovingLabel.setOpacity(128);
                             tLayer.addChild(touchMovingLabel,10);
                             _42_retain(touchMovingLabel,"moving label");
 
-                            touchMovingLabel.runAction(cc.scaleTo(0.16,1.5));
+                            touchMovingLabel.runAction(cc.scaleTo(0.16,2.5));
                             touchMovingVisible = true;
 
                             if( typeof cb === "function" ) cb(i, words[i]);
@@ -322,6 +325,12 @@ var TWEET_MODULE = function(layer) {
                         var pos = txLayer.convertToNodeSpace(newPos),
                             mw = movableWords;
 
+                        var time = (new Date().getTime() - (touchMovingLabelTime || 0)) / 1000;
+                        if( time < $42.TWEET_TEXT_MOVING_TIME * 2 ) {
+                            cc.log("Moving out ...");
+                            return;
+                        } else cc.log("Time: "+time);
+
                         /////////////////////////////
                         // Look which index the word would be
                         for( var i=0 ; i<mw.length ; i++ ) {
@@ -362,6 +371,7 @@ var TWEET_MODULE = function(layer) {
                             textWidth = $42.TWEET_TEXT_WIDTH - padding * 2,
                             lineHeight = $42.TWEET_TEXT_LINEHEIGHT;
                         for( var i=j,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
+                        //for( var i=1,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
                             var formerWidth = mw[i-1].getContentSize().width,
                                 currentPos = mw[i].getPosition(),
                                 currentWidth = mw[i].getContentSize().width;
@@ -376,10 +386,10 @@ var TWEET_MODULE = function(layer) {
 
                             formerPos = newPos;
 
-                            mw[i].stopAllActions();
+                            touchMovingLabelTime = new Date().getTime();
                             mw[i].runAction(
                                 cc.EaseSineIn.create(
-                                    cc.moveTo(0.16,newPos)
+                                    cc.moveTo($42.TWEET_TEXT_MOVING_TIME,newPos)
                                 )
                             );
                         }
