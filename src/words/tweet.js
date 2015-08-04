@@ -36,17 +36,18 @@ var TWEET_MODULE = function(layer) {
         touchStartTime = null,
         touchStartPoint = null,
         touchMovingLabel = null,
-        touchMovingLabelInserted = null,
-        touchMovingLabelTime = null,
+        touchMovingLabelOrigin = null,
+        touchMovingLabelDestination = null,
         touchMovingOffset = null,
         touchMovingVisible = false,
+        touchMovingCursor = null,
         touchHidingWord = null,
         touchShortiesXPos = null,
         touchShortiesLastX = null,
         touchShortiesSpeed = null,
-        touchRubberBand = null,
+        touchRubberBand = null;
 
-        tmp = 0;
+    cc.spriteFrameCache.addSpriteFrames(res.tweet_plist);
 
     ml.hookTweet = function(cb) {
         init();
@@ -73,6 +74,26 @@ var TWEET_MODULE = function(layer) {
         shLayer.setPosition($42.TWEET_SHORTIES_POS);
         _42_retain(shLayer, "Tweet shorties layer");
         putWordsIntoShortiesLayer();
+
+        ///////////////////////////////////////
+        // Cursor sprite
+		touchMovingCursor = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("cursor.png"));
+        touchMovingCursor.setOpacity(0);
+        txLayer.addChild(touchMovingCursor);
+        _42_retain(touchMovingCursor);
+        touchMovingCursor.runAction(
+            cc.repeatForever(
+                cc.sequence(
+                    cc.delayTime(1),
+                    cc.EaseSineIn.create(
+                        cc.scaleTo(0.16,0.9)
+                    ),
+                    cc.EaseSineOut.create(
+                        cc.scaleTo(0.16,1)
+                    )
+                )
+            )
+        );
 
         /////////////////////////////////////
         // Scheduler
@@ -149,9 +170,39 @@ var TWEET_MODULE = function(layer) {
             mvLayer.addChild(label);
         }
 
-        shortiesWidth = distributeShorties();
+        distributeShorties();
         shortiesXPos = 0;
-        mvLayer.changeWidth(shortiesWidth);
+    };
+
+    var reorganizeWords = function(index) {
+        ///////////////////////////////
+        // Reorganize words
+        var mw = movableWords,
+            padding = $42.TWEET_TEXT_PADDING,
+            textWidth = $42.TWEET_TEXT_WIDTH - padding * 2,
+            lineHeight = $42.TWEET_TEXT_LINEHEIGHT;
+        for( var i=index,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
+            var formerWidth = mw[i-1].getContentSize().width,
+                currentPos = mw[i].getPosition(),
+                currentWidth = mw[i].getContentSize().width;
+
+            if( formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth > textWidth ) {
+                var newPos = cc.p(padding + currentWidth/2, formerPos.y - lineHeight);
+            } else {
+                var newPos = cc.p(formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth/2, formerPos.y); 
+            }
+            
+            //if( newPos.x === currentPos.x && newPos.y === currentPos.y ) break;
+
+            formerPos = newPos;
+
+            touchMovingLabelTime = new Date().getTime();
+            mw[i].runAction(
+                cc.EaseSineIn.create(
+                    cc.moveTo($42.TWEET_TEXT_MOVING_TIME,newPos)
+                )
+            );
+        }
     };
 
     distributeShorties = function() {
@@ -192,7 +243,8 @@ var TWEET_MODULE = function(layer) {
             sw[i].setPosition(pos);
         }
 
-        return tWidth;
+        mvLayer.changeWidth(tWidth);
+        shortiesWidth = tWidth;
     };
     
     /////////////////////////////////////////////////////////////////////////////
@@ -245,7 +297,7 @@ var TWEET_MODULE = function(layer) {
                                 y: pos.y - loc.y
                             }
                             touchMovingLabel.setPosition(pos);
-                            touchMovingLabel.setOpacity(180);
+                            touchMovingLabel.setOpacity(128);
                             tLayer.addChild(touchMovingLabel,10);
                             _42_retain(touchMovingLabel,"moving label");
 
@@ -265,10 +317,7 @@ var TWEET_MODULE = function(layer) {
                 getLabel(txLayer.getBoundingBox(), movableWords, txLayer, function(index, word) {
                     if( index !== null ) {
                         cc.assert(touchMovingLabel,"I need a moving sprite at this point");
-
-                        // hide word, but don't refresh list now, because word will probably be inserted in the next onTouchesMoved call 
-                        touchHidingWord = movableWords.splice(index,1)[0];  // Is hiding word needed?
-                        txLayer.removeChild(touchHidingWord);
+                        touchMovingLabelOrigin = index;
                     }    
                 });
             },
@@ -287,11 +336,9 @@ var TWEET_MODULE = function(layer) {
                     y: loc.y
                 };
 
-                var insertLabel = function(box, pos, words, layer, lineHeight) {
-                    
-                };
-
                 if( touchShortiesXPos !== null && Math.abs(offset.x) > Math.abs(offset.y) && Math.abs(offset.x) > 6 && cc.rectContainsPoint(shLayer.getBoundingBox(), loc) ) {
+                    /////////////////////////////////////////////////////////////////////////////////
+                    // Move shorites bar left and right
                     var rightBorder = $42.TWEET_SHORTIES_WIDTH - shortiesWidth - $42.TWEET_SHORTIES_PADDING;
                     shortiesXPos = touchShortiesXPos + offset.x;
                     if( shortiesXPos > 0 ) {
@@ -316,36 +363,6 @@ var TWEET_MODULE = function(layer) {
                         touchMovingLabel.runAction(cc.fadeIn(0.16));
                     }
 
-                    var reorganizeWords = function(index) {
-                        ///////////////////////////////
-                        // Reorganize words
-                        var padding = $42.TWEET_TEXT_PADDING,
-                            textWidth = $42.TWEET_TEXT_WIDTH - padding * 2,
-                            lineHeight = $42.TWEET_TEXT_LINEHEIGHT;
-                        for( var i=index,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
-                            var formerWidth = mw[i-1].getContentSize().width,
-                                currentPos = mw[i].getPosition(),
-                                currentWidth = mw[i].getContentSize().width;
-
-                            if( formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth > textWidth ) {
-                                var newPos = cc.p(padding + currentWidth/2, formerPos.y - lineHeight);
-                            } else {
-                                var newPos = cc.p(formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth/2, formerPos.y); 
-                            }
-                            
-                            //if( newPos.x === currentPos.x && newPos.y === currentPos.y ) break;
-
-                            formerPos = newPos;
-
-                            touchMovingLabelTime = new Date().getTime();
-                            mw[i].runAction(
-                                cc.EaseSineIn.create(
-                                    cc.moveTo($42.TWEET_TEXT_MOVING_TIME,newPos)
-                                )
-                            );
-                        }
-                    };
-
                     var newPos = cc.p(loc.x + touchMovingOffset.x, loc.y + touchMovingOffset.y);
                     touchMovingLabel.setPosition(newPos);
                     
@@ -354,12 +371,6 @@ var TWEET_MODULE = function(layer) {
                     if( cc.rectContainsPoint(txLayer.getBoundingBox(), newPos) ) {
                         var pos = txLayer.convertToNodeSpace(newPos),
                             mw = movableWords;
-
-                        var time = (new Date().getTime() - (touchMovingLabelTime || 0)) / 1000;
-                        if( time < $42.TWEET_TEXT_MOVING_TIME * 2 ) {
-                            cc.log("Moving out ...");
-                            return;
-                        } else cc.log("Time: "+time);
 
                         /////////////////////////////
                         // Look which index the word would be
@@ -372,44 +383,18 @@ var TWEET_MODULE = function(layer) {
                         }
 
                         if( i===0 ) i=1; // first word is not movable!
-                        if( touchMovingLabelInserted === i || touchMovingLabelInserted === i-1 ) {
-                            return;
-                        } else if( touchMovingLabelInserted === null ) {
-                            //////////////////////////////////
-                            // Insert word
-			                var label = cc.LabelTTF.create(touchMovingLabel.getString(), _42_getFontName(res.exo_regular_ttf) , 44);    
-			                label.setColor(cc.color(255,255,255));
-                            label.setPosition(pos);
-                            txLayer.addChild(label);
-                            _42_retain(label,"inserted moving label");
-                            mw.splice(i,0,label);
-                            cc.log("Inserting word at pos ("+i+")");
-                        } else {
-                            //////////////////////////////////
-                            // Change the location of the word
-                            if( i>touchMovingLabelInserted ) i--;
-                            mw.splice(i,0,mw.splice(touchMovingLabelInserted,1)[0]);
-                            cc.log("Moving word from ("+touchMovingLabelInserted+") to ("+i+")");
-                        }
-                        var j = Math.min(touchMovingLabelInserted || i, i);
-                        touchMovingLabelInserted = i;
-                        cc.log("touchMovingLabelInserted: "+touchMovingLabelInserted+" (i was "+i+")");
+                        
+                        /////////////////////////////
+                        // Set the cursor
+                        var pos = mw[i-1].getPosition()
+                            width = mw[i-1].getContentSize().width;
+                        touchMovingCursor.setOpacity(255); 
+                        touchMovingCursor.setPosition(cc.p(pos.x + width/2 + $42.TWEET_TEXT_SPACE_WIDTH/2, pos.y));
 
-                        reorganizeWords(j);
-                    } else if( touchMovingLabelInserted !== null ) {
-                        var mw = movableWords,
-                            label = mw[touchMovingLabelInserted];
-
-                        //////////////////////////////////
-                        // Delete word
-                        txLayer.removeChild(label);
-                        _42_release(label);
-                        mw.splice(touchMovingLabelInserted,1);
-                        cc.log("Deleting word at pos ("+i+")"); 
-
-                        reorganizeWords(touchMovingLabelInserted);
-
-                        touchMovingLabelInserted = null;
+                        touchMovingLabelDestination = i;
+                    } else {
+                        touchMovingCursor.setOpacity(0);
+                        touchMovingLabelDestination = null;
                     }
                 }
             },
@@ -424,19 +409,83 @@ var TWEET_MODULE = function(layer) {
 
                     mvLayer.setPosition(shortiesXPos, 0);
                 }
-                
+
                 if( touchMovingLabel ) {
-                    touchMovingLabelInserted = null;
-                    touchMovingLabel.runAction(
-                        cc.sequence(
-                            cc.fadeOut(0.16),
-                            cc.callFunc(function() {
-                                tLayer.removeChild(touchMovingLabel);
-                                _42_release(touchMovingLabel);
-                                touchMovingLabel = null;
-                            })
+                    var mw = movableWords,
+                        dirty = false;
+                    
+                    if( touchMovingLabelOrigin !== null ) {
+                        var label = mw.splice(touchMovingLabelOrigin,1)[0];
+                        if( touchMovingLabelOrigin < (touchMovingLabelDestination || 0) ) touchMovingLabelDestination--;
+
+                        txLayer.removeChild(label);
+                        _42_release(label);
+
+                        dirty = true;
+                    } else if(touchMovingLabelDestination !== null && touchMovingLabel.getString().length > 3 ) {
+                        var sw = selectableWords;
+
+                        for( var i=0 ; i<sw.length && sw[i].getString() !== touchMovingLabel.getString() ; i++ );
+                        if( i < sw.length ) {
+                            var label = sw.splice(i,1)[0];
+                            distributeShorties();
+                            
+                            mvLayer.removeChild(label);
+                            _42_release(label);
+                        }
+                    }
+                    
+                    if( touchMovingLabelDestination !== null ) {
+
+                        mw.splice(touchMovingLabelDestination,0,touchMovingLabel);
+                        tLayer.removeChild(touchMovingLabel);
+                        touchMovingLabel.setPosition(txLayer.convertToNodeSpace(touchMovingLabel.getPosition()));
+                        txLayer.addChild(touchMovingLabel,5);
+                        touchMovingLabel.runAction(
+                            cc.EaseSineIn.create(
+                                cc.spawn(
+                                    cc.fadeIn($42.TWEET_TEXT_MOVING_TIME),
+                                    cc.scaleTo($42.TWEET_TEXT_MOVING_TIME,1),
+                                    cc.tintTo($42.TWEET_TEXT_MOVING_TIME,0,0,0)
+                                )
+                            )
                         )
-                    );
+
+                        dirty = true;
+                    } else {
+                        var label = touchMovingLabel;
+                        touchMovingLabel.runAction(
+                            cc.sequence(
+                                cc.fadeOut(0.16),
+                                cc.callFunc(function() {
+                                    tLayer.removeChild(label);
+                                    _42_release(label);
+                                })
+                            )
+                        );
+
+                        if( touchMovingLabelOrigin ) {
+                            var sw = selectableWords;
+
+                            tLayer.removeChild(touchMovingLabel);
+                            mvLayer.addChild(touchMovingLabel);
+                            sw.push(touchMovingLabel);
+                            touchMovingLabel.setOpacity(255);
+                            touchMovingLabel.setScale(1);
+                            touchMovingLabel.setColor(cc.color(255,255,255))
+
+                            distributeShorties();
+
+                            shortiesXPos = -Math.min(Math.max(0, touchMovingLabel.getPosition().x - $42.TWEET_SHORTIES_WIDTH/2),shortiesWidth - $42.TWEET_SHORTIES_WIDTH);
+                            mvLayer.runAction(cc.moveTo(0.16,cc.p(shortiesXPos, 0)));
+                        }
+                    }
+
+                    if( dirty ) reorganizeWords(Math.min(touchMovingLabelOrigin || touchMovingLabelDestination,touchMovingLabelDestination || touchMovingLabelOrigin));
+
+                    touchMovingLabel = touchMovingLabelOrigin = touchMovingLabelDestination = null;
+                    touchMovingCursor.setOpacity(0);
+                    touchMovingLabelDestination = null;
                 }
             }
         });

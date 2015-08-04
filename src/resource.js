@@ -5,6 +5,8 @@ var res = {
     marker_plist : 'res/images/marker.plist',
     letters_png : "res/images/letters/letters.png",
     letters_plist : 'res/images/letters/letters.plist',
+    tweet_png : "res/images/tweet/tweet.png",
+    tweet_plist : 'res/images/tweet/tweet.plist',
     title_png : "res/images/title/title.png",
 	background01_png : "res/images/backgrounds/level01.png",
 	background02_png : "res/images/backgrounds/level02.png",
