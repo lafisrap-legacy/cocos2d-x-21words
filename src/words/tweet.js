@@ -15,6 +15,7 @@ $42.TWEET_SHORTIES_HEIGHT = 160;
 $42.TWEET_SHORTIES_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT-$42.TWEET_SHORTIES_HEIGHT);
 $42.TWEET_SHORTIES_COLOR = cc.color(240,240,255,100);
 $42.TWEET_SHORTIES_LINEHEIGHT = 65;
+$42.TWEET_SHORTIES_LINES = 2;
 $42.TWEET_SHORTIES_SPACE_WIDTH = 40;
 $42.TWEET_SHORTIES_PADDING = 20;
 
@@ -188,7 +189,7 @@ var TWEET_MODULE = function(layer) {
             lineHeight = $42.TWEET_TEXT_LINEHEIGHT;
         for( var i=index,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
             var formerWidth = mw[i-1].getContentSize().width,
-                currentPos = mw[i].getPosition(),
+                //currentPos = mw[i].getPosition(),
                 currentWidth = mw[i].getContentSize().width;
 
             if( formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth > textWidth ) {
@@ -212,38 +213,36 @@ var TWEET_MODULE = function(layer) {
 
     distributeShorties = function() {
         var sw = selectableWords,
-            padding = $42.TWEET_TEXT_PADDING;
+            padding = $42.TWEET_SHORTIES_PADDING,
+            lineHeight = $42.TWEET_SHORTIES_LINEHEIGHT,
+            lines = $42.TWEET_SHORTIES_LINES;
        
         ///////////////////////////////
         // Sort shorties
         sw.sort(function(a,b) { return a.getString() < b.getString()? -1:1; });
 
         ///////////////////////////////
-        // Determine positions
-        // First: get total width
-        for( var i=0,tWidth=0 ; i<sw.length ; i++ ) tWidth += sw[i].getContentSize().width + $42.TWEET_SHORTIES_SPACE_WIDTH;
-        // Second: distribute shorties
-        yOffset = $42.TWEET_SHORTIES_HEIGHT - $42.TWEET_SHORTIES_PADDING - $42.TWEET_SHORTIES_LINEHEIGHT/2;
-        for( var i=0,x=0,y=0 ; i<sw.length ; i++ ) {
-            var width = sw[i].getContentSize().width;
-            if( y === 0 && x + width/2 > tWidth/2 ) {
-                var half1 = x,
-                    half2 = tWidth-x;
-                tWidth = Math.max(half1, half2);
-                x = 0;
-                y = $42.TWEET_SHORTIES_LINEHEIGHT;
-            }
-            sw[i].setPosition(cc.p(x+width/2,yOffset - y));
+        // Reset x array
+        for( var i=0, xPos=[], cxPos=0; i<lines ; i++ ) xPos[i] = 0;
+        for( var i=0, yOffset=lineHeight/2+padding ; i<sw.length ; i++ ) {
+            ///////////////////////////////
+            // which line is next?
+            for( var j=1,l=0 ; j<lines ; j++ ) if( xPos[j] < xPos[l] ) l=j;
 
-            x += width + $42.TWEET_SHORTIES_SPACE_WIDTH;
+            ///////////////////////////////
+            // set position and move xPos
+            var width = sw[i].getContentSize().width;        
+            sw[i].setPosition(cc.p(xPos[l]+width/2,(lines-l-1)*lineHeight + yOffset));
+            xPos[l] += width + $42.TWEET_SHORTIES_SPACE_WIDTH;
         }
-        // Third: Align them to center and set final position
-        var align1 = tWidth-half1,
-            align2 = tWidth-half2;
+        //////////////////////////////////////
+        // Align center
+        for( var i=0,max=0 ; i<lines ; i++ ) tWidth = Math.max(max, xPos[i]);  
         for( var i=0 ; i<sw.length ; i++ ) {
-            var pos   = sw[i].getPosition();
-
-            pos.x += (pos.y===yOffset? align1:align2) + $42.TWEET_SHORTIES_PADDING;
+            var pos   = sw[i].getPosition(),
+                l = Math.round(lines-(pos.y-yOffset)/lineHeight-1),
+                offset = (tWidth - xPos[l])/2;
+            pos.x +=  offset + padding;
 
             sw[i].setPosition(pos);
         }
@@ -392,10 +391,17 @@ var TWEET_MODULE = function(layer) {
                         
                         /////////////////////////////
                         // Set the cursor
-                        var pos = mw[i-1].getPosition()
-                            width = mw[i-1].getContentSize().width;
+                        var pos = mw[i-1].getPosition(),
+                            width = mw[i-1].getContentSize().width,
+                            lineBreak = (touchMovingLabel.getPosition().x < $42.TWEET_TEXT_WIDTH/2 && i!==mw.length && Math.round(mw[i].getPosition().y) < Math.round(pos.y)),
+                            cPos = {
+                                x: lineBreak? $42.TWEET_TEXT_SPACE_WIDTH -5 : pos.x + width/2 + $42.TWEET_TEXT_SPACE_WIDTH/2,
+                                y: lineBreak? pos.y - $42.TWEET_TEXT_LINEHEIGHT : pos.y 
+                            };
+
+                        cc.log((lineBreak?"Linebreak! ":"")+"pos.x: "+pos.x+", touchMovingLabel.getPosition().x: "+touchMovingLabel.getPosition().x+", i: "+i);
                         touchMovingCursor.setOpacity(255); 
-                        touchMovingCursor.setPosition(cc.p(pos.x + width/2 + $42.TWEET_TEXT_SPACE_WIDTH/2, pos.y));
+                        touchMovingCursor.setPosition(cPos);
 
                         touchMovingLabelDestination = i;
                     } else {
