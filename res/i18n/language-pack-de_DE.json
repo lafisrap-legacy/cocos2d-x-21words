@@ -32,6 +32,7 @@
         "new_level_value": 		"Wortwert",
         "new_level_win": 		"GEWONNEN!",
         "new_level_next":		["Nächster","Wortwert","bei"],
+        "tweet_anonymous":      "Unbekannt:",
         "murbiks_tutorial": 	" ",
         "murbiks_skip_tutorial": " ",
     	"mostafa_hi" 		: "Hi!\nIch bin Mostafa.",

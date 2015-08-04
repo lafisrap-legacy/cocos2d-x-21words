@@ -50,6 +50,11 @@ var TWEET_MODULE = function(layer) {
     cc.spriteFrameCache.addSpriteFrames(res.tweet_plist);
 
     ml.hookTweet = function(cb) {
+
+        var wt = $42.wordTreasure;
+        
+        wt.splice(0,0,{ word: $42.t.tweet_anonymous });
+
         init();
     };
 
@@ -290,7 +295,7 @@ var TWEET_MODULE = function(layer) {
                             }
                         }
 
-                        if( found ) {
+                        if( found && i > 0 ) {
                             touchMovingLabel = cc.LabelTTF.create(words[i].getString(), _42_getFontName(res.exo_regular_ttf) , 44);
                             touchMovingOffset = {
                                 x: pos.x - loc.x,
@@ -318,6 +323,7 @@ var TWEET_MODULE = function(layer) {
                     if( index !== null ) {
                         cc.assert(touchMovingLabel,"I need a moving sprite at this point");
                         touchMovingLabelOrigin = index;
+                        touchMovingLabelDestination = index;
                     }    
                 });
             },
@@ -453,18 +459,8 @@ var TWEET_MODULE = function(layer) {
 
                         dirty = true;
                     } else {
-                        var label = touchMovingLabel;
-                        touchMovingLabel.runAction(
-                            cc.sequence(
-                                cc.fadeOut(0.16),
-                                cc.callFunc(function() {
-                                    tLayer.removeChild(label);
-                                    _42_release(label);
-                                })
-                            )
-                        );
 
-                        if( touchMovingLabelOrigin ) {
+                        if( touchMovingLabelOrigin && touchMovingLabel.getString().length > 3 ) {
                             var sw = selectableWords;
 
                             tLayer.removeChild(touchMovingLabel);
@@ -478,6 +474,17 @@ var TWEET_MODULE = function(layer) {
 
                             shortiesXPos = -Math.min(Math.max(0, touchMovingLabel.getPosition().x - $42.TWEET_SHORTIES_WIDTH/2),shortiesWidth - $42.TWEET_SHORTIES_WIDTH);
                             mvLayer.runAction(cc.moveTo(0.16,cc.p(shortiesXPos, 0)));
+                        } else {
+                            var label = touchMovingLabel;
+                            touchMovingLabel.runAction(
+                                cc.sequence(
+                                    cc.fadeOut(0.16),
+                                    cc.callFunc(function() {
+                                        tLayer.removeChild(label);
+                                        _42_release(label);
+                                    })
+                                )
+                            );
                         }
                     }
 
