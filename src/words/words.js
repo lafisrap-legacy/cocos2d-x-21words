@@ -778,7 +778,7 @@ var _42_MODULE = function(_42Layer) {
                     {word: "GASPROM"},
                     {word: "GLÜCKT"}
                 ];
-                ml.hookTweet();
+                //ml.hookTweet();
                 //showAllWordsFlyingIn();
                 
             }, (3.5+i*0.50) * 1000 );
