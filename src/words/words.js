@@ -754,7 +754,7 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
-               /* 
+               /*
                 $42.wordTreasure = [
                     {word: "HINDERNIS"},
                     {word: "TROCKNET"},

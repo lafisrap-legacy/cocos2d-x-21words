@@ -3,21 +3,29 @@
 //  meie.
 
 $42.TWEET_TEXT_WIDTH = 640;
-$42.TWEET_TEXT_HEIGHT = 800;
+$42.TWEET_TEXT_HEIGHT = 860;
+$42.TWEET_TEXT_TEXT_SIZE = 52;
 $42.TWEET_TEXT_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT);
 $42.TWEET_TEXT_COLOR = cc.color(255,255,240,50);
 $42.TWEET_TEXT_PADDING = 30;
-$42.TWEET_TEXT_LINEHEIGHT = 65;
+$42.TWEET_TEXT_LINEHEIGHT = 75;
 $42.TWEET_TEXT_SPACE_WIDTH = 15;
 $42.TWEET_TEXT_MOVING_TIME = 0.11;
 $42.TWEET_SHORTIES_WIDTH = 640;
-$42.TWEET_SHORTIES_HEIGHT = 160;
+$42.TWEET_SHORTIES_HEIGHT = 180;
 $42.TWEET_SHORTIES_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT-$42.TWEET_SHORTIES_HEIGHT);
 $42.TWEET_SHORTIES_COLOR = cc.color(240,240,255,100);
-$42.TWEET_SHORTIES_LINEHEIGHT = 65;
+$42.TWEET_SHORTIES_LINEHEIGHT = 75;
 $42.TWEET_SHORTIES_LINES = 2;
 $42.TWEET_SHORTIES_SPACE_WIDTH = 40;
-$42.TWEET_SHORTIES_PADDING = 20;
+$42.TWEET_SHORTIES_PADDING = 18;
+$42.TWEET_MENU_WIDTH = 640;
+$42.TWEET_MENU_HEIGHT = 1136-$42.TWEET_SHORTIES_HEIGHT-$42.TWEET_TEXT_HEIGHT;
+$42.TWEET_MENU_POS = cc.p(0, 0);
+$42.TWEET_MENU_COLOR = cc.color(0,0,0,255);
+$42.TWEET_MENU_BIG_FONT_SIZE = 40;
+$42.TWEET_MENU_SMALL_FONT_SIZE = 28;
+$42.TWEET_MENU_PADDING = 10;
 
 var TWEET_MODULE = function(layer) {
 	var ml = layer,
@@ -25,7 +33,8 @@ var TWEET_MODULE = function(layer) {
         txLayer = null,     // text layer
         shLayer = null,     // shorties layer
         mvLayer = null,     // movable layer
-        menu = null,    // menu
+        mnLayer = null,     // menu layer
+        menu = null,        // menu
         movableWords = [],
         selectableWords = [],
         shortiesWidth = null,
@@ -47,6 +56,7 @@ var TWEET_MODULE = function(layer) {
         touchShortiesLastX = null,
         touchShortiesSpeed = null,
         touchRubberBand = null;
+        
 
     cc.spriteFrameCache.addSpriteFrames(res.tweet_plist);
 
@@ -81,6 +91,14 @@ var TWEET_MODULE = function(layer) {
         _42_retain(shLayer, "Tweet shorties layer");
         putWordsIntoShortiesLayer();
 
+        ////////////////////////////////////
+        // init menu layer
+        mnLayer = new cc.LayerColor($42.TWEET_MENU_COLOR, $42.TWEET_MENU_WIDTH, $42.TWEET_MENU_HEIGHT);
+        tLayer.addChild(mnLayer);
+        mnLayer.setPosition($42.TWEET_MENU_POS);
+        _42_retain(mnLayer, "Tweet menu layer");
+        initMenu();
+
         ///////////////////////////////////////
         // Cursor sprite
 		touchMovingCursor = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("cursor.png"));
@@ -114,6 +132,32 @@ var TWEET_MODULE = function(layer) {
         tLayer.unscheduleUpdate();
     };
 
+    var initMenu = function() {
+        var menuItems = [],
+            addMenuItem = function(text,x,cb) {
+                var item = new cc.MenuItemFont(text.label,cb, tLayer);
+                item.setFontName(_42_getFontName(res.exo_regular_ttf));
+                item.setFontSize(text.size==="big"?$42.TWEET_MENU_BIG_FONT_SIZE:$42.TWEET_MENU_SMALL_FONT_SIZE);
+                item.setPosition(cc.p(x,0));
+                menuItems.push(item); 
+            };
+
+        addMenuItem($42.t.tweet_save,-214,function(sender) {
+                // save
+        });
+        addMenuItem($42.t.tweet_no_internet, 0, function(sender) {
+                // change name
+        });
+        addMenuItem($42.t.tweet_no_internet, 214, function(sender) {
+                // tweet
+        });
+
+        menu = new cc.Menu(menuItems);
+        //menu.alignItemsHorizontallyWithPadding($42.TWEET_MENU_PADDING);
+        menu.setPosition(cc.p($42.TWEET_MENU_WIDTH/2,$42.TWEET_MENU_HEIGHT/2));
+        mnLayer.addChild(menu);
+    }
+
     var putWordsIntoTextLayer = function() {
         var wt = $42.wordTreasure,
             padding = $42.TWEET_TEXT_PADDING,
@@ -122,7 +166,7 @@ var TWEET_MODULE = function(layer) {
         
         for( var i=0,x=0,y=0 ; i<wt.length ; i++ ) {
 
-			var label = cc.LabelTTF.create(wt[i].word, _42_getFontName(res.exo_regular_ttf) , 44),
+			var label = cc.LabelTTF.create(wt[i].word, _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE),
                 size = label.getContentSize();
             
             if( x + size.width > textWidth ) {
@@ -152,6 +196,8 @@ var TWEET_MODULE = function(layer) {
 
             x += size.width + $42.TWEET_TEXT_SPACE_WIDTH;
         }
+
+        colorWords();
     };
 
     putWordsIntoShortiesLayer = function() {
@@ -168,7 +214,7 @@ var TWEET_MODULE = function(layer) {
         
         for( var i=0 ; i<sh.length ; i++ ) {
 
-			var label = cc.LabelTTF.create(sh[i], _42_getFontName(res.exo_regular_ttf) , 44),
+			var label = cc.LabelTTF.create(sh[i], _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE),
                 size = label.getContentSize();
             
             selectableWords.push(label);
@@ -204,10 +250,26 @@ var TWEET_MODULE = function(layer) {
 
             touchMovingLabelTime = new Date().getTime();
             mw[i].runAction(
-                cc.EaseSineIn.create(
-                    cc.moveTo($42.TWEET_TEXT_MOVING_TIME,newPos)
+                cc.sequence(
+                    cc.EaseSineIn.create(
+                        cc.moveTo($42.TWEET_TEXT_MOVING_TIME,newPos)
+                    ),
+                    cc.callFunc(function() {
+                        colorWords();
+                    })
                 )
             );
+        }
+    };
+
+    colorWords = function() {
+        var mw = movableWords;
+
+        for( var i=0,cnt=0 ; i<mw.length ; i++ ) {
+            var y = mw[i].getPosition().y;
+            cnt += mw[i].getString().length + 1;
+
+            mw[i].setOpacity(cnt<=140? 255: y > $42.TWEET_TEXT_LINEHEIGHT/2? 80:0);
         }
     };
 
@@ -295,7 +357,7 @@ var TWEET_MODULE = function(layer) {
                         }
 
                         if( found && i > 0 ) {
-                            touchMovingLabel = cc.LabelTTF.create(words[i].getString(), _42_getFontName(res.exo_regular_ttf) , 44);
+                            touchMovingLabel = cc.LabelTTF.create(words[i].getString(), _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE);
                             touchMovingOffset = {
                                 x: pos.x - loc.x,
                                 y: pos.y - loc.y
