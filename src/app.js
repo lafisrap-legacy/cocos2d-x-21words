@@ -130,6 +130,7 @@ var _42GameLayer = cc.Layer.extend({
         this._gameMode = mode;
         cc.assert(mode==="easy" || mode==="intermediate" || mode==="expert", "Game mode '"+mode+"' not supported.");
 
+        this.setCascadeOpacityEnabled(true);
         return true;
     },
 
@@ -156,7 +157,9 @@ var _42GameLayer = cc.Layer.extend({
 		this._super();
 
 	    this.stopListeners();
-	    this.unscheduleUpdate();	    	
+	    this.unscheduleUpdate();
+
+        if( self.hookExit ) self.hookExit();        
     },
     
     ////////////////////////////////////////////////////////////////////////////
@@ -243,6 +246,7 @@ var _42GameLayer = cc.Layer.extend({
 
         sb.setPosition(0,0);
         sb.setOpacity(0);
+        sb.setCascadeOpacityEnabled(true);
         _42_retain(sb, "scorebar");	
         this.addChild(sb, 5);
 
@@ -1456,8 +1460,6 @@ var _42MenuLayer = cc.LayerColor.extend({
 //
 var _42TitleLayer = cc.Layer.extend({
     
-	letters: [],
-	
     ctor:function () {
         this._super();
 
@@ -1468,65 +1470,13 @@ var _42TitleLayer = cc.Layer.extend({
         cc.height = cc.director.getWinSize().height;
 
 		var addImage = function(options) {
-			var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(options.image) || options.image);
-			sprite.setPosition(options.pos || cc.p(size.width/2,size.height/2));
-			sprite.setOpacity(options.opacity !== undefined? options.opacity : 255);
-			sprite.setScale(options.scale !== undefined? options.scale : 1);
-			sprite.setRotation(options.rotation || 0);
-			_42_retain(sprite, "Title sprite ");
-	        (options.parent || self).addChild(sprite, 0);
-	        return sprite;
 		};
 		
-		var addText = function(options) {
-			var label = cc.LabelTTF.create(options.text, _42_getFontName(res.exo_regular_ttf) , options.size);
-			label.setPosition(options.pos || cc.p(size.width/2,size.height/2));
-			label.setColor(options.color || cc.color(0,0,0));
-			label.setOpacity(options.opacity !== undefined? options.opacity : 255);
-			label.setRotation(options.rotation || 0);
-			label.setScale(options.scale !== undefined? options.scale : 1);
-			_42_retain(label, "Title text label");	
-	        (options.parent || self).addChild(label, 0);
-	        return label;
-		};
-		
-        var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]);
-		var titleBg = addImage({
-			image: res["title_png"], 
-			opacity: 0,
-            scale: 1.1,
-		});
-/*
-        var _42 = addText({
-            text: "42",
-            pos: cc.p(310, 870),
-            color: cc.color(59,136,134),
-            size: 390,
-            opacity: 0,
-            parent: titleBg
-        });
+		var titleBg = this._titleBg = cc.Sprite.create(res.title_png);
+        titleBg.setOpacity(0);
+        titleBg.setPosition(cc.p(cc.width/2, cc.height/2));
+        titleBg.setScale(1.1);
 
-        var titleTitle = addText({
-            text: $42.t.title_title,
-            pos: cc.p(cc.width/2, 635),
-            color: cc.color(215,173,10),
-            size: 130,
-            opacity: 0,
-            parent: titleBg
-        });
-*/
-        titleBg.runAction(
-            cc.fadeIn(2)
-        );
-/*
-        _42.runAction(
-            cc.fadeIn(5)
-        );
-
-        titleTitle.runAction(
-            cc.fadeIn(5)
-        );
-*/		
         // Show menu items
 		var addMenu = function(name, fontSize, color, cb) {
 	        var item = new cc.MenuItemFont(name, cb, self);
@@ -1536,39 +1486,14 @@ var _42TitleLayer = cc.Layer.extend({
 	        
 	        return item;
 		};
-
-        var hideTitle = function() {
-
-            titleBg.runAction(
-                cc.sequence(
-                    cc.fadeOut(1),
-                    cc.callFunc(function() {
-                        titleBg.removeChild(menu);
-                        self.removeChild(titleBg);
-                    })
-                )
-            );
-/*
-            _42.runAction(
-                cc.fadeOut(1.2)
-            );
-
-            titleTitle.runAction(
-                cc.fadeOut(1.2)
-            );
-*/
-            menu.runAction(
-                cc.fadeOut(1.2)
-            );
-        };
-		
-        var gameStarted = false,
-            item1 = addMenu($42.t.title_start, 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
-                if( !gameStarted ) {
-                    gameStarted = true;
+	
+        this._gameStarted = false;
+        var item1 = addMenu($42.t.title_start, 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
+                if( !self._gameStarted ) {
+                    self._gameStarted = true;
                     // start game layer
                     self.getParent().addChild(new _42GameLayer($42.currentMode || "easy"), 1, $42.TAG_GAME_LAYER);
-                    hideTitle();
+                    self.hide();
                 }
             }, self);
 	
@@ -1577,45 +1502,84 @@ var _42TitleLayer = cc.Layer.extend({
         $42.maxPoints = ls.getItem("maxPoints") || 0;
         $42.bestTime = ls.getItem("bestTime") || null;
         var item2 = addMenu("Leicht", 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                if( !gameStarted ) {
-                    gameStarted = true;
+                if( !self._gameStarted ) {
+                    self._gameStarted = true;
                     $42.currentLevel = 1;
                     $42.currentMode = "easy";
                     // start game layer
                     self.getParent().addChild(new _42GameLayer("easy"), 1, $42.TAG_GAME_LAYER);
-                    hideTitle();
+                    self.hide();
                 }
             }),
             item3 = addMenu("Mittel", 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                if( !gameStarted ) {
-                    gameStarted = true;
+                if( !self._gameStarted ) {
+                    self._gameStarted = true;
                     $42.currentLevel = 1;
                     $42.currentMode = "intermediate";
                     // start game layer
                     self.getParent().addChild(new _42GameLayer("intermediate"), 1, $42.TAG_GAME_LAYER);
-                    hideTitle();
+                    self.hide();
                 }
             }),
             item4 = addMenu("Schwer", 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                if( !gameStarted ) {
-                    gameStarted = true;
+                if( !self._gameStarted ) {
+                    self._gameStarted = true;
                     $42.currentLevel = 1;
                     $42.currentMode = "expert";
                     // start game layer
                     self.getParent().addChild(new _42GameLayer("expert"), 1, $42.TAG_GAME_LAYER);
-                    hideTitle();
+                    self.hide();
                 }
             });
 
-        var menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
+        var menu = this._menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
         menu.x = size.width/2;
         menu.y = 290;
         menu.setOpacity(0);
-        titleBg.addChild(menu, 10);       
         menu.alignItemsVerticallyWithPadding(20);
-        menu.runAction(cc.EaseSineIn.create(cc.fadeIn(2.5)));
 
+        this.show();
         return true;
+    },
+
+    show: function() {
+        this.addChild(this._titleBg);
+        this.addChild(this._menu);
+        _42_retain(this._titleBg,"Title background");
+        _42_retain(this._menu,"Title menu");
+
+        this._menu.runAction(
+            cc.EaseSineIn.create(
+                cc.fadeIn(2.5)
+            )
+        );
+
+        this._titleBg.runAction(
+            cc.EaseSineIn.create(
+                cc.fadeIn(2)
+            )
+        );
+
+        this._gameStarted = false;
+    },
+
+    hide: function() {
+
+        var self = this;
+        this._titleBg.runAction(
+            cc.sequence(
+                cc.fadeOut(1),
+                cc.callFunc(function() {
+                    self.removeChild(self._menu);
+                    self.removeChild(self._titleBg);
+                    _42_release(self._titleBg);
+                    _42_release(self._menu);
+                })
+            )
+        );
+        this._menu.runAction(
+            cc.fadeOut(1.2)
+        );
     },
     
     exitTitle: function() {
@@ -1627,18 +1591,6 @@ var _42TitleLayer = cc.Layer.extend({
 		node = node.getChildren()[0];
 		if( node ) _42_release(node);
 
-/* 		node = this.getChildByTag($42.TAG_TITLE_4);
-		if( node ) node.release();
-		delete tmpRetain[node.__instanceId];
-
- 		node = this.getChildByTag($42.TAG_TITLE_2);
-		if( node ) node.release();
-		delete tmpRetain[node.__instanceId];
-
- 		node = this.getChildByTag($42.TAG_TITLE_WORD);
-		if( node ) node.release();
-		delete tmpRetain[node.__instanceId];*/
-
 		var nodes = node.getChildren();
 		for( var i=0 ; i<nodes.length ; i++ ) {
 			if( nodes[i] ) _42_release(nodes[i]);
@@ -1648,6 +1600,7 @@ var _42TitleLayer = cc.Layer.extend({
 
 var _42_retained = [];
 var _42_retain = function(obj,name) {
+    if( !obj ) debugger;
     obj.retain();
 
 	obj.__retainId = _42_getId();
@@ -1694,7 +1647,8 @@ var _42Scene = cc.Scene.extend({
         this._super();
 
         this.loadWords(function() {
-            self.addChild(new _42TitleLayer(), 2, $42.TAG_TITLE_LAYER);
+            $42._titleLayer = new _42TitleLayer();
+            self.addChild($42._titleLayer, 2, $42.TAG_TITLE_LAYER);
         });
     },
 

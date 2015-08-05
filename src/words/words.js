@@ -753,8 +753,8 @@ var _42_MODULE = function(_42Layer) {
 
             ml.fillWordsForTiles();
             setTimeout( function() {
-                ml.pauseBuildingTiles = false;
-               /*
+                //ml.pauseBuildingTiles = false;
+               
                 $42.wordTreasure = [
                     {word: "HINDERNIS"},
                     {word: "TROCKNET"},
@@ -778,9 +778,23 @@ var _42_MODULE = function(_42Layer) {
                     {word: "GASPROM"},
                     {word: "GLÜCKT"}
                 ];
-                ml.hookTweet();
+                ml.hookTweet(function() {
+                    ml.runAction(
+                        cc.sequence(
+                            cc.EaseSineOut.create(
+                                cc.fadeOut(1)
+                            ),
+                            cc.delayTime(1.3),
+                            cc.callFunc(function() {
+                                ml.getParent().removeChildByTag($42.TAG_GAME_LAYER);
+                            })
+                        )
+                    );
+
+                    $42._titleLayer.show();
+                });
                 //showAllWordsFlyingIn();
-                */
+                
             }, (3.5+i*0.50) * 1000 );
         };
     };

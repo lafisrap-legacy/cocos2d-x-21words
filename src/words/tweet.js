@@ -55,7 +55,8 @@ var TWEET_MODULE = function(layer) {
         touchShortiesXPos = null,
         touchShortiesLastX = null,
         touchShortiesSpeed = null,
-        touchRubberBand = null;
+        touchRubberBand = null,
+        finalCallback = null;
         
 
     cc.spriteFrameCache.addSpriteFrames(res.tweet_plist);
@@ -67,6 +68,8 @@ var TWEET_MODULE = function(layer) {
         wt.splice(0,0,{ word: $42.t.tweet_anonymous });
 
         init();
+
+        finalCallback = cb;
     };
 
     var init = function() {
@@ -94,8 +97,9 @@ var TWEET_MODULE = function(layer) {
         ////////////////////////////////////
         // init menu layer
         mnLayer = new cc.LayerColor($42.TWEET_MENU_COLOR, $42.TWEET_MENU_WIDTH, $42.TWEET_MENU_HEIGHT);
-        tLayer.addChild(mnLayer);
+        ml.addChild(mnLayer,20);
         mnLayer.setPosition($42.TWEET_MENU_POS);
+        mnLayer.setCascadeOpacityEnabled(true);
         _42_retain(mnLayer, "Tweet menu layer");
         initMenu();
 
@@ -104,7 +108,7 @@ var TWEET_MODULE = function(layer) {
 		touchMovingCursor = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("cursor.png"));
         touchMovingCursor.setOpacity(0);
         txLayer.addChild(touchMovingCursor);
-        _42_retain(touchMovingCursor);
+        _42_retain(touchMovingCursor, "moving cursor");
         touchMovingCursor.runAction(
             cc.repeatForever(
                 cc.sequence(
@@ -128,6 +132,20 @@ var TWEET_MODULE = function(layer) {
     };
 
     var exit = function() {
+        var mw = movableWords,
+            sw = selectableWords;
+
+        ml.removeChild(tLayer);
+        tLayer.removeAllChildren(true);
+        _42_release(tLayer);
+        _42_release(txLayer);
+        _42_release(shLayer);
+        _42_release(mvLayer);
+        _42_release(mnLayer);
+        _42_release(touchMovingCursor);
+        for( var i=0 ; i<mw.length ; i++) _42_release(mw[i]);
+        for( var i=0 ; i<sw.length ; i++) _42_release(sw[i]);
+        if( touchMovingLabel ) _42_release(touchMovingLabel,"moving label");
         stopListeners();
         tLayer.unscheduleUpdate();
     };
@@ -143,7 +161,27 @@ var TWEET_MODULE = function(layer) {
             };
 
         addMenuItem($42.t.tweet_save,-214,function(sender) {
-                // save
+            tLayer.runAction(
+                cc.sequence(
+                    cc.EaseQuinticActionOut.create(
+                        cc.spawn(
+                            cc.rotateBy(2.3,23),
+                            cc.scaleTo(2.3,0.1),
+                            cc.moveTo(2.3,cc.p(260,-450))
+                        )
+                    ),
+                    cc.callFunc(function() {
+                        exit();
+                    })
+                )
+            );
+            mnLayer.runAction(
+                cc.EaseSineIn.create(
+                    cc.fadeOut(1)
+                )
+            );
+
+            if( typeof finalCallback === "function" ) finalCallback();
         });
         addMenuItem($42.t.tweet_no_internet, 0, function(sender) {
                 // change name
@@ -220,6 +258,7 @@ var TWEET_MODULE = function(layer) {
             selectableWords.push(label);
 
             mvLayer.addChild(label);
+            _42_retain(label, "Shorty");
         }
 
         distributeShorties();
@@ -569,7 +608,7 @@ var TWEET_MODULE = function(layer) {
     }; 
 
     var stopListeners = function() {
-        cc.eventManager.stopListener(touchListener); 
+        cc.eventManager.removeListener(touchListener); 
     };
    
     var updateCnt = 0; 
