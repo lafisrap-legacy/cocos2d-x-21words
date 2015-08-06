@@ -156,15 +156,19 @@ var _42GameLayer = cc.Layer.extend({
     onExit: function() {
 		this._super();
 
-	    this.stopListeners();
-	    this.unscheduleUpdate();
-
         if( self.hookExit ) self.hookExit();        
     },
     
     ////////////////////////////////////////////////////////////////////////////
     // endGame cleans up after a game is finished
     endGame: function() {
+	    //////////////////////////////////
+        // Stop tiles
+        this.stopListeners();
+	    this.unscheduleUpdate();
+
+        if( this.hookEndGame ) this.hookEndGame();
+
         ///////////////////
     	// delete all boxes
 		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) this.deleteRow(i,true);
@@ -1190,33 +1194,27 @@ var _42GameLayer = cc.Layer.extend({
 		    		if( self.boxes[row][i] ) {
                         tmpBox.userData = self.boxes[row][i].userData;
 		    			_42_release(self.boxes[row][i].sprite);
-	    				
-		            	self.removeChild(self.boxes[row][i].sprite);
+	    			
+                        var sprite = self.boxes[row][i].sprite;  
+                        sprite.setOpacity(0);  
 		            	self.boxes[row][i].sprite = null;
 				    	self.boxes[row][i] = null;		
 				    	
 			            // particle emitter
 			            var emitter = new cc.ParticleSystem( res.particle_flowers );
-			            emitter.x = $42.BOXES_Y_OFFSET + i * $42.BS - $42.BS/2;
-			            emitter.y = $42.BOXES_Y_OFFSET + row * $42.BS + $42.BS/2;
-			            _42_retain(emitter, "Emitter");
+			            emitter.x = $42.BS/2;
+			            emitter.y = $42.BS/2;
 			            emitter.setAngle(Math.random()*360);
-			            self.addChild(emitter);
-			            
+			            sprite.addChild(emitter);
+ 
 			            emitter.runAction(
 			            	cc.sequence(
-			            		cc.delayTime(1 + Math.random()*0.25),
+			            		cc.delayTime(2 + Math.random()*0.25),
 			            		cc.callFunc(function() {
-			            			this.stopSystem();
-			            		},emitter),
-			            		//cc.delayTime(3.0),
-			            		cc.callFunc(function() {
-			            			_42_release(this);
 			            			self.removeChild(this);
-			            		},emitter)
+			            		},sprite)
 			            	)
 			            );
-
 		    		}
 		    	}
     		}           	
@@ -1230,7 +1228,7 @@ var _42GameLayer = cc.Layer.extend({
         	return self.isSwipeLeft || self.isSwipeRight || self.isSwipeUp || self.isSwipeDown;
         }
 
-        //////////////////////////////////////////////////////77/
+        ///////////////////////////////////////////////////////
     	// Actual update functionality starts here ... beginning by calling hook update function
     	if( self.hookUpdate ) self.hookUpdate(dt);
     	
@@ -1371,7 +1369,6 @@ var _42GameLayer = cc.Layer.extend({
                 menuItems.push({
                     label: $42.t.reached_top_end_game, 
                     cb: function(sender) {
-                        if( self.hookEndGame ) self.hookEndGame();
                         
                         self.endGame();
                         this.exitMenu();

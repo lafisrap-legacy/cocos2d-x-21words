@@ -416,6 +416,47 @@ var _42_MODULE = function(_42Layer) {
                             ml.pauseBuildingTiles = false; 
                             ml.wordsForTilesCnt = level.wordFreq-1;
                             ml.fillWordsForTiles();
+                            $42.wordTreasure = [
+                                {word: "HINDERNIS"},
+                                {word: "TROCKNET"},
+                                {word: "UMGEBENDEN"},
+                                {word: "REPORTERN"},
+                                {word: "REDETEXT"},
+                                {word: "GEBRAUCH"},
+                                {word: "POSE"},
+                                {word: "NÜCHTERNE"},
+                                {word: "LADUNGEN"},
+                                {word: "INTERNATE"},
+                                {word: "HILFREICH"},
+                                {word: "WIRKEN"},
+                                {word: "PLATTENSEE"},
+                                {word: "JAPANERN"},
+                                {word: "NEBENBEI"},
+                                {word: "WACHSE"},
+                                {word: "MALAWI"},
+                                {word: "AUFKLEBER"},
+                                {word: "ERSCHWEREN"},
+                                {word: "GASPROM"},
+                                {word: "GLÜCKT"}
+                            ];
+	                        ml.unscheduleUpdate();
+                            ml.hookTweet(function() {
+                                ml.runAction(
+                                    cc.sequence(
+                                        cc.EaseSineOut.create(
+                                            cc.fadeOut(1)
+                                        ),
+                                        cc.delayTime(1.4),
+                                        cc.callFunc(function() {
+                                            ml.getParent().removeChildByTag($42.TAG_GAME_LAYER); // after this ml.onExit() is called by cocos2d-x
+                                            ml.endGame();
+                                            return;
+                                        })
+                                    )
+                                );
+
+                                $42._titleLayer.show();
+                            });
                         }
 
                         ml.unselectWord(false);
@@ -633,7 +674,7 @@ var _42_MODULE = function(_42Layer) {
             });
             background.setCascadeOpacityEnabled(true);
             ml.addChild(background, 0, $42.TAG_BACKGROUND_SPRITE);
-            _42_retain(background, "startAnimation: background");
+            _42_retain(background, "background");
             background.runAction(
                 cc.sequence(
                     cc.delayTime($42.BACKGROUND_SPEED/4),
@@ -753,46 +794,8 @@ var _42_MODULE = function(_42Layer) {
 
             ml.fillWordsForTiles();
             setTimeout( function() {
-                //ml.pauseBuildingTiles = false;
+                ml.pauseBuildingTiles = false;
                
-                $42.wordTreasure = [
-                    {word: "HINDERNIS"},
-                    {word: "TROCKNET"},
-                    {word: "UMGEBENDEN"},
-                    {word: "REPORTERN"},
-                    {word: "REDETEXT"},
-                    {word: "GEBRAUCH"},
-                    {word: "POSE"},
-                    {word: "NÜCHTERNE"},
-                    {word: "LADUNGEN"},
-                    {word: "INTERNATE"},
-                    {word: "HILFREICH"},
-                    {word: "WIRKEN"},
-                    {word: "PLATTENSEE"},
-                    {word: "JAPANERN"},
-                    {word: "NEBENBEI"},
-                    {word: "WACHSE"},
-                    {word: "MALAWI"},
-                    {word: "AUFKLEBER"},
-                    {word: "ERSCHWEREN"},
-                    {word: "GASPROM"},
-                    {word: "GLÜCKT"}
-                ];
-                ml.hookTweet(function() {
-                    ml.runAction(
-                        cc.sequence(
-                            cc.EaseSineOut.create(
-                                cc.fadeOut(1)
-                            ),
-                            cc.delayTime(1.3),
-                            cc.callFunc(function() {
-                                ml.getParent().removeChildByTag($42.TAG_GAME_LAYER);
-                            })
-                        )
-                    );
-
-                    $42._titleLayer.show();
-                });
                 //showAllWordsFlyingIn();
                 
             }, (3.5+i*0.50) * 1000 );
@@ -1773,6 +1776,8 @@ var _42_MODULE = function(_42Layer) {
 		for( var i=0 ; i<dpl.length ; i++ ) {
 			releaseSprite( dpl[i] );
 		}
+        releaseSprite(ml.getChildByTag($42.TAG_BACKGROUND_SPRITE));
+        releaseSprite(ml._levelNr);
 		releaseSprite(ml.bestWordValue);
 		releaseSprite(ml.score_words_mini);
 		releaseSprite(ml.score_points);
