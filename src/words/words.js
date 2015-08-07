@@ -529,7 +529,6 @@ var _42_MODULE = function(_42Layer) {
             levelnr.setPosition(cc.p(cc.width/2, cc.height*0.67));
             levelnr.setOpacity(0);
             levelnr.setColor(cc.color(44,18,44,255));
-            levelnr.setScale(0.7,1);
             ml.addChild(levelnr,10);
             _42_retain(levelnr,"Background level nr");
             levelnr.runAction(
@@ -543,7 +542,7 @@ var _42_MODULE = function(_42Layer) {
                     cc.spawn(
                         cc.sequence(
                             cc.scaleTo($42.BACKGROUND_SPEED*1, 2.1, 3),
-                            cc.scaleTo($42.BACKGROUND_SPEED*0.5, 0.28, 0.4)
+                            cc.scaleTo($42.BACKGROUND_SPEED*0.5, 0.4)
                         ),
                         cc.sequence(
                             cc.delayTime($42.BACKGROUND_SPEED*0.5),
