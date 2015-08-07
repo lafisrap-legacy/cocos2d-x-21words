@@ -11,6 +11,7 @@ $42.TWEET_TEXT_PADDING = 30;
 $42.TWEET_TEXT_LINEHEIGHT = 75;
 $42.TWEET_TEXT_SPACE_WIDTH = 15;
 $42.TWEET_TEXT_MOVING_TIME = 0.11;
+$42.TWEET_TEXT_HIDING_TIME = 1.8;
 $42.TWEET_SHORTIES_WIDTH = 640;
 $42.TWEET_SHORTIES_HEIGHT = 180;
 $42.TWEET_SHORTIES_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT-$42.TWEET_SHORTIES_HEIGHT);
@@ -27,9 +28,8 @@ $42.TWEET_MENU_BIG_FONT_SIZE = 40;
 $42.TWEET_MENU_SMALL_FONT_SIZE = 28;
 $42.TWEET_MENU_PADDING = 10;
 
-var TWEET_MODULE = function(layer) {
-	var ml = layer,
-        tLayer = null,      // tweet layer
+var _TWEET_MODULE = function(layer) {
+	var tLayer = null,      // tweet layer
         txLayer = null,     // text layer
         shLayer = null,     // shorties layer
         mvLayer = null,     // movable layer
@@ -61,10 +61,10 @@ var TWEET_MODULE = function(layer) {
 
     cc.spriteFrameCache.addSpriteFrames(res.tweet_plist);
 
-    ml.hookTweet = function(cb) {
+    layer.hookTweet = function(cb) {
 
-        var wt = $42.wordTreasure;
-        
+        var wt = $42.wordTreasure || [];
+
         wt.splice(0,0,{ word: $42.t.tweet_anonymous });
 
         init();
@@ -75,7 +75,9 @@ var TWEET_MODULE = function(layer) {
     var init = function() {
 
         tLayer = new cc.Layer();
-        ml.addChild(tLayer, 10);
+        layer.addChild(tLayer, 10);
+        tLayer.setCascadeOpacityEnabled(true);
+        tLayer.setOpacity(0);
         _42_retain(tLayer, "Tweet layer");
 
         ////////////////////////////////////
@@ -97,7 +99,7 @@ var TWEET_MODULE = function(layer) {
         ////////////////////////////////////
         // init menu layer
         mnLayer = new cc.LayerColor($42.TWEET_MENU_COLOR, $42.TWEET_MENU_WIDTH, $42.TWEET_MENU_HEIGHT);
-        ml.addChild(mnLayer,20);
+        layer.addChild(mnLayer,20);
         mnLayer.setPosition($42.TWEET_MENU_POS);
         mnLayer.setCascadeOpacityEnabled(true);
         _42_retain(mnLayer, "Tweet menu layer");
@@ -127,6 +129,20 @@ var TWEET_MODULE = function(layer) {
         // Scheduler
         tLayer.update = update;
 
+        tLayer.setPosition(cc.p(260,-450));
+        tLayer.setRotation(23);
+        tLayer.setScale(0.1);
+        tLayer.runAction(
+            cc.EaseSineIn.create(
+                cc.spawn(
+                    cc.moveTo($42.TWEET_TEXT_HIDING_TIME, cc.p(0,0)),
+                    cc.rotateTo($42.TWEET_TEXT_HIDING_TIME, 0),
+                    cc.scaleTo($42.TWEET_TEXT_HIDING_TIME,1),
+                    cc.fadeIn($42.TWEET_TEXT_HIDING_TIME)
+                )
+            )
+        );
+
         initListeners();
         tLayer.scheduleUpdate();
     };
@@ -135,7 +151,7 @@ var TWEET_MODULE = function(layer) {
         var mw = movableWords,
             sw = selectableWords;
 
-        ml.removeChild(tLayer);
+        layer.removeChild(tLayer);
         tLayer.removeAllChildren(true);
         _42_release(tLayer);
         _42_release(txLayer);
@@ -161,13 +177,26 @@ var TWEET_MODULE = function(layer) {
             };
 
         addMenuItem($42.t.tweet_save,-214,function(sender) {
+
+			var ls = cc.sys.localStorage,
+                mw = movableWords,
+                sw = selectableWords,
+                tt = {
+                    movableWords: [],
+                    selectableWords : []
+                };
+
+            for( var i=0 ; i<mw.length ; i++ ) tt.movableWords.push({word: mw[i].getString()});
+            for( var i=0 ; i<sw.length ; i++ ) tt.selectableWords.push(sw[i].getString());
+            ls.setItem("tweetTreasure",JSON.stringify(tt));
+
             tLayer.runAction(
                 cc.sequence(
                     cc.EaseQuinticActionOut.create(
                         cc.spawn(
-                            cc.rotateBy(2.3,23),
-                            cc.scaleTo(2.3,0.1),
-                            cc.moveTo(2.3,cc.p(260,-450))
+                            cc.rotateBy($42.TWEET_TEXT_HIDING_TIME,23),
+                            cc.scaleTo($42.TWEET_TEXT_HIDING_TIME,0.1),
+                            cc.moveTo($42.TWEET_TEXT_HIDING_TIME,cc.p(260,-450))
                         )
                     ),
                     cc.callFunc(function() {
@@ -187,7 +216,11 @@ var TWEET_MODULE = function(layer) {
                 // change name
         });
         addMenuItem($42.t.tweet_no_internet, 214, function(sender) {
+			var ls = cc.sys.localStorage;
                 // tweet
+
+
+            ls.removeItem("tweetTreasure");
         });
 
         menu = new cc.Menu(menuItems);
@@ -197,11 +230,12 @@ var TWEET_MODULE = function(layer) {
     }
 
     var putWordsIntoTextLayer = function() {
-        var wt = $42.wordTreasure,
+        var wt = $42.tweetTreasure && $42.tweetTreasure.movableWords || $42.wordTreasure,
             padding = $42.TWEET_TEXT_PADDING,
             textWidth = $42.TWEET_TEXT_WIDTH - padding * 2,
             textHeight = $42.TWEET_TEXT_HEIGHT;
         
+        movableWords = [];
         for( var i=0,x=0,y=0 ; i<wt.length ; i++ ) {
 
 			var label = cc.LabelTTF.create(wt[i].word, _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE),
@@ -239,7 +273,7 @@ var TWEET_MODULE = function(layer) {
     };
 
     putWordsIntoShortiesLayer = function() {
-        var sh = $42.shorties,
+        var sh = $42.tweetTreasure && $42.tweetTreasure.selectableWords || $42.shorties,
             padding = $42.TWEET_TEXT_PADDING;
 
         ////////////////////////////////////
@@ -250,6 +284,7 @@ var TWEET_MODULE = function(layer) {
         mvLayer.setOpacity(0);
         _42_retain(mvLayer, "Tweet shorties moving layer");
         
+        selectableWords = [];
         for( var i=0 ; i<sh.length ; i++ ) {
 
 			var label = cc.LabelTTF.create(sh[i], _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE),

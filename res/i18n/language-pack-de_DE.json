@@ -4,8 +4,12 @@
     "apptext": {
         "title_title":          "WORTE",
     	"title_words":		    "Gesammelte Worte",
-        "current_level":        "Aktueller Level",
+        "title_level":        "Aktueller Level",
         "title_start":          "START",
+        "title_easy":           "Leicht",
+        "title_intermediate":   "Mittel",
+        "title_expert":         "Schwer",
+        "title_tweet":          "Tweet",
         "level_min_value":      "(Wortwert min. %d Punkte)",
         "level_min_length":     "(min. %d Buchstaben lang)",
         "reached_top_continue": "WEITER SPIELEN",

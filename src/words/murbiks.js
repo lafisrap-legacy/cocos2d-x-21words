@@ -27,7 +27,7 @@ $42.HAND_CONTACT_TIME = 0.3;
 $42.HAND_CONTACT_TIME = 0.3;
 $42.BUBBLE_BUTTON_SCALE = 0.7;
 
-var MURBIKS_MODULE = function(layer) {
+var _MURBIKS_MODULE = function(layer) {
 	var ml = layer,
 		mul = null,
 		lg = null,
@@ -1486,4 +1486,4 @@ var MURBIKS_MODULE = function(layer) {
 	
 	initAnimation();
 },
-$MM = MURBIKS_MODULE;
+$MM = _MURBIKS_MODULE;

@@ -396,6 +396,7 @@ var _42_MODULE = function(_42Layer) {
                                 ls.removeItem("wordTreasure");
                                 ls.removeItem("currentLevel");
                                 ls.removeItem("wordProfile");
+                                $42.tweetTreasure = null;
                                 youWonTheGame();
                                 return
                             } else {
@@ -440,20 +441,8 @@ var _42_MODULE = function(_42Layer) {
                                 {word: "GLÜCKT"}
                             ];
 	                        ml.unscheduleUpdate();
-                            ml.hookTweet(function() {
-                                ml.runAction(
-                                    cc.sequence(
-                                        cc.EaseSineOut.create(
-                                            cc.fadeOut(1)
-                                        ),
-                                        cc.delayTime(1.4),
-                                        cc.callFunc(function() {
-                                            ml.getParent().removeChildByTag($42.TAG_GAME_LAYER); // after this ml.onExit() is called by cocos2d-x
-                                            ml.endGame();
-                                            return;
-                                        })
-                                    )
-                                );
+                            $42.SCENE.hookTweet(function() {
+                                ml.hideAndEndGame($42.TWEET_TEXT_HIDING_TIME+0.1);
 
                                 $42._titleLayer.show();
                             });
@@ -2127,11 +2116,7 @@ var _42_MODULE = function(_42Layer) {
 			ml.hookStartProgram( 1 , true );	
 		}
 	};
-	
-	// call tutorial module if available
-	if( typeof MURBIKS_MODULE === 'function' ) MURBIKS_MODULE(ml);
-	
-    // call tweet module if available
-	if( typeof TWEET_MODULE === 'function' ) TWEET_MODULE(ml);
+    
+    if( typeof _MURBIKS_MODULE === 'function' ) _MURBIKS_MODULE(ml);
 };
 

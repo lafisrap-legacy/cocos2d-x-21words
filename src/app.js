@@ -37,6 +37,7 @@
 var _42_GLOBALS = { 
     TITLE_MENU_COLOR_1: cc.color(44,18,44,255), // 
     TITLE_MENU_COLOR_2: cc.color(109,36,76,255), // 
+    TITLE_MENU_COLOR_3: cc.color(109,36,76,255), // 
 	TAG_SPRITE_MANAGER : 1,                 // Sprite Ids
 	TAG_GAME_LAYER : 3,                     //
 	TAG_TITLE_LAYER : 4,                    //
@@ -120,7 +121,7 @@ var _42GameLayer = cc.Layer.extend({
         /////////////////////////
         // Look if there is a plugin module
         if( typeof _42_MODULE === 'function' ) _42_MODULE(this);
-
+	
         this.showLogOnScreen();
         this.initBoxSpace();
         this.loadImages();
@@ -131,6 +132,7 @@ var _42GameLayer = cc.Layer.extend({
         cc.assert(mode==="easy" || mode==="intermediate" || mode==="expert", "Game mode '"+mode+"' not supported.");
 
         this.setCascadeOpacityEnabled(true);
+
         return true;
     },
 
@@ -181,7 +183,27 @@ var _42GameLayer = cc.Layer.extend({
 		$42._scoreBar.removeAllChildren(true);
         this.removeChild($42._scoreBar);
     },
-    
+
+    //////////////////////////////////////////////////////////////////////////////
+    // hideGame fades out the game and calls endGame after it vanished
+    hideAndEndGame: function(delay) {
+        var self = this;
+
+        this.runAction(
+            cc.sequence(
+                cc.EaseSineOut.create(
+                    cc.fadeOut(1)
+                ),
+                cc.delayTime((delay||1)-1),
+                cc.callFunc(function() {
+                    self.getParent().removeChildByTag($42.TAG_GAME_LAYER); // after this ml.onExit() is called by cocos2d-x
+                    self.endGame();
+                    return;
+                })
+            )
+        );
+    },
+
     ////////////////////////////////////////////////////////////////////////////
     // 
 	showLogOnScreen: function() {
@@ -1370,10 +1392,10 @@ var _42GameLayer = cc.Layer.extend({
                     label: $42.t.reached_top_end_game, 
                     cb: function(sender) {
                         
-                        self.endGame();
+                        self.hideAndEndGame();
                         this.exitMenu();
                         this.getParent().removeChild(this);
-                        cc.director.runScene(new _42Scene());
+                        $42._titleLayer.show();
                     }
                 });
                 
@@ -1485,56 +1507,68 @@ var _42TitleLayer = cc.Layer.extend({
 		};
 	
         this._gameStarted = false;
-        var item1 = addMenu($42.t.title_start, 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
-                if( !self._gameStarted ) {
-                    self._gameStarted = true;
-                    // start game layer
-                    self.getParent().addChild(new _42GameLayer($42.currentMode || "easy"), 1, $42.TAG_GAME_LAYER);
-                    self.hide();
-                }
-            }, self);
-	
         var ls = cc.sys.localStorage;
-        $42.wordTreasureWords = ls.getItem("wordTreasureWords") || 0;
-        $42.maxPoints = ls.getItem("maxPoints") || 0;
-        $42.bestTime = ls.getItem("bestTime") || null;
-        var item2 = addMenu("Leicht", 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                if( !self._gameStarted ) {
-                    self._gameStarted = true;
-                    $42.currentLevel = 1;
-                    $42.currentMode = "easy";
-                    // start game layer
-                    self.getParent().addChild(new _42GameLayer("easy"), 1, $42.TAG_GAME_LAYER);
-                    self.hide();
-                }
+        var item1 = addMenu($42.t.title_start, 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
+                this._menu.setEnabled(false);
+                // start game layer
+                self.getParent().addChild(new _42GameLayer($42.currentMode || "easy"), 1, $42.TAG_GAME_LAYER);
+                self.hide();
             }),
-            item3 = addMenu("Mittel", 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                if( !self._gameStarted ) {
-                    self._gameStarted = true;
-                    $42.currentLevel = 1;
-                    $42.currentMode = "intermediate";
-                    // start game layer
-                    self.getParent().addChild(new _42GameLayer("intermediate"), 1, $42.TAG_GAME_LAYER);
-                    self.hide();
-                }
+            item2 = addMenu($42.t.title_easy, 36 , $42.TITLE_MENU_COLOR_2 , function() {
+                this._menu.setEnabled(false);
+                $42.currentLevel = 1;
+                $42.currentMode = "easy";
+                ls.removeItem("wordTreasure");
+                ls.removeItem("currentLevel");
+                ls.removeItem("wordProfile");
+                // start game layer
+                self.getParent().addChild(new _42GameLayer("easy"), 1, $42.TAG_GAME_LAYER);
+                self.hide();
             }),
-            item4 = addMenu("Schwer", 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                if( !self._gameStarted ) {
-                    self._gameStarted = true;
-                    $42.currentLevel = 1;
-                    $42.currentMode = "expert";
-                    // start game layer
-                    self.getParent().addChild(new _42GameLayer("expert"), 1, $42.TAG_GAME_LAYER);
-                    self.hide();
+            item3 = addMenu($42.t.title_intermediate, 36 , $42.TITLE_MENU_COLOR_2 , function() {
+                this._menu.setEnabled(false);
+                self._gameStarted = true;
+                $42.currentLevel = 1;
+                $42.currentMode = "intermediate";
+                ls.removeItem("wordTreasure");
+                ls.removeItem("currentLevel");
+                ls.removeItem("wordProfile");
+                // start game layer
+                self.getParent().addChild(new _42GameLayer("intermediate"), 1, $42.TAG_GAME_LAYER);
+                self.hide();
+            }),
+            item4 = addMenu($42.t.title_expert, 36 , $42.TITLE_MENU_COLOR_2 , function() {
+                this._menu.setEnabled(false);
+                $42.currentLevel = 1;
+                $42.currentMode = "expert";
+                ls.removeItem("wordTreasure");
+                ls.removeItem("currentLevel");
+                ls.removeItem("wordProfile");
+                // start game layer
+                self.getParent().addChild(new _42GameLayer("expert"), 1, $42.TAG_GAME_LAYER);
+                self.hide();
+            }),
+            item5 = addMenu($42.t.title_tweet, 28, $42.TITLE_MENU_COLOR_3 , function() {
+                var tt = ls.getItem("tweetTreasure");
+                if( tt ) {
+                    this._menu.setEnabled(false);
+                    //$42._titleLayer.hide();
+                    $42.tweetTreasure = JSON.parse(tt);
+                    $42.SCENE.hookTweet(function() {
+                        //$42._titleLayer.show();
+                        self._menu.setEnabled(true);
+                    });
                 }
             });
 
-        var menu = this._menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
+        var menu = this._menu = cc.Menu.create.apply(this, [item1, item2, item3, item4, item5] );
         menu.x = size.width/2;
         menu.y = 290;
         menu.setOpacity(0);
         menu.alignItemsVerticallyWithPadding(20);
 
+        item5.setPosition(cc.p(200,-180));
+        item5.setRotation(23);
         this.show();
         return true;
     },
@@ -1557,7 +1591,7 @@ var _42TitleLayer = cc.Layer.extend({
             )
         );
 
-        this._gameStarted = false;
+        this._menu.setEnabled(true);
     },
 
     hide: function() {
@@ -1577,6 +1611,8 @@ var _42TitleLayer = cc.Layer.extend({
         this._menu.runAction(
             cc.fadeOut(1.2)
         );
+
+        this._menu.setEnabled(false);
     },
     
     exitTitle: function() {
@@ -1591,7 +1627,7 @@ var _42TitleLayer = cc.Layer.extend({
 		var nodes = node.getChildren();
 		for( var i=0 ; i<nodes.length ; i++ ) {
 			if( nodes[i] ) _42_release(nodes[i]);
-		}
+		}    
     }
 });
 
@@ -1642,6 +1678,11 @@ var _42Scene = cc.Scene.extend({
         var self = this;
 
         this._super();
+	    
+        $42.SCENE = this;
+	
+        // call tutorial module if available
+        if( typeof _TWEET_MODULE === 'function' ) _TWEET_MODULE($42.SCENE);
 
         this.loadWords(function() {
             $42._titleLayer = new _42TitleLayer();
