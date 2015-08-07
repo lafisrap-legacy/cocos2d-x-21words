@@ -1199,7 +1199,7 @@ var _42_MODULE = function(_42Layer) {
     				_42_retain(sprite, "words: sprite");	
     				sprite.setScale(0.95,0.95);
     				ml.getParent().addChild(sprite,2);
-    				
+    			/*	
     				// display value of word
     				var pos = childSprites[0].getPosition();
     				for( var i=0,sum=0,wordMul=1 ; i<word.length ; i++ ) {
@@ -1236,7 +1236,7 @@ var _42_MODULE = function(_42Layer) {
 					_42_retain(value,"words: value ("+sum+", "+wordMul+", "+value+")");	
 					value.setColor(cc.color(200,160,0));
 					sprite.addChild(value, 5);	
-					
+				*/	
 					// release and remove word sprite that is not visible anymore
 			        var s = wordFrameSprite.getChildren();
 			        for( var i=0 ; i<s.length ; i++ ) {
