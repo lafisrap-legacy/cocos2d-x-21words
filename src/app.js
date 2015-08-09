@@ -35,6 +35,7 @@
 // Global variables
 //
 var _42_GLOBALS = { 
+    SERVER_ADDRESS: "ws://localhost:4021/socket",
     TITLE_MENU_COLOR_1: cc.color(44,18,44,255), // 
     TITLE_MENU_COLOR_2: cc.color(109,36,76,255), // 
     TITLE_MENU_COLOR_3: cc.color(109,36,76,255), // 
@@ -86,6 +87,7 @@ var _42_GLOBALS = {
 	TILE_OCCURANCES : [10,5,7,7,2,2,7,0,0], // How often the tiles appear, when selected randomly
 };
 var $42 = _42_GLOBALS;
+$42.webCallbacks = [];
 
 /////////////////////////////////////////////////////////////////////////////////7
 // The game layer
@@ -1066,7 +1068,10 @@ var _42GameLayer = cc.Layer.extend({
                 } catch(e) {
                     cc.log("ERROR!"+e.message+"hookTileFixed problem with newBrcs "+JSON.stringify(newBrcs)+" at position "+JSON.stringify(lp));
                 }
-            } else self.pauseBuildingTiles = false;
+            } else {
+                self.pauseBuildingTiles = false;
+                cc.log("TILES FREED at no hookTileFixed available.");
+            }
 
     		if( !tileRet ) {
                 try {
@@ -1119,7 +1124,7 @@ var _42GameLayer = cc.Layer.extend({
     			// play sound
     			//cc.audioEngine.playEffect(res.ritsch_mp3);
 
-                var tmpColBlocked = [];
+                var colsBlocked = [];
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
     				var rd = [];
     				for( var j=0 ; j<rowsDeleted.length ; j++) {
@@ -1132,7 +1137,7 @@ var _42GameLayer = cc.Layer.extend({
     				
     				// mark transitions between blocked and non blocked columns for detection of single boxes later
     				curColBlocked = rowsDeleted.length != rd.length;
-                    tmpColBlocked.push(curColBlocked);
+                    colsBlocked.push(curColBlocked);
     				if( i !== 0 && curColBlocked !== prevColBlocked ) colsToCorrect[i-1] = colsToCorrect[i] = true;
     				else colsToCorrect[i] = false;    			
     				prevColBlocked = curColBlocked; 
@@ -1163,7 +1168,7 @@ var _42GameLayer = cc.Layer.extend({
 	    			}
     			}
 
-                cc.log("checkForAndRemoveCompleteRows, tmpColBlocked: "+JSON.stringify(tmpColBlocked));
+                cc.log("checkForAndRemoveCompleteRows, colsBlocked: "+JSON.stringify(colsBlocked));
                 cc.log("checkForAndRemoveCompleteRows, colsToCorrect: "+JSON.stringify(colsToCorrect));
 
     			// move single boxes down 
@@ -1172,6 +1177,7 @@ var _42GameLayer = cc.Layer.extend({
     					for( var j=rowsDeleted[0] ; j < $42.BOXES_PER_COL ; j++ ) {
     						// check if box have no neighbors left
     						if( self.boxes[j][i] && 
+                                !colsBlocked[j] &&
        							( j>0 && !self.boxes[j-1][i] ) && 
     							( j==$42.BOXES_PER_COL-1 || !self.boxes[j+1][i] ) && 
     							( i==0 || !self.boxes[j][i-1] ) && 
@@ -1354,6 +1360,7 @@ var _42GameLayer = cc.Layer.extend({
         // Check for bottom
         var ret;
         self.pauseBuildingTiles = true;
+        cc.log("TILES BLOCKED before bottom check.");
         if( ret = checkForBottom(t, lp) ) {
             //////////////////////////////////////////
             // tile landed, release and delete it ...
@@ -1671,6 +1678,56 @@ var _42_getFontName = function(resource) {
     }
 }
 
+_42_webConnect = function() {
+
+    try {
+        $42.websocket = new WebSocket($42.SERVER_ADDRESS);
+    } catch(e) {
+        cc.log("WebSocket connection to \""+_B_SERVER_ADDRESS+"\" failed.");
+        return false;
+    }
+
+    $42.websocket.onopen = function(evt) { _42_onOpen(evt) };
+    $42.websocket.onmessage = function(evt) { _42_onMessage(evt) };
+    $42.websocket.onerror = function(evt) { _42_onError(evt); };
+    $42.websocket.onclose = function(evt) { _42_onClose(evt); };        
+}
+
+_42_sendMessage = function( command, message, cb ) {
+    var id = message.Id = _42_getId();
+	message.Command = command;
+    cc.log(JSON.stringify(message));
+    //$42.websocket.send(JSON.stringify(message));		
+    $42.websocket.send(JSON.stringify(message));		
+    $42.webCallbacks[id] = cb;
+}
+
+_42_onOpen = function(evt) {
+    $42.webConnected = true;
+}
+
+_42_onMessage = function(evt) {
+    var self = this;
+
+    try {
+        var data = JSON.parse(evt.data);
+    } catch (e) {
+        throw "_42_onMessage: parse json message failed (" + e + ")";
+    }
+
+    if( data.Id && $42.webCallbacks[data.Id] ) {
+        var id = data.Id;
+        delete data.Id;
+        $42.webCallbacks[id](data);
+    }
+}
+
+_42_onError = function(evt) {
+}
+
+_42_onClose = function(evt) {
+    $42.webConnected = false;
+}
 
 var _42Scene = cc.Scene.extend({
 	
@@ -1688,6 +1745,8 @@ var _42Scene = cc.Scene.extend({
             $42._titleLayer = new _42TitleLayer();
             self.addChild($42._titleLayer, 2, $42.TAG_TITLE_LAYER);
         });
+
+        _42_webConnect();
     },
 
     loadWords: function(cb) {

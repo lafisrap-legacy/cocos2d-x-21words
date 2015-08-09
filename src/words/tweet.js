@@ -145,6 +145,21 @@ var _TWEET_MODULE = function(layer) {
 
         initListeners();
         tLayer.scheduleUpdate();
+
+        /////////////////////////////////////
+        // Look which words are still free to be names
+        var mw = movableWords,
+            sw = selectableWords,
+            names = [];
+        for( var i=1,cnt=0 ; i<mw.length ; i++,cnt++ ) names.push(mw[i].getString());
+        for( var i=0 ; i<sw.length ; i++,cnt++ ) {
+            var name = sw[i].getString();
+            if( name.length > 3 ) names.push(name);
+        }
+
+        _42_sendMessage("checkNames", {Names:names}, function(data) {
+            debugger;
+        });
     };
 
     var exit = function() {

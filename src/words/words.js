@@ -54,6 +54,7 @@
 //
 //
 // $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
+
 $42.LETTER_NAMES = ["space","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao"];
 $42.LETTERS =      [" ","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","Å"];
 $42.MARKER_SET = 1;                         // Marker under a letter is set, meaning that the letter is obligatory
@@ -415,6 +416,7 @@ var _42_MODULE = function(_42Layer) {
                             var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
                             ml.pauseBuildingTiles = false; 
+                            cc.log("TILES FREED at no end of level.");
                             ml.wordsForTilesCnt = level.wordFreq-1;
                             ml.fillWordsForTiles();
                             $42.wordTreasure = [
@@ -454,6 +456,7 @@ var _42_MODULE = function(_42Layer) {
                         ml.drawScorebar(false);
 					} else {
                         ml.pauseBuildingTiles = false; 
+                        cc.log("TILES FREED at didn't take word.");
 						ml.checkForAndRemoveCompleteRows();
 						ml.unselectWord(true);
 						moveSelectedWord(sw.brc);
@@ -465,6 +468,7 @@ var _42_MODULE = function(_42Layer) {
 		}
 		
         ml.pauseBuildingTiles = false;
+        cc.log("TILES FREED at no word found.");
 		
         return false; // no word was found
 	};
@@ -784,9 +788,34 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
-               
+                cc.log("TILES FREED at start of level.");
+               /*
+                $42.wordTreasure = [
+                    {word: "HINDERNIS"},
+                    {word: "TROCKNET"},
+                    {word: "UMGEBENDEN"},
+                    {word: "REPORTERN"},
+                    {word: "REDETEXT"},
+                    {word: "GEBRAUCH"},
+                    {word: "POSE"},
+                    {word: "NÜCHTERNE"},
+                    {word: "LADUNGEN"},
+                    {word: "INTERNATE"},
+                    {word: "HILFREICH"},
+                    {word: "WIRKEN"},
+                    {word: "PLATTENSEE"},
+                    {word: "JAPANERN"},
+                    {word: "NEBENBEI"},
+                    {word: "WACHSE"},
+                    {word: "MALAWI"},
+                    {word: "AUFKLEBER"},
+                    {word: "ERSCHWEREN"},
+                    {word: "GASPROM"},
+                    {word: "GLÜCKT"}
+                ];
+                $42.SCENE.hookTweet();
                 //showAllWordsFlyingIn();
-                
+                */
             }, (3.5+i*0.50) * 1000 );
         };
     };
@@ -1748,6 +1777,7 @@ var _42_MODULE = function(_42Layer) {
 		ml.dontAutoSelectWord = false;
 	    
         ml.pauseBuildingTiles = true;
+        cc.log("TILES BLOCKED at start of game.");
         startNewLevel();    
 	};
 	
@@ -1864,10 +1894,14 @@ var _42_MODULE = function(_42Layer) {
 
 		ml.lastBrcs = brcs;
         ml.pauseBuildingTiles = true;
+        cc.log("TILES BLOCKED at tile fixed.");
 		
 		setSelections(); // OPTIMIZATION: Only look in current lines
       
-        if( !sw ) ml.pauseBuildingTiles = false;
+        if( !sw ) {
+            ml.pauseBuildingTiles = false;
+            cc.log("TILES FREED at no selection after tile fixed.");
+        }
 		return updateSelectedWord();
 	};	
 
