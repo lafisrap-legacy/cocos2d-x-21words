@@ -1747,6 +1747,9 @@ var _42_MODULE = function(_42Layer) {
 		    wp = $42.wordProfile = parseInt(ls.getItem("wordProfile")) || 0x7f, // 127 == first 7 letters in the letter order
             lo = $42.letterOrder;
 
+        $42.playerName = ls.getItem("playerName") || "";
+        $42.playerHash = ls.getItem("playerHash") || "";
+
 		// remove all words that are already in the treasure
         for( var i=0 ; i<wt.length ; i++ ) {
             var prefix = wt[i].word.substr(0,3),

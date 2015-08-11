@@ -39,6 +39,7 @@
         "tweet_anonymous":      "Unbekannt:",
         "tweet_save":           {"label":"Speichern"   ,"size":"big"},
         "tweet_name":           {"label":"Name\nändern","size":"small"},
+        "tweet_name_deny":      {"label":"Doch\nnicht" ,"size":"small"},
         "tweet_tweet":          {"label":"TWEET"       ,"size":"big"},
         "tweet_tweet_confirm":  {"label":"Senden?"     ,"size":"big"},
         "tweet_no_internet":    {"label":"Kein\nInternet","size":"small"},
