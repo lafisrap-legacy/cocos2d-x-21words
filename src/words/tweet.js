@@ -12,7 +12,7 @@ $42.TWEET_TEXT_PADDING = 30;
 $42.TWEET_TEXT_LINEHEIGHT = 75;
 $42.TWEET_TEXT_SPACE_WIDTH = 15;
 $42.TWEET_TEXT_MOVING_TIME = 0.11;
-$42.TWEET_TEXT_HIDING_TIME = 1.8;
+$42.TWEET_TEXT_HIDING_TIME = 1.2;
 $42.TWEET_NAMES_COLOR = cc.color(0,255,0,180);
 $42.TWEET_NAMES_ID = 101; 
 $42.TWEET_SHORTIES_WIDTH = 640;
@@ -74,7 +74,7 @@ var _TWEET_MODULE = function(layer) {
 
         var wt = $42.wordTreasure || [];
 
-        wt.splice(0,0,{ word: $42.t.tweet_anonymous });
+        wt.splice(0,0,{ word: $42.playerName? $42.playerName+":" : $42.t.tweet_anonymous+":" });
 
         init();
 
@@ -186,7 +186,7 @@ var _TWEET_MODULE = function(layer) {
                 cc.EaseQuinticActionOut.create(
                     cc.spawn(
                         cc.rotateBy($42.TWEET_TEXT_HIDING_TIME,23),
-                        cc.scaleTo($42.TWEET_TEXT_HIDING_TIME,0.1),
+                        cc.scaleTo($42.TWEET_TEXT_HIDING_TIME,0.01),
                         cc.moveTo($42.TWEET_TEXT_HIDING_TIME,pos)
                     )
                 ),
@@ -196,8 +196,8 @@ var _TWEET_MODULE = function(layer) {
             )
         );
         mnLayer.runAction(
-            cc.EaseSineIn.create(
-                cc.fadeOut(1)
+            cc.EaseSineOut.create(
+                cc.fadeOut($42.TWEET_TEXT_HIDING_TIME)
             )
         );
     };
@@ -255,7 +255,7 @@ var _TWEET_MODULE = function(layer) {
         ////////////////////////////////////////////////////////////////////////
         // Menu function "Change Name"
         addMenuItem($42.webConnected? $42.t.tweet_name : $42.t.tweet_no_internet, 0, function(sender) {
-            if( $42.webConnected ) {
+            if( $42.webConnected && !menuTweetConfirm ) {
                 if( !menuNamesChoose ) {
                     menuNamesChoose = true;
                     
@@ -305,7 +305,7 @@ var _TWEET_MODULE = function(layer) {
         ////////////////////////////////////////////////////////////////////////
         // Menu function "TWEET"
         addMenuItem($42.webConnected? $42.t.tweet_tweet : $42.t.tweet_no_internet, 214, function(sender) {
-            if( $42.webConnected ) {
+            if( $42.webConnected && !menuNamesChoose) {
                 if( !menuTweetConfirm ) {
                     menuTweetConfirm = true;
                     menuTweetItem.setString($42.t.tweet_tweet_confirm.label);
@@ -318,6 +318,7 @@ var _TWEET_MODULE = function(layer) {
                         cc.sys.localStorage.removeItem("tweetTreasure");
                         menuTweetConfirm = false;
                         hide( cc.p(-260,750), exit );
+                        if( typeof finalCallback === "function" ) finalCallback();
                     });
                 }
             }
@@ -571,7 +572,7 @@ var _TWEET_MODULE = function(layer) {
                             }
                         }
 
-                        if( found && i > 0 ) {
+                        if( found ) {
                             if( typeof cb === "function" ) cb(i, pos, words[i]);
                         } else {
                             if( typeof cb === "function" ) cb(null);
@@ -590,7 +591,7 @@ var _TWEET_MODULE = function(layer) {
                     getLabel(txLayer.getBoundingBox(), movableWords, txLayer, function( index, pos, word ) {
                         if( index !== null && word && word.getChildByTag( $42.TWEET_NAMES_ID ) ) {
 			                var ls = cc.sys.localStorage,
-                                oldName = $42.playerName || "",
+                                oldName = $42.playerName && $42.playerName.toUpperCase() || "",
                                 newName = word.getString(),
                                 hash = $42.playerHash || getHash();
                             ///////////////////////////////////////7
@@ -605,9 +606,9 @@ var _TWEET_MODULE = function(layer) {
                                     menuNames.splice(menuNames.indexOf(newName),1);
                                     menuNames.splice(0,0,oldName);
 
-                                    $42.playerName = newName;
+                                    $42.playerName = newName[0]+newName.substring(1).toLowerCase();
                                     $42.playerHash = hash;
-                                    ls.setItem("playerName",newName);
+                                    ls.setItem("playerName",$42.playerName);
                                     ls.setItem("playerHash",hash);
 
                                     reorganizeWords();
@@ -634,7 +635,7 @@ var _TWEET_MODULE = function(layer) {
                     touchShortiesXPos = shortiesXPos;
                 });
                 getLabel(txLayer.getBoundingBox(), movableWords, txLayer, function(index, pos, word) {
-                    if( index !== null ) {
+                    if( index !== null && index !== 0 ) {
                         initMovingLabel(word, pos);
                         cc.assert(touchMovingLabel,"I need a moving sprite at this point");
                         touchMovingLabelOrigin = index;

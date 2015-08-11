@@ -1559,11 +1559,11 @@ var _42TitleLayer = cc.Layer.extend({
                 var tt = ls.getItem("tweetTreasure");
                 if( tt ) {
                     this._menu.setEnabled(false);
-                    //$42._titleLayer.hide();
+                    $42._titleLayer.hide();
                     $42.tweetTreasure = JSON.parse(tt);
                     $42.SCENE.hookTweet(function() {
-                        //$42._titleLayer.show();
-                        self._menu.setEnabled(true);
+                        $42._titleLayer.show();
+                        //self._menu.setEnabled(true);
                     });
                 }
             });
@@ -1576,11 +1576,17 @@ var _42TitleLayer = cc.Layer.extend({
 
         item5.setPosition(cc.p(200,-180));
         item5.setRotation(23);
+        item5.setOpacity(0);
+        
+        $42.menuItemTweet = item5;
+        _42_retain(item5);
+
         this.show();
         return true;
     },
 
     show: function() {
+
         this.addChild(this._titleBg);
         this.addChild(this._menu);
         _42_retain(this._titleBg,"Title background");
@@ -1591,6 +1597,11 @@ var _42TitleLayer = cc.Layer.extend({
                 cc.fadeIn(2.5)
             )
         );
+
+        var ls = cc.sys.localStorage,
+            tt = ls.getItem("tweetTreasure");
+        if( tt ) $42.menuItemTweet.setOpacity(255);
+        else $42.menuItemTweet.setOpacity(0);
 
         this._titleBg.runAction(
             cc.EaseSineIn.create(
