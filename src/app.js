@@ -35,8 +35,11 @@
 // Global variables
 //
 var _42_GLOBALS = { 
+    //SERVER_ADDRESS: "ws://localhost:4021/socket",
+    SERVER_ADDRESS: "ws://192.168.178.177:4021/socket",
     TITLE_MENU_COLOR_1: cc.color(44,18,44,255), // 
     TITLE_MENU_COLOR_2: cc.color(109,36,76,255), // 
+    TITLE_MENU_COLOR_3: cc.color(109,36,76,255), // 
 	TAG_SPRITE_MANAGER : 1,                 // Sprite Ids
 	TAG_GAME_LAYER : 3,                     //
 	TAG_TITLE_LAYER : 4,                    //
@@ -85,6 +88,7 @@ var _42_GLOBALS = {
 	TILE_OCCURANCES : [10,5,7,7,2,2,7,0,0], // How often the tiles appear, when selected randomly
 };
 var $42 = _42_GLOBALS;
+$42.webCallbacks = [];
 
 /////////////////////////////////////////////////////////////////////////////////7
 // The game layer
@@ -120,7 +124,7 @@ var _42GameLayer = cc.Layer.extend({
         /////////////////////////
         // Look if there is a plugin module
         if( typeof _42_MODULE === 'function' ) _42_MODULE(this);
-
+	
         this.showLogOnScreen();
         this.initBoxSpace();
         this.loadImages();
@@ -129,6 +133,8 @@ var _42GameLayer = cc.Layer.extend({
 	    
         this._gameMode = mode;
         cc.assert(mode==="easy" || mode==="intermediate" || mode==="expert", "Game mode '"+mode+"' not supported.");
+
+        this.setCascadeOpacityEnabled(true);
 
         return true;
     },
@@ -155,13 +161,19 @@ var _42GameLayer = cc.Layer.extend({
     onExit: function() {
 		this._super();
 
-	    this.stopListeners();
-	    this.unscheduleUpdate();	    	
+        if( this.hookExit ) this.hookExit();        
     },
     
     ////////////////////////////////////////////////////////////////////////////
     // endGame cleans up after a game is finished
     endGame: function() {
+	    //////////////////////////////////
+        // Stop tiles
+        this.stopListeners();
+	    this.unscheduleUpdate();
+
+        if( this.hookEndGame ) this.hookEndGame();
+
         ///////////////////
     	// delete all boxes
 		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) this.deleteRow(i,true);
@@ -174,7 +186,27 @@ var _42GameLayer = cc.Layer.extend({
 		$42._scoreBar.removeAllChildren(true);
         this.removeChild($42._scoreBar);
     },
-    
+
+    //////////////////////////////////////////////////////////////////////////////
+    // hideGame fades out the game and calls endGame after it vanished
+    hideAndEndGame: function(delay) {
+        var self = this;
+
+        this.runAction(
+            cc.sequence(
+                cc.EaseSineOut.create(
+                    cc.fadeOut(1)
+                ),
+                cc.delayTime((delay||1)-1),
+                cc.callFunc(function() {
+                    self.getParent().removeChildByTag($42.TAG_GAME_LAYER); // after this ml.onExit() is called by cocos2d-x
+                    self.endGame();
+                    return;
+                })
+            )
+        );
+    },
+
     ////////////////////////////////////////////////////////////////////////////
     // 
 	showLogOnScreen: function() {
@@ -243,6 +275,7 @@ var _42GameLayer = cc.Layer.extend({
 
         sb.setPosition(0,0);
         sb.setOpacity(0);
+        sb.setCascadeOpacityEnabled(true);
         _42_retain(sb, "scorebar");	
         this.addChild(sb, 5);
 
@@ -334,7 +367,9 @@ var _42GameLayer = cc.Layer.extend({
 			var file = $42.LETTER_NAMES[$42.LETTERS.indexOf(word[i])],
 				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
 				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
-			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
+			if( !sprite ) cc.log("File '"+file+".png' couldn't be opened. Letter: "+word[i]);
+            sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
+            //  ERROR: JS: assets/src/app.js:370:TypeError: sprite is null
 			wordFrameSprite.addChild( sprite );
 		}		
 		
@@ -1036,7 +1071,10 @@ var _42GameLayer = cc.Layer.extend({
                 } catch(e) {
                     cc.log("ERROR!"+e.message+"hookTileFixed problem with newBrcs "+JSON.stringify(newBrcs)+" at position "+JSON.stringify(lp));
                 }
-            } else self.pauseBuildingTiles = false;
+            } else {
+                self.pauseBuildingTiles = false;
+                cc.log("TILES FREED at no hookTileFixed available.");
+            }
 
     		if( !tileRet ) {
                 try {
@@ -1089,7 +1127,7 @@ var _42GameLayer = cc.Layer.extend({
     			// play sound
     			//cc.audioEngine.playEffect(res.ritsch_mp3);
 
-                var tmpColBlocked = [];
+                var colsBlocked = [];
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
     				var rd = [];
     				for( var j=0 ; j<rowsDeleted.length ; j++) {
@@ -1102,7 +1140,7 @@ var _42GameLayer = cc.Layer.extend({
     				
     				// mark transitions between blocked and non blocked columns for detection of single boxes later
     				curColBlocked = rowsDeleted.length != rd.length;
-                    tmpColBlocked.push(curColBlocked);
+                    colsBlocked.push(curColBlocked);
     				if( i !== 0 && curColBlocked !== prevColBlocked ) colsToCorrect[i-1] = colsToCorrect[i] = true;
     				else colsToCorrect[i] = false;    			
     				prevColBlocked = curColBlocked; 
@@ -1133,7 +1171,7 @@ var _42GameLayer = cc.Layer.extend({
 	    			}
     			}
 
-                cc.log("checkForAndRemoveCompleteRows, tmpColBlocked: "+JSON.stringify(tmpColBlocked));
+                cc.log("checkForAndRemoveCompleteRows, colsBlocked: "+JSON.stringify(colsBlocked));
                 cc.log("checkForAndRemoveCompleteRows, colsToCorrect: "+JSON.stringify(colsToCorrect));
 
     			// move single boxes down 
@@ -1142,6 +1180,7 @@ var _42GameLayer = cc.Layer.extend({
     					for( var j=rowsDeleted[0] ; j < $42.BOXES_PER_COL ; j++ ) {
     						// check if box have no neighbors left
     						if( self.boxes[j][i] && 
+                                !colsBlocked[j] &&
        							( j>0 && !self.boxes[j-1][i] ) && 
     							( j==$42.BOXES_PER_COL-1 || !self.boxes[j+1][i] ) && 
     							( i==0 || !self.boxes[j][i-1] ) && 
@@ -1186,33 +1225,27 @@ var _42GameLayer = cc.Layer.extend({
 		    		if( self.boxes[row][i] ) {
                         tmpBox.userData = self.boxes[row][i].userData;
 		    			_42_release(self.boxes[row][i].sprite);
-	    				
-		            	self.removeChild(self.boxes[row][i].sprite);
+	    			
+                        var sprite = self.boxes[row][i].sprite;  
+                        sprite.setOpacity(0);  
 		            	self.boxes[row][i].sprite = null;
 				    	self.boxes[row][i] = null;		
 				    	
 			            // particle emitter
 			            var emitter = new cc.ParticleSystem( res.particle_flowers );
-			            emitter.x = $42.BOXES_Y_OFFSET + i * $42.BS - $42.BS/2;
-			            emitter.y = $42.BOXES_Y_OFFSET + row * $42.BS + $42.BS/2;
-			            _42_retain(emitter, "Emitter");
+			            emitter.x = $42.BS/2;
+			            emitter.y = $42.BS/2;
 			            emitter.setAngle(Math.random()*360);
-			            self.addChild(emitter);
-			            
+			            sprite.addChild(emitter);
+ 
 			            emitter.runAction(
 			            	cc.sequence(
-			            		cc.delayTime(1 + Math.random()*0.25),
+			            		cc.delayTime(2 + Math.random()*0.25),
 			            		cc.callFunc(function() {
-			            			this.stopSystem();
-			            		},emitter),
-			            		//cc.delayTime(3.0),
-			            		cc.callFunc(function() {
-			            			_42_release(this);
 			            			self.removeChild(this);
-			            		},emitter)
+			            		},sprite)
 			            	)
 			            );
-
 		    		}
 		    	}
     		}           	
@@ -1226,7 +1259,7 @@ var _42GameLayer = cc.Layer.extend({
         	return self.isSwipeLeft || self.isSwipeRight || self.isSwipeUp || self.isSwipeDown;
         }
 
-        //////////////////////////////////////////////////////77/
+        ///////////////////////////////////////////////////////
     	// Actual update functionality starts here ... beginning by calling hook update function
     	if( self.hookUpdate ) self.hookUpdate(dt);
     	
@@ -1367,12 +1400,11 @@ var _42GameLayer = cc.Layer.extend({
                 menuItems.push({
                     label: $42.t.reached_top_end_game, 
                     cb: function(sender) {
-                        if( self.hookEndGame ) self.hookEndGame();
                         
-                        self.endGame();
+                        self.hideAndEndGame();
                         this.exitMenu();
                         this.getParent().removeChild(this);
-                        cc.director.runScene(new _42Scene());
+                        $42._titleLayer.show();
                     }
                 });
                 
@@ -1438,13 +1470,15 @@ var _42MenuLayer = cc.LayerColor.extend({
 
         /////////////////////
         // Create menu
-        var menu = cc.Menu.create.apply(this, items);
+        var menu = this._menu = cc.Menu.create.apply(this, items);
         menu.x = size.width/2;
         menu.y = size.height/2;
         this.addChild(menu, 1, $42.TAG_MENU_MENU);       
 
         menu.alignItemsVerticallyWithPadding(40);
 	},
+
+    getMenu: function() { return this._menu; },
     
     exitMenu: function() {
     	
@@ -1456,8 +1490,6 @@ var _42MenuLayer = cc.LayerColor.extend({
 //
 var _42TitleLayer = cc.Layer.extend({
     
-	letters: [],
-	
     ctor:function () {
         this._super();
 
@@ -1468,65 +1500,14 @@ var _42TitleLayer = cc.Layer.extend({
         cc.height = cc.director.getWinSize().height;
 
 		var addImage = function(options) {
-			var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(options.image) || options.image);
-			sprite.setPosition(options.pos || cc.p(size.width/2,size.height/2));
-			sprite.setOpacity(options.opacity !== undefined? options.opacity : 255);
-			sprite.setScale(options.scale !== undefined? options.scale : 1);
-			sprite.setRotation(options.rotation || 0);
-			_42_retain(sprite, "Title sprite ");
-	        (options.parent || self).addChild(sprite, 0);
-	        return sprite;
 		};
 		
-		var addText = function(options) {
-			var label = cc.LabelTTF.create(options.text, _42_getFontName(res.exo_regular_ttf) , options.size);
-			label.setPosition(options.pos || cc.p(size.width/2,size.height/2));
-			label.setColor(options.color || cc.color(0,0,0));
-			label.setOpacity(options.opacity !== undefined? options.opacity : 255);
-			label.setRotation(options.rotation || 0);
-			label.setScale(options.scale !== undefined? options.scale : 1);
-			_42_retain(label, "Title text label");	
-	        (options.parent || self).addChild(label, 0);
-	        return label;
-		};
-		
-        var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]);
-		var titleBg = addImage({
-			image: res["title_png"], 
-			opacity: 0,
-            scale: 1.1,
-		});
-/*
-        var _42 = addText({
-            text: "42",
-            pos: cc.p(310, 870),
-            color: cc.color(59,136,134),
-            size: 390,
-            opacity: 0,
-            parent: titleBg
-        });
+		var titleBg = this._titleBg = cc.Sprite.create(res.title_png);
+        titleBg.setOpacity(0);
+        titleBg.setPosition(cc.p(cc.width/2, cc.height/2));
+        titleBg.setScale(1.1);
+        _42_retain(this._titleBg,"Title background");
 
-        var titleTitle = addText({
-            text: $42.t.title_title,
-            pos: cc.p(cc.width/2, 635),
-            color: cc.color(215,173,10),
-            size: 130,
-            opacity: 0,
-            parent: titleBg
-        });
-*/
-        titleBg.runAction(
-            cc.fadeIn(2)
-        );
-/*
-        _42.runAction(
-            cc.fadeIn(5)
-        );
-
-        titleTitle.runAction(
-            cc.fadeIn(5)
-        );
-*/		
         // Show menu items
 		var addMenu = function(name, fontSize, color, cb) {
 	        var item = new cc.MenuItemFont(name, cb, self);
@@ -1536,86 +1517,140 @@ var _42TitleLayer = cc.Layer.extend({
 	        
 	        return item;
 		};
-
-        var hideTitle = function() {
-
-            titleBg.runAction(
-                cc.sequence(
-                    cc.fadeOut(1),
-                    cc.callFunc(function() {
-                        titleBg.removeChild(menu);
-                        self.removeChild(titleBg);
-                    })
-                )
-            );
-/*
-            _42.runAction(
-                cc.fadeOut(1.2)
-            );
-
-            titleTitle.runAction(
-                cc.fadeOut(1.2)
-            );
-*/
-            menu.runAction(
-                cc.fadeOut(1.2)
-            );
-        };
-		
-        var gameStarted = false,
-            item1 = addMenu($42.t.title_start, 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
-                if( !gameStarted ) {
-                    gameStarted = true;
-                    // start game layer
-                    self.getParent().addChild(new _42GameLayer($42.currentMode || "easy"), 1, $42.TAG_GAME_LAYER);
-                    hideTitle();
-                }
-            }, self);
 	
+        this._gameStarted = false;
         var ls = cc.sys.localStorage;
-        $42.wordTreasureWords = ls.getItem("wordTreasureWords") || 0;
-        $42.maxPoints = ls.getItem("maxPoints") || 0;
-        $42.bestTime = ls.getItem("bestTime") || null;
-        var item2 = addMenu("Leicht", 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                if( !gameStarted ) {
-                    gameStarted = true;
-                    $42.currentLevel = 1;
-                    $42.currentMode = "easy";
-                    // start game layer
-                    self.getParent().addChild(new _42GameLayer("easy"), 1, $42.TAG_GAME_LAYER);
-                    hideTitle();
-                }
+
+        var item1 = $42.menuItemStart = addMenu("no label", 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
+                self._menu.setEnabled(false);
+                // start game layer
+                var cDiff = ls.getItem("currentDifficulty") || "easy"; 
+                self.getParent().addChild(new _42GameLayer(cDiff), 1, $42.TAG_GAME_LAYER);
+                self.hide();
             }),
-            item3 = addMenu("Mittel", 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                if( !gameStarted ) {
-                    gameStarted = true;
-                    $42.currentLevel = 1;
-                    $42.currentMode = "intermediate";
-                    // start game layer
-                    self.getParent().addChild(new _42GameLayer("intermediate"), 1, $42.TAG_GAME_LAYER);
-                    hideTitle();
-                }
+            item2 = $42.menuItemChange1 = addMenu("no label", 36 , $42.TITLE_MENU_COLOR_2 , function() {
+                self._menu.setEnabled(false);
+                $42.currentLevel = 1;
+                ls.setItem("currentLevel",1);
+
+                var cDiff = ls.getItem("currentDifficulty");
+                cc.assert(cDiff, "currentDifficulty must be set when we reach this point.")
+                if( cDiff === "easy" ) cDiff = "intermediate";
+                else cDiff = "easy";
+                ls.setItem("currentDifficulty", cDiff);
+                
+                self.hide(function() { self.show() });
+
+                ls.removeItem("wordTreasure");
+                ls.removeItem("wordProfile");
             }),
-            item4 = addMenu("Schwer", 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                if( !gameStarted ) {
-                    gameStarted = true;
-                    $42.currentLevel = 1;
-                    $42.currentMode = "expert";
-                    // start game layer
-                    self.getParent().addChild(new _42GameLayer("expert"), 1, $42.TAG_GAME_LAYER);
-                    hideTitle();
+            item3 = $42.menuItemChange2 = addMenu("no label", 36 , $42.TITLE_MENU_COLOR_2 , function() {
+                self._menu.setEnabled(false);
+                $42.currentLevel = 1;
+                ls.setItem("currentLevel",1);
+                
+                var cDiff = ls.getItem("currentDifficulty");
+                cc.assert(cDiff, "currentDifficulty must be set when we reach this point.")
+                if( cDiff === "expert" ) cDiff = "intermediate";
+                else cDiff = "expert";
+                ls.setItem("currentDifficulty", cDiff);
+
+                self.hide(function() { self.show() });
+
+                ls.removeItem("wordTreasure");
+                ls.removeItem("wordProfile");
+            }),
+            item4 = addMenu($42.t.title_tweet, 28, $42.TITLE_MENU_COLOR_3 , function() {
+                var tt = ls.getItem("tweetTreasure");
+                if( tt ) {
+                    this._menu.setEnabled(false);
+                    $42._titleLayer.hide();
+                    $42.tweetTreasure = JSON.parse(tt);
+                    $42.SCENE.hookTweet(function() {
+                        $42._titleLayer.show();
+                    });
                 }
             });
 
-        var menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
+        var menu = this._menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
         menu.x = size.width/2;
         menu.y = 290;
         menu.setOpacity(0);
-        titleBg.addChild(menu, 10);       
         menu.alignItemsVerticallyWithPadding(20);
-        menu.runAction(cc.EaseSineIn.create(cc.fadeIn(2.5)));
+        _42_retain(this._menu,"Title menu");
 
+        item4.setPosition(cc.p(200,-180));
+        item4.setRotation(23);
+        item4.setOpacity(0);
+        
+        $42.menuItemTweet = item4;
+        _42_retain(item4, "Menu Item Tweet");
+
+        this.show();
         return true;
+    },
+
+    onExit: function() {
+        _42_release(this._titleBg);
+        _42_release(this._menu);
+        _42_release($42.menuItemTweet);
+    },
+
+    show: function() {
+
+        var ls = cc.sys.localStorage,
+            cDiff = ls.getItem("currentDifficulty") || "easy", 
+            mDiff = ls.getItem("maxDifficulty") || "easy",
+            cl = $42.currentLevel = ls.getItem("currentLevel") || 1,
+            tt = ls.getItem("tweetTreasure");
+
+        ls.setItem("currentDifficulty",cDiff);
+
+        this.addChild(this._titleBg);
+        this.addChild(this._menu);
+
+        this._menu.runAction(
+            cc.EaseSineIn.create(
+                cc.fadeIn(2.5)
+            )
+        );
+
+        this._titleBg.runAction(
+            cc.EaseSineIn.create(
+                cc.fadeIn(2)
+            )
+        );
+
+        $42.menuItemStart.setString(cl==1?$42.t.title_start:$42.t.title_resume);
+        $42.menuItemChange1.setString(cDiff==="easy"?$42.t.title_intermediate:$42.t.title_easy);
+        $42.menuItemChange1.setOpacity(mDiff==="easy"?0:255);
+        $42.menuItemChange2.setString(cDiff==="expert"?$42.t.title_intermediate:$42.t.title_expert);
+        $42.menuItemChange2.setOpacity(mDiff==="easy"||mDiff==="intermediate"?0:255);
+
+        if( tt ) $42.menuItemTweet.setOpacity(255);
+        else $42.menuItemTweet.setOpacity(0);
+
+        this._menu.setEnabled(true);
+    },
+
+    hide: function(cb) {
+
+        var self = this;
+        this._titleBg.runAction(
+            cc.sequence(
+                cc.fadeOut(1.3),
+                cc.callFunc(function() {
+                    self.removeChild(self._menu);
+                    self.removeChild(self._titleBg);
+                    if( typeof cb === "function" ) cb();
+                })
+            )
+        );
+        this._menu.runAction(
+            cc.fadeOut(1.2)
+        );
+
+        this._menu.setEnabled(false);
     },
     
     exitTitle: function() {
@@ -1627,27 +1662,16 @@ var _42TitleLayer = cc.Layer.extend({
 		node = node.getChildren()[0];
 		if( node ) _42_release(node);
 
-/* 		node = this.getChildByTag($42.TAG_TITLE_4);
-		if( node ) node.release();
-		delete tmpRetain[node.__instanceId];
-
- 		node = this.getChildByTag($42.TAG_TITLE_2);
-		if( node ) node.release();
-		delete tmpRetain[node.__instanceId];
-
- 		node = this.getChildByTag($42.TAG_TITLE_WORD);
-		if( node ) node.release();
-		delete tmpRetain[node.__instanceId];*/
-
 		var nodes = node.getChildren();
 		for( var i=0 ; i<nodes.length ; i++ ) {
 			if( nodes[i] ) _42_release(nodes[i]);
-		}
+		}    
     }
 });
 
 var _42_retained = [];
 var _42_retain = function(obj,name) {
+    if( !obj ) debugger;
     obj.retain();
 
 	obj.__retainId = _42_getId();
@@ -1685,6 +1709,60 @@ var _42_getFontName = function(resource) {
     }
 }
 
+_42_webConnect = function() {
+
+    try {
+        $42.websocket = new WebSocket($42.SERVER_ADDRESS);
+    } catch(e) {
+        cc.log("WebSocket connection to \""+$42.SERVER_ADDRESS+"\" failed.");
+        return false;
+    }
+
+    $42.websocket.onopen = function(evt) { _42_onOpen(evt) };
+    $42.websocket.onmessage = function(evt) { _42_onMessage(evt) };
+    $42.websocket.onerror = function(evt) { _42_onError(evt); };
+    $42.websocket.onclose = function(evt) { _42_onClose(evt); };        
+}
+
+_42_sendMessage = function( command, message, cb ) {
+    if( !$42.webConnected ) {
+       if( typeof cb === "function" ) cb(null);
+       return
+    } 
+
+    var id = message.Id = _42_getId();
+
+	message.Command = command;
+    $42.websocket.send(JSON.stringify(message));		
+    $42.webCallbacks[id] = cb;
+}
+
+_42_onOpen = function(evt) {
+    $42.webConnected = true;
+}
+
+_42_onMessage = function(evt) {
+    var self = this;
+
+    try {
+        var data = JSON.parse(evt.data);
+    } catch (e) {
+        throw "_42_onMessage: parse json message failed (" + e + ")";
+    }
+
+    if( data.Id && $42.webCallbacks[data.Id] ) {
+        var id = data.Id;
+        delete data.Id;
+        $42.webCallbacks[id](data);
+    }
+}
+
+_42_onError = function(evt) {
+}
+
+_42_onClose = function(evt) {
+    $42.webConnected = false;
+}
 
 var _42Scene = cc.Scene.extend({
 	
@@ -1692,10 +1770,18 @@ var _42Scene = cc.Scene.extend({
         var self = this;
 
         this._super();
+	    
+        $42.SCENE = this;
+	
+        // call tutorial module if available
+        if( typeof _TWEET_MODULE === 'function' ) _TWEET_MODULE($42.SCENE);
 
         this.loadWords(function() {
-            self.addChild(new _42TitleLayer(), 2, $42.TAG_TITLE_LAYER);
+            $42._titleLayer = new _42TitleLayer();
+            self.addChild($42._titleLayer, 2, $42.TAG_TITLE_LAYER);
         });
+
+        _42_webConnect();
     },
 
     loadWords: function(cb) {

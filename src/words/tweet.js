@@ -7,10 +7,14 @@ $42.TWEET_TEXT_HEIGHT = 860;
 $42.TWEET_TEXT_TEXT_SIZE = 52;
 $42.TWEET_TEXT_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT);
 $42.TWEET_TEXT_COLOR = cc.color(255,255,240,50);
+$42.TWEET_TEXT_TWEET_COLOR = cc.color(0,0,180,222);
 $42.TWEET_TEXT_PADDING = 30;
 $42.TWEET_TEXT_LINEHEIGHT = 75;
 $42.TWEET_TEXT_SPACE_WIDTH = 15;
 $42.TWEET_TEXT_MOVING_TIME = 0.11;
+$42.TWEET_TEXT_HIDING_TIME = 1.2;
+$42.TWEET_NAMES_COLOR = cc.color(0,255,0,180);
+$42.TWEET_NAMES_ID = 101; 
 $42.TWEET_SHORTIES_WIDTH = 640;
 $42.TWEET_SHORTIES_HEIGHT = 180;
 $42.TWEET_SHORTIES_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT-$42.TWEET_SHORTIES_HEIGHT);
@@ -27,9 +31,8 @@ $42.TWEET_MENU_BIG_FONT_SIZE = 40;
 $42.TWEET_MENU_SMALL_FONT_SIZE = 28;
 $42.TWEET_MENU_PADDING = 10;
 
-var TWEET_MODULE = function(layer) {
-	var ml = layer,
-        tLayer = null,      // tweet layer
+var _TWEET_MODULE = function(layer) {
+	var tLayer = null,      // tweet layer
         txLayer = null,     // text layer
         shLayer = null,     // shorties layer
         mvLayer = null,     // movable layer
@@ -55,24 +58,35 @@ var TWEET_MODULE = function(layer) {
         touchShortiesXPos = null,
         touchShortiesLastX = null,
         touchShortiesSpeed = null,
-        touchRubberBand = null;
+        touchRubberBand = null,
+        menuTweetItem = null,
+        menuTweetConfirm = false,
+        menuTweetCnt = 0,
+        menuNames = [],
+        menuNamesChoose = false,
+        menuNamesItem = null,
+        finalCallback = null;
         
 
     cc.spriteFrameCache.addSpriteFrames(res.tweet_plist);
 
-    ml.hookTweet = function(cb) {
+    layer.hookTweet = function(cb) {
 
-        var wt = $42.wordTreasure;
-        
-        wt.splice(0,0,{ word: $42.t.tweet_anonymous });
+        var wt = $42.wordTreasure || [];
+
+        wt.splice(0,0,{ word: $42.playerName? $42.playerName+":" : $42.t.tweet_anonymous+":" });
 
         init();
+
+        finalCallback = cb;
     };
 
     var init = function() {
 
         tLayer = new cc.Layer();
-        ml.addChild(tLayer, 10);
+        layer.addChild(tLayer, 10);
+        tLayer.setCascadeOpacityEnabled(true);
+        tLayer.setOpacity(0);
         _42_retain(tLayer, "Tweet layer");
 
         ////////////////////////////////////
@@ -94,8 +108,9 @@ var TWEET_MODULE = function(layer) {
         ////////////////////////////////////
         // init menu layer
         mnLayer = new cc.LayerColor($42.TWEET_MENU_COLOR, $42.TWEET_MENU_WIDTH, $42.TWEET_MENU_HEIGHT);
-        tLayer.addChild(mnLayer);
+        layer.addChild(mnLayer,20);
         mnLayer.setPosition($42.TWEET_MENU_POS);
+        mnLayer.setCascadeOpacityEnabled(true);
         _42_retain(mnLayer, "Tweet menu layer");
         initMenu();
 
@@ -104,7 +119,7 @@ var TWEET_MODULE = function(layer) {
 		touchMovingCursor = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("cursor.png"));
         touchMovingCursor.setOpacity(0);
         txLayer.addChild(touchMovingCursor);
-        _42_retain(touchMovingCursor);
+        _42_retain(touchMovingCursor, "moving cursor");
         touchMovingCursor.runAction(
             cc.repeatForever(
                 cc.sequence(
@@ -123,11 +138,85 @@ var TWEET_MODULE = function(layer) {
         // Scheduler
         tLayer.update = update;
 
+        tLayer.setPosition(cc.p(260,-450));
+        tLayer.setRotation(23);
+        tLayer.setScale(0.1);
+        tLayer.runAction(
+            cc.EaseSineIn.create(
+                cc.spawn(
+                    cc.moveTo($42.TWEET_TEXT_HIDING_TIME, cc.p(0,0)),
+                    cc.rotateTo($42.TWEET_TEXT_HIDING_TIME, 0),
+                    cc.scaleTo($42.TWEET_TEXT_HIDING_TIME,1),
+                    cc.fadeIn($42.TWEET_TEXT_HIDING_TIME)
+                )
+            )
+        );
+
         initListeners();
         tLayer.scheduleUpdate();
+
+        /////////////////////////////////////
+        // Look which words are still free to be names
+        var mw = movableWords,
+            sw = selectableWords,
+            names = [],
+            sprites = [];
+        for( var i=1,cnt=0 ; i<mw.length ; i++,cnt++ ) {
+            names.push(mw[i].getString());
+            sprites.push(mw[i]);
+        }
+        for( var i=0 ; i<sw.length ; i++,cnt++ ) {
+            var name = sw[i].getString();
+            if( name.length > 3 ) {
+                names.push(name);
+                sprites.push(sw[i]);
+            }
+        }
+
+        _42_sendMessage("checkNames", {Names:names}, function(data) {
+            menuNames = data.Names;
+            menuNames.sort();
+        });
+    };
+
+    var hide = function(pos, cb) {
+
+        tLayer.runAction(
+            cc.sequence(
+                cc.EaseQuinticActionOut.create(
+                    cc.spawn(
+                        cc.rotateBy($42.TWEET_TEXT_HIDING_TIME,23),
+                        cc.scaleTo($42.TWEET_TEXT_HIDING_TIME,0.01),
+                        cc.moveTo($42.TWEET_TEXT_HIDING_TIME,pos)
+                    )
+                ),
+                cc.callFunc(function() {
+                    if( typeof cb === "function" ) cb();
+                })
+            )
+        );
+        mnLayer.runAction(
+            cc.EaseSineOut.create(
+                cc.fadeOut($42.TWEET_TEXT_HIDING_TIME)
+            )
+        );
     };
 
     var exit = function() {
+        var mw = movableWords,
+            sw = selectableWords;
+
+        layer.removeChild(tLayer);
+        tLayer.removeAllChildren(true);
+        _42_release(tLayer);
+        _42_release(txLayer);
+        _42_release(shLayer);
+        _42_release(mvLayer);
+        _42_release(mnLayer);
+        _42_release(touchMovingCursor);
+        for( var i=0 ; i<mw.length ; i++) _42_release(mw[i]);
+        for( var i=0 ; i<sw.length ; i++) _42_release(sw[i]);
+        if( touchMovingLabel ) _42_release(touchMovingLabel,"moving label");
         stopListeners();
         tLayer.unscheduleUpdate();
     };
@@ -142,15 +231,101 @@ var TWEET_MODULE = function(layer) {
                 menuItems.push(item); 
             };
 
+        //////////////////////////////////////////////////////////////////////////
+        // Menu function "Save Tweet"
         addMenuItem($42.t.tweet_save,-214,function(sender) {
-                // save
+
+			var ls = cc.sys.localStorage,
+                mw = movableWords,
+                sw = selectableWords,
+                tt = {
+                    movableWords: [],
+                    selectableWords : []
+                };
+
+            for( var i=0 ; i<mw.length ; i++ ) tt.movableWords.push({word: mw[i].getString()});
+            for( var i=0 ; i<sw.length ; i++ ) tt.selectableWords.push(sw[i].getString());
+            ls.setItem("tweetTreasure",JSON.stringify(tt));
+            
+            hide( cc.p(260,-450), exit );
+
+            if( typeof finalCallback === "function" ) finalCallback();
         });
-        addMenuItem($42.t.tweet_no_internet, 0, function(sender) {
-                // change name
+
+        ////////////////////////////////////////////////////////////////////////
+        // Menu function "Change Name"
+        addMenuItem($42.webConnected? $42.t.tweet_name : $42.t.tweet_no_internet, 0, function(sender) {
+            if( $42.webConnected && !menuTweetConfirm ) {
+                if( !menuNamesChoose ) {
+                    menuNamesChoose = true;
+                    
+                    var mw = movableWords,
+                        mn = menuNames;
+                    for( var i=0 ; i<mw.length ; i++ ) {
+                        var label = mw[i].getChildByTag( $42.TWEET_NAMES_ID ),
+                            name = mw[i].getString();
+                        if( menuNames.indexOf(name) === -1 ) {
+                            if( label ) mw[i].removeChild(label);
+                        } else {
+                            if( !label ) {
+                                var size = mw[i].getContentSize();
+
+                                label = cc.LabelTTF.create(name, _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE);
+                                label.setPosition(cc.p(size.width/2+4,size.height/2+4));
+                                label.setColor($42.TWEET_NAMES_COLOR);
+                                label.setOpacity(0);
+                                mw[i].addChild(label,0,$42.TWEET_NAMES_ID);
+                            }
+                            label.runAction(
+                                cc.EaseSineIn.create(
+                                   cc.fadeIn( $42.TWEET_TEXT_MOVING_TIME )
+                                )
+                            )
+                        }
+                    }
+                    menuItems[1].setString($42.t.tweet_name_deny.label);
+                } else {
+                    menuNamesChoose = false;
+                    var mw = movableWords;
+                    for( var i=0 ; i<mw.length ; i++ ) {
+                        var label;
+                        if( label = mw[i].getChildByTag( $42.TWEET_NAMES_ID ) ) {
+                            label.runAction(
+                                cc.EaseSineOut.create(
+                                   cc.fadeOut( $42.TWEET_TEXT_MOVING_TIME )
+                                )
+                            )
+                        }
+                    }
+                    menuItems[1].setString($42.webConnected? $42.t.tweet_name.label : $42.t.tweet_no_internet.label);
+                }
+            }
         });
-        addMenuItem($42.t.tweet_no_internet, 214, function(sender) {
-                // tweet
+
+        ////////////////////////////////////////////////////////////////////////
+        // Menu function "TWEET"
+        addMenuItem($42.webConnected? $42.t.tweet_tweet : $42.t.tweet_no_internet, 214, function(sender) {
+            if( $42.webConnected && !menuNamesChoose) {
+                if( !menuTweetConfirm ) {
+                    menuTweetConfirm = true;
+                    menuTweetItem.setString($42.t.tweet_tweet_confirm.label);
+                    colorWords(true);
+                } else {
+                    var mw = movableWords;
+                    for( var i=0, tweet = ""; i<=menuTweetCnt ; i++ ) tweet += mw[i].getString()+" ";
+                    cc.assert(tweet.length <= 140 && tweet.length > 0, "I didn't get proper tweet text." ); 
+                    _42_sendMessage("tweet",{Tweet:tweet}, function(data) {
+                        cc.sys.localStorage.removeItem("tweetTreasure");
+                        menuTweetConfirm = false;
+                        hide( cc.p(-260,750), exit );
+                        if( typeof finalCallback === "function" ) finalCallback();
+                    });
+                }
+            }
         });
+
+        menuNamesItem = menuItems[1];
+        menuTweetItem = menuItems[2];
 
         menu = new cc.Menu(menuItems);
         //menu.alignItemsHorizontallyWithPadding($42.TWEET_MENU_PADDING);
@@ -159,11 +334,12 @@ var TWEET_MODULE = function(layer) {
     }
 
     var putWordsIntoTextLayer = function() {
-        var wt = $42.wordTreasure,
+        var wt = $42.tweetTreasure && $42.tweetTreasure.movableWords || $42.wordTreasure,
             padding = $42.TWEET_TEXT_PADDING,
             textWidth = $42.TWEET_TEXT_WIDTH - padding * 2,
             textHeight = $42.TWEET_TEXT_HEIGHT;
         
+        movableWords = [];
         for( var i=0,x=0,y=0 ; i<wt.length ; i++ ) {
 
 			var label = cc.LabelTTF.create(wt[i].word, _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE),
@@ -176,6 +352,7 @@ var TWEET_MODULE = function(layer) {
 
 			label.setPosition(cc.p(padding + x + size.width/2, textHeight - padding - y - size.height/2));
 			label.setColor(cc.color(0,0,0));
+            label.setCascadeOpacityEnabled(true);
 			_42_retain(label, "moveable word");	
 			txLayer.addChild(label, 5);
             label.runAction(
@@ -201,7 +378,7 @@ var TWEET_MODULE = function(layer) {
     };
 
     putWordsIntoShortiesLayer = function() {
-        var sh = $42.shorties,
+        var sh = $42.tweetTreasure && $42.tweetTreasure.selectableWords || $42.shorties,
             padding = $42.TWEET_TEXT_PADDING;
 
         ////////////////////////////////////
@@ -212,6 +389,7 @@ var TWEET_MODULE = function(layer) {
         mvLayer.setOpacity(0);
         _42_retain(mvLayer, "Tweet shorties moving layer");
         
+        selectableWords = [];
         for( var i=0 ; i<sh.length ; i++ ) {
 
 			var label = cc.LabelTTF.create(sh[i], _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE),
@@ -220,6 +398,7 @@ var TWEET_MODULE = function(layer) {
             selectableWords.push(label);
 
             mvLayer.addChild(label);
+            _42_retain(label, "Shorty");
         }
 
         distributeShorties();
@@ -233,7 +412,7 @@ var TWEET_MODULE = function(layer) {
             padding = $42.TWEET_TEXT_PADDING,
             textWidth = $42.TWEET_TEXT_WIDTH - padding * 2,
             lineHeight = $42.TWEET_TEXT_LINEHEIGHT;
-        for( var i=index,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
+        for( var i=index || 1,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
             var formerWidth = mw[i-1].getContentSize().width,
                 //currentPos = mw[i].getPosition(),
                 currentWidth = mw[i].getContentSize().width;
@@ -262,14 +441,36 @@ var TWEET_MODULE = function(layer) {
         }
     };
 
-    colorWords = function() {
+    colorWords = function(tweet) {
         var mw = movableWords;
 
         for( var i=0,cnt=0 ; i<mw.length ; i++ ) {
             var y = mw[i].getPosition().y;
             cnt += mw[i].getString().length + 1;
 
-            mw[i].setOpacity(cnt<=140? 255: y > $42.TWEET_TEXT_LINEHEIGHT/2? 80:0);
+            mw[i].setOpacity(cnt<=140? 255: y > $42.TWEET_TEXT_LINEHEIGHT/2 && !tweet? 80:0);
+
+            if( cnt <= 140 ) menuTweetCnt = i;
+            if( tweet ) {
+                mw[i].runAction(
+                    cc.sequence(
+                        cc.delayTime(0.2*Math.random()),
+                        cc.EaseSineIn.create(
+                            cc.spawn(
+                                cc.rotateTo($42.TWEET_TEXT_MOVING_TIME, 3),
+                                cc.tintTo(  $42.TWEET_TEXT_MOVING_TIME, 0,0,80) 
+                            )
+                        )
+                    ) 
+                );
+            } else {
+                mw[i].setColor($42.TWEET_TEXT_COLOR);
+                mw[i].runAction(
+                    cc.EaseSineOut.create(
+                        cc.rotateTo($42.TWEET_TEXT_MOVING_TIME, 0)
+                    )
+                );
+            }
         }
     };
 
@@ -336,6 +537,21 @@ var TWEET_MODULE = function(layer) {
                 };	
                 touchStartTime = new Date().getTime();
                 
+                var initMovingLabel = function(word, pos) { 
+                    touchMovingLabel = cc.LabelTTF.create(word.getString(), _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE);
+                    touchMovingOffset = {
+                        x: pos.x - loc.x,
+                        y: pos.y - loc.y
+                    }
+                    touchMovingLabel.setPosition(pos);
+                    touchMovingLabel.setOpacity(128);
+                    tLayer.addChild(touchMovingLabel,10);
+                    _42_retain(touchMovingLabel,"moving label");
+
+                    touchMovingLabel.runAction(cc.scaleTo(0.16,1.8));
+                    touchMovingVisible = true;
+                };
+
                 var getLabel = function(box, words, layer, cb) {
 
                     if( cc.rectContainsPoint(box, loc) ) {
@@ -356,32 +572,71 @@ var TWEET_MODULE = function(layer) {
                             }
                         }
 
-                        if( found && i > 0 ) {
-                            touchMovingLabel = cc.LabelTTF.create(words[i].getString(), _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE);
-                            touchMovingOffset = {
-                                x: pos.x - loc.x,
-                                y: pos.y - loc.y
-                            }
-                            touchMovingLabel.setPosition(pos);
-                            touchMovingLabel.setOpacity(128);
-                            tLayer.addChild(touchMovingLabel,10);
-                            _42_retain(touchMovingLabel,"moving label");
-
-                            touchMovingLabel.runAction(cc.scaleTo(0.16,1.8));
-                            touchMovingVisible = true;
-
-                            if( typeof cb === "function" ) cb(i, words[i]);
+                        if( found ) {
+                            if( typeof cb === "function" ) cb(i, pos, words[i]);
                         } else {
                             if( typeof cb === "function" ) cb(null);
                         }
                     }
                 };
 
-                getLabel(shLayer.getBoundingBox(), selectableWords, mvLayer, function(index, word) { 
+                if( menuTweetConfirm ) {
+                    menuTweetItem.setString($42.t.tweet_tweet.label);
+                    menuTweetConfirm = false;
+                    colorWords(false);
+                    return;
+                };
+
+                if( menuNamesChoose ) {
+                    getLabel(txLayer.getBoundingBox(), movableWords, txLayer, function( index, pos, word ) {
+                        if( index !== null && word && word.getChildByTag( $42.TWEET_NAMES_ID ) ) {
+			                var ls = cc.sys.localStorage,
+                                oldName = $42.playerName && $42.playerName.toUpperCase() || "",
+                                newName = word.getString(),
+                                hash = $42.playerHash || getHash();
+                            ///////////////////////////////////////7
+                            // Send change message
+                            _42_sendMessage("changeName", {OldName: oldName, NewName: newName, Hash: hash}, function(data) {
+                                var res = data.Result;
+
+                                if( res === "ok" ) {
+                                    var name = movableWords[0];
+                                    name.setString(newName[0]+newName.substring(1).toLowerCase()+":");
+                                    name.setPositionX($42.TWEET_TEXT_PADDING+name.getContentSize().width/2);
+                                    menuNames.splice(menuNames.indexOf(newName),1);
+                                    menuNames.splice(0,0,oldName);
+
+                                    $42.playerName = newName[0]+newName.substring(1).toLowerCase();
+                                    $42.playerHash = hash;
+                                    ls.setItem("playerName",$42.playerName);
+                                    ls.setItem("playerHash",hash);
+
+                                    reorganizeWords();
+
+                                    ////////////////////////////
+                                    // "press" the menu button of "Change word" to leave selection mode 
+                                    menuNamesItem.activate();
+                                } else if( res === "duplicate" ) {
+                                    menuNames.splice(menuNames.indexOf(name),1);
+                                    word.removeChildByTag($42.TWEET_NAMES_ID);
+                                    return
+                                } 
+                            });
+                        } 
+                    }); 
+
+                    return;
+                }
+
+                getLabel(shLayer.getBoundingBox(), selectableWords, mvLayer, function(index, pos, word) { 
+                    if( index !== null ) {
+                        initMovingLabel(word, pos);
+                    }
                     touchShortiesXPos = shortiesXPos;
                 });
-                getLabel(txLayer.getBoundingBox(), movableWords, txLayer, function(index, word) {
-                    if( index !== null ) {
+                getLabel(txLayer.getBoundingBox(), movableWords, txLayer, function(index, pos, word) {
+                    if( index !== null && index !== 0 ) {
+                        initMovingLabel(word, pos);
                         cc.assert(touchMovingLabel,"I need a moving sprite at this point");
                         touchMovingLabelOrigin = index;
                         touchMovingLabelDestination = index;
@@ -569,9 +824,17 @@ var TWEET_MODULE = function(layer) {
     }; 
 
     var stopListeners = function() {
-        cc.eventManager.stopListener(touchListener); 
+        cc.eventManager.removeListener(touchListener); 
     };
    
+    var getHash = function() {
+        var hash = "";
+        for( var i=0; i<10 ; i++ ) hash += ("000"+Math.floor(Math.random()*(1<<16)).toString(16)).slice(-4);
+
+        cc.assert(hash.length === 40, "Hash should be 40 characters long.");
+        return hash;
+    }
+    
     var updateCnt = 0; 
     var update = function(dt) {
         if( touchShortiesXPos !== null ) {
