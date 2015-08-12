@@ -35,7 +35,8 @@
 // Global variables
 //
 var _42_GLOBALS = { 
-    SERVER_ADDRESS: "ws://localhost:4021/socket",
+    //SERVER_ADDRESS: "ws://localhost:4021/socket",
+    SERVER_ADDRESS: "ws://192.168.178.177:4021/socket",
     TITLE_MENU_COLOR_1: cc.color(44,18,44,255), // 
     TITLE_MENU_COLOR_2: cc.color(109,36,76,255), // 
     TITLE_MENU_COLOR_3: cc.color(109,36,76,255), // 
@@ -160,7 +161,7 @@ var _42GameLayer = cc.Layer.extend({
     onExit: function() {
 		this._super();
 
-        if( self.hookExit ) self.hookExit();        
+        if( this.hookExit ) this.hookExit();        
     },
     
     ////////////////////////////////////////////////////////////////////////////
@@ -366,7 +367,9 @@ var _42GameLayer = cc.Layer.extend({
 			var file = $42.LETTER_NAMES[$42.LETTERS.indexOf(word[i])],
 				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
 				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
-			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
+			if( !sprite ) cc.log("File '"+file+".png' couldn't be opened. Letter: "+word[i]);
+            sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
+            //  ERROR: JS: assets/src/app.js:370:TypeError: sprite is null
 			wordFrameSprite.addChild( sprite );
 		}		
 		
@@ -1360,7 +1363,6 @@ var _42GameLayer = cc.Layer.extend({
         // Check for bottom
         var ret;
         self.pauseBuildingTiles = true;
-        cc.log("TILES BLOCKED before bottom check.");
         if( ret = checkForBottom(t, lp) ) {
             //////////////////////////////////////////
             // tile landed, release and delete it ...
@@ -1468,13 +1470,15 @@ var _42MenuLayer = cc.LayerColor.extend({
 
         /////////////////////
         // Create menu
-        var menu = cc.Menu.create.apply(this, items);
+        var menu = this._menu = cc.Menu.create.apply(this, items);
         menu.x = size.width/2;
         menu.y = size.height/2;
         this.addChild(menu, 1, $42.TAG_MENU_MENU);       
 
         menu.alignItemsVerticallyWithPadding(40);
 	},
+
+    getMenu: function() { return this._menu; },
     
     exitMenu: function() {
     	
@@ -1502,6 +1506,7 @@ var _42TitleLayer = cc.Layer.extend({
         titleBg.setOpacity(0);
         titleBg.setPosition(cc.p(cc.width/2, cc.height/2));
         titleBg.setScale(1.1);
+        _42_retain(this._titleBg,"Title background");
 
         // Show menu items
 		var addMenu = function(name, fontSize, color, cb) {
@@ -1515,47 +1520,47 @@ var _42TitleLayer = cc.Layer.extend({
 	
         this._gameStarted = false;
         var ls = cc.sys.localStorage;
-        var item1 = addMenu($42.t.title_start, 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
-                this._menu.setEnabled(false);
+
+        var item1 = $42.menuItemStart = addMenu("no label", 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
+                self._menu.setEnabled(false);
                 // start game layer
-                self.getParent().addChild(new _42GameLayer($42.currentMode || "easy"), 1, $42.TAG_GAME_LAYER);
+                var cDiff = ls.getItem("currentDifficulty") || "easy"; 
+                self.getParent().addChild(new _42GameLayer(cDiff), 1, $42.TAG_GAME_LAYER);
                 self.hide();
             }),
-            item2 = addMenu($42.t.title_easy, 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                this._menu.setEnabled(false);
+            item2 = $42.menuItemChange1 = addMenu("no label", 36 , $42.TITLE_MENU_COLOR_2 , function() {
+                self._menu.setEnabled(false);
                 $42.currentLevel = 1;
-                $42.currentMode = "easy";
+                ls.setItem("currentLevel",1);
+
+                var cDiff = ls.getItem("currentDifficulty");
+                cc.assert(cDiff, "currentDifficulty must be set when we reach this point.")
+                if( cDiff === "easy" ) cDiff = "intermediate";
+                else cDiff = "easy";
+                ls.setItem("currentDifficulty", cDiff);
+                
+                self.hide(function() { self.show() });
+
                 ls.removeItem("wordTreasure");
-                ls.removeItem("currentLevel");
                 ls.removeItem("wordProfile");
-                // start game layer
-                self.getParent().addChild(new _42GameLayer("easy"), 1, $42.TAG_GAME_LAYER);
-                self.hide();
             }),
-            item3 = addMenu($42.t.title_intermediate, 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                this._menu.setEnabled(false);
-                self._gameStarted = true;
+            item3 = $42.menuItemChange2 = addMenu("no label", 36 , $42.TITLE_MENU_COLOR_2 , function() {
+                self._menu.setEnabled(false);
                 $42.currentLevel = 1;
-                $42.currentMode = "intermediate";
+                ls.setItem("currentLevel",1);
+                
+                var cDiff = ls.getItem("currentDifficulty");
+                cc.assert(cDiff, "currentDifficulty must be set when we reach this point.")
+                if( cDiff === "expert" ) cDiff = "intermediate";
+                else cDiff = "expert";
+                ls.setItem("currentDifficulty", cDiff);
+
+                self.hide(function() { self.show() });
+
                 ls.removeItem("wordTreasure");
-                ls.removeItem("currentLevel");
                 ls.removeItem("wordProfile");
-                // start game layer
-                self.getParent().addChild(new _42GameLayer("intermediate"), 1, $42.TAG_GAME_LAYER);
-                self.hide();
             }),
-            item4 = addMenu($42.t.title_expert, 36 , $42.TITLE_MENU_COLOR_2 , function() {
-                this._menu.setEnabled(false);
-                $42.currentLevel = 1;
-                $42.currentMode = "expert";
-                ls.removeItem("wordTreasure");
-                ls.removeItem("currentLevel");
-                ls.removeItem("wordProfile");
-                // start game layer
-                self.getParent().addChild(new _42GameLayer("expert"), 1, $42.TAG_GAME_LAYER);
-                self.hide();
-            }),
-            item5 = addMenu($42.t.title_tweet, 28, $42.TITLE_MENU_COLOR_3 , function() {
+            item4 = addMenu($42.t.title_tweet, 28, $42.TITLE_MENU_COLOR_3 , function() {
                 var tt = ls.getItem("tweetTreasure");
                 if( tt ) {
                     this._menu.setEnabled(false);
@@ -1563,34 +1568,46 @@ var _42TitleLayer = cc.Layer.extend({
                     $42.tweetTreasure = JSON.parse(tt);
                     $42.SCENE.hookTweet(function() {
                         $42._titleLayer.show();
-                        //self._menu.setEnabled(true);
                     });
                 }
             });
 
-        var menu = this._menu = cc.Menu.create.apply(this, [item1, item2, item3, item4, item5] );
+        var menu = this._menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
         menu.x = size.width/2;
         menu.y = 290;
         menu.setOpacity(0);
         menu.alignItemsVerticallyWithPadding(20);
+        _42_retain(this._menu,"Title menu");
 
-        item5.setPosition(cc.p(200,-180));
-        item5.setRotation(23);
-        item5.setOpacity(0);
+        item4.setPosition(cc.p(200,-180));
+        item4.setRotation(23);
+        item4.setOpacity(0);
         
-        $42.menuItemTweet = item5;
-        _42_retain(item5);
+        $42.menuItemTweet = item4;
+        _42_retain(item4, "Menu Item Tweet");
 
         this.show();
         return true;
     },
 
+    onExit: function() {
+        _42_release(this._titleBg);
+        _42_release(this._menu);
+        _42_release($42.menuItemTweet);
+    },
+
     show: function() {
+
+        var ls = cc.sys.localStorage,
+            cDiff = ls.getItem("currentDifficulty") || "easy", 
+            mDiff = ls.getItem("maxDifficulty") || "easy",
+            cl = $42.currentLevel = ls.getItem("currentLevel") || 1,
+            tt = ls.getItem("tweetTreasure");
+
+        ls.setItem("currentDifficulty",cDiff);
 
         this.addChild(this._titleBg);
         this.addChild(this._menu);
-        _42_retain(this._titleBg,"Title background");
-        _42_retain(this._menu,"Title menu");
 
         this._menu.runAction(
             cc.EaseSineIn.create(
@@ -1598,31 +1615,34 @@ var _42TitleLayer = cc.Layer.extend({
             )
         );
 
-        var ls = cc.sys.localStorage,
-            tt = ls.getItem("tweetTreasure");
-        if( tt ) $42.menuItemTweet.setOpacity(255);
-        else $42.menuItemTweet.setOpacity(0);
-
         this._titleBg.runAction(
             cc.EaseSineIn.create(
                 cc.fadeIn(2)
             )
         );
 
+        $42.menuItemStart.setString(cl==1?$42.t.title_start:$42.t.title_resume);
+        $42.menuItemChange1.setString(cDiff==="easy"?$42.t.title_intermediate:$42.t.title_easy);
+        $42.menuItemChange1.setOpacity(mDiff==="easy"?0:255);
+        $42.menuItemChange2.setString(cDiff==="expert"?$42.t.title_intermediate:$42.t.title_expert);
+        $42.menuItemChange2.setOpacity(mDiff==="easy"||mDiff==="intermediate"?0:255);
+
+        if( tt ) $42.menuItemTweet.setOpacity(255);
+        else $42.menuItemTweet.setOpacity(0);
+
         this._menu.setEnabled(true);
     },
 
-    hide: function() {
+    hide: function(cb) {
 
         var self = this;
         this._titleBg.runAction(
             cc.sequence(
-                cc.fadeOut(1),
+                cc.fadeOut(1.3),
                 cc.callFunc(function() {
                     self.removeChild(self._menu);
                     self.removeChild(self._titleBg);
-                    _42_release(self._titleBg);
-                    _42_release(self._menu);
+                    if( typeof cb === "function" ) cb();
                 })
             )
         );
@@ -1694,7 +1714,7 @@ _42_webConnect = function() {
     try {
         $42.websocket = new WebSocket($42.SERVER_ADDRESS);
     } catch(e) {
-        cc.log("WebSocket connection to \""+_B_SERVER_ADDRESS+"\" failed.");
+        cc.log("WebSocket connection to \""+$42.SERVER_ADDRESS+"\" failed.");
         return false;
     }
 
@@ -1705,10 +1725,14 @@ _42_webConnect = function() {
 }
 
 _42_sendMessage = function( command, message, cb ) {
+    if( !$42.webConnected ) {
+       if( typeof cb === "function" ) cb(null);
+       return
+    } 
+
     var id = message.Id = _42_getId();
+
 	message.Command = command;
-    cc.log(JSON.stringify(message));
-    //$42.websocket.send(JSON.stringify(message));		
     $42.websocket.send(JSON.stringify(message));		
     $42.webCallbacks[id] = cb;
 }

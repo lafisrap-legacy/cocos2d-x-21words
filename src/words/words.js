@@ -391,17 +391,27 @@ var _42_MODULE = function(_42Layer) {
                             
                             for( var i=0 ; level.newLetters && i<level.newLetters ; i++ ) setNextProfileLetter();
 
+                            $42.wordTreasure = $42.wordTreasure.concat(ml.levelWords);
                             if( ++$42.currentLevel > $42.LEVEL_DEVS[ml._gameMode].length ) {
                                 ml.drawScorebar(false);
 
+                                youWonTheGame();
                                 ls.removeItem("wordTreasure");
                                 ls.removeItem("currentLevel");
                                 ls.removeItem("wordProfile");
-                                $42.tweetTreasure = null;
-                                youWonTheGame();
+
+                                if( ml._gameMode === "easy" ) {
+                                    var mode = "intermediate";
+                                    ls.setItem("currentDifficulty", mode);
+                                    ls.setItem("maxDifficulty", mode);
+                                } else if( ml._gameMode === "intermediate" ) {
+                                    var mode = "expert";
+                                    ls.setItem("currentDifficulty", mode);
+                                    ls.setItem("maxDifficulty", mode);
+                                }
+
                                 return
                             } else {
-                                $42.wordTreasure = $42.wordTreasure.concat(ml.levelWords);
                                 ls.setItem("wordTreasure",JSON.stringify($42.wordTreasure));
                                 ls.setItem("currentLevel",$42.currentLevel);
                                 ls.setItem("wordProfile",$42.wordProfile);
@@ -419,35 +429,6 @@ var _42_MODULE = function(_42Layer) {
                             cc.log("TILES FREED at no end of level.");
                             ml.wordsForTilesCnt = level.wordFreq-1;
                             ml.fillWordsForTiles();
-                            $42.wordTreasure = [
-                                {word: "HINDERNIS"},
-                                {word: "TROCKNET"},
-                                {word: "UMGEBENDEN"},
-                                {word: "REPORTERN"},
-                                {word: "REDETEXT"},
-                                {word: "GEBRAUCH"},
-                                {word: "POSE"},
-                                {word: "NÜCHTERNE"},
-                                {word: "LADUNGEN"},
-                                {word: "INTERNATE"},
-                                {word: "HILFREICH"},
-                                {word: "WIRKEN"},
-                                {word: "PLATTENSEE"},
-                                {word: "JAPANERN"},
-                                {word: "NEBENBEI"},
-                                {word: "WACHSE"},
-                                {word: "MALAWI"},
-                                {word: "AUFKLEBER"},
-                                {word: "ERSCHWEREN"},
-                                {word: "GASPROM"},
-                                {word: "GLÜCKT"}
-                            ];
-	                        ml.unscheduleUpdate();
-                            $42.SCENE.hookTweet(function() {
-                                ml.hideAndEndGame($42.TWEET_TEXT_HIDING_TIME+0.1);
-
-                                $42._titleLayer.show();
-                            });
                         }
 
                         ml.unselectWord(false);
@@ -968,25 +949,36 @@ var _42_MODULE = function(_42Layer) {
             var self = this,
                 endGame = function() {
                     if( self.hookEndGame ) self.hookEndGame();
-                    ml.endGame();
-                    cc.director.runScene(new _42Scene());
+                    ml.hideAndEndGame($42.TWEET_TEXT_HIDING_TIME+0.1);
+                    $42._titleLayer.show();
                 }, 
-            
+                hide = function() {
+                    menu.setEnabled(false);
+                    layer.runAction(
+                        cc.fadeOut($42.TWEET_TEXT_HIDING_TIME)
+                    );
+                },
                 menuItems = [{
 				    label: $42.t.won_tweet_yes, 
 				    cb: function(sender) {
-                        ml.hookTweet(endGame);
+                        hide();
+                        $42.SCENE.hookTweet(endGame);
 		            }
 			    },{
 				    label: $42.t.won_tweet_no, 
-				    cb: endGame
+				    cb: function() { 
+                        hide();
+                        endGame();
+                    }
                 }];
-            ml.getParent().addChild(
-            	new _42MenuLayer([
+            var layer = new _42MenuLayer([
             	    $42.t.won_congrats,
                     $42.t.won_tweet,
-            	],menuItems), 1
-            );
+            	],menuItems),
+                menu = layer.getMenu();
+            
+            layer.setCascadeOpacityEnabled(true);
+            ml.getParent().addChild( layer, 1 );
 		});		
 	};
 
@@ -1000,18 +992,18 @@ var _42_MODULE = function(_42Layer) {
 			var label = cc.LabelTTF.create(wt[i%wt.length].word, _42_getFontName(res.exo_regular_ttf) , 32);
 			label.setPosition(ml.size.width/2,0);
 			label.setColor(cc.color(0,0,0));
-			label.setOpacity(50);
+			label.setOpacity(0);
 			_42_retain(label, "flying word");	
 			ml.addChild(label, 5);
 			label.i = i;
 			label.runAction(
 				cc.sequence(
-					cc.delayTime(i * 0.32),
+					cc.delayTime(i * 0.42),
 					cc.moveTo(1.5,ml.size.width/2,200),
 					cc.spawn(
 						cc.moveTo(1.8,ml.size.width/2,600),
 						cc.EaseSineOut.create(
-							cc.scaleTo(1.8,2.8)
+							cc.scaleTo(1.8,3.8)
 						),
 						cc.EaseSineIn.create(
 							cc.fadeTo(1.8,255)
@@ -1024,14 +1016,14 @@ var _42_MODULE = function(_42Layer) {
 								cc.scaleTo(1.8,1)
 							),
 							cc.EaseSineOut.create(
-								cc.fadeTo(1.8,50)
+								cc.fadeTo(1.8,0)
 							)
 						),
 					cc.moveTo(1.5,ml.size.width/2,1200),
 					cc.callFunc(function() {
 				        _42_release(this);
 						ml.removeChild(this);
-						if( cb && this.i === 20 ) cb();
+						if( cb && this.i === 10 ) cb();
 					}, label)
 				)
 			);
@@ -1901,10 +1893,6 @@ var _42_MODULE = function(_42Layer) {
 		
 		setSelections(); // OPTIMIZATION: Only look in current lines
       
-        if( !sw ) {
-            ml.pauseBuildingTiles = false;
-            cc.log("TILES FREED at no selection after tile fixed.");
-        }
 		return updateSelectedWord();
 	};	
 
@@ -1938,8 +1926,11 @@ var _42_MODULE = function(_42Layer) {
         var sw = ml.selectedWord;
 		if( (!sw || !sw.selectedByUser) && !ml.dontAutoSelectWord && !moveToNewWord() && !sw ) selectFreeWord(); // selectBestWord();
 
-		updateMultipliers();
-	}
+        if( !sw && !ml.wordIsBeingSelected ) {
+            ml.pauseBuildingTiles = false;
+            cc.log("TILES FREED at no selection after tile fixed.");
+        }
+	};
 
 	_42Layer.hookDeleteBox = function(brc) {
 		var sw = ml.selectedWord,
