@@ -36,7 +36,8 @@
 //
 var _42_GLOBALS = { 
     //SERVER_ADDRESS: "ws://localhost:4021/socket",
-    SERVER_ADDRESS: "ws://192.168.178.177:4021/socket",
+    //SERVER_ADDRESS: "ws://192.168.178.177:4021/socket",
+    SERVER_ADDRESS: "ws://217.197.85.219:4021/socket",
     TITLE_MENU_COLOR_1: cc.color(44,18,44,255), // 
     TITLE_MENU_COLOR_2: cc.color(109,36,76,255), // 
     TITLE_MENU_COLOR_3: cc.color(109,36,76,255), // 
@@ -85,7 +86,8 @@ var _42_GLOBALS = {
 		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64},{x: 1.0*64,y: 0.5*64}],
 		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64}],
 	],
-	TILE_OCCURANCES : [10,5,7,7,2,2,7,0,0], // How often the tiles appear, when selected randomly
+	TILE_OCCURANCES : [10,5,7,7,3,2,2,0,0], // How often the tiles appear, when selected randomly
+    TILE_5_6_MAX_ROW : 11,
 };
 var $42 = _42_GLOBALS;
 $42.webCallbacks = [];
@@ -1035,6 +1037,7 @@ var _42GameLayer = cc.Layer.extend({
 
             if( minRow >= $42.GAME_OVER_ROW ) ret = "gameover";
     		
+
     		// fix single boxes of tile
     		if( ret !== "gameover" ) {
                 //cc.log("minRow = "+minRow);
@@ -1587,6 +1590,7 @@ var _42TitleLayer = cc.Layer.extend({
         _42_retain(item4, "Menu Item Tweet");
 
         this.show();
+       
         return true;
     },
 
@@ -1598,7 +1602,8 @@ var _42TitleLayer = cc.Layer.extend({
 
     show: function() {
 
-        var ls = cc.sys.localStorage,
+        var self = this,
+            ls = cc.sys.localStorage,
             cDiff = ls.getItem("currentDifficulty") || "easy", 
             mDiff = ls.getItem("maxDifficulty") || "easy",
             cl = $42.currentLevel = ls.getItem("currentLevel") || 1,
@@ -1631,6 +1636,17 @@ var _42TitleLayer = cc.Layer.extend({
         else $42.menuItemTweet.setOpacity(0);
 
         this._menu.setEnabled(true);
+        
+        setTimeout(function() {
+            if( self._menu.isEnabled() ) {
+                $42.SCENE.hookStartAnimation("Mostafas Greeting", {
+                    time: 3,
+                    cb: function() {
+                        // ...
+                    }
+                });
+            }
+        }, 5000); 
     },
 
     hide: function(cb) {
@@ -1649,6 +1665,13 @@ var _42TitleLayer = cc.Layer.extend({
         this._menu.runAction(
             cc.fadeOut(1.2)
         );
+        
+        $42.SCENE.hookStartAnimation("Mostafa flies away", {
+            time: 2,
+            cb: function() {
+                // ...
+            }
+        });
 
         this._menu.setEnabled(false);
     },
@@ -1739,6 +1762,10 @@ _42_sendMessage = function( command, message, cb ) {
 
 _42_onOpen = function(evt) {
     $42.webConnected = true;
+    
+    _42_sendMessage("checkNames", {test:"TEST"}, function(data) {
+        cc.log("$42.webConnected message test ok.");
+    });
 }
 
 _42_onMessage = function(evt) {
@@ -1775,6 +1802,7 @@ var _42Scene = cc.Scene.extend({
 	
         // call tutorial module if available
         if( typeof _TWEET_MODULE === 'function' ) _TWEET_MODULE($42.SCENE);
+        if( typeof _MURBIKS_MODULE === 'function' ) _MURBIKS_MODULE($42.SCENE);
 
         this.loadWords(function() {
             $42._titleLayer = new _42TitleLayer();

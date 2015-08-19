@@ -27,8 +27,8 @@ $42.HAND_CONTACT_TIME = 0.3;
 $42.HAND_CONTACT_TIME = 0.3;
 $42.BUBBLE_BUTTON_SCALE = 0.7;
 
-var _MURBIKS_MODULE = function(layer) {
-	var ml = layer,
+var _MURBIKS_MODULE = function(parentLayer) {
+	var pl = parentLayer,
 		mul = null,
 		lg = null,
 		curTileProgram = null,
@@ -54,706 +54,92 @@ var _MURBIKS_MODULE = function(layer) {
 		fingerPos = null,
 		hookResumeAskForWord = null,
 		hookResumeMenuLayer = null,
-		scoreBarDirty;
-	
-	/*
-	 * Program 1
-	 * 
-	 * Turning a tile, moving it, let it fall and choosing it.
-	 * 
-	 */
-	var turning_moving_falling_choosing = function() {
+        finalCallback = null;
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // Animation programs
+    // (full list at end of this file)
+    //
+    var animMostafasGreeting = function(options) {
+        mostafa.stopAllActions();    
 		
-		startTileProgram(lg.tiles.turning_moving_falling_choosing);
-
-		timer = animCnt = 0;
-		animPrograms = [{
-		    	time: 0,
-		    	anim: function() {
-		    		var words = lg.tiles_needed.turning_moving_falling_choosing;
-		    		for( var i=0 ; i<words.length ; i++ ) insertWordIfNotIn(words[i].word , words[i].value);
-	    			$42.maxWordValue = 4;
-
-	    			showMostafaAndButton(2.0);		    		
-		    	}
-		    },{
-		    	time: 2.5,
-		    	anim: function() {
-		            showSpeechBubble(3.0 , $42.t.mostafa_hi , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 2.6,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_basic01 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 2.7,
-		    	anim: function() {
-		    		jumpHandTo(cc.p(0,0));
-		    		moveHandTo(1.5 , cc.p(280,500), cc.p(280,300));		    		
-		    	}
-		    },{
-		    	time: 4.8,
-		    	anim: function() {
-		            pressFingerTo(0.743 , cc.p(290,650));		    		
-		    	}
-		    },{
-		    	time: 5.8,
-		    	anim: function() {
-		    		moveHandTo(0.5 , cc.p(270,420));		    		
-		    	}
-		    },{
-		    	time: 6.4,
-		    	anim: function() {
-		    		pressFingerTo(0.643 , cc.p(280,670));		    		
-		    	}
-		    },{
-		    	time: 7.2,
-		    	anim: function() {
-		    		var tilePos = getTilePosition();
-		    		
-		    		tilePos.y -= 20;
-		    		
-		    		moveHandTo(0.8 , tilePos);		    		
-		    	}
-		    },{
-		    	time: 7.7,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_basic02 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 7.8,
-		    	anim: function() {
-		    		var handPos = getHandPosition();
-		    		
-		    		handPos.x = handPos.x < 320? 530 : 110;
-		    		
-		    		pressFingerTo(1.5 , handPos);		    		
-		    	}
-		    },{
-		    	time: 9.3,
-		    	anim: function() {
-		    		var handPos = getHandPosition();
-		    		
-		    		handPos.x = handPos.x < 320? 530 : 110;
-		    		
-		    		pressFingerTo(1.5 , handPos);		    		
-		    	}
-		    },{
-		    	time: 10.8,
-		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(192,300));		    		
-		    	}
-		    },{
-		    	time: 13.1,
-		    	anim: function() {
-		    		var tilePos = getTilePosition();
-		    		
-		    		tilePos.y -= 20;
-		    		
-		    		moveHandTo(1.1 , tilePos);		    		
-		    	}
-		    },{
-		    	time: 14.3,
-		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(224,400));		    		
-		    	}
-		    },{
-		    	time: 15.4,
-		    	anim: function() {
-		    		moveHandTo(0.8 , cc.p(-200,0));		    		
-		    	}
-		    },{
-		    	time: 16.3,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_basic03 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 17.4,
-		    	anim: function() {
-		    		jumpHandTo(cc.p(0,0));
-		    		moveHandTo(2.0 , cc.p(280,500), cc.p(280,300));	
-		    	}
-		    },{
-		    	time: 19.5,
-		    	anim: function() {
-		            pressFingerTo(0.643 , cc.p(290,650));		    		
-		    	}
-		    },{
-		    	time: 20.3,
-		    	anim: function() {
-		    		var tilePos = getTilePosition();
-		    		
-		    		tilePos.y -= 20;
-		    		
-		    		moveHandTo(1.1 , tilePos);		    		
-		    	}
-		    },{
-		    	time: 21.4,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_basic04 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 21.5,
-		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(384,400));		    		
-		    	}
-		    },{
-		    	time: 22.6,
-		    	anim: function() {
-		    		moveHandTo(0.8 , cc.p(-200,0));		    		
-		    	}
-		    },{
-		    	time: 25.0,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_basic05 , mostafa.getPosition(), 350);		    		
-		    	}
-		    },{
-		    	time: 25.1,
-		    	anim: function() {
-		    		moveHandTo(0.8 , cc.p(340,640));		    		
-		    	}
-		    },{
-		    	time: 26.1,
-		    	anim: function() {
-		    		pressFingerTo(0.4 , cc.p(330,640));
-		    		hookResumeAskForWord(hookResumeMenuLayer , true);
-		    	}
-		    },{
-		    	time: 29.0,
-		    	anim: function() {
-		    		moveHandTo(2.2 , cc.p(80,60) , cc.p(150,200));		    		
-		    	}
-		    },{
-		    	time: 31.0,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_basic06 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 31.1,
-		    	anim: function() {
-		    		moveHandTo(0.8 , cc.p(-200,0));		    		
-		    	}
-		    },{
-		    	time: 32.1,
-		    	anim: function() {
-		            showSpeechBubble(4.0 , $42.t.mostafa_basic07 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 32.2,
-		    	anim: function() {
-		    		moveMostafaAndButton(3.0, [
-           			    cc.p(500,180),
-        	            cc.p(350,500),
-        	            cc.p(800,1000)
-        		    ]);		
-		    	}
-		    },{
-		    	time: 37.2,
-		    	anim: function() {
-		    		mostafaFlyingToMiddle(6.0, [
-					    cc.p(0,0),
-			            cc.p(200,520),
-			            cc.p(320,320)
-				    ],[
-						cc.p(320,320),
-			            cc.p(200,415),
-			            cc.p(1000,300)
-					] )	
-		    	}
-		    },{
-		    	time: 39.2,
-		    	anim: function() {
-		    		ml.unselectWord();
-		    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);
-		    	}		    	
-		    }
-		];
-	};
-	
-	/*
-	 * Program 2
-	 * 
-	 * Selecting a tile, selecting single letters, deleting unwanted letters.
-	 * 
-	 */
-	var selecting_deleting = function() {
+        var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
+			bezier = options.bezier || [
+				cc.p( 100, 568),
+				cc.p( 500, 668),
+				cc.p( 360, 480)
+			];
+	    _42_retain(animAction, "mostafa animAction fly");
 		
-		timer = animCnt = 0;
-		animPrograms = [{
-		    	time: 0,
-		    	anim: function() {
-		    		var words = lg.tiles_needed.selecting_deleting;
-		    		for( var i=0 ; i<words.length ; i++ ) insertWordIfNotIn(words[i].word , words[i].value);
-	    			
-	    			mostafa.setPosition(cc.p(800,1000));
-	    			blueButton.setPosition(cc.p(800,895));
+        mostafa.setPosition(cc.p(50, 1400));    
+	    mostafa.runAction(
+            cc.sequence(
+                cc.bezierTo(options.time, bezier),
+                cc.callFunc(function() {
+                    mul.stopAction(animAction);
+                    _42_release(animAction);
+                    animAction = mostafa.runAction(
+                        cc.sequence(
+                            anims.mostafa_land,
+                            cc.callFunc(function() {
+                                _42_release(animAction);
+                                if( typeof options.cb === "function" ) options.cb();
+                            })
+                        )
+                    );
+                    _42_retain(animAction, "mostafa animAction land");
+                })
+            )
+        ); 
+    };
 
-	    			showMostafaAndButton(3.0);		
-	    			
-	    			ml.unselectWord();
-//	    			setSelections();
-	    			ml.dontAutoSelectWord = true;
-		    	}
-			},{
-		    	time: 3.0,
-		    	anim: function() {
-		    		var tilePos = getTilePosition();
-		    		
-		    		moveHandTo(1.1 , tilePos);		    		
-		    	}
-		    },{
-		    	time: 4.1,
-		    	anim: function() {
-		    		startTileProgram(lg.tiles.selecting_deleting);
-		    		pressFingerTo(1.0 , cc.p(240,400));		    		
-		    	}
-		    },{
-		    	time: 5.2,
-		    	anim: function() {
-		    		moveHandTo(1.1 , cc.p(-200,0));	
-		    	}
-		    },{
-		    	time: 5.5,
-		    	anim: function() {
-		    		mostafaFlyingToMiddle(5.5);	
-		    	}
-		    },{
-		    	time: 7.0,
-		    	anim: function() {
-		            setTimeout(function() {
-			    		ml.unselectWord();
-			    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		            	
-		            },1500);
-		    	}
-		    },{
-		    	time: 7.0,
-		    	anim: function() {
-		    		var tilePos = getTilePosition();
-		    		
-		    		moveHandTo(1.1 , tilePos);		    		
-		    	}
-		    },{
-		    	time: 8.1,
-		    	anim: function() {
-	    			ml.dontAutoSelectWord = false;
+    var animMostafaFlyingAway = function(options) {
+        mostafa.stopAllActions();    
+		
+        var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
+			bezier = options.bezier || [
+				cc.p( 360, 480),
+				cc.p( 500, 668),
+				cc.p( 700, 700)
+			];
+	    _42_retain(animAction, "mostafa animAction fly");
+	
+	    mostafa.runAction(
+            cc.sequence(
+                cc.bezierTo(options.time, bezier),
+                cc.callFunc(function() {
+                    mul.stopAction(animAction);
+                    _42_release(animAction);
+                    if( typeof options.cb === "function" ) options.cb();
+                })
+            )
+        ); 
+    };
+    //////////////////////////////////////////////////////////////////////////////////////
+    // Service programs
+    //
+	pl.hookStartAnimation = function(program, options) {
+		cc.assert(typeof programs[program] === "function" , "42words, startProgramm: Invalid program number.");
+		
+		lg = $42.languagePack;
 
-		    		pressFingerTo(1.0 , cc.p(128,400));		    		
-		    	}
-		    },{
-		    	time: 9.2,
-		    	anim: function() {
-		    		moveHandTo(1.1 , cc.p(-200,0));	
-		    	}
-		    },{
-		    	time: 11.0,
-		    	anim: function() {
-		    		var tilePos = getTilePosition();
-		    		
-		    		moveHandTo(1.1 , tilePos);		    		
-		    	}
-		    },{
-		    	time: 12.1,
-		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(192,400));		    		
-		    	}
-		    },{
-		    	time: 13.2,
-		    	anim: function() {
-		    		moveHandTo(1.1 , cc.p(-200,0));	
-		    	}
-		    },{
-		    	time: 14.3,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_advanced02 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 14.4,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,1);
-		    		
-		    		moveHandTo(1.1 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 15.8,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,1);
-		    		
-		    		pressFingerTo(0.3 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 16.6,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,1);
-		    		
-		    		boxPos.x -= 100;
-		    		boxPos.y -= 30;
-		    		
-		    		moveHandTo(0.5 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 17.4,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,1);
-		    		
-		    		moveHandTo(1.1 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 18.8,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,1);
-		    		
-		    		pressFingerTo(0.3 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 19.2,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,1);
-		    		
-		    		boxPos.x -= 100;
-		    		boxPos.y -= 30;
-		    		
-		    		moveHandTo(0.5 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 22.0,
-		    	anim: function() {
-		    		moveHandTo(0.5 , cc.p(270,420));		    		
-		    	}
-		    },{
-		    	time: 22.5,
-		    	anim: function() {
-		    		pressFingerTo(0.643 , cc.p(280,670));		    		
-		    	}
-		    },{
-		    	time: 24.0,
-		    	anim: function() {
-		    		var tilePos = getTilePosition();
-		    		
-		    		moveHandTo(1.1 , tilePos);		    		
-		    	}
-		    },{
-		    	time: 25.1,
-		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(288,400));		    		
-		    	}
-		    },{
-		    	time: 26.2,
-		    	anim: function() {
-		    		moveHandTo(1.1 , cc.p(-200,0));	
-		    	}
-		    },{
-		    	time: 27.5,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,4);
-		    		
-		    		boxPos.y -= $42.BS;
-		    		
-		    		moveHandTo(0.5 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 27.6,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_advanced03 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 27.7,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_advanced04 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 27.8,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,5);
+		if( !pl.getChildByTag($42.MURBIKS_LAYER_TAG )) pl.addChild(mul,3,$42.MURBIKS_LAYER_TAG);
 
-		    		boxPos.y -= 40;
-		    		
-		    		moveHandTo(0.5 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 28.5,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,5);
-		    		
-		    		boxPos.y -= 40;
-		    		
-		    		pressFingerTo(0.2 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 29.0,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(1,5);
-		    		
-		    		boxPos.x -= 100;
-		    		boxPos.y -= 30;
-		    		
-		    		moveHandTo(0.5 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 32.0,
-		    	anim: function() {
-		    		moveHandTo(0.4 , cc.p(320,300));		    		
-		    	}
-		    },{
-		    	time: 32.4,
-		    	anim: function() {
-		    		pressFingerTo(0.2 , cc.p(320,500));		    		
-		    	}
-		    },{
-		    	time: 33.0,
-		    	anim: function() {
-		    		var tilePos = getTilePosition();
-		    		
-		    		moveHandTo(0.5 , tilePos);		    		
-		    	}
-		    },{
-		    	time: 33.5,
-		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(0,100));		    		
-		    	}
-		    },{
-		    	time: 34.6,
-		    	anim: function() {
-		    		moveHandTo(1.1 , cc.p(-200,0));	
-		    	}
-		    },{
-		    	time: 35.4,
-		    	anim: function() {
-		    		var boxPos = getBoxPosition(2,3);
+		curProgram = program;
+        finalCallback = options.cb;
 
-		    		hand.setRotation(85);
-		    		moveHandTo(0.5 , boxPos);		    		
-		    	}
-		    },{
-		    	time: 35.9,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_advanced05 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 36,
-		    	anim: function() {
-		            showSpeechBubble(3.0 , $42.t.mostafa_advanced06 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 36.1,
-		    	anim: function() {
-		    		var tilePos = getTilePosition();
-		    		
-		    		moveHandTo(1.1 , tilePos);		    		
-		    		hand.runAction(cc.rotateTo(2.5,$42.HAND_ROTATION));
-		    	}
-		    },{
-		    	time: 37.4,
-		    	anim: function() {
-		    		pressFingerTo(1.0 , cc.p(576,100));		    		
-		    	}
-		    },{
-		    	time: 38.5,
-		    	anim: function() {
-		    		moveHandTo(1.1 , cc.p(-200,0));	
-		    		hand.runAction(cc.rotateTo(1.1,125));
-		    	}
-		    },{
-		    	time: 39.9,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_advanced07 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 40.0,
-		    	anim: function() {
-		    		var tilePos = getTilePosition();
-		    		
-		    		moveHandTo(1.7 , tilePos);		    		
-		    	}
-		    },{
-		    	time: 41.8,
-		    	anim: function() {
-		    		pressFingerTo(8.0 , cc.p(448,300));		    		
-		    	}
-		    },{
-		    	time: 49.8,
-		    	anim: function() {
-		            showSpeechBubble(undefined , $42.t.mostafa_advanced08 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 49.9,
-		    	anim: function() {
-		    		moveHandTo(2.5 , cc.p(-200,0));
-		    		hand.runAction(cc.rotateTo(2.5,$42.HAND_ROTATION));
-		    	}
-		    },{
-		    	time: 53.0,
-		    	anim: function() {
-		    		moveHandTo(0.8 , cc.p(340,640));		    		
-		    	}
-		    },{
-		    	time: 54.1,
-		    	anim: function() {
-		    		pressFingerTo(0.4 , cc.p(340,640));
-		    		hookResumeAskForWord(hookResumeMenuLayer , true);
-		    	}
-		    },{
-		    	time: 54.6,
-		    	anim: function() {
-		    		moveHandTo(0.8 , cc.p(-200,0));		    		
-		    	}
-		    },{
-		    	time: 55.2,
-		    	anim: function() {
-		            showSpeechBubble(3.0 , $42.t.mostafa_advanced09 , mostafa.getPosition());		    		
-		    	}
-		    },{
-		    	time: 55.3,
-		    	anim: function() {
-		    		moveMostafaAndButton(3.0, [
-           			    cc.p(500,180),
-        	            cc.p(350,500),
-        	            cc.p(800,1000)
-        		    ]);		
-		    	}
-		    },{
-		    	time: 60.7,
-		    	anim: function() {
-		    		mostafaFlyingToMiddle(6.0, [
-					    cc.p(0,0),
-			            cc.p(200,520),
-			            cc.p(320,320)
-				    ],[
-						cc.p(320,320),
-			            cc.p(200,415),
-			            cc.p(1000,300)
-					] )	
-		    	}
-		    },{
-		    	time: 62.7,
-		    	anim: function() {
-		            showSpeechBubble(6.0 , $42.t.mostafa_advanced10 , mostafa.getPosition());	
-		    		ml.timeCounter = 0;
-		            setTimeout(function() {
-			    		ml.unselectWord();
-			    		for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) ml.deleteRow(i,true);		            	
-		            },6000);
-		            $42.wordTreasureBestWord = null;
-		            $42.wordTreasureValue = 0;
-		            $42.wordTreasure = [];
-		    		ml.totalPoints = 0;
-		    		scoreBarDirty = true;		    	}
-		    }
-		];
+		programs[program](options);
 	};
 	
-	var test = function(cb) {
-		startTileProgram(lg.tiles.test);
-	};
+	pl.hookEndAnimation = function() {
 
-	var test1 = function(cb) {
-		startTileProgram(lg.tiles.test1);
-	};
-	
-	var test2 = function(cb) {
-		startTileProgram(lg.tiles.test2);
-	};
-	
-	var test3 = function(cb) {
-		startTileProgram(lg.tiles.test3);
-	};
-	
-	var test4 = function(cb) {
-		startTileProgram(lg.tiles.test4);
-	};
-	
-	var test5 = function(cb) {
-		startTileProgram(lg.tiles.test5);
-	};
-	
-	var test6 = function(cb) {
-		startTileProgram(lg.tiles.test6);
-	};
-	
-	
-	/* 
-	 * Service programs
-	 */
-	
-	var endProgram = function(emergency) {
-
-		if( emergency ) {
-			stopTileProgram();
-			hideSpeechBubble();
-			moveMostafaAndButton(2.0, [
-	  			cc.p(500,180),
-		            cc.p(350,500),
-		            cc.p(800,1000)
-			    ]);
-			moveHandTo(0.8 , cc.p(-300,-300));
-			fingerIsPressed = false;
-			if( fingerPos ) {
-				ml._touchListener.onTouchesEnded(undefined, undefined, fingerPos);
-				fingerPos = null;
-			}
-			animCnt = null;			
-		}
-		var ls = cc.sys.localStorage;
+		stopTileProgram();
+		
+        var ls = cc.sys.localStorage;
 		$42.tutorialsDone = curProgram + 1;
 		ls.setItem("tutorialsDone",$42.tutorialsDone); 
 
-		// resume touch events
-		if( stopEvents ) ml.initListeners();
-	};
-	
-	var showMostafaAndButton = function(time, cb) {
-		
-		// menu functions
-    	var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
-			bezierMostafa = [
-			    cc.p(0,0),
-	            cc.p(200,520),
-	            cc.p(500,180)
-		    ],
-			bezierButton = [
-				cc.p(0,-105),
-	            cc.p(200,415),
-	            cc.p(500,75)
-			];
-		_42_retain(animAction,"mostafa animAction 1");
-			
-	    mostafa.runAction(
-	        	cc.sequence(
-	        		cc.bezierTo(time, bezierMostafa),
-	        		cc.callFunc(function() {
-	        			mul.stopAction(animAction);
-	        			animAction = mostafa.runAction(anims.mostafa_land);
-	        			 _42_retain(animAction, "mostafa animAction 2");
-	        		})
-	    		)
-	    	); 
-	    	
-	    blueButton.runAction(cc.sequence(cc.bezierTo(time, bezierButton)));
-	};
-	
-	var moveMostafaAndButton = function( time, bezier ) {
-
-		var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
-			bezierMostafa = bezier,
-			bezierButton = [
-				cc.p(bezier[0].x,bezier[0].y-105),
-				cc.p(bezier[1].x,bezier[1].y-105),
-				cc.p(bezier[2].x,bezier[2].y-105),
-			];
-		 _42_retain(animAction, "mostafa animAction 3");
-			
-	    mostafa.runAction(
-	        	cc.sequence(
-	        		cc.bezierTo(time, bezierMostafa),
-	        		cc.callFunc(function() {
-	        			mul.stopAction(animAction);
-	        			animAction = mostafa.runAction(anims.mostafa_land);
-	        			 _42_retain(animAction, "mostafa animAction 4");
-	        		})
-	    		)
-	    	); 
-	    	
-	    blueButton.runAction(cc.bezierTo(time, bezierButton));		
+        if( typeof finalCallback === "function" ) cb(); 
 	};
 	
 	var mostafaFlyingToMiddle = function(time, bezierIn , bezierOut) {
@@ -761,14 +147,14 @@ var _MURBIKS_MODULE = function(layer) {
 			bezierMostafaIn = bezierIn || [
 				cc.p(500,180),
 				cc.p(650,300),
-				cc.p(ml.size.width/2,ml.size.height/2)
+				cc.p(cc.width/2,cc.height/2)
 			];
 			bezierMostafaOut = bezierOut || [
-			    cc.p(ml.size.width/2,ml.size.height/2),
+			    cc.p(cc.width/2,cc.height/2),
 	   			cc.p(350,400),
 	   			cc.p(500,180)
 	   		];
-		 _42_retain(animAction,"mostafa animAction 5");
+		_42_retain(animAction,"mostafa animAction 5");
 			
 	    mostafa.runAction(
         	cc.sequence(
@@ -788,8 +174,8 @@ var _MURBIKS_MODULE = function(layer) {
 	
 	var showSpeechBubble = function(time, text, pos, bubbleY) {
 		
-		var bubbleX = ml.size.width/2;
-		if( !bubbleY ) bubbleY = ml.size.height/2;
+		var bubbleX = cc.width/2;
+		if( !bubbleY ) bubbleY = cc.height/2;
 		if( mul.getChildByTag( $42.SPEECH_BUBBLE_TAG ) ) mul.removeChild(speechBubble);
 		if( mul.getChildByTag( $42.SPEECH_BUBBLE_LINE_TAG ) ) mul.removeChild(speechBubbleLine);
 		if( mul.getChildByTag( $42.SPEECH_BUBBLE_CLOUD_TAG ) ) mul.removeChild(speechBubbleCloud);
@@ -852,7 +238,16 @@ var _MURBIKS_MODULE = function(layer) {
 		speechBubbleButton.runAction(cc.sequence(cc.delayTime(0.6),cc.fadeIn(1.0)));
 		
 		if( time ) {
-			speechBubble.runAction(cc.sequence(cc.delayTime(time-0.9),cc.callFunc(function() { removeSpeechBubble(0.9); })))
+			speechBubble.runAction(
+                cc.sequence(
+                    cc.delayTime(time-0.9),
+                    cc.callFunc(
+                        function() { 
+                            removeSpeechBubble(0.9); 
+                        }
+                    )
+                )
+            )
 		}
 	};
 
@@ -893,29 +288,6 @@ var _MURBIKS_MODULE = function(layer) {
 		speechBubble.runAction(cc.fadeOut(0.9));			
 	};
 
-	var getTilePosition = function() {
-		return ml.tiles[ml.tiles.length-1].sprite.getPosition();
-	};
-	
-	var getBoxPosition = function(row,col) {
-		return ml.boxes[row][col].sprite.getPosition();
-	};
-	
-	var getHandPosition = function() {
-		var fo = getFingerOffset(),
-			hp = hand.getPosition();
-
-		return cc.p(hp.x + fo.x, hp.y + fo.y);
-	};
-	
-	var insertWordIfNotIn = function(word, value, freq) {
-		var prefix = word.substr(0,3);
-		// delete word from full word list
-		var words = $42.words[prefix];
-		for( var i=0 ; i<words.length && words[i].word !== word ; i++ );
-		if( i === words.length ) words.push({"word":word,"value":value,"frequency":freq || 0});
-	};
-	
 	var getFingerOffset = function() {
 		var finger = hand.getChildByTag($42.FINGER_TAG);
 		return cc.p(
@@ -1055,7 +427,7 @@ var _MURBIKS_MODULE = function(layer) {
 		var loadFrames = function(name,cnt) {
 			var frames = [];
 	    	for (var i = 1; i <= cnt; i++) {
-	        	str = name + (i < 10 ? ("0" + i) : i);
+	        	str = name + (i < 10 ? ("0" + i) : i) + ".png";
 	        	frames.push(cc.spriteFrameCache.getSpriteFrame(str));        	
 	    	}
 	    	var anim = cc.Animation.create(frames, 0.06);
@@ -1118,15 +490,6 @@ var _MURBIKS_MODULE = function(layer) {
 		hand.addChild(finger,-1,$42.FINGER_TAG);
 		mul.addChild(hand, 5, $42.HAND_TAG);
 		
-		for( var i=0 ; i<3 ; i++ ) {
-			contactRings[i] = cc.DrawNode.create();
-			contactRings[i].clear();
-			contactRings[i].setScale(0);
-			contactRings[i].drawCircle(cc.p(0,0), $42.HAND_CONTACT_SIZE, 0, 100, false, 2, $42.HAND_CONTACT_COLOR);
-			finger.addChild(contactRings[i]);
-			_42_retain(contactRings[i], "contactRing "+i);
-		}
-		
 		mul.update = update;
 		mul.scheduleUpdate();
 	};
@@ -1136,319 +499,9 @@ var _MURBIKS_MODULE = function(layer) {
 		// Create layer for tutorial
 		_42_release(mul);
 		mul.unscheduleUpdate();
-		ml.getParent().removeChild(mul);
-	};
-	
+		pl.getParent().removeChild(mul);
+	};	
  
-	/*
-	 * All programs
-	 */
-	var programs = [
-        turning_moving_falling_choosing,		// 0
-        selecting_deleting,
-        test1,
-        test2,
-        test3,
-        test4,
-        test5,
-        test6,
-        undefined,
-        undefined,
-        test
-    ];
-
-	ml.hookStartProgram = function(program, stopEvs) {
-		cc.assert(typeof programs[program] === "function" , "42words, startProgramm: Invalid program number.");
-		
-		lg = $42.languagePack;
-
-		var scene = ml.getParent();
-		if( !scene.getChildByTag($42.MURBIKS_LAYER_TAG )) scene.addChild(mul,3,$42.MURBIKS_LAYER_TAG);
-
-		// No touch events
-		if( stopEvs ) ml.stopListeners();
-		
-		stopEvents = stopEvs;
-		curProgram = program;
-		
-		programs[program]();
-	};
-	
-	ml.hookGetProgrammedTile = function(isCalledAgain) {
-		if( curTileProgram && curTileProgramCnt < curTileProgram.length ) {
-		    return curTileProgram[curTileProgramCnt++];
-        }
-
-		curTileProgram = null;
-		curTileProgramCnt = null;
-        
-        ////////////////////////////////
-        // Fit in words from wordsForTiles list
-        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
-            sw = ml.selectedWord,
-            wft = ml.wordsForTiles;
-
-        if( level.type === $42.LEVEL_TYPE_FREE ) return {letters: [" "," "," "," "]};
-        
-        /////////////////////////////////
-        // Only return letters in a specified frequency
-        //cc.log("ml.hookGetProgrammedTile (1): ml.wordsForTilesCnt: "+ml.wordsForTilesCnt+", level.wordFreq: "+level.wordFreq);
-        if( ++ml.wordsForTilesCnt < level.wordFreq ) {
-    	    //$42.msg2.setString("Sending empty tile.");
-            return {letters: [" "," "," "," "]};
-        }
-        else ml.wordsForTilesCnt -= level.wordFreq;
-        //cc.log("ml.hookGetProgrammedTile (2): Getting tile ... ml.wordsForTiles: "+JSON.stringify(ml.wordsForTiles));
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Word is selected: Look if word is still possible, put one entry into ml.wordsForTiles
-        if( sw ) {
-            var words = [];
-            for( var i=0 ; i<sw.words.length ; i++ ) {
-                var word = sw.words[i].word;
-                for( var j=word.length-1 ; j>=3 ; j-- ) {
-                    var box = ml.boxes[sw.brc.row][sw.brc.col+j];
-
-                    if( box && box.userData !== word[j] ) break;
-                    if( !box ) var index = j;
-                }
-
-                if( j < 3 ) {
-                    ////////////////////
-                    // free space around?
-                    for( var j=0, fs=0; j<6; j++ ) if( ml.boxes[sw.brc.row+Math.floor(j/3)][sw.brc.col+index+j%3] ) fs++;
-
-                    if( fs <= 2 || !ml.boxes[sw.brc.row+1][sw.brc.col+index] ) {
-                        words.push(word);
-                    }
-                }
-            }
-
-            //////////////////////////////////////////
-            // No words found that fit to selection
-            if( !words.length ) { 
-                if( !sw.selectedByUser && level.type === $42.LEVEL_TYPE_GIVEN ) { 
-                    ml.unselectWord(true);
-                    ml.fillWordsForTiles();
-                } else {
-                    return null; // no tile returned
-                }
-            /////////////////////////////////////////
-            // One or more words found that fit 
-            } else {
-                var word = words[Math.floor(Math.random(words.length))];
-
-                for( var i=0 ; i<word.length ; i++ ) {
-                    var box = ml.boxes[sw.brc.row][sw.brc.col+i];
-                    
-                    if( !box || box.userData !== word[i] ) break;
-                }
-                cc.assert(i>=3,"At least the prefix must be equal!");
-                if(i>=word.length) return null; // word is already complete. User is probably searching for something else.                    
-                
-                wft = ml.wordsForTiles = {
-                    words: [word],
-                    index: i
-                }
-            }
-        }
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Looking for fitting tiles 
-
-        wft.index = wft.index || 0;
-        if( wft.words.length > 0 ) {
-            var word = wft.words[0].toUpperCase(),
-                directions = [{x: $42.BS, y:0}, {x:0, y:$42.BS}, {x:-$42.BS, y:0}, {x:0, y:-$42.BS}];
-            
-            var getFittingTile = function(word) {
-                var tb = $42.TILE_BOXES,
-                    fittingTiles = [],
-                    ret;
-
-                if( !(ret = isWordPossible(word) )) return null;
-                
-                if( wft.lastIndex === ret.index ) {
-                    wft.repeat = (wft.repeat || 0) + 1;
-                    if( wft.repeat >= 3 ) return null;
-                }
-                wft.lastIndex = wft.index = ret.index;
-                brc = {row: ret.brc.row, col: ret.brc.col+wft.index};
-                for( var i=0 ; i<tb.length ; i++ ) {
-                    var t = {
-                            boxes: tb[i],
-                            rotatedBoxes: null,
-                            rotation: 0
-                        };
-                    for( r=0 ; r<360 ; r+=90 ) {
-                        t.rotation = r;
-                        ml.rotateBoxes(t);
-
-                        var rb = t.rotatedBoxes;
-                        for( var j=0 ; j<rb.length ; j++ ) {
-                            var clear = true,
-                                grounded = false,
-                                groundedAt = [],
-                                letters = 0;
-                            for( var k=0 ; k<rb.length ; k++ ) {
-                                var rowOff = (rb[k].y - rb[j].y) / $42.BS,
-                                    colOff = (rb[k].x - rb[j].x) / $42.BS;
-
-                                if( brc.row + rowOff < 0 || brc.row + rowOff >= $42.BOXES_PER_COL ||
-                                    brc.col + colOff < 0 || brc.col + colOff >= $42.BOXES_PER_ROW ) {
-                                    clear = false;
-                                    break;
-                                } 
-
-                                var box = ml.boxes[brc.row + rowOff][brc.col + colOff];
-
-                                if( box && box.userData ) {
-                                    clear = false;
-                                    break;
-                                }
-                                var row = brc.row + rowOff,
-                                    col = brc.col + colOff;
-
-                                if( row === 0 || (ml.boxes[row-1][col] && ml.boxes[row-1][col].userData) ) {
-                                    grounded = true;
-                                    groundedAt.push({
-                                        row: row? row-1:0,
-                                        col: col,
-                                        box: row? ml.boxes[row-1][col].userData:null
-                                    });
-                                }
-
-                                ////////////////////////
-                                // Count how many letters can be placed in current line
-                                if( rb[j].y === rb[k].y ) letters++;
-                            }
-
-                            if( clear && grounded && letters < 3 ) {
-                                //cc.log("getFittingTile: Found new fitting tile. tile: "+i+", boxIndex: "+j+", dir: "+r );
-                                fittingTiles.push({
-                                    tile:       i,
-                                    boxIndex:   j,
-                                    dir:        r/90,
-                                    groundedAt: groundedAt
-                                });
-                            } 
-                        }
-                    }
-                }
-
-                //cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",JSON.stringify(fittingTiles));
-                if( fittingTiles.length ) return fittingTiles[Math.floor(Math.random()*fittingTiles.length)];
-                else return null;
-            };
-
-            var isWordPossible = function(word) {
-                var maxIndex = 0;
-                for( var i=$42.BOXES_PER_COL-1 ; i>=0 ; i-- ) {
-                    for( var j=0 ; j<$42.BOXES_PER_ROW ; j++ ) {
-                        if( ml.boxes[i][j] && ml.boxes[i][j].userData === word[0] ) {
-                            var index = 1,
-                                k = 0;
-                            while( j+index<$42.BOXES_PER_ROW && ml.boxes[i][j+index] && ml.boxes[i][j+index].userData === word[index] && index<word.length ) index++; 
-                            while( j+index+k<$42.BOXES_PER_ROW && !ml.boxes[i][j+index+k] && index+k<word.length ) k++;
-
-                            if( index+k === word.length && index > maxIndex ) {
-                                var ret = {
-                                    index: index,
-                                    brc: {
-                                        row: i,
-                                        col: j
-                                    }
-                                };
-                                maxIndex = index;
-                            }
-                        }
-                    }
-                }
-    
-                return ret;
-            };
-
-            if( wft.index > 0 ) {
-                var fittingTile = getFittingTile(word);
-
-                if( !fittingTile ) {
-                    wft.index = 0;
-                    wft.repeat = 0;
-                    wft.lastIndex = null;
-                    wft.words.splice(0,1);
-                    if( wft.words.length === 0 ) ml.fillWordsForTiles();
-
-                    if( !isCalledAgain ) return ml.hookGetProgrammedTile(true);
-                }
-            }
-                
-//            fittingTile = {
-//                tile: 0,
-//                boxIndex: 0,
-//                dir: 0
-//            };
-
-
-            var tile = { 
-                    tile: fittingTile? fittingTile.tile : Math.floor(Math.random()*7),
-                    letters: []
-                },
-                tileBoxes = $42.TILE_BOXES[tile.tile],
-                boxIndex = fittingTile? fittingTile.boxIndex : Math.floor(Math.random()*tileBoxes.length),
-                dir = fittingTile? fittingTile.dir : Math.floor(Math.random()*4),
-                direction = directions[dir],
-                dirFixed = !!fittingTile;
-            
-            tile.letters[boxIndex] = word[wft.index++];
-
-            ////////////////////////////////
-            // Look if there is a second letter possible, in any rotation of the tile
-            var box = tileBoxes[boxIndex];
-
-            for( var i=0 ; wft.index<word.length && i<4 ; i++ ) {
-                var second = null,
-                    third  = null;
-
-                for( var j=0 ; j<tileBoxes.length ; j++ ) {
-                    if( tileBoxes[j].y === box.y + direction.y   && tileBoxes[j].x === box.x + direction.x ) second = j;
-                    if( tileBoxes[j].y === box.y + direction.y*2 && tileBoxes[j].x === box.x + direction.x*2 ) third = j;
-                }
-
-                // Are the exactly two fitting letters? 
-                if( second !== null && third === null ) {
-                    tile.letters[second] = word[wft.index++];
-                    break;
-                }
-
-                // Is there only one letter and the direction is fixed
-                if( dirFixed ) {
-                    cc.assert(!third, "In fixed direction mode there should be no third letter.");
-                    break;
-                }
-
-                // change direction and try again (only one or three letters fitting)
-                direction = directions[++dir%directions.length];
-            }
-
-            for( var i=0 ; i<tileBoxes.length ; i++ ) if( !tile.letters[i] ) tile.letters[i] = " ";
-    	    //$42.msg2.setString("wft: "+JSON.stringify(wft));
-            return tile;
-        } 
-
-		return null;
-	};
-	
-	ml.hookResumeAskForWord = function(cb , menuLayer ) {
-		hookResumeAskForWord = cb;
-		hookResumeMenuLayer = menuLayer;
-	};
-	
-	ml.hookDrawScoreBar = function() {
-		var tmp = scoreBarDirty;
-		scoreBarDirty = false;
-		return tmp;
-	}
-	
 	var update = function(dt) {
 		if( animCnt !== null ) {
 			timer += dt;
@@ -1484,6 +537,11 @@ var _MURBIKS_MODULE = function(layer) {
 
 	};
 	
+    var programs = {
+        "Mostafas Greeting": animMostafasGreeting,
+        "Mostafa flies away": animMostafaFlyingAway
+    };
+
 	initAnimation();
 },
 $MM = _MURBIKS_MODULE;

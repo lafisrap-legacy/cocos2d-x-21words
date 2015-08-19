@@ -1718,6 +1718,270 @@ var _42_MODULE = function(_42Layer) {
 		);		
 	}
 		
+	getProgrammedTile = function(isCalledAgain) {
+		//if( curTileProgram && curTileProgramCnt < curTileProgram.length ) {
+		//    return curTileProgram[curTileProgramCnt++];
+        //}
+
+		//curTileProgram = null;
+		//curTileProgramCnt = null;
+        
+        ////////////////////////////////
+        // Fit in words from wordsForTiles list
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
+            sw = ml.selectedWord,
+            wft = ml.wordsForTiles;
+
+        if( level.type === $42.LEVEL_TYPE_FREE ) return {letters: [" "," "," "," "]};
+        
+        /////////////////////////////////
+        // Only return letters in a specified frequency
+        //cc.log("ml.hookGetProgrammedTile (1): ml.wordsForTilesCnt: "+ml.wordsForTilesCnt+", level.wordFreq: "+level.wordFreq);
+        if( ++ml.wordsForTilesCnt < level.wordFreq ) {
+    	    //$42.msg2.setString("Sending empty tile.");
+            return {letters: [" "," "," "," "]};
+        }
+        else ml.wordsForTilesCnt -= level.wordFreq;
+        //cc.log("ml.hookGetProgrammedTile (2): Getting tile ... ml.wordsForTiles: "+JSON.stringify(ml.wordsForTiles));
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Word is selected: Look if word is still possible, put one entry into ml.wordsForTiles
+        if( sw ) {
+            var words = [];
+            for( var i=0 ; i<sw.words.length ; i++ ) {
+                var word = sw.words[i].word;
+                for( var j=word.length-1 ; j>=3 ; j-- ) {
+                    var box = ml.boxes[sw.brc.row][sw.brc.col+j];
+
+                    if( box && box.userData !== word[j] ) break;
+                    if( !box ) var index = j;
+                }
+
+                if( j < 3 ) {
+                    ////////////////////
+                    // free space around?
+                    for( var j=0, fs=0; j<6; j++ ) if( ml.boxes[sw.brc.row+Math.floor(j/3)][sw.brc.col+index+j%3] ) fs++;
+
+                    if( fs <= 2 || !ml.boxes[sw.brc.row+1][sw.brc.col+index] ) {
+                        words.push(word);
+                    }
+                }
+            }
+
+            //////////////////////////////////////////
+            // No words found that fit to selection
+            if( !words.length ) { 
+                if( !sw.selectedByUser && level.type === $42.LEVEL_TYPE_GIVEN ) { 
+                    ml.unselectWord(true);
+                    ml.fillWordsForTiles();
+                } else {
+                    return null; // no tile returned
+                }
+            /////////////////////////////////////////
+            // One or more words found that fit 
+            } else {
+                var word = words[Math.floor(Math.random(words.length))];
+
+                for( var i=0 ; i<word.length ; i++ ) {
+                    var box = ml.boxes[sw.brc.row][sw.brc.col+i];
+                    
+                    if( !box || box.userData !== word[i] ) break;
+                }
+                cc.assert(i>=3,"At least the prefix must be equal!");
+                if(i>=word.length) return null; // word is already complete. User is probably searching for something else.                    
+                
+                wft = ml.wordsForTiles = {
+                    words: [word],
+                    index: i
+                }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Looking for fitting tiles 
+
+        wft.index = wft.index || 0;
+        if( wft.words.length > 0 ) {
+            var word = wft.words[0].toUpperCase(),
+                directions = [{x: $42.BS, y:0}, {x:0, y:$42.BS}, {x:-$42.BS, y:0}, {x:0, y:-$42.BS}];
+            
+            var getFittingTile = function(word) {
+                var tb = $42.TILE_BOXES,
+                    fittingTiles = [],
+                    ret;
+
+                if( !(ret = isWordPossible(word) )) return null;
+                
+                if( wft.lastIndex === ret.index ) {
+                    wft.repeat = (wft.repeat || 0) + 1;
+                    if( wft.repeat >= 3 ) return null;
+                }
+                wft.lastIndex = wft.index = ret.index;
+                brc = {row: ret.brc.row, col: ret.brc.col+wft.index};
+                for( var i=0 ; i<tb.length - (brc.row<$42.TILE_5_6_MAX_ROW?0:2) ; i++ ) {
+                    var t = {
+                            boxes: tb[i],
+                            rotatedBoxes: null,
+                            rotation: 0
+                        };
+                    for( r=0 ; r<360 ; r+=90 ) {
+                        t.rotation = r;
+                        ml.rotateBoxes(t);
+
+                        var rb = t.rotatedBoxes;
+                        for( var j=0 ; j<rb.length ; j++ ) {
+                            var clear = true,
+                                grounded = false,
+                                groundedAt = [],
+                                letters = 0;
+                            for( var k=0 ; k<rb.length ; k++ ) {
+                                var rowOff = (rb[k].y - rb[j].y) / $42.BS,
+                                    colOff = (rb[k].x - rb[j].x) / $42.BS;
+
+                                if( brc.row + rowOff < 0 || brc.row + rowOff >= $42.BOXES_PER_COL ||
+                                    brc.col + colOff < 0 || brc.col + colOff >= $42.BOXES_PER_ROW ) {
+                                    clear = false;
+                                    break;
+                                } 
+
+                                var box = ml.boxes[brc.row + rowOff][brc.col + colOff];
+
+                                if( box && box.userData ) {
+                                    clear = false;
+                                    break;
+                                }
+                                var row = brc.row + rowOff,
+                                    col = brc.col + colOff;
+
+                                if( row === 0 || (ml.boxes[row-1][col] && ml.boxes[row-1][col].userData) ) {
+                                    grounded = true;
+                                    groundedAt.push({
+                                        row: row? row-1:0,
+                                        col: col,
+                                        box: row? ml.boxes[row-1][col].userData:null
+                                    });
+                                }
+
+                                ////////////////////////
+                                // Count how many letters can be placed in current line
+                                if( rb[j].y === rb[k].y ) letters++;
+                            }
+
+                            if( clear && grounded && letters < 3 ) {
+                                //cc.log("getFittingTile: Found new fitting tile. tile: "+i+", boxIndex: "+j+", dir: "+r );
+                                fittingTiles.push({
+                                    tile:       i,
+                                    boxIndex:   j,
+                                    dir:        r/90,
+                                    groundedAt: groundedAt
+                                });
+                            } 
+                        }
+                    }
+                }
+
+                //cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",JSON.stringify(fittingTiles));
+                if( fittingTiles.length ) return fittingTiles[Math.floor(Math.random()*fittingTiles.length)];
+                else return null;
+            };
+
+            var isWordPossible = function(word) {
+                var maxIndex = 0;
+                for( var i=$42.BOXES_PER_COL-1 ; i>=0 ; i-- ) {
+                    for( var j=0 ; j<$42.BOXES_PER_ROW ; j++ ) {
+                        if( ml.boxes[i][j] && ml.boxes[i][j].userData === word[0] ) {
+                            var index = 1,
+                                k = 0;
+                            while( j+index<$42.BOXES_PER_ROW && ml.boxes[i][j+index] && ml.boxes[i][j+index].userData === word[index] && index<word.length ) index++; 
+                            while( j+index+k<$42.BOXES_PER_ROW && !ml.boxes[i][j+index+k] && index+k<word.length ) k++;
+
+                            if( index+k === word.length && index > maxIndex ) {
+                                var ret = {
+                                    index: index,
+                                    brc: {
+                                        row: i,
+                                        col: j
+                                    }
+                                };
+                                maxIndex = index;
+                            }
+                        }
+                    }
+                }
+    
+                return ret;
+            };
+
+            if( wft.index > 0 ) {
+                var fittingTile = getFittingTile(word);
+
+                if( !fittingTile ) {
+                    wft.index = 0;
+                    wft.repeat = 0;
+                    wft.lastIndex = null;
+                    wft.words.splice(0,1);
+                    if( wft.words.length === 0 ) ml.fillWordsForTiles();
+
+                    if( !isCalledAgain ) return getProgrammedTile(true);
+                }
+            }
+                
+//            fittingTile = {
+//                tile: 0,
+//                boxIndex: 0,
+//                dir: 0
+//            };
+
+
+            var tile = { 
+                    tile: fittingTile? fittingTile.tile : Math.floor(Math.random()*7),
+                    letters: []
+                },
+                tileBoxes = $42.TILE_BOXES[tile.tile],
+                boxIndex = fittingTile? fittingTile.boxIndex : Math.floor(Math.random()*tileBoxes.length),
+                dir = fittingTile? fittingTile.dir : Math.floor(Math.random()*4),
+                direction = directions[dir],
+                dirFixed = !!fittingTile;
+            
+            tile.letters[boxIndex] = word[wft.index++];
+
+            ////////////////////////////////
+            // Look if there is a second letter possible, in any rotation of the tile
+            var box = tileBoxes[boxIndex];
+
+            for( var i=0 ; wft.index<word.length && i<4 ; i++ ) {
+                var second = null,
+                    third  = null;
+
+                for( var j=0 ; j<tileBoxes.length ; j++ ) {
+                    if( tileBoxes[j].y === box.y + direction.y   && tileBoxes[j].x === box.x + direction.x ) second = j;
+                    if( tileBoxes[j].y === box.y + direction.y*2 && tileBoxes[j].x === box.x + direction.x*2 ) third = j;
+                }
+
+                // Are the exactly two fitting letters? 
+                if( second !== null && third === null ) {
+                    tile.letters[second] = word[wft.index++];
+                    break;
+                }
+
+                // Is there only one letter and the direction is fixed
+                if( dirFixed ) {
+                    cc.assert(!third, "In fixed direction mode there should be no third letter.");
+                    break;
+                }
+
+                // change direction and try again (only one or three letters fitting)
+                direction = directions[++dir%directions.length];
+            }
+
+            for( var i=0 ; i<tileBoxes.length ; i++ ) if( !tile.letters[i] ) tile.letters[i] = " ";
+    	    //$42.msg2.setString("wft: "+JSON.stringify(wft));
+            return tile;
+        } 
+
+		return null;
+	};
+	
 	/*
 	 * hookLoadImages
 	 * 
@@ -1808,7 +2072,7 @@ var _42_MODULE = function(_42Layer) {
 	 */
 	_42Layer.hookSetTile = function() {
 		
-		if( ml.hookGetProgrammedTile ) this._nextTile = ml.hookGetProgrammedTile();
+		this._nextTile = getProgrammedTile();
 		
 		if( !this._nextTile || this._nextTile.tile === undefined ) return ml.getRandomValue($42.TILE_OCCURANCES);
         else return this._nextTile.tile; 
