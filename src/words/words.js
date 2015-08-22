@@ -426,7 +426,6 @@ var _42_MODULE = function(_42Layer) {
                             var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
                             ml.pauseBuildingTiles = false; 
-                            cc.log("TILES FREED at no end of level.");
                             ml.wordsForTilesCnt = level.wordFreq-1;
                             ml.fillWordsForTiles();
                         }
@@ -437,7 +436,6 @@ var _42_MODULE = function(_42Layer) {
                         ml.drawScorebar(false);
 					} else {
                         ml.pauseBuildingTiles = false; 
-                        cc.log("TILES FREED at didn't take word.");
 						ml.checkForAndRemoveCompleteRows();
 						ml.unselectWord(true);
 						moveSelectedWord(sw.brc);
@@ -449,7 +447,6 @@ var _42_MODULE = function(_42Layer) {
 		}
 		
         ml.pauseBuildingTiles = false;
-        cc.log("TILES FREED at no word found.");
 		
         return false; // no word was found
 	};
@@ -522,13 +519,14 @@ var _42_MODULE = function(_42Layer) {
             _42_retain(element1,"Background sun");
             element1.runAction(
                 cc.sequence(
+                    cc.delayTime($42.BACKGROUND_SPEED*1.5),
                     cc.EaseSineOut.create(
                         cc.spawn(
                             cc.scaleTo($42.BACKGROUND_SPEED*0.67, 0.6),
                             cc.fadeTo($42.BACKGROUND_SPEED*0.67,128)
                         )
                     ),
-                    cc.delayTime($42.BACKGROUND_SPEED*0.33),
+                    cc.delayTime($42.BACKGROUND_SPEED),
                     cc.EaseSineIn.create(
                         cc.fadeOut($42.BACKGROUND_SPEED*0.67)
                     ),
@@ -548,26 +546,15 @@ var _42_MODULE = function(_42Layer) {
             _42_retain(levelnr,"Background level nr");
             levelnr.runAction(
                 cc.sequence(
-                    cc.EaseSineOut.create(
+                    cc.delayTime($42.BACKGROUND_SPEED*2.0),
+                    cc.sequence(
                         cc.spawn(
-                            cc.fadeIn($42.BACKGROUND_SPEED*0.67)
-                        )
-                    ),
-                    //cc.delayTime($42.BACKGROUND_SPEED*0.33),
-                    cc.spawn(
-                        cc.sequence(
-                            cc.scaleTo($42.BACKGROUND_SPEED*1, 2.1, 3),
-                            cc.scaleTo($42.BACKGROUND_SPEED*0.5, 0.4)
+                            cc.fadeIn($42.BACKGROUND_SPEED*0.67),
+                            cc.EaseSineOut.create(cc.scaleTo($42.BACKGROUND_SPEED*0.67, 1.7, 2.4))
                         ),
-                        cc.sequence(
-                            cc.delayTime($42.BACKGROUND_SPEED*0.5),
-                            cc.EaseQuinticActionIn.create(
-                                cc.spawn(
-                                    cc.moveTo( $42.BACKGROUND_SPEED*1.0,cc.p(30,cc.height-41)),
-                                    cc.rotateBy($42.BACKGROUND_SPEED*1.0,1440)
-                                )
-                            )
-                        )
+                        cc.EaseSineIn.create(cc.scaleTo($42.BACKGROUND_SPEED*0.5, 0)),
+                        cc.scaleTo(0, 0.4),
+                        cc.moveTo(0,cc.p(30,cc.height-41))
                     ),
                     cc.callFunc(function() {
                         if( oldLevelnr ) oldLevelnr.runAction(
@@ -584,6 +571,7 @@ var _42_MODULE = function(_42Layer) {
                             )
                         );
                         levelnr.setColor(cc.color(128,128,128));
+                        levelnr.setOpacity(128);
                     })
                 )
             );
@@ -596,13 +584,14 @@ var _42_MODULE = function(_42Layer) {
             _42_retain(element2,"Background beams");
             element2.runAction(
                 cc.sequence(
+                    cc.delayTime($42.BACKGROUND_SPEED*1.5),
                     cc.EaseSineOut.create(
                         cc.spawn(
                             cc.scaleTo($42.BACKGROUND_SPEED*0.67, 0.6),
                             cc.fadeTo($42.BACKGROUND_SPEED*0.67,128)
                         )
                     ),
-                    cc.delayTime($42.BACKGROUND_SPEED*0.33),
+                    cc.delayTime($42.BACKGROUND_SPEED),
                     cc.EaseSineIn.create(
                         cc.fadeOut($42.BACKGROUND_SPEED*0.67)
                     ),
@@ -613,8 +602,8 @@ var _42_MODULE = function(_42Layer) {
                 )
             );
 
-            element1.runAction(cc.rotateBy($42.BACKGROUND_SPEED*2,-270));
-            element2.runAction(cc.rotateBy($42.BACKGROUND_SPEED*2,270));
+            element1.runAction(cc.rotateBy($42.BACKGROUND_SPEED*4.5,-450));
+            element2.runAction(cc.rotateBy($42.BACKGROUND_SPEED*4.5,450));
             
             /////////////////////////////
             // Remove old background if there is one
@@ -731,7 +720,7 @@ var _42_MODULE = function(_42Layer) {
                 background.addChild(label, 0);
                 label.runAction(
                     cc.sequence(
-                        cc.delayTime(2.5+i*0.33),
+                        cc.delayTime(4.5+i*0.33),
                         cc.spawn(
                             cc.scaleTo(1,1),
                             cc.fadeTo(1,$42.GIVEN_WORDS_OPACITY)
@@ -768,35 +757,9 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
-                cc.log("TILES FREED at start of level.");
-               /*
-                $42.wordTreasure = [
-                    {word: "HINDERNIS"},
-                    {word: "TROCKNET"},
-                    {word: "UMGEBENDEN"},
-                    {word: "REPORTERN"},
-                    {word: "REDETEXT"},
-                    {word: "GEBRAUCH"},
-                    {word: "POSE"},
-                    {word: "NÜCHTERNE"},
-                    {word: "LADUNGEN"},
-                    {word: "INTERNATE"},
-                    {word: "HILFREICH"},
-                    {word: "WIRKEN"},
-                    {word: "PLATTENSEE"},
-                    {word: "JAPANERN"},
-                    {word: "NEBENBEI"},
-                    {word: "WACHSE"},
-                    {word: "MALAWI"},
-                    {word: "AUFKLEBER"},
-                    {word: "ERSCHWEREN"},
-                    {word: "GASPROM"},
-                    {word: "GLÜCKT"}
-                ];
-                $42.SCENE.hookTweet();
-                //showAllWordsFlyingIn();
-                */
-            }, (3.5+i*0.50) * 1000 );
+            }, (5.5+i*0.50) * 1000 );
+
+            checkForTutorial();
         };
     };
 
@@ -1981,7 +1944,31 @@ var _42_MODULE = function(_42Layer) {
 
 		return null;
 	};
-	
+
+    var checkForTutorial = function() {
+        var td = $42.tutorialsDone,
+            ls = cc.sys.localStorage;
+
+        if( !td.basicConcepts ) {
+            setTimeout(function() {
+                ml.stopListeners();
+                ml.unscheduleUpdate();
+                ml._currentTile.sprite.runAction(cc.fadeTo(1,50));
+                $42.SCENE.hookStartAnimation("Story Basic Concepts", {
+                    time: 2,
+                    cb: function() {
+                        ml.initListeners();
+                        ml.scheduleUpdate();
+                        ml._currentTile.sprite.runAction(cc.fadeIn(0.5));
+
+                        td.basicConcepts = true;
+                        ls.setItem("tutorialsDone", JSON.stringify(td));
+                    }
+                });
+           }, 9000); 
+        }
+    };    
+
 	/*
 	 * hookLoadImages
 	 * 
@@ -2004,6 +1991,7 @@ var _42_MODULE = function(_42Layer) {
 
         $42.playerName = ls.getItem("playerName") || "";
         $42.playerHash = ls.getItem("playerHash") || "";
+        $42.tutorialsDone = JSON.parse(ls.getItem("tutorialsDone") || "[]");
 
 		// remove all words that are already in the treasure
         for( var i=0 ; i<wt.length ; i++ ) {
@@ -2020,11 +2008,8 @@ var _42_MODULE = function(_42Layer) {
 		$42.displayedProfileLetters = [];
 		getNextProfileLetters();
 
-		$42.tutorialsDone = ls.getItem("tutorialsDone") || 0;
-		
 // ml.hookStartProgram( 2 , false );
 // ml.hookStartProgram( 0 , true );
-//		if( ml.hookStartProgram && $42.tutorialsDone < 1 ) ml.hookStartProgram( 0 , true );	
 //		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
 		// ml.hookStartProgram( 2 , false );
 		
@@ -2035,7 +2020,6 @@ var _42_MODULE = function(_42Layer) {
 		ml.dontAutoSelectWord = false;
 	    
         ml.pauseBuildingTiles = true;
-        cc.log("TILES BLOCKED at start of game.");
         startNewLevel();    
 	};
 	
@@ -2152,7 +2136,6 @@ var _42_MODULE = function(_42Layer) {
 
 		ml.lastBrcs = brcs;
         ml.pauseBuildingTiles = true;
-        cc.log("TILES BLOCKED at tile fixed.");
 		
 		setSelections(); // OPTIMIZATION: Only look in current lines
       
@@ -2191,7 +2174,6 @@ var _42_MODULE = function(_42Layer) {
 
         if( !sw && !ml.wordIsBeingSelected ) {
             ml.pauseBuildingTiles = false;
-            cc.log("TILES FREED at no selection after tile fixed.");
         }
 	};
 
@@ -2399,13 +2381,7 @@ var _42_MODULE = function(_42Layer) {
 	
 	_42Layer.hookUpdate = function(dt) {
 		
-		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);
-						
-		// tutorial 2 starts >= 750
-		if( ml.totalPoints >= 750 && !ml.wordIsBeingSelected && ml.hookStartProgram && $42.tutorialsDone < 2 ) {
-			$42.tutorialsDone = 2;
-			ml.hookStartProgram( 1 , true );	
-		}
+		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);					
 	};
     
     if( typeof _MURBIKS_MODULE === 'function' ) _MURBIKS_MODULE(ml);

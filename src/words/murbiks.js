@@ -11,96 +11,90 @@ $42.MURBIKS_LAYER_TAG = 103;
 $42.SPEECH_BUBBLE_WIDTH = 500;
 $42.SPEECH_BUBBLE_HEIGHT = 450;
 $42.SPEECH_BUBBLE_COLOR = cc.color(0,0,70);
-$42.SPEECH_BUBBLE_FONTSIZE = 48;
+$42.SPEECH_BUBBLE_FONTSIZE = 64;
 $42.SPEECH_BUBBLE_OPACITY = 120;
 $42.SPEECH_BUBBLE_LINE_COLOR = cc.color(170,170,185);
 $42.SPEECH_BUBBLE_TAG = 201;
 $42.SPEECH_BUBBLE_LINE_TAG = 202;
 $42.SPEECH_BUBBLE_CLOUD_TAG = 203;
 $42.SPEECH_BUBBLE_BUTTON_TAG = 204;
-$42.HAND_TAG = 104;
-$42.FINGER_TAG = 102;
-$42.HAND_ROTATION = 60;
+$42.HAND_TAG = 205;
+$42.HAND_ROTATION = -60;
 $42.HAND_CONTACT_SIZE = 40;
 $42.HAND_CONTACT_COLOR = cc.color(0,0,70);
 $42.HAND_CONTACT_TIME = 0.3;
 $42.HAND_CONTACT_TIME = 0.3;
+$42.TILE1_TAG = 206;
+$42.TILE2_TAG = 207;
 $42.BUBBLE_BUTTON_SCALE = 0.7;
+$42.STORY_BACKGROUND_POS = cc.p(320,832);
+$42.STORY_BACKGROUND_OPACITY = 90;
+$42.STORY_BACKGROUND_SPEED = 3.33;
+$42.STORY_MENU_FONT_SIZE = 38;
+$42.STORY_MENU_PADDING = 20;
+$42.STORY_SCALE_PRESS_FINGER = 0.9;
 
 var _MURBIKS_MODULE = function(parentLayer) {
 	var pl = parentLayer,
-		mul = null,
-		lg = null,
+		mul = null, // murbics layer
 		curTileProgram = null,
 		curTileProgramCnt = null,
-		mostafa = null,
+		curProgram = null,
 		anims = {},
-		blueButton = null,
-		menuText = null,
+        finalCallback = null,
+        activeTimeouts = [],
+		
+        mostafa = null,
 		hand = null,
-		contactRings = [],
-		contactActions = [],
 		speechBubbleCloud = null,
-		speechBubbleButton = null,
-		speechBubbleButtonImage = null,
 		speechBubbleLine = null,
 		speechBubble = null,
-		timer = null,
-		animCnt = null,
-		animPrograms = null,
-		stopEvents = false,
-		curProgram = null,
-		fingerIsPressed = false,
-		fingerPos = null,
-		hookResumeAskForWord = null,
-		hookResumeMenuLayer = null,
-        finalCallback = null;
+        tile1 = null,
+        tile2 = null,
+        storyBackground = null;
 
     //////////////////////////////////////////////////////////////////////////////////////
     // Animation programs
     // (full list at end of this file)
     //
     var animMostafasGreeting = function(options) {
-        mostafa.stopAllActions();    
-		
-        var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
-			bezier = options.bezier || [
+        stopActionsAndTimeouts();
+
+        var chatWithPlayer = function() {
+            var text = $42.t.mostafa.greeting,
+                pos = mostafa.getPosition();
+
+            for( var i=0 ; i<text.length ; i++ ) {
+                activeTimeouts.push( setTimeout(function(i) {
+                    showSpeechBubble(5, text[i], pos, 800); 
+                }, 1+i*7500, i));
+            }
+            if( typeof options.cb === "function" ) options.cb();
+        };
+
+        mostafa.setPosition(cc.p(50, 1400));    
+        mostafaFlyTo({
+            time: options.time, 
+            bezier: [
 				cc.p( 100, 568),
 				cc.p( 500, 668),
-				cc.p( 360, 480)
-			];
-	    _42_retain(animAction, "mostafa animAction fly");
-		
-        mostafa.setPosition(cc.p(50, 1400));    
-	    mostafa.runAction(
-            cc.sequence(
-                cc.bezierTo(options.time, bezier),
-                cc.callFunc(function() {
-                    mul.stopAction(animAction);
-                    _42_release(animAction);
-                    animAction = mostafa.runAction(
-                        cc.sequence(
-                            anims.mostafa_land,
-                            cc.callFunc(function() {
-                                _42_release(animAction);
-                                if( typeof options.cb === "function" ) options.cb();
-                            })
-                        )
-                    );
-                    _42_retain(animAction, "mostafa animAction land");
-                })
-            )
-        ); 
+				cc.p( 360, 420)
+			],
+            cb: function() {
+                activeTimeouts.push( setTimeout(chatWithPlayer,5000) );
+            }
+        });
     };
 
     var animMostafaFlyingAway = function(options) {
-        mostafa.stopAllActions();    
-		
+        stopActionsAndTimeouts();
+        hideSpeechBubble();
+
         var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
 			bezier = options.bezier || [
 				cc.p( 360, 480),
 				cc.p( 500, 668),
-				cc.p( 700, 700)
+				cc.p( 750, 700)
 			];
 	    _42_retain(animAction, "mostafa animAction fly");
 	
@@ -115,15 +109,98 @@ var _MURBIKS_MODULE = function(parentLayer) {
             )
         ); 
     };
+
+    var animStoryBasicConcepts = function(options) {
+        stopActionsAndTimeouts();
+
+        var sb = storyBackground;
+
+        var page1 = function(time,cb) {
+            var size = sb.getContentSize(),
+                time0 = time,
+                time1 = 2,
+                time2 = 1.3,
+                time3 = 0.2,
+                time4 = 0.5,
+                time5 = 1,
+                time6 = 0.5,
+                time7 = 1,
+                time8 = 0.5,
+                time9 = time2;
+            
+            tile1.setPosition(cc.p(size.width/2, size.height/2));
+            if( !sb.getChildByTag($42.TILE1_TAG) ) sb.addChild(tile1,0,$42.TILE1_TAG);
+            
+            hand.setPosition(cc.p(size.width, size.height/4));
+            hand.setOpacity(0);
+            if( !sb.getChildByTag($42.HAND_TAG) ) sb.addChild(hand,0,$42.HAND_TAG);
+
+            tile1.runAction(
+                cc.sequence(
+                    cc.delayTime(time0+time1+time2+time3+time4),
+                    cc.moveBy(time5,cc.p(-200,0)),
+                    cc.moveBy(time5*2,cc.p(400,0)),
+                    cc.moveBy(time5,cc.p(-200,0)),
+                    cc.delayTime(time6),
+                    cc.moveBy(time7,cc.p( 100,-100)),
+                    cc.moveBy(time7,cc.p(-150, -50))
+                )
+            );
+
+            var tPos = tile1.getPosition();
+            hand.runAction(
+                cc.sequence(
+                    cc.delayTime(time0+time1),
+                    cc.fadeIn(0),
+                    cc.EaseSineOut.create(cc.moveTo(time2,cc.p(tPos.x,tPos.y-50))),
+                    cc.delayTime(time3),
+                    cc.scaleTo(time4,$42.STORY_SCALE_PRESS_FINGER),
+                    cc.moveBy(time5,cc.p(-200,0)),
+                    cc.moveBy(time5*2,cc.p(400,0)),
+                    cc.moveBy(time5,cc.p(-200,0)),
+                    cc.delayTime(time6),
+                    cc.moveBy(time7,cc.p( 100,-100)),
+                    cc.moveBy(time7,cc.p(-150, -50)),
+                    cc.scaleTo(time8,1),
+                    cc.EaseSineIn.create(cc.moveTo(time9,cc.p(size.width*1.2,size.height/4))),
+                    cc.callFunc(cb)
+                )
+            );    
+
+            activeTimeouts.push( setTimeout(function() {
+               showSpeechBubble(0, $42.t.mostafa.basic1, mostafa.getPosition(), 350); 
+            }, time0 * 1000) );
+        };
+
+        var page2 = function() {
+        };
+
+        var page3 = function() {
+        };
+
+        var pages = [page1, page2, page3]
+
+        mostafa.setPosition(cc.p(750,576)); 
+        mostafa.setFlippedX(true);
+        mostafaFlyTo({
+            time: options.time || 2,
+            bezier: [
+                cc.p(500,650),
+                cc.p(200,200),
+                cc.p(550,130) 
+            ]
+        });
+
+        showConcepts(pages);
+    };
+
     //////////////////////////////////////////////////////////////////////////////////////
     // Service programs
     //
 	pl.hookStartAnimation = function(program, options) {
 		cc.assert(typeof programs[program] === "function" , "42words, startProgramm: Invalid program number.");
 		
-		lg = $42.languagePack;
-
-		if( !pl.getChildByTag($42.MURBIKS_LAYER_TAG )) pl.addChild(mul,3,$42.MURBIKS_LAYER_TAG);
+		if( !pl.getChildByTag($42.MURBIKS_LAYER_TAG )) pl.addChild(mul,20,$42.MURBIKS_LAYER_TAG);
 
 		curProgram = program;
         finalCallback = options.cb;
@@ -141,6 +218,37 @@ var _MURBIKS_MODULE = function(parentLayer) {
 
         if( typeof finalCallback === "function" ) cb(); 
 	};
+
+    var mostafaFlyTo = function(options) {
+        mostafa.stopAllActions();    
+
+        var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
+			bezier = options.bezier, 
+            timeout = null;
+	    _42_retain(animAction, "mostafa animAction fly");	
+
+        var land = function() {
+            mul.stopAction(animAction);
+            _42_release(animAction);
+            animAction = mostafa.runAction(
+                cc.sequence(
+                    anims.mostafa_land,
+                    cc.callFunc(function() {
+                        _42_release(animAction);
+                        if( typeof options.cb === "function" ) options.cb();
+                    })
+                )
+            );
+            _42_retain(animAction, "mostafa animAction land");
+        };
+
+	    mostafa.runAction(
+            cc.sequence(
+                cc.bezierTo(options.time, options.bezier),
+                cc.callFunc(land)
+            )
+        ); 
+    };
 	
 	var mostafaFlyingToMiddle = function(time, bezierIn , bezierOut) {
 		var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
@@ -198,30 +306,11 @@ var _MURBIKS_MODULE = function(parentLayer) {
 
 		speechBubbleCloud.setOpacity(0);
 		speechBubble.setOpacity(0);
-		speechBubbleButton.setOpacity(0);
-		
-        speechBubbleButton.x = bubbleX - 120;
-        speechBubbleButton.y = bubbleY - 240 - speechBubble.getContentSize().height/2;
-        
-        //$42.msg2.setString("x: "+bubbleX+", y: "+bubbleY+", content size: "+speechBubble.getContentSize().height);
 		
         mul.addChild(speechBubbleLine,5,$42.SPEECH_BUBBLE_LINE_TAG);
 		mul.addChild(speechBubbleCloud,5,$42.SPEECH_BUBBLE_CLOUD_TAG);
-		if( !time ) {
-			mul.addChild(speechBubbleButton,5,$42.SPEECH_BUBBLE_BUTTON_TAG);
-			speechBubbleButton.runAction(
-				cc.repeatForever(
-					cc.sequence(
-						cc.blink(0.66,4),
-						cc.delayTime(5)
-					)
-				)
-			);
-		}
 		mul.addChild(speechBubble,5,$42.SPEECH_BUBBLE_TAG);
 
-        ml.pause();
-        ml.unscheduleUpdate();
         mul.pause();
         mul.unscheduleUpdate();
 
@@ -235,7 +324,6 @@ var _MURBIKS_MODULE = function(parentLayer) {
 			)
 		);
 		speechBubble.runAction(cc.fadeIn(0.3));			
-		speechBubbleButton.runAction(cc.sequence(cc.delayTime(0.6),cc.fadeIn(1.0)));
 		
 		if( time ) {
 			speechBubble.runAction(
@@ -243,7 +331,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
                     cc.delayTime(time-0.9),
                     cc.callFunc(
                         function() { 
-                            removeSpeechBubble(0.9); 
+                            hideSpeechBubble(0.9); 
                         }
                     )
                 )
@@ -251,51 +339,130 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		}
 	};
 
-	var removeSpeechBubble = function(time) {
+    var showConcepts = function(pages) {
+
+        var sb = storyBackground;
+
+        mul.addChild(sb);
+        sb.setPosition(mostafa.getPosition());
+        sb.setOpacity(0);
+        sb.setScale(0);
+        sb.runAction(
+            cc.EaseQuinticActionOut.create(
+                cc.spawn(
+                    cc.scaleTo($42.STORY_BACKGROUND_SPEED, 1),
+                    cc.rotateBy($42.STORY_BACKGROUND_SPEED, 1080),
+                    cc.fadeTo($42.STORY_BACKGROUND_SPEED, $42.STORY_BACKGROUND_OPACITY),
+                    cc.moveTo($42.STORY_BACKGROUND_SPEED, $42.STORY_BACKGROUND_POS)
+                )
+            )
+        );
+
+        var size = sb.getContentSize();
+        
+        var item1 = new cc.MenuItemFont($42.t.story_again, function() {
+                stopActionsAndTimeouts();
+                item1.setOpacity(0);
+                item1.setEnabled(false);
+                pages[page](0.3, function() {
+                    item1.setOpacity(255);
+                    item1.setEnabled(true);
+                    hideSpeechBubble();
+                });
+            }, mul),
+            item2 = new cc.MenuItemFont($42.t.story_continue, function() {
+                stopActionsAndTimeouts();
+                page++;
+                if( page < pages.length ) {
+                    item1.setOpacity(0);
+                    item1.setEnabled(false);
+                    pages[page](0.3, function() {
+                        item1.setOpacity(255);
+                        item1.setEnabled(true);
+                    });
+                }
+                else hideConcepts(); 
+                
+                hideSpeechBubble();
+            }, mul);
+
+        item1.setFontName(_42_getFontName(res.exo_regular_ttf));
+        item1.setFontSize($42.STORY_MENU_FONT_SIZE);
+        item1.setPosition(cc.p(-size.width/2+item1.getContentSize().width/2+40,20));
+        item2.setFontName(_42_getFontName(res.exo_regular_ttf));
+        item2.setFontSize($42.STORY_MENU_FONT_SIZE);
+        item2.setPosition(cc.p(size.width/2-item2.getContentSize().width/2-40,20));
+        
+        menu = new cc.Menu([item1, item2]);
+        menu.setPosition(cc.p(size.width/2,40));
+        sb.addChild(menu);
+
+        var page=0;
+        item1.setOpacity(0);
+        item1.setEnabled(false);
+        pages[page]($42.STORY_BACKGROUND_SPEED, function() {
+            item1.setOpacity(255);
+            item1.setEnabled(true);
+            hideSpeechBubble();
+        });
+    };
+
+    var hideConcepts = function() {
+        var sb = storyBackground;
+
+        sb.runAction(
+            cc.sequence(
+                cc.EaseSineOut.create(
+                    cc.fadeOut($42.STORY_BACKGROUND_SPEED)
+                ),
+                cc.callFunc(function() {
+                    sb.removeAllChildren(true);
+                    mul.removeChild(sb);
+                    options.cb();
+                })
+            )
+        );
+
+        var ch = sb.getChildren();
+        for( var i=0 ; i<ch.length ; i++ ) {
+            ch[i].runAction(
+                cc.sequence(
+                    cc.EaseSineOut.create(
+                        cc.fadeOut($42.STORY_BACKGROUND_SPEED)
+                    )
+                ) 
+            ); 
+        }
+    };
+
+	var hideSpeechBubble = function(time) {
 		if( !time ) var time = 0.9;
     	speechBubbleCloud.runAction(
 	    	cc.sequence(
 	   			cc.fadeOut(time),
 	   			cc.callFunc( function() {
-	       	        ml.resume();
-	       	        ml.scheduleUpdate();
         	        mul.resume();
 	       	        mul.scheduleUpdate();
-	       	        mul.removeChild(speechBubbleButton);			        
 					mul.removeChild(speechBubbleCloud);
 					mul.removeChild(speechBubble);			        
 	    		})
 	    	)
 	    );
 		speechBubble.runAction(cc.fadeOut(time));			
-		speechBubbleButton.runAction(cc.fadeOut(time));			
 	};
 
-	var hideSpeechBubble = function() {
+    var stopActionsAndTimeouts = function() {
+        mostafa.stopAllActions();    
+        speechBubble.stopAllActions();    
+        speechBubbleCloud.stopAllActions();    
+		clearActiveTimeouts();
+    };
 
-		speechBubbleCloud.stopAllActions();
-		speechBubbleCloud.runAction(
-			cc.sequence(
-				cc.fadeOut(0.3),
-				cc.callFunc( function() {
-					mul.removeChild(speechBubbleCloud);
-					mul.removeChild(speechBubble);
-			        mul.removeChild(speechBubbleLine);
-				})
-			)
-		);
-		speechBubble.stopAllActions();
-		speechBubble.runAction(cc.fadeOut(0.9));			
-	};
+    var clearActiveTimeouts = function() {
+        for( var i=0 ; i<activeTimeouts.length ; i++ ) clearTimeout(activeTimeouts[i]);
+        activeTimeouts = [];
+    };
 
-	var getFingerOffset = function() {
-		var finger = hand.getChildByTag($42.FINGER_TAG);
-		return cc.p(
-			hand.convertToWorldSpace(finger.getPosition()).x - mul.convertToWorldSpace(hand.getPosition()).x,
-			hand.convertToWorldSpace(finger.getPosition()).y - mul.convertToWorldSpace(hand.getPosition()).y
-		);
-	};
-		
 	var jumpHandTo = function(pos) {
 		
 		var fo = getFingerOffset();
@@ -315,11 +482,6 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		
 		// stop everything, we have new orders ...
 		hand.stopAllActions();
-		fingerIsPressed = false;
-    	for( var i=0 ; i<contactRings.length ; i++ ) {
-    		contactRings[i].setScale(0);
-    		contactRings[i].stopAllActions();
-    	}
 		
 	    if( !contact ) {
 		    if( bezierPoint ) hand.runAction(cc.EaseSineIn.create(cc.bezierTo(time, bezierHand)));
@@ -327,24 +489,15 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		    
 	    } else {
 
-	    	// we must now the lower finger position shortly to get the target position
-	    	var fp = hand.convertToWorldSpace(finger.getPosition());
-	    	hand.setScale(0.9);
-			fo = getFingerOffset();
-	    	hand.setScale(1.0);
-	    	
-	    	// move hand with finger pressed down
 		    if( bezierPoint ) hand.runAction(
 		    	cc.sequence(
 		    		cc.spawn(
 		    			cc.scaleTo(time*0.15 ,0.9),
 		    			cc.moveTo(time*0.15, cc.p(fp.x-fo.x,fp.y-fo.y))
 		    		),
-		    		cc.callFunc(function() { fingerIsPressed = true; }),
 		    		cc.EaseSineIn.create(
 		    			cc.bezierTo(time*0.7 , bezierHand)
 		    		),
-		    		cc.callFunc(function() { fingerIsPressed = false; }),
 		    		cc.scaleTo(time*0.15,1)    		
 		    	)
 		    );
@@ -354,48 +507,12 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		    			cc.scaleTo(time*0.15 ,0.9),
 		    			cc.moveTo(time*0.15, cc.p(fp.x-fo.x,fp.y-fo.y))
 		    		),
-		    		cc.callFunc(function() { fingerIsPressed = true; }),
 		    		cc.EaseSineIn.create(
 		    			cc.moveTo(time*0.7, cc.p(pos.x- fo.x, pos.y - fo.y))
 		    		),
-		    		cc.callFunc(function() { fingerIsPressed = false; }),
 		    		cc.scaleTo(time*0.15,1)    				    		
 		    	)
 		    );
-	    	
-	    	for( var i=0 ; i<contactRings.length ; i++ ) {
-	    		contactRings[i].runAction(
-	    			cc.sequence(
-	    				cc.scaleTo(0, 0.5),
-	    				cc.delayTime($42.HAND_CONTACT_TIME/contactRings.length*i),
-	    				cc.callFunc(function() {
-	    		    		this.runAction(
-			    				cc.repeatForever(
-				    				cc.sequence(
-					    				cc.scaleTo($42.HAND_CONTACT_TIME, 2.2),
-					    				cc.scaleTo(0, 0.3)
-					    			)
-					    		)
-				    		);	 
-	    				}, contactRings[i])
-	    			)
-	    		);
-	    	}
-
-	    	// stop circles after the movement
-	    	hand.runAction(
-	    		cc.spawn(
-		    		cc.sequence(
-	    				cc.delayTime(time),
-	    				cc.callFunc( function() {
-	    			    	for( var i=0 ; i<contactRings.length ; i++ ) {
-	    			    		contactRings[i].setScale(0);
-	    			    		contactRings[i].stopAllActions();
-	    			    	}
-	    				})
-		    		)
-		    	)
-	    	);
 	    }
 	};
 	
@@ -448,47 +565,28 @@ var _MURBIKS_MODULE = function(parentLayer) {
         _42_retain(mostafa, "Mostafa");
     	mul.addChild(mostafa, 5);
     	
-    	// load blue button items
-		blueButton = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("mostafabutton"),cc.rect(0,0,250,70));
-		blueButton.x =  0;
-		blueButton.y =  -105;
-		_42_retain(blueButton, "Blue button");
-		menuText = cc.MenuItemFont.create(" ", function() {
-			endProgram(true);
-		} , mul);
-		_42_retain(menuText, "menuText");
-		var menuBox = cc.Menu.create(menuText);
-		menuBox.x = 125;
-		menuBox.y = 35;		
-		menuBox.setColor(cc.color(0,0,40,255));
-		blueButton.addChild(menuBox,5);
-		mul.addChild(blueButton,10);
-		
 		// speech bubble load cloud and text object
-		speechBubbleCloud = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("wordcloud"),cc.rect(0,0,480,300));
+		speechBubbleCloud = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("wordcloud.png"),cc.rect(0,0,480,300));
 		_42_retain(speechBubbleCloud, "speechBubbleCloud");
 		speechBubble = cc.LabelTTF.create("", "LibreBaskerville-Regular", $42.SPEECH_BUBBLE_FONTSIZE, cc.size($42.SPEECH_BUBBLE_WIDTH,0),cc.TEXT_ALIGNMENT_CENTER, cc.VERTICAL_TEXT_ALIGNMENT_CENTER);
 		_42_retain(speechBubble, "speechBubble");
 		speechBubble.setColor($42.SPEECH_BUBBLE_COLOR);
 		speechBubbleLine = cc.DrawNode.create();
 		_42_retain(speechBubbleLine, "speechBubbleLine");
-		var sprite = cc.spriteFrameCache.getSpriteFrame("go_on_button");
-		speechBubbleButtonImage = cc.MenuItemImage.create(sprite, sprite, removeSpeechBubble);
-        speechBubbleButton = cc.Menu.create.apply(mul, [speechBubbleButtonImage] );
-        speechBubbleButton.setOpacity(255);
-        speechBubbleButton.setScale($42.BUBBLE_BUTTON_SCALE);
-        _42_retain(speechBubbleButton, "speechBubbleButton");
         
-		// load hand, finger and contact
-		hand = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("hand"),cc.rect(0,0,364,640));
+		// load hand
+		hand = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("hand.png"));
 		hand.setRotation($42.HAND_ROTATION);
-		hand.setPosition(cc.p(-300,-300));
 		_42_retain(hand, "Hand");
-		finger = cc.Node.create();
-		finger.setPosition(260,620);
-		_42_retain(finger, "Finger");
-		hand.addChild(finger,-1,$42.FINGER_TAG);
-		mul.addChild(hand, 5, $42.HAND_TAG);
+        hand.setAnchorPoint(0.285, 0.94);
+
+        // load tiles and story background
+		tile1 = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tile1.png"));
+		tile2 = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tile2.png"));
+        storyBackground = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("story_background.png"));
+		_42_retain(tile1, "Tile 1");
+		_42_retain(tile2, "Tile 2");
+        _42_retain(storyBackground, "Story Background");
 		
 		mul.update = update;
 		mul.scheduleUpdate();
@@ -503,43 +601,12 @@ var _MURBIKS_MODULE = function(parentLayer) {
 	};	
  
 	var update = function(dt) {
-		if( animCnt !== null ) {
-			timer += dt;
-			
-			if( animPrograms[animCnt].time < timer ) animPrograms[animCnt++].anim();
-			if( animCnt >= animPrograms.length ) {
-				endProgram(false);
-				animCnt = null;
-			}
-		}
-		
-		// Emulate touch events
-    	if( fingerIsPressed ) {
-			var pos = hand.convertToWorldSpace(finger.getPosition());
-			
-    		if( !fingerPos ) {
-    			fingerPos = pos;
-
-	    		//cc.log("42words, update ("+timer+"): onTouchesBegan to "+fingerPos.x+" / "+fingerPos.y);
-    			ml._touchListener.onTouchesBegan(undefined, undefined, fingerPos);
-    		} else {
-    			fingerPos = pos;
-    			
-    			ml._touchListener.onTouchesMoved(undefined, undefined, fingerPos);
-    		}
-    	} else {
-    		if( fingerPos ) {
-	    		//cc.log("42words, update ("+timer+"): onTouchesEnded to "+fingerPos.x+" / "+fingerPos.y);
-    			ml._touchListener.onTouchesEnded(undefined, undefined, fingerPos);
-    			fingerPos = null;
-    		}
-    	};
-
 	};
 	
     var programs = {
         "Mostafas Greeting": animMostafasGreeting,
-        "Mostafa flies away": animMostafaFlyingAway
+        "Mostafa flies away": animMostafaFlyingAway,
+        "Story Basic Concepts": animStoryBasicConcepts
     };
 
 	initAnimation();

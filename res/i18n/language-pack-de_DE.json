@@ -46,116 +46,13 @@
         "tweet_tweet_confirm":  {"label":"Senden!"     ,"size":"big"},
         "tweet_no_internet":    {"label":"Kein\nInternet","size":"small"},
         "tweet_no_server":      {"label":"Server\nweg","size":"small"},
-        "murbiks_tutorial": 	" ",
-        "murbiks_skip_tutorial": " ",
-    	"mostafa_hi" 		: "Hi!\nIch bin Mostafa.",
-    	"mostafa_basic01"	: "Bei 42-Worte kannst du Bausteine drehen, indem du irgendwo auf dem Bildschirm nach oben wischst.",
-    	"mostafa_basic02"	: "Du kannst Bausteine bewegen, indem du sie mit dem Finger ziehst.",
-    	"mostafa_basic03" 	: "Es geht darum, Worte mit mindestens vier Buchstaben zu bilden",
-    	"mostafa_basic04"	: "Ein Wortanfang wie hier ENT wird farbig markiert. Dann kannst du ihn vervollständigen.",
-    	"mostafa_basic05"	: "Ein gefundenes Wort kannst du wählen oder ablehnen.",
-    	"mostafa_basic06"	: "Hier unten siehst du alle Buchstaben, die du verwenden kannst.",
-    	"mostafa_basic07"	: "Viel Spaß!",
-    	"mostafa_advanced01": "BOUMMM!",
-    	"mostafa_advanced02": "Du kannst Wortanfänge mit einem Klick auf den ersten Buchstaben wählen und abwählen.",
-    	"mostafa_advanced03": "Wenn an einer Stelle mehrere Buchstaben möglich sind, erscheint solch ein Fragezeichen.",
-    	"mostafa_advanced04": "Mit einem Klick kannst du den Buchstaben fixieren.",
-    	"mostafa_advanced05": "Siehst du das T, das dem Wort RATTE noch fehlt? Es muss eine Zeile tiefer.",
-    	"mostafa_advanced06": "Das geht so ...",
-    	"mostafa_advanced07": "Die Zeile wird vervollständigt. Dadurch werden alle Buchstaben gelöscht, die nicht gelb markiert sind.",
-    	"mostafa_advanced08": "Und so kann das T in die Lücke fallen.",
-    	"mostafa_advanced09": "Tschüüüüssss ...",
-    	"mostafa_advanced10": "Du hast 45 Minuten für 42 Worte. Die Zeit siehst du unten rechts."   	
-    },
-    "tiles": {
-    	"turning_moving_falling_choosing": [
-		    { "tile": 0, "letters": "TROW" },
-		    { "tile": 3, "letters": "ENNT" },
-		    { "tile": 1, "letters": "TSET" },
-		   	{ "tile": 2, "letters": "NEAS" },
-		    { "tile": 0, "letters": "ERST" },
-		    { "tile": 6, "letters": "EIER" },
-		    { "tile": 0, "letters": "RRAN" },
-		    { "tile": 3, "letters": "TIEE" },
-		    { "tile": 4, "letters": "RRTN" },
-		    { "tile": 0, "letters": "TIRR" },
-		    { "tile": 5, "letters": "EESA" },
-		    { "tile": 2, "letters": "AANN" },
-		    { "tile": 0, "letters": "TSAA" },		    
-		    { "tile": 1, "letters": "AISR" },
-		    { "tile": 1, "letters": "SISE" },		    
-		    { "tile": 3, "letters": "STAA" },
-		    { "tile": 0, "letters": "RRTS" }	
-		],
-		"selecting_deleting": [
-		    { "tile": 0, "letters": "CYPH" },
-		    { "tile": 0, "letters": "RATR" },
-		    { "tile": 2, "letters": "GETP" },
-		    { "tile": 0, "letters": "RNEK" },
-		    { "tile": 1, "letters": "ENTE" },
-		    { "tile": 1, "letters": "DUCK" },
-		    { "tile": 0, "letters": "STEI" }
-		],
-		"test": [
-		    { "tile": 0, "letters": "CYPH" },
-		    { "tile": 0, "letters": "ERPU" },
-		    { "tile": 3, "letters": "RNEK" }
-		],
-		"test1": [
-		    { "tile": 2, "letters": "NEAS" },
-		    { "tile": 0, "letters": "ERST" },
-		    { "tile": 6, "letters": "EIER" },
-		    { "tile": 0, "letters": "RRAN" },
-		    { "tile": 3, "letters": "TIEE" },
-		    { "tile": 4, "letters": "RRTN" },
-		    { "tile": 0, "letters": "IRIA" },
-		    { "tile": 5, "letters": "SSET" },
-		    { "tile": 2, "letters": "AANN" },
-		    { "tile": 0, "letters": "TSAA" },		    
-		    { "tile": 1, "letters": "AISR" },
-		    { "tile": 1, "letters": "SISE" },		    
-		    { "tile": 3, "letters": "STAA" },
-		    { "tile": 0, "letters": "RRTS" }		    
-		],
-		"test2": [
-		    { "tile": 0, "letters": "ATES" },
-		    { "tile": 0, "letters": "TSBC" }
-		],
-		"test3": [
-		    { "tile": 0, "letters": "ATES" },
-		    { "tile": 0, "letters": "ABCD" },
-		    { "tile": 0, "letters": "EFGH" },
-		    { "tile": 0, "letters": "TSBC" }
-		],
-		"test4": [
-		    { "tile": 0, "letters": "ATES" },
-		    { "tile": 0, "letters": "SBCD" },
-		    { "tile": 0, "letters": "EFGH" },
-		    { "tile": 0, "letters": "TSBC" }
-		],
-		"test5": [
-		    { "tile": 0, "letters": "TESA" },
-		    { "tile": 0, "letters": "ASET" },
-		    { "tile": 0, "letters": "ABCD" },
-		    { "tile": 0, "letters": "EFGH" },
-		    { "tile": 0, "letters": "FHIJ" }
-		],
-		"test6": [
-		    { "tile": 0, "letters": "TESA" },
-		    { "tile": 0, "letters": "ASET" },
-		    { "tile": 0, "letters": "SBCD" },
-		    { "tile": 0, "letters": "EFGH" },
-		    { "tile": 0, "letters": "FHIJ" }
-		] 
-    },
-    "tiles_needed": {
-    	"turning_moving_falling_choosing": [
-		    { "word" : "ENTE", "value" : 4 }
-		],
-		"selecting_deleting": [
-		    { "word" : "RATTE", "value" : 5 },
-		    { "word" : "RATEN", "value" : 5 }
-		]
+        "mostafa": {
+            "greeting": ["Hallo!\nIch bin Mostafa.", "Wenn du spielen willst,\ndrücke START!" ],
+            "basic1":   "Du kannst die Bausteine nach links, rechts und nach unten bewegen.",
+            "basic2":   "Wenn du nach oben wischt, dreht sich der Baustein.",
+            "basic3":   "Versuche die Worte auf dem Spielfeld zu bilden."
+        },
+        "story_again":          "Nochmal",
+        "story_continue":       "Weiter" 
     }
-    
 }

@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////
+
 // Main app holding a plain vanilla tetris game
 //
 //  LAYERS
@@ -39,8 +39,8 @@ var _42_GLOBALS = {
     //SERVER_ADDRESS: "ws://192.168.178.177:4021/socket",
     SERVER_ADDRESS: "ws://217.197.85.219:4021/socket",
     TITLE_MENU_COLOR_1: cc.color(44,18,44,255), // 
-    TITLE_MENU_COLOR_2: cc.color(109,36,76,255), // 
-    TITLE_MENU_COLOR_3: cc.color(109,36,76,255), // 
+    TITLE_MENU_COLOR_2: cc.color(44,18,44,255), // 
+    TITLE_MENU_COLOR_3: cc.color(44,18,44,255), // 
 	TAG_SPRITE_MANAGER : 1,                 // Sprite Ids
 	TAG_GAME_LAYER : 3,                     //
 	TAG_TITLE_LAYER : 4,                    //
@@ -675,6 +675,8 @@ var _42GameLayer = cc.Layer.extend({
 	        }			
 		}
         
+        tileSprite.setCascadeOpacityEnabled(true);
+
         //////////////////////////
         // build a tile object
         var t = {
@@ -1076,7 +1078,6 @@ var _42GameLayer = cc.Layer.extend({
                 }
             } else {
                 self.pauseBuildingTiles = false;
-                cc.log("TILES FREED at no hookTileFixed available.");
             }
 
     		if( !tileRet ) {
@@ -1502,10 +1503,7 @@ var _42TitleLayer = cc.Layer.extend({
         cc.width  = cc.director.getWinSize().width;
         cc.height = cc.director.getWinSize().height;
 
-		var addImage = function(options) {
-		};
-		
-		var titleBg = this._titleBg = cc.Sprite.create(res.title_png);
+		var titleBg = this._titleBg = cc.Sprite.create(res.title_easy_png);
         titleBg.setOpacity(0);
         titleBg.setPosition(cc.p(cc.width/2, cc.height/2));
         titleBg.setScale(1.1);
@@ -1576,13 +1574,12 @@ var _42TitleLayer = cc.Layer.extend({
             });
 
         var menu = this._menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
-        menu.x = size.width/2;
-        menu.y = 290;
+        menu.setPosition(cc.p(size.width/2, 230));
         menu.setOpacity(0);
         menu.alignItemsVerticallyWithPadding(20);
         _42_retain(this._menu,"Title menu");
 
-        item4.setPosition(cc.p(200,-180));
+        item4.setPosition(cc.p(200,-130));
         item4.setRotation(23);
         item4.setOpacity(0);
         
@@ -1605,13 +1602,15 @@ var _42TitleLayer = cc.Layer.extend({
         var self = this,
             ls = cc.sys.localStorage,
             cDiff = ls.getItem("currentDifficulty") || "easy", 
-            mDiff = ls.getItem("maxDifficulty") || "easy",
+            //mDiff = ls.getItem("maxDifficulty") || "easy",
+            mDiff = "expert",
             cl = $42.currentLevel = ls.getItem("currentLevel") || 1,
             tt = ls.getItem("tweetTreasure");
 
         ls.setItem("currentDifficulty",cDiff);
 
         this.addChild(this._titleBg);
+        this._titleBg.setTexture(res["title_"+cDiff+"_png"]);
         this.addChild(this._menu);
 
         this._menu.runAction(
@@ -1637,7 +1636,8 @@ var _42TitleLayer = cc.Layer.extend({
 
         this._menu.setEnabled(true);
         
-        setTimeout(function() {
+        this._timeout = setTimeout(function() {
+            self._timeout = null;
             if( self._menu.isEnabled() ) {
                 $42.SCENE.hookStartAnimation("Mostafas Greeting", {
                     time: 3,
@@ -1666,6 +1666,11 @@ var _42TitleLayer = cc.Layer.extend({
             cc.fadeOut(1.2)
         );
         
+        if( this._timeout ) {
+            clearTimeout(this._timeout);
+            this._timeout = null;
+        }
+
         $42.SCENE.hookStartAnimation("Mostafa flies away", {
             time: 2,
             cb: function() {

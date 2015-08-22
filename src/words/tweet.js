@@ -105,15 +105,6 @@ var _TWEET_MODULE = function(layer) {
         _42_retain(shLayer, "Tweet shorties layer");
         putWordsIntoShortiesLayer();
 
-        ////////////////////////////////////
-        // init menu layer
-        mnLayer = new cc.LayerColor($42.TWEET_MENU_COLOR, $42.TWEET_MENU_WIDTH, $42.TWEET_MENU_HEIGHT);
-        layer.addChild(mnLayer,20);
-        mnLayer.setPosition($42.TWEET_MENU_POS);
-        mnLayer.setCascadeOpacityEnabled(true);
-        _42_retain(mnLayer, "Tweet menu layer");
-        initMenu();
-
         ///////////////////////////////////////
         // Cursor sprite
 		touchMovingCursor = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("cursor.png"));
@@ -174,8 +165,21 @@ var _TWEET_MODULE = function(layer) {
         }
 
         _42_sendMessage("checkNames", {Names:names}, function(data) {
-            menuNames = data.Names;
-            menuNames.sort();
+            if( !data ) {
+                $42.webConnected = false;
+            } else {
+                menuNames = data.Names;
+                menuNames.sort();
+            }
+            
+            ////////////////////////////////////
+            // init menu layer
+            mnLayer = new cc.LayerColor($42.TWEET_MENU_COLOR, $42.TWEET_MENU_WIDTH, $42.TWEET_MENU_HEIGHT);
+            layer.addChild(mnLayer,20);
+            mnLayer.setPosition($42.TWEET_MENU_POS);
+            mnLayer.setCascadeOpacityEnabled(true);
+            _42_retain(mnLayer, "Tweet menu layer");
+            initMenu();
         });
     };
 
