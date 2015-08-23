@@ -50,7 +50,7 @@
             "greeting": ["Hallo!\nIch bin Mostafa.", "Wenn du spielen willst,\ndrücke START!" ],
             "basic1":   "Du kannst die Bausteine nach links, rechts und nach unten bewegen.",
             "basic2":   "Wenn du nach oben wischt, dreht sich der Baustein.",
-            "basic3":   "Versuche die Worte auf dem Spielfeld zu bilden."
+            "basic3":   "Versuche die Worte zu bilden, die auf dem Spielfeld stehen."
         },
         "story_again":          "Nochmal",
         "story_continue":       "Weiter" 

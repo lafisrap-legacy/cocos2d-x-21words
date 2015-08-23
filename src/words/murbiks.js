@@ -8,11 +8,11 @@
  * 
  * */
 $42.MURBIKS_LAYER_TAG = 103;
-$42.SPEECH_BUBBLE_WIDTH = 500;
+$42.SPEECH_BUBBLE_WIDTH = 540;
 $42.SPEECH_BUBBLE_HEIGHT = 450;
 $42.SPEECH_BUBBLE_COLOR = cc.color(0,0,70);
-$42.SPEECH_BUBBLE_FONTSIZE = 64;
-$42.SPEECH_BUBBLE_OPACITY = 120;
+$42.SPEECH_BUBBLE_FONTSIZE = 48;
+$42.SPEECH_BUBBLE_OPACITY = 230;
 $42.SPEECH_BUBBLE_LINE_COLOR = cc.color(170,170,185);
 $42.SPEECH_BUBBLE_TAG = 201;
 $42.SPEECH_BUBBLE_LINE_TAG = 202;
@@ -26,11 +26,12 @@ $42.HAND_CONTACT_TIME = 0.3;
 $42.HAND_CONTACT_TIME = 0.3;
 $42.TILE1_TAG = 206;
 $42.TILE2_TAG = 207;
+$42.WORDFRAME_TAG = 208;
 $42.BUBBLE_BUTTON_SCALE = 0.7;
 $42.STORY_BACKGROUND_POS = cc.p(320,832);
 $42.STORY_BACKGROUND_OPACITY = 90;
-$42.STORY_BACKGROUND_SPEED = 3.33;
-$42.STORY_MENU_FONT_SIZE = 38;
+$42.STORY_BACKGROUND_SPEED = 1.33;
+$42.STORY_MENU_FONT_SIZE = 48;
 $42.STORY_MENU_PADDING = 20;
 $42.STORY_SCALE_PRESS_FINGER = 0.9;
 
@@ -51,6 +52,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		speechBubble = null,
         tile1 = null,
         tile2 = null,
+        wordframe = null,
         storyBackground = null;
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -81,7 +83,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 				cc.p( 360, 420)
 			],
             cb: function() {
-                activeTimeouts.push( setTimeout(chatWithPlayer,5000) );
+                activeTimeouts.push( setTimeout(chatWithPlayer,1000) );
             }
         });
     };
@@ -118,22 +120,22 @@ var _MURBIKS_MODULE = function(parentLayer) {
         var page1 = function(time,cb) {
             var size = sb.getContentSize(),
                 time0 = time,
-                time1 = 2,
-                time2 = 1.3,
+                time1 = 1,
+                time2 = 1.1,
                 time3 = 0.2,
-                time4 = 0.5,
-                time5 = 1,
-                time6 = 0.5,
-                time7 = 1,
-                time8 = 0.5,
+                time4 = 0.3,
+                time5 = 0.7,
+                time6 = 0.2,
+                time7 = 0.7,
+                time8 = 0.3,
                 time9 = time2;
             
             tile1.setPosition(cc.p(size.width/2, size.height/2));
-            if( !sb.getChildByTag($42.TILE1_TAG) ) sb.addChild(tile1,0,$42.TILE1_TAG);
+            if( !sb.getChildByTag($42.TILE1_TAG) ) sb.addChild(tile1,5,$42.TILE1_TAG);
             
             hand.setPosition(cc.p(size.width, size.height/4));
             hand.setOpacity(0);
-            if( !sb.getChildByTag($42.HAND_TAG) ) sb.addChild(hand,0,$42.HAND_TAG);
+            if( !sb.getChildByTag($42.HAND_TAG) ) sb.addChild(hand,10,$42.HAND_TAG);
 
             tile1.runAction(
                 cc.sequence(
@@ -150,9 +152,9 @@ var _MURBIKS_MODULE = function(parentLayer) {
             var tPos = tile1.getPosition();
             hand.runAction(
                 cc.sequence(
-                    cc.delayTime(time0+time1),
+                    cc.delayTime(time0),
                     cc.fadeIn(0),
-                    cc.EaseSineOut.create(cc.moveTo(time2,cc.p(tPos.x,tPos.y-50))),
+                    cc.EaseSineOut.create(cc.moveTo(time1+time2,cc.p(tPos.x,tPos.y-50))),
                     cc.delayTime(time3),
                     cc.scaleTo(time4,$42.STORY_SCALE_PRESS_FINGER),
                     cc.moveBy(time5,cc.p(-200,0)),
@@ -172,10 +174,107 @@ var _MURBIKS_MODULE = function(parentLayer) {
             }, time0 * 1000) );
         };
 
-        var page2 = function() {
+        var page2 = function(time, cb) {
+            var size = sb.getContentSize(),
+                time0 = 1,
+                time1 = 1.1,
+                time2 = 0.3,
+                time3 = 0.6,
+                time4 = 0.3;
+            
+            tile1.setPosition(cc.p(270,170));
+            
+            hand.setPosition(cc.p(size.width, size.height/4));
+            hand.setOpacity(0);
+
+            tile1.runAction(
+                cc.sequence(
+                    cc.delayTime(time0+time1+time2),
+                    cc.rotateBy(time3,180),
+                    cc.delayTime(time4+time2),
+                    cc.rotateBy(time3,180)
+                )
+            );
+
+            var tPos = tile1.getPosition();
+            hand.runAction(
+                cc.sequence(
+                    cc.delayTime(time0),
+                    cc.fadeIn(0),
+                    cc.EaseSineOut.create(cc.moveTo(time1,cc.p(size.width/2,size.height/2))),
+                    cc.scaleTo(time2,$42.STORY_SCALE_PRESS_FINGER),
+                    cc.EaseSineOut.create(cc.moveTo(time3,cc.p(size.width/2,size.height*0.75))),
+                    cc.spawn(
+                        cc.scaleTo(time4,1),
+                        cc.moveTo(time4, cc.p(size.width/2, size.height/2))
+                    ),
+                    cc.scaleTo(time2,$42.STORY_SCALE_PRESS_FINGER),
+                    cc.EaseSineOut.create(cc.moveTo(time3,cc.p(size.width/2,size.height*0.75))),
+                    cc.spawn(
+                        cc.scaleTo(time4,1),
+                        cc.moveTo(time4, cc.p(size.width/2, size.height/2))
+                    ),
+                    cc.EaseSineIn.create(cc.moveTo(time1,cc.p(size.width*1.2,size.height*0.25))),
+                    cc.callFunc(cb)
+                )
+            );    
+
+            activeTimeouts.push( setTimeout(function() {
+               showSpeechBubble(0, $42.t.mostafa.basic2, mostafa.getPosition(), 350); 
+            }, time0 * 1000) );
         };
 
-        var page3 = function() {
+        var page3 = function(time, cb) {
+            var ml = $42.SCENE.mainLayer,
+                size = sb.getContentSize(),
+                time0 = 1,
+                time1 = 4.1,
+                time2 = 0.5,
+                time3 = 0.3,
+                time4 = 1.1;
+            
+            if( !sb.getChildByTag($42.TILE2_TAG) ) sb.addChild(tile2,5,$42.TILE2_TAG);
+            if( !sb.getChildByTag($42.WORDFRAME_TAG) ) sb.addChild(wordframe,0,$42.WORDFRAME_TAG);
+            
+            tile1.setRotation(0);
+            tile2.setPosition(cc.p(434, 640+64));
+            wordframe.setTextureRect(cc.rect(0,0,268,68));
+            wordframe.setPosition(cc.p(303, 203));
+            wordframe.setOpacity(0);
+            
+            hand.setPosition(cc.p(size.width, size.height/4));
+            hand.setOpacity(0);
+
+            tile2.runAction(
+                cc.sequence(
+                    cc.delayTime(time0),
+                    cc.moveBy(time1+time2+time3, cc.p(0,-264)),
+                    cc.moveBy(time4, cc.p(-65,-205))
+                )
+            );
+
+            hand.runAction(
+                cc.sequence(
+                    cc.delayTime(time0+time1),
+                    cc.fadeIn(0),
+                    cc.callFunc(function() {
+                        $42.SCENE.mainLayer.levelLabels[0].runAction(cc.blink(7,10));
+                    }),
+                    cc.EaseSineOut.create(cc.moveTo(time2, cc.p(434, 400))),
+                    cc.scaleTo(time3,$42.STORY_SCALE_PRESS_FINGER),
+                    cc.moveBy(time4, cc.p(-65,-205)),
+                    cc.callFunc(function() {
+                        wordframe.setOpacity(255);
+                    }),
+                    cc.scaleTo(time3,1),
+                    cc.EaseSineIn.create(cc.moveTo(time2, cc.p(700, 320))),
+                    cc.callFunc(cb)
+                )
+            );    
+
+            activeTimeouts.push( setTimeout(function() {
+               showSpeechBubble(0, $42.t.mostafa.basic3, mostafa.getPosition(), 350); 
+            }, time0 * 1000) );
         };
 
         var pages = [page1, page2, page3]
@@ -191,7 +290,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
             ]
         });
 
-        showConcepts(pages);
+        showConcepts(pages, options.cb);
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -339,21 +438,19 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		}
 	};
 
-    var showConcepts = function(pages) {
+    var showConcepts = function(pages,cb) {
 
         var sb = storyBackground;
 
         mul.addChild(sb);
-        sb.setPosition(mostafa.getPosition());
-        sb.setOpacity(0);
+        sb.setPosition(cc.p(cc.width,cc.height));
+        sb.setOpacity($42.STORY_BACKGROUND_OPACITY);
         sb.setScale(0);
         sb.runAction(
             cc.EaseQuinticActionOut.create(
                 cc.spawn(
-                    cc.scaleTo($42.STORY_BACKGROUND_SPEED, 1),
-                    cc.rotateBy($42.STORY_BACKGROUND_SPEED, 1080),
-                    cc.fadeTo($42.STORY_BACKGROUND_SPEED, $42.STORY_BACKGROUND_OPACITY),
-                    cc.moveTo($42.STORY_BACKGROUND_SPEED, $42.STORY_BACKGROUND_POS)
+                    cc.scaleTo($42.STORY_BACKGROUND_SPEED*2, 1),
+                    cc.moveTo($42.STORY_BACKGROUND_SPEED*2, $42.STORY_BACKGROUND_POS)
                 )
             )
         );
@@ -379,11 +476,14 @@ var _MURBIKS_MODULE = function(parentLayer) {
                     pages[page](0.3, function() {
                         item1.setOpacity(255);
                         item1.setEnabled(true);
+                        hideSpeechBubble();
                     });
+                } else {
+                    hideConcepts();
+                    hideSpeechBubble();
+                    if( typeof cb === "function" ) cb();
                 }
-                else hideConcepts(); 
                 
-                hideSpeechBubble();
             }, mul);
 
         item1.setFontName(_42_getFontName(res.exo_regular_ttf));
@@ -400,7 +500,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
         var page=0;
         item1.setOpacity(0);
         item1.setEnabled(false);
-        pages[page]($42.STORY_BACKGROUND_SPEED, function() {
+        pages[page]($42.STORY_BACKGROUND_SPEED*2, function() {
             item1.setOpacity(255);
             item1.setEnabled(true);
             hideSpeechBubble();
@@ -418,7 +518,6 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 cc.callFunc(function() {
                     sb.removeAllChildren(true);
                     mul.removeChild(sb);
-                    options.cb();
                 })
             )
         );
@@ -455,6 +554,9 @@ var _MURBIKS_MODULE = function(parentLayer) {
         mostafa.stopAllActions();    
         speechBubble.stopAllActions();    
         speechBubbleCloud.stopAllActions();    
+        tile1.stopAllActions();
+        tile2.stopAllActions();
+        hand.stopAllActions();
 		clearActiveTimeouts();
     };
 
@@ -568,7 +670,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		// speech bubble load cloud and text object
 		speechBubbleCloud = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("wordcloud.png"),cc.rect(0,0,480,300));
 		_42_retain(speechBubbleCloud, "speechBubbleCloud");
-		speechBubble = cc.LabelTTF.create("", "LibreBaskerville-Regular", $42.SPEECH_BUBBLE_FONTSIZE, cc.size($42.SPEECH_BUBBLE_WIDTH,0),cc.TEXT_ALIGNMENT_CENTER, cc.VERTICAL_TEXT_ALIGNMENT_CENTER);
+		speechBubble = cc.LabelTTF.create("", _42_getFontName(res.exo_regular_ttf), $42.SPEECH_BUBBLE_FONTSIZE, cc.size($42.SPEECH_BUBBLE_WIDTH,0),cc.TEXT_ALIGNMENT_CENTER, cc.VERTICAL_TEXT_ALIGNMENT_CENTER);
 		_42_retain(speechBubble, "speechBubble");
 		speechBubble.setColor($42.SPEECH_BUBBLE_COLOR);
 		speechBubbleLine = cc.DrawNode.create();
@@ -583,10 +685,12 @@ var _MURBIKS_MODULE = function(parentLayer) {
         // load tiles and story background
 		tile1 = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tile1.png"));
 		tile2 = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tile2.png"));
+        wordframe = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("wordframe.png"));
         storyBackground = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("story_background.png"));
-		_42_retain(tile1, "Tile 1");
-		_42_retain(tile2, "Tile 2");
-        _42_retain(storyBackground, "Story Background");
+		_42_retain(tile1, "Story: Tile 1");
+		_42_retain(tile2, "Story: Tile 2");
+		_42_retain(wordframe, "Story: Wordframe");
+        _42_retain(storyBackground, "Story: Background");
 		
 		mul.update = update;
 		mul.scheduleUpdate();

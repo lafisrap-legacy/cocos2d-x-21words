@@ -549,10 +549,10 @@ var _42_MODULE = function(_42Layer) {
                     cc.delayTime($42.BACKGROUND_SPEED*2.0),
                     cc.sequence(
                         cc.spawn(
-                            cc.fadeIn($42.BACKGROUND_SPEED*0.67),
-                            cc.EaseSineOut.create(cc.scaleTo($42.BACKGROUND_SPEED*0.67, 1.7, 2.4))
+                            cc.fadeIn($42.BACKGROUND_SPEED*1.0),
+                            cc.EaseSineOut.create(cc.scaleTo($42.BACKGROUND_SPEED*1.0, 1.7, 2.4))
                         ),
-                        cc.EaseSineIn.create(cc.scaleTo($42.BACKGROUND_SPEED*0.5, 0)),
+                        cc.EaseSineIn.create(cc.scaleTo($42.BACKGROUND_SPEED*0.22, 0)),
                         cc.scaleTo(0, 0.4),
                         cc.moveTo(0,cc.p(30,cc.height-41))
                     ),
@@ -1951,9 +1951,13 @@ var _42_MODULE = function(_42Layer) {
 
         if( !td.basicConcepts ) {
             setTimeout(function() {
+                var oldLabel = ml.levelLabels[0].getString();
+                ml.levelLabels[0].setString("ANNA");
+
                 ml.stopListeners();
                 ml.unscheduleUpdate();
                 ml._currentTile.sprite.runAction(cc.fadeTo(1,50));
+
                 $42.SCENE.hookStartAnimation("Story Basic Concepts", {
                     time: 2,
                     cb: function() {
@@ -1963,6 +1967,7 @@ var _42_MODULE = function(_42Layer) {
 
                         td.basicConcepts = true;
                         ls.setItem("tutorialsDone", JSON.stringify(td));
+                        ml.levelLabels[0].setString(oldLabel);
                     }
                 });
            }, 9000); 
@@ -2369,12 +2374,43 @@ var _42_MODULE = function(_42Layer) {
 	};
 
     _42Layer.hookKeyPressed = function(key) {
-       
+      
+        var self = this; 
         switch( key ) {
         case 78:  
-            ++$42.currentLevel;
-            endLevel();
-            startNewLevel();	
+            if( ++$42.currentLevel < 8 ) {
+                endLevel();
+                startNewLevel();	
+            } else {
+                ml.unscheduleUpdate();
+                ml.stopListeners();
+                $42.wordTreasure.push({word:"SOME"});
+                $42.wordTreasure.push({word:"RANDOM"});
+                $42.wordTreasure.push({word:"WORDS"});
+                $42.wordTreasure.push({word:"JUST"});
+                $42.wordTreasure.push({word:"FORR"});
+                $42.wordTreasure.push({word:"TEST"});
+                $42.SCENE.hookTweet(function() {
+                    if( self.hookEndGame ) self.hookEndGame();
+                    ml.hideAndEndGame($42.TWEET_TEXT_HIDING_TIME+0.1);
+                    $42._titleLayer.show();
+                });
+            }
+            break;
+        case 84:  
+            ml.unscheduleUpdate();
+            ml.stopListeners();
+            $42.wordTreasure.push({word:"SOME"});
+            $42.wordTreasure.push({word:"RANDOM"});
+            $42.wordTreasure.push({word:"WORDS"});
+            $42.wordTreasure.push({word:"JUST"});
+            $42.wordTreasure.push({word:"FORR"});
+            $42.wordTreasure.push({word:"TEST"});
+            $42.SCENE.hookTweet(function() {
+                if( self.hookEndGame ) self.hookEndGame();
+                ml.hideAndEndGame($42.TWEET_TEXT_HIDING_TIME+0.1);
+                $42._titleLayer.show();
+            });
             break;
         }
     };

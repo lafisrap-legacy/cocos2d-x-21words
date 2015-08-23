@@ -126,7 +126,8 @@ var _42GameLayer = cc.Layer.extend({
         /////////////////////////
         // Look if there is a plugin module
         if( typeof _42_MODULE === 'function' ) _42_MODULE(this);
-	
+        $42.SCENE.mainLayer = this;
+
         this.showLogOnScreen();
         this.initBoxSpace();
         this.loadImages();

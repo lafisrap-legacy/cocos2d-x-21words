@@ -6,7 +6,7 @@ $42.TWEET_TEXT_WIDTH = 640;
 $42.TWEET_TEXT_HEIGHT = 860;
 $42.TWEET_TEXT_TEXT_SIZE = 52;
 $42.TWEET_TEXT_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT);
-$42.TWEET_TEXT_COLOR = cc.color(255,255,240,50);
+$42.TWEET_TEXT_COLOR = cc.color(255,255,240,120);
 $42.TWEET_TEXT_TWEET_COLOR = cc.color(0,0,180,222);
 $42.TWEET_TEXT_PADDING = 30;
 $42.TWEET_TEXT_LINEHEIGHT = 75;
@@ -274,7 +274,7 @@ var _TWEET_MODULE = function(layer) {
                             if( !label ) {
                                 var size = mw[i].getContentSize();
 
-                                label = cc.LabelTTF.create(name, _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE);
+                                label = cc.LabelTTF.create(name, _42_getFontName(res.shadows_into_light_ttf) , $42.TWEET_TEXT_TEXT_SIZE);
                                 label.setPosition(cc.p(size.width/2+4,size.height/2+4));
                                 label.setColor($42.TWEET_NAMES_COLOR);
                                 label.setOpacity(0);
@@ -309,7 +309,7 @@ var _TWEET_MODULE = function(layer) {
         ////////////////////////////////////////////////////////////////////////
         // Menu function "TWEET"
         addMenuItem($42.webConnected? $42.t.tweet_tweet : $42.t.tweet_no_internet, 214, function(sender) {
-            if( $42.webConnected && !menuNamesChoose) {
+            if( true || $42.webConnected && !menuNamesChoose) {
                 if( !menuTweetConfirm ) {
                     menuTweetConfirm = true;
                     menuTweetItem.setString($42.t.tweet_tweet_confirm.label);
@@ -346,7 +346,7 @@ var _TWEET_MODULE = function(layer) {
         movableWords = [];
         for( var i=0,x=0,y=0 ; i<wt.length ; i++ ) {
 
-			var label = cc.LabelTTF.create(wt[i].word, _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE),
+			var label = cc.LabelTTF.create(wt[i].word, _42_getFontName(res.shadows_into_light_ttf) , $42.TWEET_TEXT_TEXT_SIZE),
                 size = label.getContentSize();
             
             if( x + size.width > textWidth ) {
@@ -396,7 +396,7 @@ var _TWEET_MODULE = function(layer) {
         selectableWords = [];
         for( var i=0 ; i<sh.length ; i++ ) {
 
-			var label = cc.LabelTTF.create(sh[i], _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE),
+			var label = cc.LabelTTF.create(sh[i], _42_getFontName(res.shadows_into_light_ttf) , $42.TWEET_TEXT_TEXT_SIZE),
                 size = label.getContentSize();
             
             selectableWords.push(label);
@@ -418,7 +418,6 @@ var _TWEET_MODULE = function(layer) {
             lineHeight = $42.TWEET_TEXT_LINEHEIGHT;
         for( var i=index || 1,formerPos=mw[i-1].getPosition() ; i<mw.length ; i++ ) {
             var formerWidth = mw[i-1].getContentSize().width,
-                //currentPos = mw[i].getPosition(),
                 currentWidth = mw[i].getContentSize().width;
 
             if( formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth > textWidth ) {
@@ -427,8 +426,6 @@ var _TWEET_MODULE = function(layer) {
                 var newPos = cc.p(formerPos.x + formerWidth/2 + $42.TWEET_TEXT_SPACE_WIDTH + currentWidth/2, formerPos.y); 
             }
             
-            //if( newPos.x === currentPos.x && newPos.y === currentPos.y ) break;
-
             formerPos = newPos;
 
             touchMovingLabelTime = new Date().getTime();
@@ -457,17 +454,15 @@ var _TWEET_MODULE = function(layer) {
             if( cnt <= 140 ) menuTweetCnt = i;
             if( tweet ) {
                 mw[i].runAction(
-                    cc.sequence(
-                        cc.delayTime(0.2*Math.random()),
-                        cc.EaseSineIn.create(
-                            cc.spawn(
-                                cc.rotateTo($42.TWEET_TEXT_MOVING_TIME, 3),
-                                cc.tintTo(  $42.TWEET_TEXT_MOVING_TIME, 0,0,80) 
-                            )
+                    cc.repeatForever(
+                        cc.sequence(
+                            cc.EaseSineOut.create(cc.fadeTo(0.33,50)),
+                            cc.EaseSineIn.create(cc.fadeIn(0.33))
                         )
-                    ) 
+                    )
                 );
             } else {
+                if( tweet === false ) mv[i].stopAllActions();
                 mw[i].setColor($42.TWEET_TEXT_COLOR);
                 mw[i].runAction(
                     cc.EaseSineOut.create(
@@ -542,7 +537,7 @@ var _TWEET_MODULE = function(layer) {
                 touchStartTime = new Date().getTime();
                 
                 var initMovingLabel = function(word, pos) { 
-                    touchMovingLabel = cc.LabelTTF.create(word.getString(), _42_getFontName(res.exo_regular_ttf) , $42.TWEET_TEXT_TEXT_SIZE);
+                    touchMovingLabel = cc.LabelTTF.create(word.getString(), _42_getFontName(res.shadows_into_light_ttf) , $42.TWEET_TEXT_TEXT_SIZE);
                     touchMovingOffset = {
                         x: pos.x - loc.x,
                         y: pos.y - loc.y

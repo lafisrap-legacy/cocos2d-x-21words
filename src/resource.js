@@ -1,8 +1,6 @@
 var res = {
-    tiles_png : "res/images/tiles.png",
-    tiles_plist : 'res/images/tiles.plist',
-    marker_png : "res/images/marker.png",
-    marker_plist : 'res/images/marker.plist',
+    tiles_png : "res/images/tiles/tiles.png",
+    tiles_plist : 'res/images/tiles/tiles.plist',
     letters_png : "res/images/letters/letters.png",
     letters_plist : 'res/images/letters/letters.plist',
     tweet_png : "res/images/tweet/tweet.png",
@@ -34,7 +32,8 @@ var res = {
 	amtype72_fnt : "res/fonts/amtype72.fnt",
 	american_typewriter_ttf: "res/fonts/American Typewriter.ttf",
 	//exo_bold_ttf: {type:"font", name:"Exo", srcs:["res/fonts/Exo-Bold.ttf"]},
-	exo_regular_ttf: {type:"font", name:"Exo", srcs:["res/fonts/Exo-Regular.ttf"]},
+	exo_regular_ttf:        {type:"font", name:"Exo", srcs:["res/fonts/Exo-Regular.ttf"]},
+    shadows_into_light_ttf: {type:"font", name:"Shadows Into Light", srcs:["res/fonts/ShadowsIntoLight.ttf"]},
 	
 	// murbiks / tutorial
     murbiks_single_png : "res/images/murbiks/mostafa_fly01.png",
