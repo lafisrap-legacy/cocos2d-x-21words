@@ -28,7 +28,6 @@
 //          - names
 //          - cities
 //
-//
 //  - In given mode word should just fly away without asking
 //
 //  GIVEN
@@ -1949,7 +1948,7 @@ var _42_MODULE = function(_42Layer) {
         var td = $42.tutorialsDone,
             ls = cc.sys.localStorage;
 
-        if( true || !td.basicConcepts ) {
+        if( !td.basicConcepts && $42.currentLevel == 1 ) {
             setTimeout(function() {
                 var oldLabel = ml.levelLabels[0].getString();
                 ml.levelLabels[0].setString("ANNA");
@@ -1971,7 +1970,26 @@ var _42_MODULE = function(_42Layer) {
                     }
                 });
            }, 9000); 
-        }
+         } else if( !td.advancedConcepts && $42.currentLevel == 6 ) {
+            setTimeout(function() {
+                ml.stopListeners();
+                ml.unscheduleUpdate();
+                ml._currentTile.sprite.runAction(cc.fadeTo(1,50));
+
+                $42.SCENE.hookStartAnimation("Story Advanced Concepts", {
+                    time: 2,
+                    cb: function() {
+                        ml.initListeners();
+                        ml.scheduleUpdate();
+                        ml._currentTile.sprite.runAction(cc.fadeIn(0.5));
+
+                        td.advancedConcepts = true;
+                        ls.setItem("tutorialsDone", JSON.stringify(td));
+                    }
+                });
+           }, 9000); 
+            
+         }
     };    
 
 	/*

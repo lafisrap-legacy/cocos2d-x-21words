@@ -5,8 +5,9 @@
 $42.TWEET_TEXT_WIDTH = 640;
 $42.TWEET_TEXT_HEIGHT = 860;
 $42.TWEET_TEXT_TEXT_SIZE = 52;
+$42.TWEET_TEXT_TEXT_COLOR = cc.color(0,0,0,255);
 $42.TWEET_TEXT_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT);
-$42.TWEET_TEXT_COLOR = cc.color(255,255,240,120);
+$42.TWEET_TEXT_COLOR = cc.color(255,255,240,0);
 $42.TWEET_TEXT_TWEET_COLOR = cc.color(0,0,180,222);
 $42.TWEET_TEXT_PADDING = 30;
 $42.TWEET_TEXT_LINEHEIGHT = 75;
@@ -18,7 +19,7 @@ $42.TWEET_NAMES_ID = 101;
 $42.TWEET_SHORTIES_WIDTH = 640;
 $42.TWEET_SHORTIES_HEIGHT = 180;
 $42.TWEET_SHORTIES_POS = cc.p(0, 1136-$42.TWEET_TEXT_HEIGHT-$42.TWEET_SHORTIES_HEIGHT);
-$42.TWEET_SHORTIES_COLOR = cc.color(240,240,255,100);
+$42.TWEET_SHORTIES_COLOR = cc.color(240,240,255,40);
 $42.TWEET_SHORTIES_LINEHEIGHT = 75;
 $42.TWEET_SHORTIES_LINES = 2;
 $42.TWEET_SHORTIES_SPACE_WIDTH = 40;
@@ -88,6 +89,9 @@ var _TWEET_MODULE = function(layer) {
         tLayer.setCascadeOpacityEnabled(true);
         tLayer.setOpacity(0);
         _42_retain(tLayer, "Tweet layer");
+		var background = cc.Sprite.create(res.twitter_png);
+        background.setPosition(cc.width/2,cc.height/2);
+        tLayer.addChild(background);
 
         ////////////////////////////////////
         // init text layer
@@ -355,7 +359,7 @@ var _TWEET_MODULE = function(layer) {
             }
 
 			label.setPosition(cc.p(padding + x + size.width/2, textHeight - padding - y - size.height/2));
-			label.setColor(cc.color(0,0,0));
+			label.setColor($42.TWEET_TEXT_TEXT_COLOR);
             label.setCascadeOpacityEnabled(true);
 			_42_retain(label, "moveable word");	
 			txLayer.addChild(label, 5);
@@ -399,6 +403,7 @@ var _TWEET_MODULE = function(layer) {
 			var label = cc.LabelTTF.create(sh[i], _42_getFontName(res.shadows_into_light_ttf) , $42.TWEET_TEXT_TEXT_SIZE),
                 size = label.getContentSize();
             
+            label.setColor($42.TWEET_TEXT_TEXT_COLOR);
             selectableWords.push(label);
 
             mvLayer.addChild(label);
@@ -453,17 +458,19 @@ var _TWEET_MODULE = function(layer) {
 
             if( cnt <= 140 ) menuTweetCnt = i;
             if( tweet ) {
+                var rTime = 0.33*Math.random();
                 mw[i].runAction(
                     cc.repeatForever(
                         cc.sequence(
-                            cc.EaseSineOut.create(cc.fadeTo(0.33,50)),
-                            cc.EaseSineIn.create(cc.fadeIn(0.33))
+                            cc.EaseSineOut.create(cc.fadeTo(0.33+rTime,180)),
+                            cc.EaseSineIn.create(cc.fadeIn(0.33+rTime))
                         )
                     )
                 );
             } else {
                 if( tweet === false ) mv[i].stopAllActions();
-                mw[i].setColor($42.TWEET_TEXT_COLOR);
+                mw[i].setColor($42.TWEET_TEXT_TEXT_COLOR);
+                mw[i].setOpacity(255);
                 mw[i].runAction(
                     cc.EaseSineOut.create(
                         cc.rotateTo($42.TWEET_TEXT_MOVING_TIME, 0)
@@ -542,6 +549,7 @@ var _TWEET_MODULE = function(layer) {
                         x: pos.x - loc.x,
                         y: pos.y - loc.y
                     }
+                    touchMovingLabel.setColor($42.TWEET_TEXT_TEXT_COLOR);
                     touchMovingLabel.setPosition(pos);
                     touchMovingLabel.setOpacity(128);
                     tLayer.addChild(touchMovingLabel,10);
@@ -790,7 +798,7 @@ var _TWEET_MODULE = function(layer) {
                             sw.push(touchMovingLabel);
                             touchMovingLabel.setOpacity(255);
                             touchMovingLabel.setScale(1);
-                            touchMovingLabel.setColor(cc.color(255,255,255))
+                            touchMovingLabel.setColor($42.TWEET_TEXT_TEXT_COLOR);
 
                             distributeShorties();
 

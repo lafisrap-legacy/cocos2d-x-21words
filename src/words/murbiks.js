@@ -37,6 +37,7 @@ $42.STORY_BACKGROUND_OPACITY = 90;
 $42.STORY_BACKGROUND_SPEED = 1.33;
 $42.STORY_MENU_FONT_SIZE = 48;
 $42.STORY_MENU_PADDING = 20;
+$42.STORY_MENU_TAG = 222;
 $42.STORY_SCALE_PRESS_FINGER = 0.9;
 
 var _MURBIKS_MODULE = function(parentLayer) {
@@ -320,7 +321,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
         var sb = storyBackground,
             marker = [];
 
-        var markersInit = [0,0,0,1,1,1,1,1,1];
+        var markersInit = [0,0,0,1,-1,1,1,1,1];
         var resetMarker = function(i,type) {
             sb.removeChild(marker[i]);
             marker[i] = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(type || "marker"+markersInit[i]+".png"));
@@ -369,7 +370,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
                     cc.moveBy(time4,cc.p(-100,-280)),
                     cc.callFunc(function() {
                         marker[3].setOpacity(255)
-                        marker[4].setOpacity(255)
+                        //marker[4].setOpacity(255)
                     })
                 )
             );
@@ -378,7 +379,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 cc.sequence(
                     cc.delayTime(time0+time1),
                     cc.fadeIn(0),
-                    cc.EaseSineOut.create(cc.moveTo(time2,cc.p(360,500))),
+                    cc.EaseSineOut.create(cc.moveTo(time2,cc.p(390,500))),
                     cc.scaleTo(time3,$42.STORY_SCALE_PRESS_FINGER),
                     cc.moveBy(time4,cc.p(-100,-280)),
                     cc.EaseSineIn.create(cc.moveTo(time2,cc.p(size.width*1.2,size.height/4))),
@@ -709,6 +710,9 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             )
         );
+        
+        var ch = sb.getChildren();
+        for( var i=0 ; i<ch.length ; i++ ) ch[i].setOpacity(255);
 
         var size = sb.getContentSize();
         
@@ -750,7 +754,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
         
         menu = new cc.Menu([item1, item2]);
         menu.setPosition(cc.p(size.width/2,40));
-        sb.addChild(menu);
+        sb.addChild(menu,0,$42.STORY_MENU_TAG);
 
         var page=0;
         item1.setOpacity(0);
@@ -787,6 +791,10 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 ) 
             ); 
         }
+
+        setTimeout(function() {
+            for( var i=0 ; i<ch.length ; i++ ) ch[i].setOpacity(255);
+        },$42.STORY_BACKGROUND_SPEED*1000+1);
     };
 
 	var hideSpeechBubble = function(time) {
@@ -987,8 +995,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
     var programs = {
         "Mostafas Greeting": animMostafasGreeting,
         "Mostafa flies away": animMostafaFlyingAway,
-        //"Story Basic Concepts": animStoryBasicConcepts,
-        "Story Basic Concepts": animStoryAdvancedConcepts,
+        "Story Basic Concepts": animStoryBasicConcepts,
         "Story Advanced Concepts": animStoryAdvancedConcepts
     };
 };

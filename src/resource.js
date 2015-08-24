@@ -15,6 +15,7 @@ var res = {
 	background05_png : "res/images/backgrounds/level05.png",
 	background06_png : "res/images/backgrounds/level06.png",
 	background07_png : "res/images/backgrounds/level07.png",
+	twitter_png : "res/images/backgrounds/twitter.png",
 	background_element1_png : "res/images/backgrounds/element1.png",
 	background_element2_png : "res/images/backgrounds/element2.png",
     background_levelnr_png : "res/images/backgrounds/levelnr.png",
