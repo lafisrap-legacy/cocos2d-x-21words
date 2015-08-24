@@ -7,7 +7,7 @@
             <key>hand.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{624,2},{204,365}}</string>
+                <string>{{686,2},{204,365}}</string>
                 <key>offset</key>
                 <string>{1,-1}</string>
                 <key>rotated</key>
@@ -20,11 +20,11 @@
             <key>mostafa_fly01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{754,499},{100,84}}</string>
+                <string>{{686,628},{100,84}}</string>
                 <key>offset</key>
                 <string>{0,-2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{0,10},{100,84}}</string>
                 <key>sourceSize</key>
@@ -33,7 +33,7 @@
             <key>mostafa_fly02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{684,628},{80,88}}</string>
+                <string>{{788,628},{80,88}}</string>
                 <key>offset</key>
                 <string>{10,3}</string>
                 <key>rotated</key>
@@ -46,7 +46,7 @@
             <key>mostafa_fly03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{582,628},{100,86}}</string>
+                <string>{{582,676},{100,86}}</string>
                 <key>offset</key>
                 <string>{0,4}</string>
                 <key>rotated</key>
@@ -59,7 +59,7 @@
             <key>mostafa_fly04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{680,718},{84,84}}</string>
+                <string>{{786,718},{84,84}}</string>
                 <key>offset</key>
                 <string>{8,1}</string>
                 <key>rotated</key>
@@ -72,7 +72,7 @@
             <key>mostafa_fly05.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{582,808},{98,84}}</string>
+                <string>{{582,856},{98,84}}</string>
                 <key>offset</key>
                 <string>{-1,1}</string>
                 <key>rotated</key>
@@ -85,7 +85,7 @@
             <key>mostafa_fly06.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{670,908},{88,88}}</string>
+                <string>{{768,920},{88,88}}</string>
                 <key>offset</key>
                 <string>{3,3}</string>
                 <key>rotated</key>
@@ -98,7 +98,7 @@
             <key>mostafa_fly07.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{582,716},{96,90}}</string>
+                <string>{{582,764},{96,90}}</string>
                 <key>offset</key>
                 <string>{0,2}</string>
                 <key>rotated</key>
@@ -111,11 +111,11 @@
             <key>mostafa_fly08.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{582,908},{92,86}}</string>
+                <string>{{668,860},{92,86}}</string>
                 <key>offset</key>
                 <string>{2,3}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{6,4},{92,86}}</string>
                 <key>sourceSize</key>
@@ -124,7 +124,7 @@
             <key>mostafa_fly09.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{760,869},{100,76}}</string>
+                <string>{{684,714},{100,76}}</string>
                 <key>offset</key>
                 <string>{0,-5}</string>
                 <key>rotated</key>
@@ -137,7 +137,7 @@
             <key>mostafa_land01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{760,869},{100,76}}</string>
+                <string>{{684,714},{100,76}}</string>
                 <key>offset</key>
                 <string>{0,-5}</string>
                 <key>rotated</key>
@@ -150,11 +150,11 @@
             <key>mostafa_land02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{766,601},{98,66}}</string>
+                <string>{{816,499},{98,66}}</string>
                 <key>offset</key>
                 <string>{0,-11}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{1,28},{98,66}}</string>
                 <key>sourceSize</key>
@@ -163,7 +163,7 @@
             <key>mostafa_land03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{766,669},{98,66}}</string>
+                <string>{{680,792},{98,66}}</string>
                 <key>offset</key>
                 <string>{-1,-12}</string>
                 <key>rotated</key>
@@ -176,7 +176,7 @@
             <key>mostafa_land04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{668,808},{98,60}}</string>
+                <string>{{624,576},{98,60}}</string>
                 <key>offset</key>
                 <string>{0,-10}</string>
                 <key>rotated</key>
@@ -189,7 +189,7 @@
             <key>mostafa_land05.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{766,737},{98,64}}</string>
+                <string>{{668,948},{98,64}}</string>
                 <key>offset</key>
                 <string>{1,-12}</string>
                 <key>rotated</key>
@@ -202,7 +202,7 @@
             <key>mostafa_land06.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{766,803},{98,64}}</string>
+                <string>{{780,804},{98,64}}</string>
                 <key>offset</key>
                 <string>{-1,-12}</string>
                 <key>rotated</key>
@@ -215,7 +215,7 @@
             <key>mostafa_land07.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{760,947},{94,48}}</string>
+                <string>{{762,870},{94,48}}</string>
                 <key>offset</key>
                 <string>{-2,-19}</string>
                 <key>rotated</key>
@@ -241,7 +241,7 @@
             <key>tile1.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{624,369},{195,128}}</string>
+                <string>{{686,369},{195,128}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -254,7 +254,7 @@
             <key>tile2.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{624,499},{128,127}}</string>
+                <string>{{686,499},{128,127}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -263,6 +263,19 @@
                 <string>{{0,0},{128,127}}</string>
                 <key>sourceSize</key>
                 <string>{128,127}</string>
+            </dict>
+            <key>tile3.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{624,2},{572,60}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{2,2},{572,60}}</string>
+                <key>sourceSize</key>
+                <string>{576,64}</string>
             </dict>
             <key>wordcloud.png</key>
             <dict>
@@ -285,9 +298,9 @@
             <key>realTextureFileName</key>
             <string>murbiks.png</string>
             <key>size</key>
-            <string>{866,1002}</string>
+            <string>{892,1014}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:db54c5bd5fb323e4fc2506d08c05499c:3cda5107bc424c7bc1d003554943fb9c:26928e92b16fc2be55fd250249d2542a$</string>
+            <string>$TexturePacker:SmartUpdate:8599bb05d99c5df256786776100c9d74:8a51ccde22d11cc56fd877f0a8b615e4:26928e92b16fc2be55fd250249d2542a$</string>
             <key>textureFileName</key>
             <string>murbiks.png</string>
         </dict>

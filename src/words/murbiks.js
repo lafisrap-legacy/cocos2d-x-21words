@@ -26,7 +26,11 @@ $42.HAND_CONTACT_TIME = 0.3;
 $42.HAND_CONTACT_TIME = 0.3;
 $42.TILE1_TAG = 206;
 $42.TILE2_TAG = 207;
-$42.WORDFRAME_TAG = 208;
+$42.TILE3_TAG = 208;
+$42.TILE4_TAG = 209;
+$42.TILE5_TAG = 210;
+$42.MARKER_TAG = 211; // -220
+$42.WORDFRAME_TAG = 221;
 $42.BUBBLE_BUTTON_SCALE = 0.7;
 $42.STORY_BACKGROUND_POS = cc.p(320,832);
 $42.STORY_BACKGROUND_OPACITY = 90;
@@ -52,6 +56,9 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		speechBubble = null,
         tile1 = null,
         tile2 = null,
+        tile3 = null,
+        tile4 = null,
+        tile5 = null,
         wordframe = null,
         storyBackground = null;
 
@@ -238,7 +245,10 @@ var _MURBIKS_MODULE = function(parentLayer) {
             
             tile1.setRotation(0);
             tile2.setPosition(cc.p(434, 640+64));
-            wordframe.setTextureRect(cc.rect(0,0,268,68));
+            
+            var rect = wordframe.getTextureRect();
+            rect.width = 268; rect.height = 68;
+            wordframe.setTextureRect(rect);
             wordframe.setPosition(cc.p(303, 203));
             wordframe.setOpacity(0);
             
@@ -290,7 +300,250 @@ var _MURBIKS_MODULE = function(parentLayer) {
             ]
         });
 
-        showConcepts(pages, options.cb);
+        showConcepts(pages, function() {
+            mostafaFlyTo({
+                time: options.time || 2,
+                bezier: [
+                    cc.p(550,430), 
+                    cc.p(500,650),
+                    cc.p(-100,200)
+                ]
+            });
+        
+            if( typeof options.cb === "function" ) options.cb();
+        });
+    };
+
+    var animStoryAdvancedConcepts = function(options) {
+        stopActionsAndTimeouts();
+
+        var sb = storyBackground,
+            marker = [];
+
+        var markersInit = [0,0,0,1,1,1,1,1,1];
+        var resetMarker = function(i,type) {
+            sb.removeChild(marker[i]);
+            marker[i] = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(type || "marker"+markersInit[i]+".png"));
+            marker[i].setPosition(cc.p(i*60+50, 104));
+            marker[i].setScale(0.9375);
+            sb.addChild(marker[i], 6, $42.MARKER_TAG+i);
+        }
+
+        var page1 = function(time,cb) {
+            var size = sb.getContentSize(),
+                time0 = time || 1,
+                time1 = 4.5,
+                time2 = 1.1,
+                time3 = 0.3,
+                time4 = 1.3,
+                time5 = 1.1;
+            
+            tile3.setPosition(cc.p(290, 160));
+            tile3.setScale(0.9375);
+            if( !sb.getChildByTag($42.TILE3_TAG) ) sb.addChild(tile3,5,$42.TILE3_TAG);
+            
+            tile4.setPosition(cc.p(360, 750));
+            tile4.setScale(0.9375);
+            if( !sb.getChildByTag($42.TILE4_TAG) ) sb.addChild(tile4,5,$42.TILE4_TAG);
+            
+            hand.setPosition(cc.p(size.width, size.height/4));
+            hand.setOpacity(0);
+            if( !sb.getChildByTag($42.HAND_TAG) ) sb.addChild(hand,10,$42.HAND_TAG);
+
+		    if( !sb.getChildByTag($42.MARKER_TAG+i) ) {
+                var markersInit = [0,0,0,1,1,1,1,1,1];
+                for( var i=0 ; i<9 ; i++ ) {
+                    marker[i] = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker"+markersInit[i]+".png"));
+                    marker[i].setPosition(cc.p(i*60+50, 104));
+                    marker[i].setScale(0.9375);
+                    sb.addChild(marker[i], 6, $42.MARKER_TAG+i);
+                }
+            }
+            marker[3].setOpacity(0);
+            marker[4].setOpacity(0);
+
+            tile4.runAction(
+                cc.sequence(
+                    cc.delayTime(time0),
+                    cc.moveBy(time1+time2+time3,cc.p(0,-250)),
+                    cc.moveBy(time4,cc.p(-100,-280)),
+                    cc.callFunc(function() {
+                        marker[3].setOpacity(255)
+                        marker[4].setOpacity(255)
+                    })
+                )
+            );
+
+            hand.runAction(
+                cc.sequence(
+                    cc.delayTime(time0+time1),
+                    cc.fadeIn(0),
+                    cc.EaseSineOut.create(cc.moveTo(time2,cc.p(360,500))),
+                    cc.scaleTo(time3,$42.STORY_SCALE_PRESS_FINGER),
+                    cc.moveBy(time4,cc.p(-100,-280)),
+                    cc.EaseSineIn.create(cc.moveTo(time2,cc.p(size.width*1.2,size.height/4))),
+                    cc.callFunc(cb)
+                )
+            );    
+
+            activeTimeouts.push( setTimeout(function() {
+               showSpeechBubble(0, $42.t.mostafa.advanced1, mostafa.getPosition(), 350); 
+            }, time0 * 1000) );
+        };
+
+        var page2 = function(time, cb) {
+            var size = sb.getContentSize(),
+                time0 = 1,
+                time1 = 1.1,
+                time2 = 0.3,
+                time3 = 0.6,
+                time4 = 0.3;
+            
+            for( var i=0 ; i<9 ; i++ ) resetMarker(i);
+
+            tile4.setPosition(cc.p(260, 220));
+            tile4.setScale(0.9375);
+            
+            hand.setPosition(cc.p(size.width, size.height/4));
+            hand.setOpacity(0);
+
+            hand.runAction(
+                cc.sequence(
+                    cc.delayTime(time0),
+                    cc.fadeIn(0),
+                    cc.EaseSineOut.create(cc.moveTo(time1,cc.p(230,100))),
+                    cc.EaseSineOut.create(cc.scaleTo(time2,$42.STORY_SCALE_PRESS_FINGER)),
+                    cc.callFunc(function() { resetMarker(3, "marker3.png"); }),
+                    cc.EaseSineIn.create(cc.scaleTo(time2,1)),
+                    cc.EaseSineOut.create(cc.moveBy(time3,cc.p(120,0))),
+                    cc.EaseSineOut.create(cc.scaleTo(time2,$42.STORY_SCALE_PRESS_FINGER)),
+                    cc.callFunc(function() { resetMarker(5, "marker3.png"); }),
+                    cc.EaseSineIn.create(cc.scaleTo(time2,1)),
+                    cc.EaseSineOut.create(cc.moveBy(time3,cc.p(60,0))),
+                    cc.EaseSineOut.create(cc.scaleTo(time2,$42.STORY_SCALE_PRESS_FINGER)),
+                    cc.callFunc(function() { resetMarker(6, "marker3.png"); }),
+                    cc.EaseSineIn.create(cc.scaleTo(time2,1)),
+                    cc.EaseSineOut.create(cc.moveBy(time3,cc.p(60,0))),
+                    cc.EaseSineOut.create(cc.scaleTo(time2,$42.STORY_SCALE_PRESS_FINGER)),
+                    cc.callFunc(function() { resetMarker(7, "marker3.png"); }),
+                    cc.EaseSineIn.create(cc.scaleTo(time2,1)),
+                    cc.EaseSineOut.create(cc.moveBy(time3,cc.p(60,0))),
+                    cc.EaseSineOut.create(cc.scaleTo(time2,$42.STORY_SCALE_PRESS_FINGER)),
+                    cc.callFunc(function() { resetMarker(8, "marker3.png"); }),
+                    cc.EaseSineIn.create(cc.scaleTo(time2,1)),
+                    cc.EaseSineIn.create(cc.moveTo(time1,cc.p(750,200))),
+                    cc.callFunc(cb)
+                )
+            );    
+
+            activeTimeouts.push( setTimeout(function() {
+               showSpeechBubble(0, $42.t.mostafa.advanced2, mostafa.getPosition(), 350); 
+            }, time0 * 1000) );
+        };
+
+        var page3 = function(time, cb) {
+            var size = sb.getContentSize(),
+                time0 = 1,
+                time1 = 4.1,
+                time2 = 0.5,
+                time3 = 0.3,
+                time4 = 1.1,
+                time5 = 2.0;
+            
+            if( !sb.getChildByTag($42.TILE5_TAG) ) sb.addChild(tile5,5,$42.TILE5_TAG);
+            if( !sb.getChildByTag($42.WORDFRAME_TAG) ) sb.addChild(wordframe,0,$42.WORDFRAME_TAG);
+            
+            resetMarker(3, "marker3.png");
+            resetMarker(5, "marker3.png");
+            resetMarker(6, "marker3.png");
+            resetMarker(7, "marker3.png");
+            resetMarker(8, "marker3.png");
+            
+            tile5.setPosition(cc.p(500, 750));
+            tile5.setScale(0.9375);
+
+            var reset = function(children) {
+                    for( var i=0 ; i<children.length ; i++ ) {
+                        children[i].setPosition(children[i]._orgPos);
+                        children[i].setOpacity(255);
+                    }
+                };
+            reset(tile4.getChildren());
+            reset(tile5.getChildren());
+
+            var rect = wordframe.getTextureRect();
+            rect.width = 542; rect.height = 64;
+            wordframe.setTextureRect(rect);
+            wordframe.setPosition(cc.p(290,160));
+            wordframe.setOpacity(0);
+            
+            hand.setPosition(cc.p(size.width, size.height/4));
+            hand.setOpacity(0);
+
+            tile5.runAction(
+                cc.sequence(
+                    cc.delayTime(time0),
+                    cc.moveBy(time1+time2+time3, cc.p(0,-260)),
+                    cc.moveTo(time4, cc.p(560,220))
+                )
+            );
+
+            hand.runAction(
+                cc.sequence(
+                    cc.delayTime(time0+time1),
+                    cc.fadeIn(0),
+                    cc.EaseSineOut.create(cc.moveTo(time2, cc.p(500, 490))),
+                    cc.scaleTo(time3,$42.STORY_SCALE_PRESS_FINGER),
+                    cc.moveTo(time4, cc.p(560,220)),
+                    cc.scaleTo(time3,1),
+                    cc.callFunc(function() {
+                        var ch4 = tile4.getChildren(),
+                            ch5 = tile5.getChildren();
+                        ch4[3].setOpacity(0);
+                        ch5[3].setOpacity(0);
+                        ch4[0].runAction(cc.moveBy(time2+time5, cc.p(0,-64)));
+                        ch4[1].runAction(cc.moveBy(time2+time5, cc.p(0,-64)));
+                        ch5[2].runAction(cc.moveBy(time2+time5, cc.p(0,-64)));
+                    }),
+                    cc.EaseSineIn.create(cc.moveTo(time2, cc.p(700, 320))),
+                    cc.delayTime(time5),
+                    cc.callFunc(function() {
+                        wordframe.setOpacity(255);
+                    }),
+                    cc.callFunc(cb)
+                )
+            );    
+
+            activeTimeouts.push( setTimeout(function() {
+               showSpeechBubble(0, $42.t.mostafa.advanced3, mostafa.getPosition(), 350); 
+            }, time0 * 1000) );
+        };
+
+        var pages = [page1, page2, page3]
+
+        mostafa.setPosition(cc.p(750,576)); 
+        mostafa.setFlippedX(true);
+        mostafaFlyTo({
+            time: options.time || 2,
+            bezier: [
+                cc.p(500,650),
+                cc.p(200,200),
+                cc.p(550,130) 
+            ]
+        });
+
+        showConcepts(pages, function() {
+            mostafaFlyTo({
+                time: options.time || 2,
+                bezier: [
+                    cc.p(550,430), 
+                    cc.p(500,650),
+                    cc.p(-100,200)
+                ]
+            });
+        
+            if( typeof options.cb === "function" ) options.cb();
+        });
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -298,7 +551,9 @@ var _MURBIKS_MODULE = function(parentLayer) {
     //
 	pl.hookStartAnimation = function(program, options) {
 		cc.assert(typeof programs[program] === "function" , "42words, startProgramm: Invalid program number.");
-		
+	
+        if( !mul ) initAnimation();
+
 		if( !pl.getChildByTag($42.MURBIKS_LAYER_TAG )) pl.addChild(mul,20,$42.MURBIKS_LAYER_TAG);
 
 		curProgram = program;
@@ -464,7 +719,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 pages[page](0.3, function() {
                     item1.setOpacity(255);
                     item1.setEnabled(true);
-                    hideSpeechBubble();
+                    //hideSpeechBubble();
                 });
             }, mul),
             item2 = new cc.MenuItemFont($42.t.story_continue, function() {
@@ -476,7 +731,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
                     pages[page](0.3, function() {
                         item1.setOpacity(255);
                         item1.setEnabled(true);
-                        hideSpeechBubble();
+                        //hideSpeechBubble();
                     });
                 } else {
                     hideConcepts();
@@ -556,6 +811,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
         speechBubbleCloud.stopAllActions();    
         tile1.stopAllActions();
         tile2.stopAllActions();
+        tile3.stopAllActions();
+        tile4.stopAllActions();
         hand.stopAllActions();
 		clearActiveTimeouts();
     };
@@ -634,6 +891,20 @@ var _MURBIKS_MODULE = function(parentLayer) {
 	    curTileProgramCnt = null;
 	};
 
+    var createTile = function(letters, boxes) {
+        var tile = cc.Node.create();
+    
+        tile.setCascadeOpacityEnabled(true);
+        for( var i=0 ; i<4 ; i++ ) {
+            var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame($42.LETTER_NAMES[$42.LETTERS.indexOf(letters[i])]+".png"));    
+            sprite.setPosition(boxes[i]);
+            sprite._orgPos = boxes[i];
+            tile.addChild(sprite);
+        }   
+        
+        return tile;
+    };
+
 	var initAnimation = function() {
 
 		// Create layer for tutorial
@@ -685,10 +956,16 @@ var _MURBIKS_MODULE = function(parentLayer) {
         // load tiles and story background
 		tile1 = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tile1.png"));
 		tile2 = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tile2.png"));
+		tile3 = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tile3.png"));
+		tile4 = createTile(" AXT", [{x: 0.5*64,y: 1.0*64},{x: 0.5*64,y: 0.0*64},{x:-0.5*64,y:-1.0*64},{x: 0.5*64,y:-1.0*64}]); 
+		tile5 = createTile("GD Q", [{x:-0.5*64,y: 1.0*64},{x:-0.5*64,y: 0.0*64},{x: 0.5*64,y: 0.0*64},{x: 0.5*64,y:-1.0*64}]); 
         wordframe = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("wordframe.png"));
         storyBackground = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("story_background.png"));
 		_42_retain(tile1, "Story: Tile 1");
 		_42_retain(tile2, "Story: Tile 2");
+		_42_retain(tile3, "Story: Tile 3");
+		_42_retain(tile4, "Story: Tile 4");
+		_42_retain(tile5, "Story: Tile 5");
 		_42_retain(wordframe, "Story: Wordframe");
         _42_retain(storyBackground, "Story: Background");
 		
@@ -710,9 +987,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
     var programs = {
         "Mostafas Greeting": animMostafasGreeting,
         "Mostafa flies away": animMostafaFlyingAway,
-        "Story Basic Concepts": animStoryBasicConcepts
+        //"Story Basic Concepts": animStoryBasicConcepts,
+        "Story Basic Concepts": animStoryAdvancedConcepts,
+        "Story Advanced Concepts": animStoryAdvancedConcepts
     };
-
-	initAnimation();
-},
-$MM = _MURBIKS_MODULE;
+};

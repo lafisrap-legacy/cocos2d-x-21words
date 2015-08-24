@@ -1949,7 +1949,7 @@ var _42_MODULE = function(_42Layer) {
         var td = $42.tutorialsDone,
             ls = cc.sys.localStorage;
 
-        if( !td.basicConcepts ) {
+        if( true || !td.basicConcepts ) {
             setTimeout(function() {
                 var oldLabel = ml.levelLabels[0].getString();
                 ml.levelLabels[0].setString("ANNA");
@@ -1996,7 +1996,7 @@ var _42_MODULE = function(_42Layer) {
 
         $42.playerName = ls.getItem("playerName") || "";
         $42.playerHash = ls.getItem("playerHash") || "";
-        $42.tutorialsDone = JSON.parse(ls.getItem("tutorialsDone") || "[]");
+        $42.tutorialsDone = JSON.parse(ls.getItem("tutorialsDone") || "{}");
 
 		// remove all words that are already in the treasure
         for( var i=0 ; i<wt.length ; i++ ) {
@@ -2006,18 +2006,12 @@ var _42_MODULE = function(_42Layer) {
             if( index > -1 ) $42.words[prefix][index].deleted = true;
         }
 				
-		// prepare for which letters can be used (word profile), and what
-		// letters will be next
+		// prepare for which letters can be used (word profile), and what letters will be next
 		$42.wordProfileLetters = []; 
 		for( var i=0 ; i<lo.length ; i++ ) if( (wp | 1<<i) === wp ) $42.wordProfileLetters.push(lo[i]); 
 		$42.displayedProfileLetters = [];
 		getNextProfileLetters();
 
-// ml.hookStartProgram( 2 , false );
-// ml.hookStartProgram( 0 , true );
-//		else if( ml.hookStartProgram ) ml.hookStartProgram( 2 , false );
-		// ml.hookStartProgram( 2 , false );
-		
 		ml.totalPoints = 0;
 		ml.rollingLayerStage = 0;
 		ml.nextMultiplier = 0;
@@ -2419,7 +2413,5 @@ var _42_MODULE = function(_42Layer) {
 		
 		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);					
 	};
-    
-    if( typeof _MURBIKS_MODULE === 'function' ) _MURBIKS_MODULE(ml);
 };
 
