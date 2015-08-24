@@ -178,7 +178,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
             );    
 
             activeTimeouts.push( setTimeout(function() {
-               showSpeechBubble(0, $42.t.mostafa.basic1, mostafa.getPosition(), 350); 
+               showSpeechBubble(0, $42.t.mostafa.basic1, mostafa.getPosition(), 320); 
             }, time0 * 1000) );
         };
 
@@ -228,7 +228,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
             );    
 
             activeTimeouts.push( setTimeout(function() {
-               showSpeechBubble(0, $42.t.mostafa.basic2, mostafa.getPosition(), 350); 
+               showSpeechBubble(0, $42.t.mostafa.basic2, mostafa.getPosition(), 320); 
             }, time0 * 1000) );
         };
 
@@ -351,7 +351,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
             hand.setOpacity(0);
             if( !sb.getChildByTag($42.HAND_TAG) ) sb.addChild(hand,10,$42.HAND_TAG);
 
-		    if( !sb.getChildByTag($42.MARKER_TAG+i) ) {
+		    if( !sb.getChildByTag($42.MARKER_TAG) ) {
                 var markersInit = [0,0,0,1,1,1,1,1,1];
                 for( var i=0 ; i<9 ; i++ ) {
                     marker[i] = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker"+markersInit[i]+".png"));
@@ -534,6 +534,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
         });
 
         showConcepts(pages, function() {
+            mostafa.setFlippedX(false);
             mostafaFlyTo({
                 time: options.time || 2,
                 bezier: [
@@ -789,10 +790,11 @@ var _MURBIKS_MODULE = function(parentLayer) {
                         cc.fadeOut($42.STORY_BACKGROUND_SPEED)
                     )
                 ) 
-            ); 
+            );
         }
 
         setTimeout(function() {
+            var ch = sb.getChildren();
             for( var i=0 ; i<ch.length ; i++ ) ch[i].setOpacity(255);
         },$42.STORY_BACKGROUND_SPEED*1000+1);
     };
@@ -821,6 +823,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
         tile2.stopAllActions();
         tile3.stopAllActions();
         tile4.stopAllActions();
+        tile5.stopAllActions();
         hand.stopAllActions();
 		clearActiveTimeouts();
     };
@@ -904,7 +907,12 @@ var _MURBIKS_MODULE = function(parentLayer) {
     
         tile.setCascadeOpacityEnabled(true);
         for( var i=0 ; i<4 ; i++ ) {
-            var sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame($42.LETTER_NAMES[$42.LETTERS.indexOf(letters[i])]+".png"));    
+            var file = ($42.LETTER_NAMES[$42.LETTERS.indexOf(letters[i])]+".png").trim(),
+                frame = cc.spriteFrameCache.getSpriteFrame(file);
+
+            cc.log("file: "+file,", frame: "+frame);
+
+            var sprite = cc.Sprite.create(frame);    
             sprite.setPosition(boxes[i]);
             sprite._orgPos = boxes[i];
             tile.addChild(sprite);

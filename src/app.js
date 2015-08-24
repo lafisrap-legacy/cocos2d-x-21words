@@ -1522,6 +1522,8 @@ var _42TitleLayer = cc.Layer.extend({
 	
         this._gameStarted = false;
         var ls = cc.sys.localStorage;
+        
+        $42.tutorialsDone = JSON.parse(ls.getItem("tutorialsDone") || "{}");
 
         var item1 = $42.menuItemStart = addMenu("no label", 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
                 self._menu.setEnabled(false);
@@ -1602,6 +1604,7 @@ var _42TitleLayer = cc.Layer.extend({
 
         var self = this,
             ls = cc.sys.localStorage,
+            td = $42.tutorialsDone,
             cDiff = ls.getItem("currentDifficulty") || "easy", 
             //mDiff = ls.getItem("maxDifficulty") || "easy",
             mDiff = "expert",
@@ -1639,7 +1642,10 @@ var _42TitleLayer = cc.Layer.extend({
         
         this._timeout = setTimeout(function() {
             self._timeout = null;
-            if( self._menu.isEnabled() ) {
+            if( !td.mostafasGreeting && self._menu.isEnabled() ) {
+                td.mostafasGreeting = true;
+                ls.setItem("tutorialsDone", JSON.stringify(td));
+
                 $42.SCENE.hookStartAnimation("Mostafas Greeting", {
                     time: 3,
                     cb: function() {

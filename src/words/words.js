@@ -267,6 +267,7 @@ var _42_MODULE = function(_42Layer) {
 			curWords = sw.words.slice();
 			for( var i=3 ; i<sw.markers.length ; i++ ) if( sw.markers[i] === $42.MARKER_SEL || sw.markers[i] === $42.MARKER_SET ) sw.markers[i] = null;
 		}
+        for( var i=0,minLength=$42.BOXES_PER_ROW ; i<curWords.length ; i++ ) minLength = Math.min(minLength, curWords[i].word.length);
 		for( var i=sw.brc.col ; i<$42.BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
 			// remove old sprite
@@ -280,7 +281,7 @@ var _42_MODULE = function(_42Layer) {
 				if(ml.boxes[sw.brc.row][i] && curWords[j].word[col] === ml.boxes[sw.brc.row][i].userData ) hits++;
 				else if( curWords[j].word[col] ) missingLetters += curWords[j].word[col];
 			}
-			if( sw.markers[col] === $42.MARKER_SET || col <= 2) {
+			if( /*sw.markers[col] === $42.MARKER_SET ||*/ col < 3 || (hits === 1 && col < minLength) ) {
 				// letter in box matches with all words, draw sprite
 				sw.markers[col] = $42.MARKER_SET;
 				sw.sprites[col] = cc.Sprite.create(setMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
@@ -2014,7 +2015,6 @@ var _42_MODULE = function(_42Layer) {
 
         $42.playerName = ls.getItem("playerName") || "";
         $42.playerHash = ls.getItem("playerHash") || "";
-        $42.tutorialsDone = JSON.parse(ls.getItem("tutorialsDone") || "{}");
 
 		// remove all words that are already in the treasure
         for( var i=0 ; i<wt.length ; i++ ) {
