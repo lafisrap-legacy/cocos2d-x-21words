@@ -31,6 +31,7 @@ $42.TWEET_MENU_COLOR = cc.color(0,0,0,255);
 $42.TWEET_MENU_BIG_FONT_SIZE = 40;
 $42.TWEET_MENU_SMALL_FONT_SIZE = 28;
 $42.TWEET_MENU_PADDING = 10;
+$42.TWEET_TWEETY_POS = cc.p(320,576);
 
 var _TWEET_MODULE = function(layer) {
 	var tLayer = null,      // tweet layer
@@ -317,17 +318,27 @@ var _TWEET_MODULE = function(layer) {
                 if( !menuTweetConfirm ) {
                     menuTweetConfirm = true;
                     menuTweetItem.setString($42.t.tweet_tweet_confirm.label);
+
+                    menuTweety = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tweety.png"));
+                    menuTweety.setPosition($42.TWEET_TWEETY_POS);
+                    menuTweety.setOpacity(0);
+                    tLayer.addChild(menuTweety,5);
+                    menuTweety.runAction(
+                        cc.repeatForever(
+                            cc.sequence(
+                                cc.EaseSineOut.create(
+                                    cc.fadeIn(0.5)
+                                ),
+                                cc.EaseSineIn.create(
+                                    cc.fadeTo(0.5,150)
+                                )
+                            )
+                        )
+                    );
                     colorWords(true);
+                    shLayer.runAction(cc.moveBy(0.5, cc.p(0, -$42.TWEET_SHORTIES_HEIGHT)));
                 } else {
-                    var mw = movableWords;
-                    for( var i=0, tweet = ""; i<=menuTweetCnt ; i++ ) tweet += mw[i].getString()+" ";
-                    cc.assert(tweet.length <= 140 && tweet.length > 0, "I didn't get proper tweet text." ); 
-                    _42_sendMessage("tweet",{Tweet:tweet}, function(data) {
-                        cc.sys.localStorage.removeItem("tweetTreasure");
-                        menuTweetConfirm = false;
-                        hide( cc.p(-260,750), exit );
-                        if( typeof finalCallback === "function" ) finalCallback();
-                    });
+                    sendTweet();
                 }
             }
         });
@@ -336,10 +347,39 @@ var _TWEET_MODULE = function(layer) {
         menuTweetItem = menuItems[2];
 
         menu = new cc.Menu(menuItems);
-        //menu.alignItemsHorizontallyWithPadding($42.TWEET_MENU_PADDING);
         menu.setPosition(cc.p($42.TWEET_MENU_WIDTH/2,$42.TWEET_MENU_HEIGHT/2));
         mnLayer.addChild(menu);
     }
+
+    var sendTweet = function() {
+        var mw = movableWords;
+
+        cc.assert(menuTweetCnt <= mw.length, "menuTweetCnt mustn't be lar ger than movableWords.length.");
+        for( var i=0, tweet = ""; i<=menuTweetCnt ; i++ ) tweet += mw[i].getString()+" ";
+        cc.assert(tweet.length <= 140 && tweet.length > 0, "I didn't get proper tweet text." ); 
+        _42_sendMessage("tweet",{Tweet:tweet}, function(data) {
+            cc.sys.localStorage.removeItem("tweetTreasure");
+            menuTweetConfirm = false;
+            hide( cc.p(-260,750), exit );
+            if( typeof finalCallback === "function" ) finalCallback();
+        });
+
+        removeTweety();
+    }
+
+    var removeTweety = function() {
+        if( menuTweety ) {
+            menuTweety.runAction(
+                cc.sequence(
+                    cc.fadeOut(0.5),
+                    cc.callFunc(function() {
+                        tLayer.removeChild(menuTweety);
+                        menuTweety = null;
+                    })
+                )
+            );
+        }
+    };
 
     var putWordsIntoTextLayer = function() {
         var wt = $42.tweetTreasure && $42.tweetTreasure.movableWords || $42.wordTreasure,
@@ -439,9 +479,10 @@ var _TWEET_MODULE = function(layer) {
                     cc.EaseSineIn.create(
                         cc.moveTo($42.TWEET_TEXT_MOVING_TIME,newPos)
                     ),
-                    cc.callFunc(function() {
-                        colorWords();
-                    })
+                    cc.delayTime(0.01),
+                    cc.callFunc(function(i) {
+                        if( i===index) colorWords();
+                    },i)
                 )
             );
         }
@@ -457,26 +498,6 @@ var _TWEET_MODULE = function(layer) {
             mw[i].setOpacity(cnt<=140? 255: y > $42.TWEET_TEXT_LINEHEIGHT/2 && !tweet? 80:0);
 
             if( cnt <= 140 ) menuTweetCnt = i;
-            if( tweet ) {
-                var rTime = 0.33*Math.random();
-                mw[i].runAction(
-                    cc.repeatForever(
-                        cc.sequence(
-                            cc.EaseSineOut.create(cc.fadeTo(0.33+rTime,180)),
-                            cc.EaseSineIn.create(cc.fadeIn(0.33+rTime))
-                        )
-                    )
-                );
-            } else {
-                if( tweet === false ) mv[i].stopAllActions();
-                mw[i].setColor($42.TWEET_TEXT_TEXT_COLOR);
-                mw[i].setOpacity(255);
-                mw[i].runAction(
-                    cc.EaseSineOut.create(
-                        cc.rotateTo($42.TWEET_TEXT_MOVING_TIME, 0)
-                    )
-                );
-            }
         }
     };
 
@@ -492,7 +513,7 @@ var _TWEET_MODULE = function(layer) {
 
         ///////////////////////////////
         // Reset x array
-        for( var i=0, xPos=[], cxPos=0; i<lines ; i++ ) xPos[i] = 0;
+        for( var i=0, xPos=[], cxPos=0; i<lines ; i++ ) xPos[i] = $42.TWEET_SHORTIES_SPACE_WIDTH/2;
         for( var i=0, yOffset=lineHeight/2+padding ; i<sw.length ; i++ ) {
             ///////////////////////////////
             // which line is next?
@@ -506,7 +527,7 @@ var _TWEET_MODULE = function(layer) {
         }
         //////////////////////////////////////
         // Align center
-        for( var i=0,max=0 ; i<lines ; i++ ) tWidth = Math.max(max, xPos[i]);  
+        for( var i=0,max=0 ; i<lines ; i++ ) tWidth = Math.max(max, xPos[i]) + $42.TWEET_SHORTIES_SPACE_WIDTH/2;  
         for( var i=0 ; i<sw.length ; i++ ) {
             var pos   = sw[i].getPosition(),
                 l = Math.round(lines-(pos.y-yOffset)/lineHeight-1),
@@ -568,9 +589,9 @@ var _TWEET_MODULE = function(layer) {
                                 pos = layer.convertToWorldSpace(words[i].getPosition());
 
                             box = {
-                                width: box.width,
+                                width: Math.max(box.width, $42.TWEET_SHORTIES_SPACE_WIDTH),
                                 height: box.height,
-                                x: pos.x - box.width/2,
+                                x: pos.x - Math.max(box.width, $42.TWEET_SHORTIES_SPACE_WIDTH)/2,
                                 y: pos.y - box.height/2
                             };
                             if( cc.rectContainsPoint(box, loc) ) {
@@ -588,9 +609,15 @@ var _TWEET_MODULE = function(layer) {
                 };
 
                 if( menuTweetConfirm ) {
-                    menuTweetItem.setString($42.t.tweet_tweet.label);
-                    menuTweetConfirm = false;
-                    colorWords(false);
+                    if( cc.rectContainsPoint(menuTweety.getBoundingBox(), loc) ) {
+                        sendTweet();
+                    } else {
+                        menuTweetItem.setString($42.t.tweet_tweet.label);
+                        menuTweetConfirm = false;
+                        removeTweety();
+                        colorWords(false);
+                        shLayer.runAction(cc.moveBy(0.5, cc.p(0, $42.TWEET_SHORTIES_HEIGHT)));
+                    }
                     return;
                 };
 

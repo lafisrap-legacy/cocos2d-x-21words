@@ -39029,7 +39029,6 @@ serielle 0
 seriellen 0
 Serien 0,8
 serienreif 0
-Series 0
 seriös 0
 seriöse 0
 Seriöse 0
@@ -42578,7 +42577,6 @@ tastete 0
 Tastsinn 0,8
 Tataren 0,8
 Tatbestand 0
-Tate 0
 täte 0
 Tateinheit 0
 Taten 0,8
@@ -42987,8 +42985,6 @@ Thalbach 0
 Thaler 0
 THALES 0
 Thalheim 0
-Thalia 0
-Thälmann 0
 that 0
 That 0
 Thatcher 0

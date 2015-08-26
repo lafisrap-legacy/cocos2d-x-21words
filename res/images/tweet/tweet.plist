@@ -7,7 +7,7 @@
             <key>cursor.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,2},{12,80}}</string>
+                <string>{{236,2},{12,80}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -17,6 +17,19 @@
                 <key>sourceSize</key>
                 <string>{12,80}</string>
             </dict>
+            <key>tweety.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,2},{232,230}}</string>
+                <key>offset</key>
+                <string>{-1,6}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{11,7},{232,230}}</string>
+                <key>sourceSize</key>
+                <string>{256,256}</string>
+            </dict>
         </dict>
         <key>metadata</key>
         <dict>
@@ -25,9 +38,9 @@
             <key>realTextureFileName</key>
             <string>tweet.png</string>
             <key>size</key>
-            <string>{16,89}</string>
+            <string>{250,234}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:722d1c6e725bfc432b5a2aeca1dfd0bb:74124fd41b594bf999b42c38fc14408b:7af820c4e3a6b682cad1208f4fe62a62$</string>
+            <string>$TexturePacker:SmartUpdate:936e87fde61a56e181ca1873d11aabbf:4075608380bfa1c94bd2dceee0e359fd:7af820c4e3a6b682cad1208f4fe62a62$</string>
             <key>textureFileName</key>
             <string>tweet.png</string>
         </dict>

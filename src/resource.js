@@ -1,10 +1,10 @@
 var res = {
     tiles_png : "res/images/tiles/tiles.png",
-    tiles_plist : 'res/images/tiles/tiles.plist',
+    tiles_plist : "res/images/tiles/tiles.plist",
     letters_png : "res/images/letters/letters.png",
-    letters_plist : 'res/images/letters/letters.plist',
+    letters_plist : "res/images/letters/letters.plist",
     tweet_png : "res/images/tweet/tweet.png",
-    tweet_plist : 'res/images/tweet/tweet.plist',
+    tweet_plist : "res/images/tweet/tweet.plist",
     title_easy_png : "res/images/title/title.png",
     title_intermediate_png : "res/images/title/title_2.png",
     title_expert_png : "res/images/title/title_3.png",
@@ -16,6 +16,9 @@ var res = {
 	background06_png : "res/images/backgrounds/level06.png",
 	background07_png : "res/images/backgrounds/level07.png",
 	twitter_png : "res/images/backgrounds/twitter.png",
+	wordfound_png : "res/images/backgrounds/wordfound.png",
+    circles_png : "res/images/backgrounds/circles.png",
+    circles_plist : "res/images/backgrounds/circles.plist",
 	background_element1_png : "res/images/backgrounds/element1.png",
 	background_element2_png : "res/images/backgrounds/element2.png",
     background_levelnr_png : "res/images/backgrounds/levelnr.png",
@@ -39,7 +42,7 @@ var res = {
 	// murbiks / tutorial
     murbiks_single_png : "res/images/murbiks/mostafa_fly01.png",
     murbiks_png : "res/images/murbiks/murbiks.png",
-    murbiks_plist : 'res/images/murbiks/murbiks.plist',
+    murbiks_plist : "res/images/murbiks/murbiks.plist",
     
     // particles
     particle_flowers: "res/particles/Flower.plist",

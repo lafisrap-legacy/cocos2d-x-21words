@@ -100,6 +100,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
         stopActionsAndTimeouts();
         hideSpeechBubble();
 
+        if( mostafa.getPosition().x > cc.width+70 ) mostafa.setPosition(cc.p(-70,cc.height/2));
+
         var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
 			bezier = options.bezier || [
 				cc.p( 360, 480),
@@ -808,6 +810,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
         	        mul.resume();
 	       	        mul.scheduleUpdate();
 					mul.removeChild(speechBubbleCloud);
+					mul.removeChild(speechBubbleLine);			        
 					mul.removeChild(speechBubble);			        
 	    		})
 	    	)
@@ -819,6 +822,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
         mostafa.stopAllActions();    
         speechBubble.stopAllActions();    
         speechBubbleCloud.stopAllActions();    
+        speechBubbleLine.setOpacity(0);
         tile1.stopAllActions();
         tile2.stopAllActions();
         tile3.stopAllActions();
@@ -907,16 +911,18 @@ var _MURBIKS_MODULE = function(parentLayer) {
     
         tile.setCascadeOpacityEnabled(true);
         for( var i=0 ; i<4 ; i++ ) {
-            var file = ($42.LETTER_NAMES[$42.LETTERS.indexOf(letters[i])]+".png").trim(),
+            var index = $42.LETTERS.indexOf(letters[i]),
+                name = $42.LETTER_NAMES[index],
+                file = name+".png",
                 frame = cc.spriteFrameCache.getSpriteFrame(file);
 
-            cc.log("file: "+file,", frame: "+frame);
+            cc.log("file: '"+file+"', name: '"+name+"', index: "+index+", frame: "+frame);
 
             var sprite = cc.Sprite.create(frame);    
             sprite.setPosition(boxes[i]);
             sprite._orgPos = boxes[i];
             tile.addChild(sprite);
-        }   
+        }
         
         return tile;
     };
@@ -928,7 +934,6 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		_42_retain(mul, "Tutorial layer");
 		
 		// Load sprite frames to frame cache, add texture node
-        cc.spriteFrameCache.addSpriteFrames(res.murbiks_plist);
 
 		var loadFrames = function(name,cnt) {
 			var frames = [];
@@ -945,6 +950,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		loadFrames("mostafa_land",7);
 		
         mostafa = cc.Sprite.create(res.murbiks_single_png);        
+        mostafa.setScale(0.75);
         mostafa.attr({
         	x: 0,
         	y: 0,
@@ -1006,4 +1012,6 @@ var _MURBIKS_MODULE = function(parentLayer) {
         "Story Basic Concepts": animStoryBasicConcepts,
         "Story Advanced Concepts": animStoryAdvancedConcepts
     };
+
+    cc.spriteFrameCache.addSpriteFrames(res.murbiks_plist);
 };

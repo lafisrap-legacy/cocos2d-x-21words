@@ -118,10 +118,9 @@ var _42GameLayer = cc.Layer.extend({
     ctor:function (mode) {
         this._super();
 
-        var size = this.size = cc.director.getWinSize(),
-        	res = cc.director.getOpenGLView().getFrameSize();
+        var res = cc.director.getOpenGLView().getFrameSize();
         
-        $42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD * size.height / res.height;
+        $42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD * cc.height / res.height;
         
         /////////////////////////
         // Look if there is a plugin module
@@ -214,8 +213,6 @@ var _42GameLayer = cc.Layer.extend({
     // 
 	showLogOnScreen: function() {
 		
-        var size = this.size;
-
         // tmp Errormessage layer
         var logMsg = cc.Node.create();
         
@@ -224,7 +221,7 @@ var _42GameLayer = cc.Layer.extend({
         
         $42.msg1.setPosition(0,0);
         $42.msg2.setPosition(0,-20);
-		logMsg.setPosition(size.width/2,size.height-50);
+		logMsg.setPosition(cc.width/2,cc.height-50);
 
 		//logMsg.addChild($42.msg1, 1);        	
 		//logMsg.addChild($42.msg2, 1);        	
@@ -247,7 +244,6 @@ var _42GameLayer = cc.Layer.extend({
     ////////////////////////////////////////////////////////////////////////////
     // initBoxSpace initializes the box array and draws the score bar
 	initBoxSpace: function() {
-        var size = this.size;
         
 	    // initialize boxes arrays
 	    for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) {
@@ -329,7 +325,8 @@ var _42GameLayer = cc.Layer.extend({
 	
     drawScorebarText: function(text,pos,size,color) {
 		
-		var label = new cc.LabelBMFont( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT ),
+		//var label = new cc.LabelBMFont( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT ),
+    	var label = new cc.LabelTTF   ( text , _42_getFontName(res.exo_regular_ttf), size),
             rl = $42._rollingLayer;
 
 		label.setPosition(pos);
@@ -764,8 +761,7 @@ var _42GameLayer = cc.Layer.extend({
     //
     update: function(dt) {
     	
-    	var self = this,
-			size = this.size;
+    	var self = this;
 
     	/////////////////////////////////////
     	// Internal function: get current row / col of a box
@@ -1275,7 +1271,7 @@ var _42GameLayer = cc.Layer.extend({
         /////////////////////////////////////
     	// if there is no tile flying right now, build a new one
         if( !t && !this.pauseBuildingTiles ) {
-            this._currentTile = t = self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, size.height+$42.BS)); 
+            this._currentTile = t = self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, cc.height+$42.BS)); 
         } else if( !t ) return;
         
         var lp = t.sprite.getPosition(),
@@ -1322,7 +1318,7 @@ var _42GameLayer = cc.Layer.extend({
             if( !self.isSwipeDown ) {
                 ////////////////////////////////////////
                 // go back to normal falling speed if tile is not dragged
-                if( lp.y < size.height - $42.BS ) {
+                if( lp.y < cc.height - $42.BS ) {
                     t.fallingSpeed = $42.FALLING_SPEED;
                 } else {
                     t.fallingSpeed = $42.FALLING_SPEED * 36;
@@ -1435,10 +1431,9 @@ var _42MenuLayer = cc.LayerColor.extend({
     // ctor is the init function
     //
     ctor:function (question, menuItems) {
-        var size = this.size = cc.director.getWinSize(),
-    	self = this;            
+    	var self = this;            
         
-        this._super(new cc.Color(40,0,0,160),size.width,size.height);
+        this._super(new cc.Color(40,0,0,160),cc.width,cc.height);
 
         this.initMenu(question, menuItems);
 		
@@ -1450,8 +1445,7 @@ var _42MenuLayer = cc.LayerColor.extend({
     //
 	initMenu: function(questions, menuItems) {
 		
-        var size = this.size,
-        	self = this,
+        var self = this,
         	items = [];
 
         ////////////////////
@@ -1459,8 +1453,8 @@ var _42MenuLayer = cc.LayerColor.extend({
         if( typeof questions === "string") questions = [questions];
         for( var i=0 ; i<questions.length ; i++ ) {
     		var q = cc.LabelTTF.create(questions[i], _42_getFontName(res.exo_regular_ttf), 36),
-	    	x = size.width/2,
-	    	y = size.height/2 + menuItems.length * 96 + (questions.length-i-1) * 64;
+	    	x = cc.width/2,
+	    	y = cc.height/2 + menuItems.length * 96 + (questions.length-i-1) * 64;
 	
 			q.setPosition(x,y);
 			this.addChild(q, 1);        	
@@ -1476,8 +1470,8 @@ var _42MenuLayer = cc.LayerColor.extend({
         /////////////////////
         // Create menu
         var menu = this._menu = cc.Menu.create.apply(this, items);
-        menu.x = size.width/2;
-        menu.y = size.height/2;
+        menu.x = cc.width/2;
+        menu.y = cc.height/2;
         this.addChild(menu, 1, $42.TAG_MENU_MENU);       
 
         menu.alignItemsVerticallyWithPadding(40);
@@ -1498,13 +1492,15 @@ var _42TitleLayer = cc.Layer.extend({
     ctor:function () {
         this._super();
 
-        var self = this,
-        	size = this.size = cc.director.getWinSize();
+        var self = this;
 
         cc.width  = cc.director.getWinSize().width;
         cc.height = cc.director.getWinSize().height;
 
-		var titleBg = this._titleBg = cc.Sprite.create(res.title_easy_png);
+		cc.spriteFrameCache.addSpriteFrames(res.letters_plist);
+		cc.spriteFrameCache.addSpriteFrames(res.circles_plist);
+		
+        var titleBg = this._titleBg = cc.Sprite.create(res.title_easy_png);
         titleBg.setOpacity(0);
         titleBg.setPosition(cc.p(cc.width/2, cc.height/2));
         titleBg.setScale(1.1);
@@ -1577,7 +1573,7 @@ var _42TitleLayer = cc.Layer.extend({
             });
 
         var menu = this._menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
-        menu.setPosition(cc.p(size.width/2, 230));
+        menu.setPosition(cc.p(cc.width/2, 230));
         menu.setOpacity(0);
         menu.alignItemsVerticallyWithPadding(20);
         _42_retain(this._menu,"Title menu");
@@ -1717,7 +1713,7 @@ var _42_retain = function(obj,name) {
 
 var _42_release = function(obj) {
     
-    if( !obj ) debugger;
+    if( !obj || !_42_retained[obj.__retainId] ) debugger;
 	cc.assert(obj && _42_retained[obj.__retainId], "_42_release: Object '"+obj.__retainId+"' not valid or not in retained array...");
 	if( obj && _42_retained[obj.__retainId] ) {
         obj.release();

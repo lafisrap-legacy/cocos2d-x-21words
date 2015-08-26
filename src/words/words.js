@@ -79,13 +79,17 @@ $42.SCOREBAR_LETTERS_PER_COL = 2;           // Show max n columns
 $42.SCOREBAR_LETTERS_PADDING = 7;          // Padding of small letters
 $42.SCOREBAR_LETTERS_SCALE = 0.45;          // Size difference to real normal letters
 $42.SCOREBAR_ROLLING_LAYER_DELAY = 3.0;     // Seconds till the next score bar roll
-$42.MAX_MULTIPLIERS = 5;                    // Maximum number of multipliers
-$42.MAX_PLAYING_TIME = 45;                  // Normal length of a full game in minutes
-$42.WORD_MULTIPLIER_CYPHERPUNKS = 3;        // Multiplier for Cypherpunk words
 $42.BACKGROUND_MOVEMENTS = [cc.p(0,-1136), cc.p(0,1136), cc.p(-640, 0), cc.p(640, 0)];
 $42.BACKGROUND_SPEED = 1.33;
 $42.BACKGROUND_MOVE = 0.66;
 $42.BACKGROUND_NEXT_TILE = 2.5;
+$42.WORDFOUND_PADDING = 30;
+$42.WORDFOUND_LINE_HEIGHT = 40;
+$42.WORDFOUND_COLOR = cc.color(0,0,50);   
+$42.WORDFOUND_MOSTAFA_SPACE = 70;  
+$42.WORDS_FLYING_IN_COLOR1 = cc.color(255,255,255);
+$42.WORDS_FLYING_IN_COLOR2 = cc.color(233,255,233);
+
 // Order of multipliers
 $42.MULTIPLIER = [[2,"letter"],[2,"letter"],[2,"letter"],[3,"letter"],[2,"word"],[3,"letter"],[5,"letter"],[3,"word"],[3,"letter"],[5,"letter"],[10,"letter"]];
 
@@ -223,18 +227,16 @@ var _42_MODULE = function(_42Layer) {
         }
 		
 		// Define sprites and show word start sprite
-		var setMarkerFrame = [],
+		var setMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker0.png"),
 			optMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker1.png"),
 			selMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker3.png");
-		
-		setMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker0.png");
-		
+				
 		if( !sw.startMarker ) {
 			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2.png"),cc.rect(0,0,$42.BS,$42.BS));
 			_42_retain(sw.startMarker, "words: sw.startMarker.png");	
 			sw.startMarker.setPosition(cc.p($42.BOXES_X_OFFSET + sw.brc.col * $42.BS + $42.START_MARKER_X_OFFSET,
 											$42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.START_MARKER_Y_OFFSET));
-			ml.addChild(sw.startMarker,2);
+			ml.addChild(sw.startMarker,5);
 		}
 		var pos = sw.startMarker.getPosition(),
 			row = Math.round(pos.y-$42.BOXES_Y_OFFSET-$42.START_MARKER_Y_OFFSET)/$42.BS;
@@ -267,7 +269,6 @@ var _42_MODULE = function(_42Layer) {
 			curWords = sw.words.slice();
 			for( var i=3 ; i<sw.markers.length ; i++ ) if( sw.markers[i] === $42.MARKER_SEL || sw.markers[i] === $42.MARKER_SET ) sw.markers[i] = null;
 		}
-        for( var i=0,minLength=$42.BOXES_PER_ROW ; i<curWords.length ; i++ ) minLength = Math.min(minLength, curWords[i].word.length);
 		for( var i=sw.brc.col ; i<$42.BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
 			// remove old sprite
@@ -281,22 +282,22 @@ var _42_MODULE = function(_42Layer) {
 				if(ml.boxes[sw.brc.row][i] && curWords[j].word[col] === ml.boxes[sw.brc.row][i].userData ) hits++;
 				else if( curWords[j].word[col] ) missingLetters += curWords[j].word[col];
 			}
-			if( /*sw.markers[col] === $42.MARKER_SET ||*/ col < 3 || (hits === 1 && col < minLength) ) {
+			//if( sw.markers[col] === $42.MARKER_SET || col < 3 ) {
+            if( sw.markers[col] === $42.MARKER_SEL && hits > 0 ) {
+				// if the user marked the letter, than show marker select sprite
+				sw.sprites[col] = cc.Sprite.create(selMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
+				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
+			} else if( hits === curWords.length ) {
 				// letter in box matches with all words, draw sprite
 				sw.markers[col] = $42.MARKER_SET;
 				sw.sprites[col] = cc.Sprite.create(setMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
 				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
-			} else if( sw.markers[col] === $42.MARKER_SEL && hits > 0 || hits === curWords.length ) {
-				// if the user marked the letter, than show marker select sprite
-				sw.markers[col] = $42.MARKER_SEL;
-				sw.sprites[col] = cc.Sprite.create(selMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
-				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
+				sw.markers[col] = $42.MARKER_SET;
 			} else if( hits === 0 ) {
 				// letter in box matches with no word
 				sw.markers[col] = null;
 			} else {
 				// letter in box matches with some words, draw marker option
-				// sprite
 				sw.markers[col] = $42.MARKER_OPT;
 				sw.sprites[col] = cc.Sprite.create(optMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));					
 				ml.boxes[sw.brc.row][i].sprite.setOpacity($42.UNSELECTED_BOX_OPACITY);	
@@ -492,7 +493,7 @@ var _42_MODULE = function(_42Layer) {
                     if( level.minLength && word.word.length < level.minLength ) continue;
                     if( level.maxLength && word.word.length > level.maxLength ) continue;
                     if( (wp & word.profile) < word.profile ) continue; 
-                    if( prefGroups && (prefGroups & word.groups) === 0) continue; 
+                    //if( prefGroups && (prefGroups & word.groups) === 0) continue; 
 
                     levelWords.push(word);
                 }
@@ -550,7 +551,7 @@ var _42_MODULE = function(_42Layer) {
                     cc.sequence(
                         cc.spawn(
                             cc.fadeIn($42.BACKGROUND_SPEED*1.0),
-                            cc.EaseSineOut.create(cc.scaleTo($42.BACKGROUND_SPEED*1.0, 1.7, 2.4))
+                            cc.EaseSineOut.create(cc.scaleTo($42.BACKGROUND_SPEED*1.0, 1.3, 1.6))
                         ),
                         cc.EaseSineIn.create(cc.scaleTo($42.BACKGROUND_SPEED*0.22, 0)),
                         cc.scaleTo(0, 0.4),
@@ -813,7 +814,7 @@ var _42_MODULE = function(_42Layer) {
             break;
         case "intermediate":
             ml.unselectWord();
-            for( var i=0 ; i<5 ; i++ ) {
+            for( var i=0 ; i<7 ; i++ ) {
                 setTimeout( function() {
                     ml.checkForAndRemoveCompleteRows([0]);
                 }, $42.MOVE_SPEED * i * 1.1 * 1000);
@@ -821,7 +822,7 @@ var _42_MODULE = function(_42Layer) {
             break;
         case "expert":
             ml.unselectWord();
-            for( var i=0 ; i<2 ; i++ ) {
+            for( var i=0 ; i<7 ; i++ ) {
                 setTimeout( function() {
                     ml.checkForAndRemoveCompleteRows([0]);
                 }, $42.MOVE_SPEED * i * 1.1 * 1000);
@@ -897,7 +898,6 @@ var _42_MODULE = function(_42Layer) {
 
     ////////////////////////////////////////////////////////////////////////////////////////
     // Game end
-    // TODO: Word selection tool and the twitter send button
     //
 	var youWonTheGame = function() {
 		
@@ -910,7 +910,6 @@ var _42_MODULE = function(_42Layer) {
 		showAllWordsFlyingIn(function() {
             var self = this,
                 endGame = function() {
-                    if( self.hookEndGame ) self.hookEndGame();
                     ml.hideAndEndGame($42.TWEET_TEXT_HIDING_TIME+0.1);
                     $42._titleLayer.show();
                 }, 
@@ -948,44 +947,47 @@ var _42_MODULE = function(_42Layer) {
     // Show word list at the end
     //
 	var showAllWordsFlyingIn = function(cb) {
-		var wt = $42.wordTreasure;
+		var wt = $42.wordTreasure,
+            c1 = $42.WORDS_FLYING_IN_COLOR1,
+            c2 = $42.WORDS_FLYING_IN_COLOR2;
 		
 		for( var i=20 ; i>=0 /* wt.length */ ; i-- ) {
-			var label = cc.LabelTTF.create(wt[i%wt.length].word, _42_getFontName(res.exo_regular_ttf) , 32);
-			label.setPosition(ml.size.width/2,0);
-			label.setColor(cc.color(0,0,0));
+			var label = cc.LabelTTF.create(wt[i%wt.length].word, _42_getFontName(res.shadows_into_light_ttf) , 128);
+			label.setPosition(cc.width/2,0);
+			label.setColor(c1);
 			label.setOpacity(0);
+            label.setScale(0.25);
 			_42_retain(label, "flying word");	
 			ml.addChild(label, 5);
 			label.i = i;
 			label.runAction(
 				cc.sequence(
-					cc.delayTime(i * 0.42),
-					cc.moveTo(1.5,ml.size.width/2,200),
+					cc.delayTime(i * 0.85),
+					cc.moveTo(1.5,cc.width/2,200),
 					cc.spawn(
-						cc.moveTo(1.8,ml.size.width/2,600),
+						cc.moveTo(1.8,cc.width/2,600),
 						cc.EaseSineOut.create(
-							cc.scaleTo(1.8,3.8)
+							cc.scaleTo(1.8,1.4)
 						),
 						cc.EaseSineIn.create(
 							cc.fadeTo(1.8,255)
 						),
-						cc.tintTo(1.8,84,13,143)
+						cc.tintTo(1.8,c2.r,c2.g,c2.b)
 					),
 					cc.spawn(
-							cc.moveTo(1.8,ml.size.width/2,1000),
+							cc.moveTo(1.8,cc.width/2,1000),
 							cc.EaseSineIn.create(
-								cc.scaleTo(1.8,1)
+								cc.scaleTo(1.8,0.25)
 							),
 							cc.EaseSineOut.create(
 								cc.fadeTo(1.8,0)
 							)
 						),
-					cc.moveTo(1.5,ml.size.width/2,1200),
+					cc.moveTo(1.5,cc.width/2,1200),
 					cc.callFunc(function() {
 				        _42_release(this);
 						ml.removeChild(this);
-						if( cb && this.i === 10 ) cb();
+						if( cb && this.i === 16 ) cb();
 					}, label)
 				)
 			);
@@ -1012,7 +1014,7 @@ var _42_MODULE = function(_42Layer) {
 		
 		for( var i=0 ; i<text.length ; i++ ) {
 			var label = cc.LabelTTF.create(text[i].t, "res/fonts/American Typewriter.ttf", 160);
-			label.setPosition(ml.size.width/2,ml.size.height/2);
+			label.setPosition(cc.width/2,cc.height/2);
 			label.setScale(0,0);
 			label.setColor(text[i].color);
 			_42_retain(label, "blow up word");	
@@ -1069,9 +1071,9 @@ var _42_MODULE = function(_42Layer) {
 		wordFrameSprite.setTextureRect(rect);
 		wordFrameSprite.setPosition(x,y);
 		ml.addChild(wordFrameSprite,15);
+        wordFrameSprite.setOpacity(0);
 		
 		// add sprites of word
-		var multipliersInWord = [];
 		for( var i=0 ; i<word.length ; i++) {
 			cc.assert( ml.boxes[brc.row][brc.col+i].sprite , "42words, showFullword: Sprite is missing in box at position "+brc.row+"/"+brc.col );
 			
@@ -1080,48 +1082,49 @@ var _42_MODULE = function(_42Layer) {
 			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
 			_42_retain(sprite, "words: sprite "+i);	
 			wordFrameSprite.addChild( sprite );
-			
-			// look for mulitpliers and add if there are
-			var sw = ml.selectedWord,
-				m = ml.multipliers;
-			
-			for( var j=0 ; j<m.length ; j++ ) {
-				if( sw && sw.brc.row === m[j].brc.row && sw.brc.col+i === m[j].brc.col ) {
-					var orgSprite = m[j].sprite,
-						sprite = cc.Sprite.create(orgSprite.getTexture(),orgSprite.getTextureRect());
-					sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
-					sprite.setColor(cc.color(128,0,0,255));
-					sprite.setScale(1.3,1.3);
-					_42_retain(sprite, "multiplier "+j);	
-					wordFrameSprite.addChild( sprite , 2 );
-					
-					multipliersInWord[i] = m[j];
-				}				
-			}
 		}
 		
-		// move, rotate and scale word
-		var bezier = [
-		      cc.p(x,y),
-              cc.p(x<ml.size.width/2?ml.size.width:0,ml.size.height/2),
-              cc.p(ml.size.width/2,ml.size.height-300)];
+        var background = cc.Sprite.create(res.wordfound_png);
+        _42_retain(background, "Word found background");
+        background.setPosition(cc.p(cc.width/2, cc.height/2));
+        background.setScale(0);
+        background.setOpacity(0);
+        ml.addChild(background,10);
+        fillBackgroundWithWords(background);
 
-		wordFrameSprite.runAction(
-			cc.sequence(
-				cc.delayTime($42.MOVE_SPEED*rowsDeleted),
-				cc.EaseSineIn.create(
-					cc.bezierTo($42.WORD_FRAME_MOVE_TIME,bezier)
-				)
-			)
-		);
+		// move, rotate and scale word
+		var wordBezier = [
+		      cc.p(x<cc.width/2?x+200:x-200,y+200),
+              cc.p(x<cc.width/2?x+200:x-200,cc.height-300),
+              cc.p(cc.width/2,cc.height-300)];
+
 		wordFrameSprite.runAction(cc.EaseSineIn.create(
 			cc.sequence(
-				cc.delayTime($42.MOVE_SPEED*rowsDeleted),
+                cc.callFunc(function() {
+                    rotateCircles(word.length,cc.p(x,y));
+                }),
 				cc.EaseSineOut.create(
-					cc.scaleTo($42.WORD_FRAME_MOVE_TIME/2,1.5)
+                    cc.spawn(
+                        cc.fadeIn ($42.WORD_FRAME_MOVE_TIME*0.05),
+                        cc.scaleTo($42.WORD_FRAME_MOVE_TIME*0.05,1.2)
+                    )
 				),
 				cc.EaseSineIn.create(
-					cc.scaleTo($42.WORD_FRAME_MOVE_TIME/2,0.95)
+					cc.scaleTo($42.WORD_FRAME_MOVE_TIME*0.05,1)
+				),
+				cc.EaseSineIn.create(
+				    cc.scaleTo($42.MOVE_SPEED*rowsDeleted + $42.WORD_FRAME_MOVE_TIME*1.0, 1.2)
+                ),
+                cc.spawn(
+                    cc.bezierTo($42.WORD_FRAME_MOVE_TIME*1.4,wordBezier),
+                    cc.sequence(
+                        cc.EaseSineOut.create(
+                            cc.scaleTo($42.WORD_FRAME_MOVE_TIME*0.7,2.3)
+                        ),
+                        cc.EaseSineIn.create(
+                            cc.scaleTo($42.WORD_FRAME_MOVE_TIME*0.7,0.95)
+                        )
+                    )
 				),
 				cc.callFunc(function() {
 					
@@ -1145,6 +1148,23 @@ var _42_MODULE = function(_42Layer) {
 				            ml.getParent().removeChild(menuLayer);
 					        sprite.removeAllChildren(true);
 					        ml.getParent().removeChild(sprite);
+
+                            background.runAction(
+                                cc.sequence(
+                                    cc.EaseQuinticActionOut.create(
+                                        cc.spawn(
+                                            cc.scaleTo($42.WORD_FRAME_MOVE_TIME,0),
+                                            cc.fadeOut($42.WORD_FRAME_MOVE_TIME)
+                                        )
+                                    ),
+                                    cc.callFunc(function() {
+                                        ml.removeChild(background);
+                                        _42_release(background);
+                                    })
+                                )
+                            );
+
+                            stopCircles();
 
 					        cb( takeWord );					        
 	   					},
@@ -1170,6 +1190,23 @@ var _42_MODULE = function(_42Layer) {
 	   				var menuLayer = new _42MenuLayer(levelType !== $42.LEVEL_TYPE_GIVEN? $42.t.take_word_question: $42.t.take_word_congrats[Math.floor(Math.random()*$42.t.take_word_congrats.length)],menuItems); 
     	            ml.getParent().addChild( menuLayer , 2);
 
+                    menuLayer.setOpacity(0);
+                    var items = menuLayer.getChildren();
+                    
+                    if( items[2] ) {
+                        items[0].setColor(cc.color(0,0,0,255));
+                        items[0].setPosition(cc.p(cc.width/2,cc.height*0.50));
+                        items[1].setColor(cc.color(0,0,0,255));
+                        items[1].setPosition(cc.p(cc.width/2,cc.height*0.36));
+                        items[2].setColor(cc.color(0,0,0,255));
+                        items[2].setPosition(cc.p(cc.width/2,cc.height*0.28));
+                    } else {
+                        items[0].setColor(cc.color(0,0,0,255));
+                        items[0].setPosition(cc.p(cc.width/2,cc.height*0.50));
+                        items[1].setColor(cc.color(0,0,0,255));
+                        items[1].setPosition(cc.p(cc.width/2,cc.height*0.34));
+                    }
+
     	            if( ml.hookResumeAskForWord ) ml.hookResumeAskForWord( resume , menuLayer );
     	            
     				sprite = cc.Sprite.create(this.getTexture(),this.getTextureRect());
@@ -1188,45 +1225,8 @@ var _42_MODULE = function(_42Layer) {
     				_42_retain(sprite, "words: sprite");	
     				sprite.setScale(0.95,0.95);
     				ml.getParent().addChild(sprite,2);
-    			/*	
-    				// display value of word
-    				var pos = childSprites[0].getPosition();
-    				for( var i=0,sum=0,wordMul=1 ; i<word.length ; i++ ) {
-        				var value = $42.letterValues[word[i]] && $42.letterValues[word[i]].value || 0,
-        					mul = multipliersInWord[i];
-        				
-        				if( mul ) {
-        					if( mul.word ) wordMul = mul.mul;
-        					else {
-        						value *= mul.mul;
-        					}
-        				}
-        				sum += value;
-
-        				var valueSprite = cc.LabelTTF.create(value, _42_getFontName(res.exo_regular_ttf), 32);
-        				valueSprite.setPosition(pos.x + $42.BS*i , pos.y + $42.BS + 10);
-        				_42_retain(valueSprite, "words: value "+i);	
-    			        valueSprite.setColor(cc.color(200,160,0));
-    			        sprite.addChild(valueSprite, 5);	    					
-    				}
-    				
-    				if( wordMul > 1 ) {
-        				showWordMultiplier(wordMul , cc.p(sprite.getTextureRect().width/2+220 , pos.y + $42.BS * 2 + 40), {r:207,g:10,b:10}, sprite);    					
-    				}
-    				
-					// if it is a cypherpunk word ...
-					if( group == 2 ) {
-        				showWordMultiplier($42.WORD_MULTIPLIER_CYPHERPUNKS , cc.p(sprite.getTextureRect().width/2+120 , pos.y + $42.BS * 2 + 90), {r:43,g:255,b:17},  sprite);
-						wordMul *= $42.WORD_MULTIPLIER_CYPHERPUNKS;
-					};
-
-    				var value = cc.LabelTTF.create($42.t.take_word_wordvalue+": "+sum*wordMul, _42_getFontName(res.exo_regular_ttf), 48);
-					value.setPosition(sprite.getTextureRect().width/2 , pos.y + $42.BS * 2 + 10);
-					_42_retain(value,"words: value ("+sum+", "+wordMul+", "+value+")");	
-					value.setColor(cc.color(200,160,0));
-					sprite.addChild(value, 5);	
-				*/	
-					// release and remove word sprite that is not visible anymore
+					
+                    // release and remove word sprite that is not visible anymore
 			        var s = wordFrameSprite.getChildren();
 			        for( var i=0 ; i<s.length ; i++ ) {
 				        _42_release(s[i]);
@@ -1242,46 +1242,55 @@ var _42_MODULE = function(_42Layer) {
 			)
 		));
 
-	};
-	
-	var showWordMultiplier = function( multiplier , pos , color , parent ) {
-		var	sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("multiplier"+multiplier+"word.png"),cc.rect(0,0,$42.BS,$42.BS));
-		cc.assert(sprite,"42Words, showWordMultiplier: Couldn't load sprite ressource for multiplier "+multiplier);
-		sprite.setScale(0.1,0.1);
-		sprite.setPosition(pos);
-		sprite.runAction(cc.sequence(
-			cc.delayTime(Math.random()*0.33),
-			cc.spawn(
-				cc.tintTo(0.95,color.r,color.g,color.b),
-				cc.scaleTo(0.95,1.2),
-				cc.rotateTo(0.95,11)
-			)
-		));
-    	parent.addChild(sprite, 5);
-	};
-	
-	var showWordTreasure = function(word, sprite, cb) {
-		
-		var ch = sprite.getChildren();
-		
-		// show new word as sprite
-		var newWord = cc.LabelTTF.create(word, _42_getFontName(res.exo_regular_ttf), 72);
-		newWord.setPosition(cc.p(ml.size.width/2,ml.size.height-300));
-		newWord.setColor(cc.color(160,0,0,255));
-		ml.getParent().addChild(newWord,1);
+        background.runAction(
+            cc.sequence(
+				cc.delayTime($42.MOVE_SPEED*rowsDeleted+$42.WORD_FRAME_MOVE_TIME*2),
+                cc.callFunc(function() {
+                }),
+                cc.EaseQuinticActionOut.create(
+                    cc.spawn(
+                        cc.scaleTo($42.WORD_FRAME_MOVE_TIME/2,1),
+                        cc.fadeTo($42.WORD_FRAME_MOVE_TIME/2,255)
+                    )
+                )
+            )
+        );
 
-		// fade out sprite and word value text
-		for( var i=0; i<ch.length ; i++ ) ch[i].runAction(cc.EaseSineOut.create(cc.fadeTo(1.3,0)));
-		sprite.runAction(
-			cc.sequence(
-				cc.EaseSineOut.create(
-					cc.fadeTo(1.3,0)
-				),
-				cc.callFunc(function() {
-					// cb();
-				})
-			)
-		);
+	};
+
+    var fillBackgroundWithWords = function(background) {
+
+        var wt = $42.wordTreasure,
+            words = wt.concat(ml.levelWords);
+
+        for( var i=0,x=cc.width-$42.WORDFOUND_PADDING,y=$42.WORDFOUND_PADDING ; i<words.length ; i++ ) {
+
+		    var word = cc.LabelTTF.create(words[i].word, _42_getFontName(res.exo_regular_ttf), 32),
+                mostafa = cc.Sprite.create(res.murbiks_single_png),        
+                width = word.getContentSize().width;
+
+            x = x - width/2;
+            if( x < width/2 + $42.WORDFOUND_PADDING ) {
+                x = cc.width - $42.WORDFOUND_PADDING - width/2;
+                y += $42.WORDFOUND_LINE_HEIGHT;
+            }
+
+		    word.setPosition(cc.p(x,y));
+		    word.setColor($42.WORDFOUND_COLOR);
+		    background.addChild(word);
+
+            x = x - width/2 - $42.WORDFOUND_MOSTAFA_SPACE/2;
+            if( x < $42.WORDFOUND_PADDING ) {
+                x = cc.width - $42.WORDFOUND_MOSTAFA_SPACE / 3;
+                y += $42.WORDFOUND_LINE_HEIGHT;
+            }
+
+            mostafa.setPosition(cc.p(x,y));
+            mostafa.setScale(0.4);
+            background.addChild(mostafa);
+            
+            x -= $42.WORDFOUND_MOSTAFA_SPACE/2;
+        }
 	};
 	
 	var selectBestWord = function() {
@@ -1403,8 +1412,6 @@ var _42_MODULE = function(_42Layer) {
 		} else {
 			ml.selectedWord = null;
 		}		
-		
-		updateMultipliers();
 	};
 	
 	ml.unselectWord = function(refresh) {
@@ -1426,10 +1433,10 @@ var _42_MODULE = function(_42Layer) {
 	        _42_retain(word, "blow word "+i);	
 	        angle = (angle+79)%360;
 	        ml.addChild(word, 5);
-	        var x2 = Math.random()>0.5? -400 : ml.size.width + 400,
-	        	y2 = Math.random()*ml.size.height,
-	        	x1 = x2<0? ml.size.width:0,
-	        	y1 = Math.random()*ml.size.height,
+	        var x2 = Math.random()>0.5? -400 : cc.width + 400,
+	        	y2 = Math.random()*cc.height,
+	        	x1 = x2<0? cc.width:0,
+	        	y1 = Math.random()*cc.height,
 	        	bezier = [cc.p(word.x,word.y),
 	                      cc.p(x1,y1),
 	                      cc.p(x2,y2)],
@@ -1472,6 +1479,115 @@ var _42_MODULE = function(_42Layer) {
 		}
 	};
 		
+    var rotateCircles = function(len, wordPos) {
+        var ROUNDS = 4,
+            yOffset = (856 - wordPos.y) / (ROUNDS-1),
+            pos = [
+                cc.p(320-3.5*len*10,856+ 5),
+                cc.p(320-2.5*len*10,856+10),
+                cc.p(320-1.5*len*10,856-15),
+                cc.p(320-0.5*len*10,856-20),
+                cc.p(320+0.5*len*10,856+15),
+                cc.p(320+1.5*len*10,856-25),
+                cc.p(320+2.5*len*10,856+10),
+                cc.p(320+3.5*len*10,856- 5)
+            ],
+            zIndex = [
+                20,
+                11,
+                12,
+                18,
+                14,
+                15,
+                16,
+                17
+            ];
+
+        ml._wordFoundCircles = [];
+        for( var i=0 ; i<8 ; i++ ) {
+            var c = ml._wordFoundCircles[i] = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("circle"+(i+1)+".png"));
+            ml.addChild(c, zIndex[i]);
+            c.setPosition(cc.p(cc.width*1.2, cc.height/2));
+            _42_retain(c, "Circle "+i);
+
+            for( var j=0, bezier=[] ; j<ROUNDS ; j++ ) {
+                var radius = cc.size(cc.width*0.5-j*cc.width*0.5/(ROUNDS-1), cc.height/8-j*cc.height/8/(ROUNDS-1)),
+                    deviation  = { 
+                        left: cc.p((0.5-Math.random()) * radius.width, (0.5-Math.random()) * radius.height),
+                        right:cc.p((0.5-Math.random()) * radius.width, (0.5-Math.random()) * radius.height)
+                    }
+                bezier[j] = { 
+                    upper: [
+                        cc.p(pos[i].x + radius.width + deviation.right.x, pos[i].y + radius.height + deviation.right.y - (ROUNDS-j-1)*yOffset),
+                        cc.p(pos[i].x - radius.width + deviation.left.x , pos[i].y + radius.height + deviation.left.y  - (ROUNDS-j-1)*yOffset),
+                        cc.p(pos[i].x - radius.width, pos[i].y - (ROUNDS-j-1)*yOffset)
+                    ], 
+                    lower: [
+                        cc.p(pos[i].x - radius.width - deviation.left.x , pos[i].y - radius.height - deviation.left.y  - (ROUNDS-j-1)*yOffset),
+                        cc.p(pos[i].x + radius.width - deviation.right.x, pos[i].y - radius.height - deviation.right.y - (ROUNDS-j-1)*yOffset),
+                        cc.p(pos[i].x + radius.width, pos[i].y - (ROUNDS-j-1)*yOffset)
+                    ]
+                };
+            }
+
+            var speed = (50+Math.random()*50)*(i%2?-1:1),
+                time = 0.280;
+
+            c.runAction(
+                cc.sequence(
+                    cc.rotateBy(time*2, speed*4/ROUNDS),
+                    cc.rotateBy(time*2, speed*3/ROUNDS),
+                    cc.rotateBy(time*2, speed*2/ROUNDS),
+                    cc.rotateBy(time*2000, speed*1000/ROUNDS)
+                )
+            );
+            
+            c.setScale(0);
+            c.runAction(
+                cc.sequence(
+                    cc.EaseQuinticActionOut.create(
+                        cc.scaleTo(time*6,0.08)
+                    ),
+                    cc.EaseQuinticActionOut.create(
+                        cc.scaleTo(time*2,1)
+                    )
+                )
+            );
+
+            setTimeout(function(c, bezier, i) {
+                c.runAction(
+                    cc.sequence(
+                        cc.bezierTo(time, bezier[0].upper),
+                        cc.bezierTo(time, bezier[0].lower),
+                        cc.bezierTo(time, bezier[1].upper),
+                        cc.bezierTo(time, bezier[1].lower),
+                        cc.bezierTo(time, bezier[2].upper),
+                        cc.bezierTo(time, bezier[2].lower),
+                        cc.bezierTo(time, bezier[3].upper),
+                        cc.bezierTo(time, bezier[3].lower)
+                    )
+                )
+            }, i*time*500, c, bezier, i);
+        } 
+    };
+
+    var stopCircles = function() {
+        for( var i=0 ; i<8 ; i++ ) {
+            var c = ml._wordFoundCircles[i];
+            c.runAction(
+                cc.sequence(
+                    cc.EaseSineOut.create(
+                        cc.fadeOut($42.WORD_FRAME_MOVE_TIME + Math.random())
+                    ),
+                    cc.callFunc(function(c) {
+                        ml.removeChild(c);
+                        _42_release(c);
+                    },c)
+                )
+            )
+        }
+    };
+
 	var drawLetterBoxes = function(options) {
 
         if( !$42.newWordProfileLetters && $42.displayedProfileLetters.length !== 0  ) return;
@@ -1592,110 +1708,14 @@ var _42_MODULE = function(_42Layer) {
 		}
 	};
 	
-	var setNextMultiplier = function() {
-		var m = ml.multipliers;
-		
-		if( m.length >= $42.MAX_MULTIPLIERS ) return;
-		
-		var mul = $42.MULTIPLIER[ml.nextMultiplier],
-			sprite = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("multiplier"+mul[0]+mul[1]+".png"),cc.rect(0,0,$42.BS,$42.BS));
-		_42_retain(sprite, "multiplier"+mul[0]+" "+mul[1]);	
-
-        // find a new position
-        while( true ) {
-    		var brc = { 
-    			row : 3 + m.length/2 + Math.random()*4 >>> 0,
-    			col : Math.random()*$42.BOXES_PER_ROW >>> 0
-    		};
-    		
-    		for( var i=0 ; i<m.length ; i++ ) 
-    			if( (m[i].brc.row === brc.row || m[i].brc.row === brc.row-1 || m[i].brc.row === brc.row+1 ) && 
-    				 m[i].brc.col === brc.col ) break;
-    		if( i === m.length) break;
-        }
-        
-        // set position, color and show sprite
-        sprite.setPosition($42.BOXES_X_OFFSET+$42.BS*brc.col+$42.BS/2,$42.BOXES_Y_OFFSET+$42.BS*brc.row+$42.BS/2);
-        ml.addChild(sprite,20);
-        m.push({
-        	sprite: sprite,
-        	brc: brc,
-        	mul: mul[0],
-        	word: mul[1]==="word"? true:false
-        });
-        
-        // color it
-        updateMultipliers();
-        
-        ml.nextMultiplier = ++ml.nextMultiplier%$42.MULTIPLIER.length;
-	}
-	
-	var updateMultipliers = function() {
-		var m = ml.multipliers,
-		sw = ml.selectedWord;
-
-		for( var i=0 ; i<m.length ; i++ ) {
-			var brc = m[i].brc,
-				sprite = m[i].sprite,
-				marker = sw && sw.brc.row === brc.row && sw.markers[brc.col-sw.brc.col];
-	
-		    if( (marker === $42.MARKER_SEL || marker === $42.MARKER_SET) ) {
-		    	if( !m[i].armed ) {
-			    	sprite.runAction(cc.sequence(cc.tintTo(0.33,128,0,0),cc.blink(0.5,3)));
-			    	m[i].armed = true;		    		
-		    	}
-		    }
-		    else if( ml.boxes[brc.row][brc.col] ) {
-		    	sprite.runAction(cc.tintTo(0.33,0,0,128));
-		    	m[i].armed = false;
-		    }
-		    else {
-		    	sprite.runAction(cc.tintTo(0.33,128,128,128));	
-		    	m[i].armed = false;
-		    }
-		}
-	};
-	
-	var blowMultiplier = function(value, pos) {
-		var coin = cc.LabelTTF.create(value, _42_getFontName(res.exo_regular_ttf), 40),
-			time = 0.5;
-
-		coin.setPosition(pos.x,pos.y);
-		_42_retain(coin, "coin");	
-		coin.setColor(cc.color(40,0,0));
-		ml.addChild(coin, 5);
-		coin.runAction(
-			cc.sequence(
-				cc.EaseSineOut.create(
-			    	cc.spawn(
-			    		cc.moveBy(time,cc.p((pos.x-ml.size.width/2)/4,300)),
-			    		cc.scaleTo(time,2),
-			    		cc.fadeTo(time,0)
-			    	)
-			    ),
-			    cc.callFunc(function() {
-					_42_release(this);
-			    	ml.removeChild(this);
-			    },coin)
-			)
-		);		
-	}
-		
 	getProgrammedTile = function(isCalledAgain) {
-		//if( curTileProgram && curTileProgramCnt < curTileProgram.length ) {
-		//    return curTileProgram[curTileProgramCnt++];
-        //}
-
-		//curTileProgram = null;
-		//curTileProgramCnt = null;
-        
         ////////////////////////////////
         // Fit in words from wordsForTiles list
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             sw = ml.selectedWord,
             wft = ml.wordsForTiles;
 
-        if( level.type === $42.LEVEL_TYPE_FREE ) return {letters: [" "," "," "," "]};
+        if( level.type === $42.LEVEL_TYPE_FREE ) return null;
         
         /////////////////////////////////
         // Only return letters in a specified frequency
@@ -2000,7 +2020,8 @@ var _42_MODULE = function(_42Layer) {
 	 * 
 	 */
 	_42Layer.hookLoadImages = function() {
-		cc.spriteFrameCache.addSpriteFrames(res.letters_plist);
+		//cc.spriteFrameCache.addSpriteFrames(res.letters_plist);
+        //Have to be loaded earlier, for murbiks animations
 	};
 	
 	_42Layer.hookStartGame = function() {
@@ -2356,7 +2377,6 @@ var _42_MODULE = function(_42Layer) {
 					ml.boxes[sw.brc.row][sw.brc.col+col].sprite.setOpacity($42.UNSELECTED_BOX_OPACITY);	
 				}
 				updateSelectedWord();
-				updateMultipliers();
 			} else {
                 var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 				
@@ -2403,7 +2423,6 @@ var _42_MODULE = function(_42Layer) {
                 $42.wordTreasure.push({word:"FORR"});
                 $42.wordTreasure.push({word:"TEST"});
                 $42.SCENE.hookTweet(function() {
-                    if( self.hookEndGame ) self.hookEndGame();
                     ml.hideAndEndGame($42.TWEET_TEXT_HIDING_TIME+0.1);
                     $42._titleLayer.show();
                 });
@@ -2419,7 +2438,6 @@ var _42_MODULE = function(_42Layer) {
             $42.wordTreasure.push({word:"FORR"});
             $42.wordTreasure.push({word:"TEST"});
             $42.SCENE.hookTweet(function() {
-                if( self.hookEndGame ) self.hookEndGame();
                 ml.hideAndEndGame($42.TWEET_TEXT_HIDING_TIME+0.1);
                 $42._titleLayer.show();
             });
