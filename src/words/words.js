@@ -1546,7 +1546,13 @@ var _42_MODULE = function(_42Layer) {
             c.runAction(
                 cc.sequence(
                     cc.EaseQuinticActionOut.create(
-                        cc.scaleTo(time*6,0.08)
+                        cc.scaleTo(time*2,0.08)
+                    ),
+                    cc.EaseQuinticActionOut.create(
+                        cc.scaleTo(time*2,0.18)
+                    ),
+                    cc.EaseQuinticActionOut.create(
+                        cc.scaleTo(time*2,0.28)
                     ),
                     cc.EaseQuinticActionOut.create(
                         cc.scaleTo(time*2,1)

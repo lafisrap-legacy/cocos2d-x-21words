@@ -70,7 +70,7 @@ var _42_GLOBALS = {
 	LONG_TAP_TIME : 300,                    // minimum time for tap
 	FALLING_SPEED : 0.40,                   // pixel per 1/60
 	MOVE_SPEED : 0.09,                      // animation speed of sprites in seconds
-	TOUCH_THRESHOLD : 6,                    // pixel
+	TOUCH_THRESHOLD : 3,                    // pixel
 	KEY_LEFT_CODE : 37,                     // keys for browser usage
 	KEY_UP_CODE : 38,                       //
 	KEY_RIGHT_CODE : 39,                    //
@@ -120,7 +120,8 @@ var _42GameLayer = cc.Layer.extend({
 
         var res = cc.director.getOpenGLView().getFrameSize();
         
-        $42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD * cc.height / res.height;
+        //$42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD * cc.height / res.height;
+        $42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD;
         
         /////////////////////////
         // Look if there is a plugin module
@@ -435,8 +436,8 @@ var _42GameLayer = cc.Layer.extend({
 	                };
 	                
 	                self.touchLastPoint = {
-	                    	x: loc.x,
-	                    	y: loc.y
+                        x: loc.x,
+                        y: loc.y
 	                };	
 	                
 	                self.touchStartTime = new Date().getTime();
@@ -451,58 +452,34 @@ var _42GameLayer = cc.Layer.extend({
 	            		var loc = pos;
 	            	}
 	                
-	            	var start = self.touchStartPoint;
+	            	var start = self.touchStartPoint,
+                        last = self.touchLastPoint;
 	
 	                if( !loc || !start ) {
+                        cc.assert(false, "There should always be a location and a start point while moving.");
 		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
 	                	return;
 	                }
 	                
-	                self.touchDistance = {
-	            			x: Math.abs(loc.x - start.x),
-	            			y: Math.abs(loc.y - start.y)
+	                self.touchCurrentMove = {
+                        x: (self.touchCurrentMove && self.touchCurrentMove.x || 0) + loc.x - last.x,
+                        y: (self.touchCurrentMove && self.touchCurrentMove.y || 0) + loc.y - last.y
 	            	};
+                    cc.log("self.touchCurrentMove: "+JSON.stringify(self.touchCurrentMove)+", loc: "+JSON.stringify(loc)+", last: "+JSON.stringify(last));
 	                
 	                // check for left
 	                if( loc.x < start.x - $42.TOUCH_SWIPE_THRESHOLD) {
-	                	// if direction changed while swiping left, set new base point
-	                	if( loc.x > self.touchLastPoint.x ) {
-	                		start = self.touchStartPoint = {
-	                        		x: loc.x,
-	                        		y: loc.y
-	                        };
-	                		self.isSwipeLeft = false;
-	                	} else {
-	                    	self.isSwipeLeft = true;                		
-	                	}
+                        self.isSwipeLeft = true;                		
 	                }
 	                
 	                // check for right
 	                if( loc.x > start.x + $42.TOUCH_SWIPE_THRESHOLD ) {
-	                	// if direction changed while swiping right, set new base point
-	                	if( loc.x < self.touchLastPoint.x ) {
-	                		self.touchStartPoint = {
-	                        		x: loc.x,
-	                        		y: loc.y
-	                        };
-	                		self.isSwipeRight = false;
-	                	} else {
 	                    	self.isSwipeRight = true;                		
-	                	}
 	                }
 	
 	                // check for down
 	                if( loc.y < start.y - $42.TOUCH_SWIPE_THRESHOLD * 3 ) {
-	                	// if direction changed while swiping down, set new base point
-	                	if( loc.y > self.touchLastPoint.y ) {
-	                		self.touchStartPoint = {
-	                        		x: loc.x,
-	                        		y: loc.y
-	                        };
-	                		self.isSwipeDown = false;
-	                	} else {
-	                    	self.isSwipeDown = true;                		
-	                	}
+                        self.isSwipeDown = true;                		
 	                }
 	
 	                // check for up
@@ -511,8 +488,8 @@ var _42GameLayer = cc.Layer.extend({
 	                }
 	                
 	                self.touchLastPoint = {
-	                		x: loc.x,
-	                		y: loc.y
+                        x: loc.x,
+                        y: loc.y
 	                };
 	            },
 	            	
@@ -531,6 +508,18 @@ var _42GameLayer = cc.Layer.extend({
 	                	if( new Date().getTime() - self.touchStartTime > $42.LONG_TAP_TIME ) {
 	    	                if( self.hookOnLongTap ) self.hookOnLongTap(loc);
 	                	} else {
+                            var t = self._currentTile,
+                                boxes = t.sprite.getChildren();
+                                        
+                            for( var i=0 ; i<boxes.length ; i++ ) {
+                                var rect = boxes[i].getBoundingBox(),
+                                    loc1 = t.sprite.convertToNodeSpace(loc);
+                                if( cc.rectContainsPoint(rect, loc1) ) {
+                                    self.isSwipeUp = true;
+                                    break;
+                                }                              
+                            }
+
 		                	self.isTap = true;
 		                	if( self.hookOnTap ) self.hookOnTap(loc);
 
@@ -541,6 +530,8 @@ var _42GameLayer = cc.Layer.extend({
 	                } else {
 		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
 	                }
+                    
+                    self.touchCurrentMove = {x:0, y:0};
 	            }
 	        });
 		    	
@@ -562,32 +553,31 @@ var _42GameLayer = cc.Layer.extend({
 	            	switch(key) {
 	            	case 'a':
 	            	case $42.KEY_LEFT_CODE:
-	            		self.touchStartPoint = { 
-	            			x: pos.x,
-	            			y: pos.y
+	            		self.touchCurrentMove = { 
+	            			x: -$42.BS,
+	            			y: 0
 	            		};
-	        			self.touchLastPoint = {
-	            			x: pos.x - $42.BS,
-	            			y: pos.y
-	            		};
+                        self._currentTile.isDragged = true;
 	            		self.isSwipeLeft = true;
 	            		break;
 	            	case 's':
 	            	case $42.KEY_RIGHT_CODE:
-	            		self.touchStartPoint = { 
-	            			x: pos.x,
-	            			y: pos.y
+	            		self.touchCurrentMove = { 
+	            			x: $42.BS,
+	            			y: 0
 	            		};
-	        			self.touchLastPoint = {
-	            			x: pos.x + $42.BS,
-	            			y: pos.y
-	            		};
+                        self._currentTile.isDragged = true;
 	            		self.isSwipeRight = true;
 	            		break;
 	            	case $42.KEY_UP_CODE:
 	            		self.isSwipeUp = true;
 	            		break;
 	            	case $42.KEY_DOWN_CODE:
+	            		self.touchCurrentMove = { 
+	            			x: 0,
+	            			y: -$42.BS/2
+	            		};
+                        self._currentTile.isDragged = true;
 	            		self.isSwipeDown = true;
 	            		break;
                     default:
@@ -803,19 +793,15 @@ var _42GameLayer = cc.Layer.extend({
     	
         //////////////////////////////////////
         // Internal function: Move tile left or right
-    	var moveHorizontalyAndCheckForBarrier = function(t, lp, tp) {
+    	var moveHorizontalyAndCheckForBarrier = function(t, lp, cm) {
     		var b = t.rotatedBoxes,					// usually four tile boxes
-    			op = t.offsetToStartPoint, 			// distance of user finger to sprite center when grabbing a tile 
     			offset = 32-(Math.abs(t.rotatedBoxes[0].x) % $42.BS),
-    			dir = Math.sign(tp.x-lp.x+op.x);  	// direction, left = -1
+    			dir = Math.sign(cm.x);  	// direction, left = -1
     		
 			// limit horizontal movement to little less than one box per cycle
-			lp.x = (Math.abs(tp.x - lp.x + op.x) < $42.BS)? tp.x + op.x : lp.x + ($42.BS-1) * dir;
+			lp.x += Math.min( Math.abs(cm.x) , $42.BS-1 )*Math.sign(cm.x);
 			
-			// move tile to center of user finger in snap speed
-			if( Math.abs(op.x) > 0 ) op.x = Math.sign(op.x) * Math.max(Math.abs(op.x) - $42.SNAP_SPEED, 0);
-
-			var newX = null;
+            var newX = null;
 			// check all (four) boxes
     		for( var i=0 ; i<t.boxes.length ; i++) {
     			
@@ -852,7 +838,6 @@ var _42GameLayer = cc.Layer.extend({
     		
     		if( newX ) {
     			lp.x = newX;
-                //cc.log("New x: "+lp.x);
     		}
     		
     		return true;
@@ -869,8 +854,6 @@ var _42GameLayer = cc.Layer.extend({
 			
 			if( t.isRotating && !(t.rotation%180) && checkRotation( t , {x:lp.x - offset , y:lp.y} ) === "ok" ) offset = -offset;
 		
-            cc.log("Aligning by "+offset+" from "+JSON.stringify(lp)+". tileOffset: "+tileOffset+", rotation = "+t.rotation);
-
 			var targetX = lp.x + offset;
 			
 			if( offset ) {
@@ -891,7 +874,7 @@ var _42GameLayer = cc.Layer.extend({
     	
         //////////////////////////////////////////
         // Internal function: Rotate tile
-    	var rotateTile = function rotate(t,lp) {
+    	var rotateTile = function rotate(t, lp, recurse) {
 			var oldRotation = t.rotation;
 			t.rotation = (t.rotation + 90)%360;
 			self.rotateBoxes(t);
@@ -938,14 +921,20 @@ var _42GameLayer = cc.Layer.extend({
 					       		
 				
 				return true;
-			} else {
-				t.isRotating = false;
-				t.rotation = oldRotation;
-				self.rotateBoxes(t);  
-				
-				return false;
-			}
-    		
+			} else if( !recurse ) { 
+                t.rotation = oldRotation;
+                self.rotateBoxes(t);  
+                if( rotate(t, {x: lp.x, y: lp.y+$42.BS}, true) ) {
+                    lp.y += $42.BS;
+                    return true;
+                } 
+            }
+
+            t.isRotating = false;
+            t.rotation = oldRotation;
+            self.rotateBoxes(t);  
+            
+            return false;
     	};
     	
         /////////////////////////////
@@ -1276,7 +1265,8 @@ var _42GameLayer = cc.Layer.extend({
         
         var lp = t.sprite.getPosition(),
             sp = self.touchStartPoint,
-            tp = self.touchLastPoint;
+            tp = self.touchLastPoint,
+            cm = self.touchCurrentMove || {x:0, y:0};
 
         lp.x = Math.round(lp.x); // align x (positions manipulated by MoveBy seem to be not precise)
 
@@ -1289,31 +1279,18 @@ var _42GameLayer = cc.Layer.extend({
                 // swipe up rotates a tile
                 if( self.isSwipeUp ) {
                     
+                    self.isSwipeUp = false;
                     t.isRotating = true;
                     t.fallingSpeed = $42.FALLING_SPEED;
                     
                     rotateTile(t , lp);
-                /////////////////////////////////////
-                // swipe down let a tile fall
-                } else if( self.isSwipeDown && !sp || self.isSwipeDown &&
-                        sp.x < lp.x + $42.BS*2 && sp.x > lp.x - $42.BS*2 &&
-                        sp.y < lp.y + $42.BS*2 && sp.y > lp.y - $42.BS*2) {
-                    t.fallingSpeed = $42.FALLING_SPEED * 36;
                 }			
             }
             
             if( !t.isRotating && isSwipe() && sp ) {
-/*            if( !t.isRotating && isSwipe() && sp &&
-                /////////////////////////////////
-                // Grab a tile
-                sp.x < lp.x + $42.BS*2 && sp.x > lp.x - $42.BS*2 &&
-                sp.y < lp.y + $42.BS*2 && sp.y > lp.y - $42.BS*2	) { // move the tile if the touch is in range
- */ 
                 t.isDragged = true;
-                t.offsetToStartPoint = {
-                    x: lp.x - sp.x,
-                    y: lp.y - sp.y
-                }
+
+                cc.log("MOV: Grabbing tile.");
             } 
             
             if( !self.isSwipeDown ) {
@@ -1329,11 +1306,12 @@ var _42GameLayer = cc.Layer.extend({
 
         } else {
 
-            if( self.touchStartPoint == null ) {
+            if( !sp && cm.x === 0 && cm.y === 0 ) {
                 /////////////////////
                 // align to column if player does't touch the tile
                 if( !t.isAligning ) {
                     
+                    cc.log("MOV: Aligning. "+JSON.stringify(cm));
                     alignToColumn(t,lp,function() {
                         t.isDragged = false;    					
                     });	
@@ -1342,14 +1320,18 @@ var _42GameLayer = cc.Layer.extend({
                 ///////////////////////
                 // Move tile if she touches it
                 if( !t.isAligning ) {
-                    moveHorizontalyAndCheckForBarrier(t,lp,tp);   
+                    cc.log("MOV: Moving. "+JSON.stringify(cm));
+                    moveHorizontalyAndCheckForBarrier(t,lp,cm);   
+                    cm.x = 0;
                 }
                 
-                if(tp.y < lp.y - $42.BS*2 && !t.isRotating) {
-                    t.fallingSpeed = Math.max( Math.min($42.FALLING_SPEED * 36, lp.y - $42.BS*2 - tp.y) , $42.FALLING_SPEED);
+                if(cm.y < 0 && !t.isRotating) {
+                    t.fallingSpeed = Math.min( -cm.y , $42.FALLING_SPEED * 32);
                 } else {
                     t.fallingSpeed = $42.FALLING_SPEED;
                 }
+            
+                cm.y = 0;
             }
         }
         
@@ -1599,20 +1581,6 @@ var _42TitleLayer = cc.Layer.extend({
     },
 
     show: function() {
-
-        for( var i=0 ; i<1 ; i++ ) {
-            setTimeout(function() {
-                cc.audioEngine.playEffect(res.bomb_mp3);
-                cc.audioEngine.playEffect(res.richtig_mp3);
-                cc.audioEngine.playEffect(res.falsch_mp3);
-            }, i*10000+1);
-            setTimeout(function() {
-                cc.audioEngine.playEffect(res.pling_mp3);
-            }, i*530+1);
-            setTimeout(function() {
-                cc.audioEngine.playEffect(res.plopp_mp3);
-            }, i*330+1);
-        }
 
         var self = this,
             ls = cc.sys.localStorage,
