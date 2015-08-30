@@ -27,6 +27,9 @@ var res = {
 	amtype72_png : "res/fonts/amtype72.png",
 
 	// sounds
+	falsch_mp3 : "res/sounds/falsch.mp3",
+	richtig_mp3 : "res/sounds/richtig.mp3",
+	bomb_mp3 : "res/sounds/bomb.mp3",
 	plopp_mp3 : "res/sounds/plopp.mp3",
 	pling_mp3 : "res/sounds/pling.mp3",
 	ritsch_mp3 : "res/sounds/ritsch.mp3",

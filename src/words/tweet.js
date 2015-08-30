@@ -478,14 +478,12 @@ var _TWEET_MODULE = function(layer) {
                 cc.sequence(
                     cc.EaseSineIn.create(
                         cc.moveTo($42.TWEET_TEXT_MOVING_TIME,newPos)
-                    ),
-                    cc.delayTime(0.01),
-                    cc.callFunc(function(i) {
-                        if( i===index) colorWords();
-                    },i)
+                    )
                 )
             );
         }
+        
+        setTimeout(colorWords, $42.TWEET_TEXT_MOVING_TIME*1000+10);
     };
 
     colorWords = function(tweet) {
@@ -750,7 +748,6 @@ var _TWEET_MODULE = function(layer) {
                                 y: lineBreak? pos.y - $42.TWEET_TEXT_LINEHEIGHT : pos.y 
                             };
 
-                        cc.log((lineBreak?"Linebreak! ":"")+"pos.x: "+pos.x+", touchMovingLabel.getPosition().x: "+touchMovingLabel.getPosition().x+", i: "+i);
                         touchMovingCursor.setOpacity(255); 
                         touchMovingCursor.setPosition(cPos);
 

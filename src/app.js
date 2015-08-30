@@ -1302,12 +1302,13 @@ var _42GameLayer = cc.Layer.extend({
                 }			
             }
             
-            if( !t.isRotating && isSwipe() && sp &&
+            if( !t.isRotating && isSwipe() && sp ) {
+/*            if( !t.isRotating && isSwipe() && sp &&
                 /////////////////////////////////
                 // Grab a tile
                 sp.x < lp.x + $42.BS*2 && sp.x > lp.x - $42.BS*2 &&
                 sp.y < lp.y + $42.BS*2 && sp.y > lp.y - $42.BS*2	) { // move the tile if the touch is in range
-  
+ */ 
                 t.isDragged = true;
                 t.offsetToStartPoint = {
                     x: lp.x - sp.x,
@@ -1321,6 +1322,7 @@ var _42GameLayer = cc.Layer.extend({
                 if( lp.y < cc.height - $42.BS ) {
                     t.fallingSpeed = $42.FALLING_SPEED;
                 } else {
+                    // Let tile fall faster at top border
                     t.fallingSpeed = $42.FALLING_SPEED * 36;
                 }
             }
@@ -1586,7 +1588,7 @@ var _42TitleLayer = cc.Layer.extend({
         _42_retain(item4, "Menu Item Tweet");
 
         this.show();
-       
+
         return true;
     },
 
@@ -1597,6 +1599,20 @@ var _42TitleLayer = cc.Layer.extend({
     },
 
     show: function() {
+
+        for( var i=0 ; i<1 ; i++ ) {
+            setTimeout(function() {
+                cc.audioEngine.playEffect(res.bomb_mp3);
+                cc.audioEngine.playEffect(res.richtig_mp3);
+                cc.audioEngine.playEffect(res.falsch_mp3);
+            }, i*10000+1);
+            setTimeout(function() {
+                cc.audioEngine.playEffect(res.pling_mp3);
+            }, i*530+1);
+            setTimeout(function() {
+                cc.audioEngine.playEffect(res.plopp_mp3);
+            }, i*330+1);
+        }
 
         var self = this,
             ls = cc.sys.localStorage,
