@@ -910,7 +910,7 @@ var _42GameLayer = cc.Layer.extend({
 				}
 				
 				// play sound
-				//cc.audioEngine.playEffect(res.klack_mp3);
+    		    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("rotate");
 
 				t.sprite.runAction(cc.sequence( 
 						cc.rotateTo($42.MOVE_SPEED*2,t.rotation),

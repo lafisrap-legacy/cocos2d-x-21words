@@ -332,12 +332,15 @@ var _42_MODULE = function(_42Layer) {
             // Full word found?
 			if( j === word.length ) {
 
+                var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+
                 if( word === ml.tmpLastWordFound ) {
                     cc.log("ERROR: Word '"+word+"' found twice.");
                     debugger;
                 }
                 ml.tmpLastWordFound = word;
 
+                $42.SCENE.playEffect(level.music.fullWord);
                 ////////////////////////////////////
                 // FULL WORD FOUND!
 				// First delete word from global word list and selected word list
@@ -411,7 +414,7 @@ var _42_MODULE = function(_42Layer) {
                                     ls.setItem("maxDifficulty", mode);
                                 }
 
-                                return
+                                return true;
                             } else {
                                 ls.setItem("wordTreasure",JSON.stringify($42.wordTreasure));
                                 ls.setItem("currentLevel",$42.currentLevel);
@@ -764,6 +767,12 @@ var _42_MODULE = function(_42Layer) {
         };
 
         $42.SCENE.playBackgroundMusic(level.music.background);
+        setTimeout(function() {
+            $42.SCENE.playEffect(level.music.levelWords);
+        }, 4500);
+        setTimeout(function() {
+            $42.SCENE.playEffect(level.music.levelNr);
+        }, 1500);
        //$42.SCENE.playInCount(level.music.fixTile);
     };
 
@@ -1335,7 +1344,8 @@ var _42_MODULE = function(_42Layer) {
     var selectFreeWord = function() {
 		var s = ml.selections,
 			sw = ml.selectedWord,
-			nsw = null;
+			nsw = null,
+            level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
 		if( !s.length ) return false;
 		if( sw ) ml.unselectWord();
@@ -1370,6 +1380,7 @@ var _42_MODULE = function(_42Layer) {
                     maxValue: max
                 } 
 		        updateSelectedWord();
+                $42.SCENE.playEffect(level.music.selection);
                 return
             }
 		}
@@ -2106,7 +2117,10 @@ var _42_MODULE = function(_42Layer) {
 	 */
 	_42Layer.hookSetTile = function() {
 		
-		this._nextTile = getProgrammedTile();
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+        $42.SCENE.playEffect(level.music.setTile);
+		
+        this._nextTile = getProgrammedTile();
 		
 		if( !this._nextTile || this._nextTile.tile === undefined ) return ml.getRandomValue($42.TILE_OCCURANCES);
         else return this._nextTile.tile; 
@@ -2186,11 +2200,12 @@ var _42_MODULE = function(_42Layer) {
 		ml.lastBrcs = brcs;
         ml.pauseBuildingTiles = true;
 		
+        $42.SCENE.playEffect(level.music.fixTile);
 		setSelections(); // OPTIMIZATION: Only look in current lines
        
-        $42.SCENE.playEffect(level.music.fixTile);
+		var ret = updateSelectedWord();
 
-		return updateSelectedWord();
+        return ret;
 	};	
 
 	_42Layer.hookTileFixedAfterRowsDeleted = function( ) {
@@ -2211,6 +2226,7 @@ var _42_MODULE = function(_42Layer) {
 
                         if( brc1.row == brc2.row && (brc1.col == brc2.col || brc1.col == brc2.col+1 || brc1.col == brc2.col+2) ) {
                             moveSelectedWord(brc2, false);
+                            $42.SCENE.playEffect(level.music.selection);
                             return true;
                         }
                     }
@@ -2267,9 +2283,12 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookAllBoxesMovedDown = function(rowsDeleted) {
-		setSelections();
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+		
+        setSelections();
 		updateSelectedWord({ rowsDeleted: rowsDeleted});			
 
+        $42.SCENE.playEffect(level.music.deleteRow);
 		// switch to next profile letter candidate
 		getNextProfileCandidate();
 	};
@@ -2456,6 +2475,11 @@ var _42_MODULE = function(_42Layer) {
             });
             break;
         }
+    };
+    
+    _42Layer.hookPlayLevelSound = function(sound) {
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+        $42.SCENE.playEffect(level.music[sound]);
     };
 	
 	_42Layer.hookUpdate = function(dt) {

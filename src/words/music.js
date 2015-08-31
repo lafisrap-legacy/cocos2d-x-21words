@@ -24,8 +24,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     }, 
     selection:      { audio: res.blue_mountains_selection_mp3 },
     fullWord:       { audio: res.blue_mountains_full_word_mp3 },
-    deleteRow:      { audio: res.blue_mountains_delete_row_mp3 },
-    deleteRowWord:  { audio: res.blue_mountains_delete_row_word_mp3 }
+    deleteRow:      { audio: res.blue_mountains_swipe_mp3 }
 };
 
 var _MUSIC_MODULE = function(layer) {
