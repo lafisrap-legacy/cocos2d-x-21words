@@ -88,6 +88,8 @@ var _42_GLOBALS = {
 	],
 	TILE_OCCURANCES : [10,5,7,7,3,2,2,0,0], // How often the tiles appear, when selected randomly
     TILE_5_6_MAX_ROW : 11,
+    MUSIC_VOLUME: 0.2,
+    EFFECTS_VOLUME: 0.8,
 };
 var $42 = _42_GLOBALS;
 $42.webCallbacks = [];
@@ -509,7 +511,7 @@ var _42GameLayer = cc.Layer.extend({
 	    	                if( self.hookOnLongTap ) self.hookOnLongTap(loc);
 	                	} else {
                             var t = self._currentTile,
-                                boxes = t.sprite.getChildren();
+                                boxes = t && t.sprite.getChildren() || [];
                                         
                             for( var i=0 ; i<boxes.length ; i++ ) {
                                 var rect = boxes[i].getBoundingBox(),
@@ -1289,8 +1291,6 @@ var _42GameLayer = cc.Layer.extend({
             
             if( !t.isRotating && isSwipe() && sp ) {
                 t.isDragged = true;
-
-                cc.log("MOV: Grabbing tile.");
             } 
             
             if( !self.isSwipeDown ) {
@@ -1311,7 +1311,6 @@ var _42GameLayer = cc.Layer.extend({
                 // align to column if player does't touch the tile
                 if( !t.isAligning ) {
                     
-                    cc.log("MOV: Aligning. "+JSON.stringify(cm));
                     alignToColumn(t,lp,function() {
                         t.isDragged = false;    					
                     });	
@@ -1320,7 +1319,6 @@ var _42GameLayer = cc.Layer.extend({
                 ///////////////////////
                 // Move tile if she touches it
                 if( !t.isAligning ) {
-                    cc.log("MOV: Moving. "+JSON.stringify(cm));
                     moveHorizontalyAndCheckForBarrier(t,lp,cm);   
                     cm.x = 0;
                 }
@@ -1795,6 +1793,7 @@ var _42Scene = cc.Scene.extend({
         // call tutorial module if available
         if( typeof _TWEET_MODULE === 'function' ) _TWEET_MODULE($42.SCENE);
         if( typeof _MURBIKS_MODULE === 'function' ) _MURBIKS_MODULE($42.SCENE);
+        if( typeof _MUSIC_MODULE === 'function' ) _MUSIC_MODULE($42.SCENE);
 
         this.loadWords(function() {
             $42._titleLayer = new _42TitleLayer();

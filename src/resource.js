@@ -31,7 +31,23 @@ var res = {
 	pling_mp3 : "res/sounds/pling.mp3",
 	ritsch_mp3 : "res/sounds/ritsch.mp3",
 
-	// fonts
+    blue_mountains_intro_mp3:           "res/sounds/levelsounds/blau_berge_einleitung1,1,1.mp3",
+    blue_mountains_loop_mp3:            "res/sounds/levelsounds/blau_berge_loop2,1,1.mp3",
+    blue_mountains_level_words_mp3:     "res/sounds/levelsounds/blaue_berge_drei_worte0,1,1.mp3",
+    blue_mountains_level_nr_mp3:        "res/sounds/levelsounds/blaue_berge_levelzahl0,1,1.mp3",
+    blue_mountains_set_tile_mp3:        "res/sounds/levelsounds/blaue_berge_buchstaben_neu0,1,1.mp3",
+    blue_mountains_swipe_mp3:           "res/sounds/levelsounds/blaue_berge_wischen0,1,1.mp3",
+    blue_mountains_rotate_1_mp3:        "res/sounds/levelsounds/blaue_berge_drehen2,1,1.mp3",
+    blue_mountains_rotate_2_mp3:        "res/sounds/levelsounds/blaue_berge_drehen3 ,1,1.mp3",
+    blue_mountains_rotate_3_mp3:        "res/sounds/levelsounds/blaue_berge_drehen1,1,1.mp3",
+    blue_mountains_fix_tile_1_mp3:      "res/sounds/levelsounds/blaue_berge_buchstaben_unten1,1,1.mp3",  
+    blue_mountains_fix_tile_2_mp3:      "res/sounds/levelsounds/blaue_berge_buchstaben_unten3,1,1.mp3",
+    blue_mountains_selection_mp3:       "res/sounds/levelsounds/blaue_berge_buchstabenkombi0,1,1.mp3",
+    blue_mountains_full_word_mp3:       "res/sounds/levelsounds/blaue_berge_wort_fertig0,1,1.mp3",
+    blue_mountains_delete_row_mp3:      "res/sounds/levelsounds/blaue_berge_reihe_kracht0,1,1.mp3",
+    blue_mountains_delete_row_word_mp3: "res/sounds/levelsounds/blaue_berge_wort_fertig_reihe_runter0,1,1.mp3",
+	
+    // fonts
 	amtype24_fnt : "res/fonts/amtype24.fnt",
 	amtype72_fnt : "res/fonts/amtype72.fnt",
 	american_typewriter_ttf: "res/fonts/American Typewriter.ttf",

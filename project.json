@@ -15,6 +15,7 @@
         "src/app.js",
         "src/words/words.js",
         "src/words/murbiks.js",
+        "src/words/music.js",
         "src/words/levels.js",
         "src/words/tweet.js"
     ]

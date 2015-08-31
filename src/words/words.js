@@ -762,6 +762,9 @@ var _42_MODULE = function(_42Layer) {
 
             checkForTutorial();
         };
+
+        $42.SCENE.playBackgroundMusic(level.music.background);
+       //$42.SCENE.playInCount(level.music.fixTile);
     };
 
     ml.fillWordsForTiles = function() {
@@ -769,6 +772,7 @@ var _42_MODULE = function(_42Layer) {
         var wordList = ml.levelPool,
             level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             prefixes = [],
+            indizes = [],
             words = [];
 
         if( level.type === $42.LEVEL_TYPE_FREE ) return;
@@ -779,6 +783,7 @@ var _42_MODULE = function(_42Layer) {
         
         ml.wordsForTiles = {
             index: 0,
+            indizes: indizes,
             words: words
         };
         
@@ -796,6 +801,8 @@ var _42_MODULE = function(_42Layer) {
                 }
                 // if nothing found, take the last ...
                 if( j === prefix.length ) words.push(prefix[prefix.length-1].word);
+
+                indizes.push(0);
             } 
         }
 
@@ -1857,7 +1864,6 @@ var _42_MODULE = function(_42Layer) {
                             }
 
                             if( clear && grounded && letters < 3 ) {
-                                //cc.log("getFittingTile: Found new fitting tile. tile: "+i+", boxIndex: "+j+", dir: "+r );
                                 fittingTiles.push({
                                     tile:       i,
                                     boxIndex:   j,
@@ -2127,8 +2133,6 @@ var _42_MODULE = function(_42Layer) {
 		tileSprite.setPosition(pos);
 		ml.addChild(tileSprite,2);
         
-        //if( sw ) $42.msg2.setString("missingLetters: "+JSON.stringify(sw.missingLetters));
-
         // add single boxes with letters to the tile
         for( var i=0 ; i<tileBoxes.length ; i++) {
         	
@@ -2176,13 +2180,16 @@ var _42_MODULE = function(_42Layer) {
 	
 	_42Layer.hookTileFixed = function( brcs ) {
 		
-        var sw = ml.selectedWord;
+        var sw = ml.selectedWord, 
+            level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
 		ml.lastBrcs = brcs;
         ml.pauseBuildingTiles = true;
 		
 		setSelections(); // OPTIMIZATION: Only look in current lines
-      
+       
+        $42.SCENE.playEffect(level.music.fixTile);
+
 		return updateSelectedWord();
 	};	
 
