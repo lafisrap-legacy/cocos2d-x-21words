@@ -1,3 +1,5 @@
+$42.MUSIC_VOLUME_GRANULARITY = 10;
+
 ////////////////////////////////////////////////
 // Music for level 5
 $42.MUSIC_BLUE_MOUNTAINS = {
@@ -9,10 +11,18 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         loop:  res.blue_mountains_loop_mp3,
         loopLength:     90.592653,
         loopTimes:      24,
-        loopMeasure:    4
+        loopMeasure:    4,
+        fadeOutDelay:   0.972,
+        fadeOutTime:    0.460
     },
-    levelWords:     { audio: res.blue_mountains_level_words_mp3 },
-    levelNr:        { audio: res.blue_mountains_level_nr_mp3 },
+    levelWords:     { 
+        audio: res.blue_mountains_level_words_mp3,
+        delay: 1500,
+    },
+    levelNr:        { 
+        audio: res.blue_mountains_level_nr_mp3, 
+        delay: 4500
+    },
     setTile:        { audio: res.blue_mountains_set_tile_mp3 },
     swipe:          { audio: res.blue_mountains_swipe_mp3 },
     rotate:         { 
@@ -27,6 +37,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     }, 
     selection:      { audio: res.blue_mountains_selection_mp3 },
     fullWord:       { audio: res.blue_mountains_full_word_mp3 },
+    lastWord:       { audio: res.blue_mountains_last_word_mp3 },
     deleteRow:      { audio: res.blue_mountains_swipe_mp3 }
 };
 
@@ -116,14 +127,30 @@ var _MUSIC_MODULE = function(layer) {
         musicPlaying = bMusic;
     };
 
-    layer.stopBackgroundMusic = function() {
-        var mp = musicPlaying;
+    layer.stopBackgroundMusic = function(time) {
+        var mp = musicPlaying,
+            stopMusic = function() {
+                if( mp.timeout ) clearTimeout(mp.timeout);
+                cc.audioEngine.stopMusic();
+                musicPlaying = null;
+            };
 
-        if( mp ) { 
-            if( mp.timeout ) clearTimeout(mp.timeout);
-            c.audioEngine.stopMusic();
-            musicPlaying = null;
-        }
+        if( mp && time ) {
+            var volume = cc.audioEngine.getMusicVolume(),
+                vg = $42.MUSIC_VOLUME_GRANULARITY,
+                steps = Math.ceil(time * 1000 / vg),
+                step = volume / steps;
+
+            var interval = setInterval(function() {
+                volume -= step;
+                if( volume < 0 ) {
+                    stopMusic();
+                    clearInterval(interval);
+                } else {
+                    cc.audioEngine.setMusicVolume(volume);
+                }
+            }, $42.MUSIC_VOLUME_GRANULARITY);
+        } else if( mp ) stopMusic();
     };
 }
 
