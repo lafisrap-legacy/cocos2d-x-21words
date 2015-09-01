@@ -1383,7 +1383,7 @@ var _42GameLayer = cc.Layer.extend({
                 menuItems.push({
                     label: $42.t.reached_top_end_game, 
                     cb: function(sender) {
-                        
+                        if( self.hookStopBackgroundMusic ) self.hookStopBackgroundMusic();                       
                         self.hideAndEndGame();
                         this.exitMenu();
                         this.getParent().removeChild(this);
