@@ -761,12 +761,14 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
+                $42.SCENE.callFuncOnNextCount(function() {
+                    $42.SCENE.playBackgroundMusic(level.music.background);
+                }, level.music.background, 3);
             }, (5.5+i*0.50) * 1000 );
 
             checkForTutorial();
         };
 
-        $42.SCENE.playBackgroundMusic(level.music.background);
         setTimeout(function() {
             $42.SCENE.playEffect(level.music.levelWords);
         }, 4500);

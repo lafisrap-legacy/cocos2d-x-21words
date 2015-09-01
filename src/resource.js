@@ -31,8 +31,8 @@ var res = {
 	pling_mp3 : "res/sounds/pling.mp3",
 	ritsch_mp3 : "res/sounds/ritsch.mp3",
 
-    blue_mountains_intro_mp3:           "res/sounds/levelsounds/blau_berge_einleitung1,1,1.mp3",
-    blue_mountains_loop_mp3:            "res/sounds/levelsounds/blau_berge_loop2,1,1.mp3",
+    blue_mountains_intro_mp3:           "res/sounds/levelsounds/blau_berge_einleitung1,1,3_24takte_a4.mp3",
+    blue_mountains_loop_mp3:            "res/sounds/levelsounds/blau_berge_loop2,1,3_24takte_a5.mp3",
     blue_mountains_level_words_mp3:     "res/sounds/levelsounds/blaue_berge_drei_worte0,1,1.mp3",
     blue_mountains_level_nr_mp3:        "res/sounds/levelsounds/blaue_berge_levelzahl0,1,1.mp3",
     blue_mountains_set_tile_mp3:        "res/sounds/levelsounds/blaue_berge_buchstaben_neu0,1,1.mp3",
