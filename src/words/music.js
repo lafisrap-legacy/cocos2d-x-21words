@@ -1,6 +1,89 @@
 $42.MUSIC_VOLUME_GRANULARITY = 10;
 
 ////////////////////////////////////////////////
+// Music for level 1
+$42.MUSIC_RED_HILLS = {
+    background: {
+        intro: res.red_hills_intro_mp3,
+        introLength:    90.592653,
+        introTimes:     24,
+        introMeasure:   4,
+        loop:  res.red_hills_loop_mp3,
+        loopLength:     90.592653,
+        loopTimes:      24,
+        loopMeasure:    4,
+        fadeOutDelay:   0.972,
+        fadeOutTime:    0.460
+    },
+    levelWords:     { 
+        audio: res.red_hills_level_words_mp3,
+        delay: 1500,
+    },
+    levelNr:        { 
+        audio: res.red_hills_level_nr_mp3, 
+        delay: 4500
+    },
+    setTile:        { audio: res.red_hills_set_tile_mp3 },
+    swipe:          { audio: [res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3] },
+    rotate:         { 
+        audio: [res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
+        minInterval: 000 
+    },
+    fixTile:        { 
+        audio: res.red_hills_fix_tile_1_mp3, 
+        playOnCount:    true,
+        maxDelay:       0.00,
+        shift:          -0.05,
+    }, 
+    selection:      { audio: res.red_hills_selection_mp3 },
+    fullWord:       { audio: res.red_hills_full_word_mp3 },
+    lastWord:       { audio: res.red_hills_last_word_mp3 },
+    deleteRow:      { audio: res.red_hills_delete_row_mp3 }
+};
+
+
+////////////////////////////////////////////////
+// Music for level 2
+$42.MUSIC_FLAMES = {
+    background: {
+        intro: res.flames_intro_mp3,
+        introLength:    90.592653,
+        introTimes:     24,
+        introMeasure:   4,
+        loop:  res.flames_loop_mp3,
+        loopLength:     90.592653,
+        loopTimes:      24,
+        loopMeasure:    4,
+        fadeOutDelay:   0.972,
+        fadeOutTime:    0.460
+    },
+    levelWords:     { 
+        audio: res.flames_level_words_mp3,
+        delay: 1500,
+    },
+    levelNr:        { 
+        audio: res.flames_level_nr_mp3, 
+        delay: 4500
+    },
+    setTile:        { audio: res.flames_set_tile_mp3 },
+    swipe:          { audio: res.flames_swipe_mp3 },
+    rotate:         { 
+        audio: [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
+        minInterval: 000 
+    },
+    fixTile:        { 
+        audio: res.flames_fix_tile_1_mp3, 
+        playOnCount:    true,
+        maxDelay:       0.00,
+        shift:          -0.05,
+    }, 
+    selection:      { audio: res.flames_selection_mp3 },
+    fullWord:       { audio: res.flames_full_word_mp3 },
+    lastWord:       { audio: res.flames_last_word_mp3 },
+    deleteRow:      { audio: res.flames_delete_row_mp3 }
+};
+
+////////////////////////////////////////////////
 // Music for level 5
 $42.MUSIC_BLUE_MOUNTAINS = {
     background: {
