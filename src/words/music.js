@@ -27,7 +27,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     swipe:          { audio: res.blue_mountains_swipe_mp3 },
     rotate:         { 
         audio: [res.blue_mountains_rotate_1_mp3, res.blue_mountains_rotate_2_mp3, res.blue_mountains_rotate_3_mp3],
-        minInterval: 400 
+        minInterval: 000 
     },
     fixTile:        { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
