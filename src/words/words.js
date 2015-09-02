@@ -2529,6 +2529,11 @@ var _42_MODULE = function(_42Layer) {
         $42.SCENE.playEffect(level.music[sound]);
     };
     
+    _42Layer.hookStopLevelSound = function(sound) {
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+        $42.SCENE.stopEffect(level.music[sound]);
+    };
+    
     _42Layer.hookStopBackgroundMusic = function() {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
         $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTime);

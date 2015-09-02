@@ -560,6 +560,7 @@ var _42GameLayer = cc.Layer.extend({
 	            			y: 0
 	            		};
                         self._currentTile.isDragged = true;
+    		            if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
 	            		self.isSwipeLeft = true;
 	            		break;
 	            	case 's':
@@ -569,6 +570,7 @@ var _42GameLayer = cc.Layer.extend({
 	            			y: 0
 	            		};
                         self._currentTile.isDragged = true;
+    		            if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
 	            		self.isSwipeRight = true;
 	            		break;
 	            	case $42.KEY_UP_CODE:
@@ -580,6 +582,7 @@ var _42GameLayer = cc.Layer.extend({
 	            			y: -$42.BS/2
 	            		};
                         self._currentTile.isDragged = true;
+    		            if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
 	            		self.isSwipeDown = true;
 	            		break;
                     default:
@@ -1291,6 +1294,7 @@ var _42GameLayer = cc.Layer.extend({
             
             if( !t.isRotating && isSwipe() && sp ) {
                 t.isDragged = true;
+    		    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
             } 
             
             if( !self.isSwipeDown ) {
@@ -1313,6 +1317,7 @@ var _42GameLayer = cc.Layer.extend({
                     
                     alignToColumn(t,lp,function() {
                         t.isDragged = false;    					
+    		            if( self.hookStopLevelSound ) self.hookStopLevelSound("swipe");
                     });	
                 }
             } else {

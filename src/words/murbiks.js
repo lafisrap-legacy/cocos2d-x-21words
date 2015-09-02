@@ -110,6 +110,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 			];
 	    _42_retain(animAction, "mostafa animAction fly");
 	
+        $42.SCENE.playEffect({ audio: res.mostafa_out_mp3 });
 	    mostafa.runAction(
             cc.sequence(
                 cc.bezierTo(options.time, bezier),
@@ -605,7 +606,14 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 cc.bezierTo(options.time, options.bezier),
                 cc.callFunc(land)
             )
-        ); 
+        );
+
+        var dest = options.bezier[2];
+        if( dest.x < 0 || dest.x > cc.width || dest.y < 0 || dest.y > cc.height ) {
+            $42.SCENE.playEffect({ audio: res.mostafa_out_mp3 });
+        } else {
+            $42.SCENE.playEffect({ audio: res.mostafa_in_mp3 });
+        }
     };
 	
 	var mostafaFlyingToMiddle = function(time, bezierIn , bezierOut) {

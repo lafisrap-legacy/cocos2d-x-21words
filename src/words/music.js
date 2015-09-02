@@ -16,7 +16,10 @@ $42.MUSIC_RED_HILLS = {
         delay: 4500
     },
     setTile:        { audio: res.red_hills_set_tile_mp3 },
-    swipe:          { audio: [res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3] },
+    swipe:          { 
+        audio: [res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
+        intervalTime: 450
+    },
     rotate:         { 
         audio: [res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
         minInterval: 000 
@@ -55,10 +58,13 @@ $42.MUSIC_FLAMES = {
         delay: 4500
     },
     setTile:        { audio: res.flames_set_tile_mp3 },
-    swipe:          { audio: res.flames_swipe_mp3 },
+    swipe:          { 
+        audio: [res.flames_swipe_1_mp3, res.flames_swipe_2_mp3, res.flames_swipe_3_mp3], 
+        intervalTime: 450
+    },
     rotate:         { 
         audio: [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
-        minInterval: 000 
+        minInterval: 0 
     },
     fixTile:        { 
         audio: res.flames_fix_tile_1_mp3, 
@@ -84,8 +90,8 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         loopLength:     90.592653,
         loopTimes:      24,
         loopMeasure:    4,
-        fadeOutDelay:   0.972,
-        fadeOutTime:    0.460
+        fadeOutDelay:   0.566,
+        fadeOutTime:    1.566
     },
     levelWords:     { 
         audio: res.blue_mountains_level_words_mp3,
@@ -96,7 +102,10 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         delay: 4500
     },
     setTile:        { audio: res.blue_mountains_set_tile_mp3 },
-    swipe:          { audio: res.blue_mountains_swipe_mp3 },
+    swipe:          { 
+        audio: res.blue_mountains_swipe_mp3,
+        intervalTime: 450
+    },
     rotate:         { 
         audio: [res.blue_mountains_rotate_1_mp3, res.blue_mountains_rotate_2_mp3, res.blue_mountains_rotate_3_mp3],
         minInterval: 000 
@@ -116,7 +125,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
 var _MUSIC_MODULE = function(layer) {
     var musicPlaying = null;
 
-    layer.playEffect = function(effect) {
+    layer.playEffect = function playEffect(effect) {
         var mp = musicPlaying,
             time = new Date().getTime();
 
@@ -136,17 +145,31 @@ var _MUSIC_MODULE = function(layer) {
                 beat = Math.floor(span/mp.beatLength),
                 offset = Math.min( span - beat * mp.beatLength - (effect.shift || 0)*mp.beatLength, mp.beatLength);
 
-            cc.log("Count offset: "+(offset/mp.beatLength)+"ms");
+            cc.log("Beat offset: "+(offset/mp.beatLength)+"ms");
             if( effect.maxDelay && effect.maxDelay > offset/mp.beatLength ) {
-                cc.audioEngine.playEffect(effect.audio[as]);
+                effect.id = cc.audioEngine.playEffect(effect.audio[as]);
             } else {
                 setTimeout(function() {
-                    cc.audioEngine.playEffect(effect.audio[as]);
+                    effect.id = cc.audioEngine.playEffect(effect.audio[as]);
                 }, (mp.beatLength - offset)%mp.beatLength);
                 cc.log("Waiting for: "+(mp.beatLength-offset)+"ms");
             }
+        } else if( effect.intervalTime && !effect.interval ) {
+            effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+            effect.interval = setInterval(function() {
+                playEffect(effect);
+            }, effect.intervalTime);
         } else {
-            cc.audioEngine.playEffect(effect.audio[as]);
+            effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+        }
+    };
+
+    layer.stopEffect = function(effect) {
+        if( effect.interval ) {
+            clearInterval(effect.interval);
+            effect.interval = null;
+        } else {
+            cc.audioEngine.stopEffect(effect.id);
         }
     };
 

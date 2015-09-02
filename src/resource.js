@@ -30,6 +30,8 @@ var res = {
 	plopp_mp3 : "res/sounds/plopp.mp3",
 	pling_mp3 : "res/sounds/pling.mp3",
 	ritsch_mp3 : "res/sounds/ritsch.mp3",
+    mostafa_out_mp3 : "res/sounds/mostafa_geht0,1,1.mp3",
+    mostafa_in_mp3 :  "res/sounds/mostafa_kommt0,1,1.mp3",
 
     // level 1
     red_hills_intro_mp3:              "res/sounds/none.mp3",
@@ -79,7 +81,7 @@ var res = {
     blue_mountains_fix_tile_2_mp3:      "res/sounds/levelsounds/blaue_berge_buchstaben_unten3,1,1.mp3",
     blue_mountains_selection_mp3:       "res/sounds/levelsounds/blaue_berge_buchstabenkombi0,1,1.mp3",
     blue_mountains_full_word_mp3:       "res/sounds/levelsounds/blaue_berge_wort_fertig0,1,1.mp3",
-    blue_mountains_last_word_mp3:       "res/sounds/levelsounds/blaue_berge_letztes_wort_fertig0,1,8_hintergrund_fade_out_0,972-1,432.mp3",
+    blue_mountains_last_word_mp3:       "res/sounds/levelsounds/blaue_berge_letztes_wort_fertig0,1,8_hintergrund_fade_out_0,566-1,556.mp3",
     blue_mountains_delete_row_mp3:      "res/sounds/levelsounds/blaue_berge_reihe_kracht0,1,1.mp3",
 	
     // fonts
