@@ -4,16 +4,8 @@ $42.MUSIC_VOLUME_GRANULARITY = 10;
 // Music for level 1
 $42.MUSIC_RED_HILLS = {
     background: {
-        intro: res.red_hills_intro_mp3,
-        introLength:    90.592653,
-        introTimes:     24,
-        introMeasure:   4,
-        loop:  res.red_hills_loop_mp3,
-        loopLength:     90.592653,
-        loopTimes:      24,
-        loopMeasure:    4,
-        fadeOutDelay:   0.972,
-        fadeOutTime:    0.460
+        intro:          null,
+        loop:           null
     },
     levelWords:     { 
         audio: res.red_hills_level_words_mp3,
@@ -31,7 +23,7 @@ $42.MUSIC_RED_HILLS = {
     },
     fixTile:        { 
         audio: res.red_hills_fix_tile_1_mp3, 
-        playOnCount:    true,
+        playOnBeat:    true,
         maxDelay:       0.00,
         shift:          -0.05,
     }, 
@@ -46,12 +38,9 @@ $42.MUSIC_RED_HILLS = {
 // Music for level 2
 $42.MUSIC_FLAMES = {
     background: {
-        intro: res.flames_intro_mp3,
-        introLength:    90.592653,
-        introTimes:     24,
-        introMeasure:   4,
-        loop:  res.flames_loop_mp3,
-        loopLength:     90.592653,
+        intro:          null,
+        loop:           res.flames_loop_mp3,
+        loopLength:     82.625306,
         loopTimes:      24,
         loopMeasure:    4,
         fadeOutDelay:   0.972,
@@ -73,7 +62,7 @@ $42.MUSIC_FLAMES = {
     },
     fixTile:        { 
         audio: res.flames_fix_tile_1_mp3, 
-        playOnCount:    true,
+        playOnBeat:    true,
         maxDelay:       0.00,
         shift:          -0.05,
     }, 
@@ -114,7 +103,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     fixTile:        { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
-        playOnCount:    true,
+        playOnBeat:    true,
         maxDelay:       0.00,
         shift:          -0.05,
     }, 
@@ -142,19 +131,19 @@ var _MUSIC_MODULE = function(layer) {
         else effect.audioSlot = ++effect.audioSlot%effect.audio.length;
 
         var as = effect.audioSlot;
-        if( effect.playOnCount && mp ) {
+        if( effect.playOnBeat && mp ) {
             var span = time - mp.startTime,
-                count = Math.floor(span/mp.countLength),
-                offset = Math.min( span - count * mp.countLength - (effect.shift || 0)*mp.countLength, mp.countLength);
+                beat = Math.floor(span/mp.beatLength),
+                offset = Math.min( span - beat * mp.beatLength - (effect.shift || 0)*mp.beatLength, mp.beatLength);
 
-            cc.log("Count offset: "+(offset/mp.countLength)+"ms");
-            if( effect.maxDelay && effect.maxDelay > offset/mp.countLength ) {
+            cc.log("Count offset: "+(offset/mp.beatLength)+"ms");
+            if( effect.maxDelay && effect.maxDelay > offset/mp.beatLength ) {
                 cc.audioEngine.playEffect(effect.audio[as]);
             } else {
                 setTimeout(function() {
                     cc.audioEngine.playEffect(effect.audio[as]);
-                }, (mp.countLength - offset)%mp.countLength);
-                cc.log("Waiting for: "+(mp.countLength-offset)+"ms");
+                }, (mp.beatLength - offset)%mp.beatLength);
+                cc.log("Waiting for: "+(mp.beatLength-offset)+"ms");
             }
         } else {
             cc.audioEngine.playEffect(effect.audio[as]);
@@ -166,10 +155,10 @@ var _MUSIC_MODULE = function(layer) {
             time = new Date().getTime();
         if( mp ) {
             var span = time - (mp.startTime || time),
-                count = Math.floor(span/mp.countLength),
-                offset = span - count * mp.countLength;
+                beat = Math.floor(span/mp.beatLength),
+                offset = span - beat * mp.beatLength;
 
-            setTimeout(cb, mp.countLength * (cnt || 1) - offset);
+            setTimeout(cb, mp.beatLength * (cnt || 1) - offset);
         }
     };
 
@@ -183,31 +172,38 @@ var _MUSIC_MODULE = function(layer) {
 
         var as = effect.audioSlot, 
             span = new Date().getTime() - mp.startTime,
-            shift = effect.shift*mp.countLength + (effect.shift<0? mp.countLength : 0);
+            shift = effect.shift*mp.beatLength + (effect.shift<0? mp.beatLength : 0);
 
         setTimeout( function() {
             setInterval(function() {
                 cc.audioEngine.playEffect(effect.audio[as]);
-            }, mp.countLength);
+            }, mp.beatLength);
         }, shift);
     };
 
     layer.playBackgroundMusic = function(bMusic) {
         var time = new Date().getTime();
 
-        bMusic.startTime   = new Date().getTime();
-        bMusic.countLength = bMusic.introLength*1000 / bMusic.introTimes / bMusic.introMeasure;
-        cc.audioEngine.playMusic(bMusic.intro, false);
-        cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
+        if( bMusic.intro ) {
+            bMusic.startTime   = new Date().getTime(); 
+            cc.assert(bMusic.introLength && bMusic.introTimes && bMusic.introMeasure, "");
+            bMusic.beatLength = bMusic.introLength*1000 / bMusic.introTimes / bMusic.introMeasure;
+            cc.audioEngine.playMusic(bMusic.intro, false);
+            cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
 
-        bMusic.timeout = setTimeout(function() {
-            bMusic.startTime   = new Date().getTime();
-            bMusic.countLength = bMusic.loopLength*1000 / bMusic.loopTimes / bMusic.loopMeasure;
-            cc.audioEngine.playMusic(bMusic.loop, true);
-            
-        }, bMusic.introLength*1000);
+            musicPlaying = bMusic;
+        }
 
-        musicPlaying = bMusic;
+        if( bMusic.loop ) {
+            bMusic.timeout = setTimeout(function() {
+                bMusic.startTime   = new Date().getTime();
+                bMusic.beatLength = bMusic.loopLength*1000 / bMusic.loopTimes / bMusic.loopMeasure;
+                cc.audioEngine.playMusic(bMusic.loop, true);
+                
+            }, bMusic.introLength*1000 || 0);
+
+            musicPlaying = bMusic;
+        }
     };
 
     layer.stopBackgroundMusic = function(time) {

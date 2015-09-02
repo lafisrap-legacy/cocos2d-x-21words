@@ -79,7 +79,7 @@ var res = {
     blue_mountains_fix_tile_2_mp3:      "res/sounds/levelsounds/blaue_berge_buchstaben_unten3,1,1.mp3",
     blue_mountains_selection_mp3:       "res/sounds/levelsounds/blaue_berge_buchstabenkombi0,1,1.mp3",
     blue_mountains_full_word_mp3:       "res/sounds/levelsounds/blaue_berge_wort_fertig0,1,1.mp3",
-    blue_mountains_last_word_mp3:       "res/sounds/levelsounds/blaue_berge_letztes_wort_fertig0,1,3_hintergrund_fade_out_0,972-1,432.mp3",
+    blue_mountains_last_word_mp3:       "res/sounds/levelsounds/blaue_berge_letztes_wort_fertig0,1,8_hintergrund_fade_out_0,972-1,432.mp3",
     blue_mountains_delete_row_mp3:      "res/sounds/levelsounds/blaue_berge_reihe_kracht0,1,1.mp3",
 	
     // fonts
