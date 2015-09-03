@@ -173,14 +173,16 @@ var _MUSIC_MODULE = function(layer) {
         }
     };
 
-    layer.callFuncOnNextCount = function(cb, mp, cnt) {
+    layer.callFuncOnNextBeat = function(cb, mp, cnt) {
         var mp = mp || musicPlaying,
             time = new Date().getTime();
+        cc.log("Waiting for next beat ...");
         if( mp ) {
             var span = time - (mp.startTime || time),
                 beat = Math.floor(span/mp.beatLength),
                 offset = span - beat * mp.beatLength;
 
+            cc.log("... for "+(mp.beatLength * (cnt || 1) - offset)+" ms.");
             setTimeout(cb, mp.beatLength * (cnt || 1) - offset);
         }
     };
@@ -204,9 +206,10 @@ var _MUSIC_MODULE = function(layer) {
         }, shift);
     };
 
-    layer.playBackgroundMusic = function(bMusic) {
+    layer.playBackgroundMusic = function(bMusic, afterNBeats) {
         var time = new Date().getTime();
 
+        cc.log("Playing background music of '"+bMusic.intro+"' and '"+bMusic.loop+"'.");
         if( bMusic.intro ) {
             bMusic.startTime   = new Date().getTime(); 
             cc.assert(bMusic.introLength && bMusic.introTimes && bMusic.introMeasure, "");
@@ -223,7 +226,7 @@ var _MUSIC_MODULE = function(layer) {
                 bMusic.beatLength = bMusic.loopLength*1000 / bMusic.loopTimes / bMusic.loopMeasure;
                 cc.audioEngine.playMusic(bMusic.loop, true);
                 
-            }, bMusic.introLength*1000 || 0);
+            }, (bMusic.introLength || 0)*1000 );
 
             musicPlaying = bMusic;
         }

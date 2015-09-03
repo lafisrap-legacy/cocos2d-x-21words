@@ -467,7 +467,7 @@ var _42GameLayer = cc.Layer.extend({
                         x: (self.touchCurrentMove && self.touchCurrentMove.x || 0) + loc.x - last.x,
                         y: (self.touchCurrentMove && self.touchCurrentMove.y || 0) + loc.y - last.y
 	            	};
-                    cc.log("self.touchCurrentMove: "+JSON.stringify(self.touchCurrentMove)+", loc: "+JSON.stringify(loc)+", last: "+JSON.stringify(last));
+                    //cc.log("self.touchCurrentMove: "+JSON.stringify(self.touchCurrentMove)+", loc: "+JSON.stringify(loc)+", last: "+JSON.stringify(last));
 	                
 	                // check for left
 	                if( loc.x < start.x - $42.TOUCH_SWIPE_THRESHOLD) {
@@ -1166,8 +1166,8 @@ var _42GameLayer = cc.Layer.extend({
 	    			}
     			}
 
-                cc.log("checkForAndRemoveCompleteRows, colsBlocked: "+JSON.stringify(colsBlocked));
-                cc.log("checkForAndRemoveCompleteRows, colsToCorrect: "+JSON.stringify(colsToCorrect));
+                //cc.log("checkForAndRemoveCompleteRows, colsBlocked: "+JSON.stringify(colsBlocked));
+                //cc.log("checkForAndRemoveCompleteRows, colsToCorrect: "+JSON.stringify(colsToCorrect));
 
     			// move single boxes down 
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
@@ -1245,7 +1245,7 @@ var _42GameLayer = cc.Layer.extend({
 		    	}
     		}           	
     	
-            cc.log("deleteRow, rows deleted: "+JSON.stringify(tmpBoxes));
+            //cc.log("deleteRow, rows deleted: "+JSON.stringify(tmpBoxes));
         };
 
         /////////////////////////////
