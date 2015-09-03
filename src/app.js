@@ -88,7 +88,7 @@ var _42_GLOBALS = {
 	],
 	TILE_OCCURANCES : [10,5,7,7,3,2,2,0,0], // How often the tiles appear, when selected randomly
     TILE_5_6_MAX_ROW : 11,
-    MUSIC_VOLUME: 0.2,
+    MUSIC_VOLUME: 0.4,
     EFFECTS_VOLUME: 0.8,
 };
 var $42 = _42_GLOBALS;
@@ -559,8 +559,8 @@ var _42GameLayer = cc.Layer.extend({
 	            			x: -$42.BS,
 	            			y: 0
 	            		};
+                        if( !self.isSwipeLeft && self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
                         self._currentTile.isDragged = true;
-    		            if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
 	            		self.isSwipeLeft = true;
 	            		break;
 	            	case 's':
@@ -569,8 +569,8 @@ var _42GameLayer = cc.Layer.extend({
 	            			x: $42.BS,
 	            			y: 0
 	            		};
+                        if( !self.isSwipeRight && self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
                         self._currentTile.isDragged = true;
-    		            if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
 	            		self.isSwipeRight = true;
 	            		break;
 	            	case $42.KEY_UP_CODE:
@@ -581,8 +581,9 @@ var _42GameLayer = cc.Layer.extend({
 	            			x: 0,
 	            			y: -$42.BS/2
 	            		};
+                        cc.log("DOWN: self._currentTile.isDragged = "+self._currentTile.isDragged+", self.isSwipeDown = "+self.isSwipeDown);
+                        if( !self.isSwipeDown && self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
                         self._currentTile.isDragged = true;
-    		            if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
 	            		self.isSwipeDown = true;
 	            		break;
                     default:
@@ -1265,8 +1266,20 @@ var _42GameLayer = cc.Layer.extend({
         /////////////////////////////////////
     	// if there is no tile flying right now, build a new one
         if( !t && !this.pauseBuildingTiles ) {
-            this._currentTile = t = self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, cc.height+$42.BS)); 
-        } else if( !t ) return;
+            var buildTile = function() {
+                self._currentTile = t = self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, cc.height+$42.BS)); 
+                this.pauseBuildingTiles = false;
+            };
+
+            if( self.hookFuncOnNextBeat ) {
+                this.pauseBuildingTiles = true;
+                self.hookFuncOnNextBeat(buildTile, 2);
+            } else {
+                buildTile();
+            }
+        }
+        
+        if( !t ) return;
         
         var lp = t.sprite.getPosition(),
             sp = self.touchStartPoint,

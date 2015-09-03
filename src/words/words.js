@@ -761,9 +761,10 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
+
                 $42.SCENE.callFuncOnNextBeat(function() {
                     $42.SCENE.playBackgroundMusic(level.music.background);
-                }, level.music.background, 3);
+                }, level.music.background, 4);
             }, (5.5+i*0.50) * 1000 );
 
             checkForTutorial();
@@ -2538,10 +2539,15 @@ var _42_MODULE = function(_42Layer) {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
         $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTime);
     };
-	
-	_42Layer.hookUpdate = function(dt) {
-		
-		if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);					
-	};
+
+    _42Layer.hookFuncOnNextBeat = function(cb, cnt) {
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];	
+        $42.SCENE.callFuncOnNextBeat(cb, level.music.background, cnt);
+    }
+
+_42Layer.hookUpdate = function(dt) {
+    
+    if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);					
+};
 };
 
