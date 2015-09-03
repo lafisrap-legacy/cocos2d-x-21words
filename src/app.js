@@ -88,8 +88,8 @@ var _42_GLOBALS = {
 	],
 	TILE_OCCURANCES : [10,5,7,7,3,2,2,0,0], // How often the tiles appear, when selected randomly
     TILE_5_6_MAX_ROW : 11,
-    MUSIC_VOLUME: 0.5,
-    EFFECTS_VOLUME: 0.5,
+    MUSIC_VOLUME: 0.4,
+    EFFECTS_VOLUME: 0.8,
 };
 var $42 = _42_GLOBALS;
 $42.webCallbacks = [];
