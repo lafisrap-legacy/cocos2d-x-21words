@@ -1,6 +1,17 @@
 $42.MUSIC_VOLUME_GRANULARITY = 10;
 
 ////////////////////////////////////////////////
+// Music for easy title
+$42.MUSIC_TITLE_EASY = {
+    intro: res.title_easy_intro_mp3,
+    introLength:    11.376000,
+    loop:  res.title_easy_loop_mp3,
+    loopLength:     38.124000,
+    fadeOutDelay:   0,
+    fadeOutTime:    5000
+}
+
+////////////////////////////////////////////////
 // Music for level 1
 $42.MUSIC_RED_HILLS = {
     background: {
@@ -40,9 +51,7 @@ $42.MUSIC_FLAMES = {
         loop:           res.flames_loop_mp3,
         loopLength:     82.625306,
         loopTimes:      24,
-        loopMeasure:    4,
-        fadeOutTime:    0.05,
-        fadeInTime:     0.05
+        loopMeasure:    4
     },
     levelWords:     { 
         audio: res.flames_level_words_mp3,
@@ -79,9 +88,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         loop:  res.blue_mountains_loop_mp3,
         loopLength:     90.592653,
         loopTimes:      24,
-        loopMeasure:    4,
-        fadeOutTime:   0.05,
-        fadeInTime:    0.05
+        loopMeasure:    4
     },
     levelWords:     { 
         audio: res.blue_mountains_level_words_mp3,
@@ -94,10 +101,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     setTile:        { audio: res.blue_mountains_set_tile_mp3 },
     swipe:          { 
         audio: res.blue_mountains_swipe_mp3,
-        end:   res.blue_mountains_swipe_end_mp3,
-        minInterval: 2100,
-        intervalTime: 4277,
-        endDelay: 4277
+        dontStop: true
     },
     rotate:         { 
         audio: [res.blue_mountains_rotate_1_mp3, res.blue_mountains_rotate_2_mp3, res.blue_mountains_rotate_3_mp3],
@@ -181,7 +185,7 @@ var _MUSIC_MODULE = function(layer) {
                     }, effect.endDelay-span || 0 );
                 }
             }
-        } else {
+        } else if(!effect.dontStop ) {
             cc.audioEngine.stopEffect(effect.id);
             effect.id = null;
         }
@@ -268,7 +272,7 @@ var _MUSIC_MODULE = function(layer) {
     var fadeBackgroundMusic = function(time, direction, dontStop) {
         var volume = cc.audioEngine.getMusicVolume(),
             vg = $42.MUSIC_VOLUME_GRANULARITY,
-            steps = Math.ceil(time * 1000 / vg),
+            steps = Math.ceil(time / vg),
             step = volume / steps * direction;
 
         cc.assert(direction === -1 || direction === 1, "Fade direction must be either 1 or -1.");

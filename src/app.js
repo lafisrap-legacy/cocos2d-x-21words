@@ -1612,7 +1612,12 @@ var _42TitleLayer = cc.Layer.extend({
         this.addChild(this._titleBg);
         this._titleBg.setTexture(res["title_"+cDiff+"_png"]);
         this.addChild(this._menu);
+        if( cDiff === "easy" ) this.backgroundMusic = $42.MUSIC_TITLE_EASY;
+        else if( cDiff === "intermediate" ) /* */;
+        else if( cDiff === "expert" ) /* */;
 
+        $42.SCENE.playBackgroundMusic(this.backgroundMusic);
+        
         this._menu.runAction(
             cc.EaseSineIn.create(
                 cc.fadeIn(2.5)
@@ -1633,7 +1638,7 @@ var _42TitleLayer = cc.Layer.extend({
 
         if( tt ) $42.menuItemTweet.setOpacity(255);
         else $42.menuItemTweet.setOpacity(0);
-
+       
         this._menu.setEnabled(true);
         
         this._timeout = setTimeout(function() {
@@ -1681,6 +1686,13 @@ var _42TitleLayer = cc.Layer.extend({
             }
         });
 
+        if( this.backgroundMusic ) {
+            setTimeout(function() {
+                $42.SCENE.stopBackgroundMusic(self.backgroundMusic.fadeOutTime);
+                this.backgroundMusic = null; 
+            }, this.backgroundMusic.fadeOutDelay || 0);
+        }
+        
         this._menu.setEnabled(false);
     },
     
