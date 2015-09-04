@@ -4,7 +4,7 @@ $42.MUSIC_VOLUME_GRANULARITY = 10;
 // Music for easy title
 $42.MUSIC_TITLE_EASY = {
     intro: res.title_easy_intro_mp3,
-    introLength:    11.376000,
+    introLength:    11.386000,
     loop:  res.title_easy_loop_mp3,
     loopLength:     38.124000,
     fadeOutDelay:   0,
@@ -146,27 +146,33 @@ var _MUSIC_MODULE = function(layer) {
             cc.log("Beat offset: "+(offset/mp.beatLength)+"ms");
             if( effect.maxDelay && effect.maxDelay > offset/mp.beatLength ) {
                 effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+    	        $42.msg2.setString("Now playing: "+effect.audio[as]);
             } else {
                 setTimeout(function() {
                     effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+    	            $42.msg2.setString("Now playing: "+effect.audio[as]);
                 }, (mp.beatLength - offset)%mp.beatLength);
                 cc.log("Waiting for: "+(mp.beatLength-offset)+"ms");
             }
         } else if( effect.intervalTime && !effect.interval ) {
             effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+    	    $42.msg2.setString("Starting interval: "+effect.audio[as]);
             effect.interval = setInterval(function() {
                 if( effect.intervalIsEnding ) {
                     cc.log("Ending interval of "+effect.audio[as]);
+    	            $42.msg2.setString("Ending interval: "+effect.audio[as]);
                     clearInterval(effect.interval);
                     effect.interval = null;
                     effect.intervalIsEnding = false;
                 } else {
                     cc.log("Playing in interval: "+effect.audio[as]);
+    	            $42.msg2.setString("Playing in interval: "+effect.audio[as]);
                     playEffect(effect);
                 }
             }, effect.intervalTime);
         } else {
             effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+    	    $42.msg2.setString("Now playing: "+effect.audio[as]);
         }
         
         effect.lastPlay = time;
@@ -181,12 +187,14 @@ var _MUSIC_MODULE = function(layer) {
                     var span = new Date().getTime() - effect.lastPlay;
                     setTimeout(function() {
                         cc.log("Playing end of interval: "+effect.end);
+    	                $42.msg2.setString("Playing effect end: "+effect.end);
                         layer.playEffect({audio: effect.end});
                     }, effect.endDelay-span || 0 );
                 }
             }
         } else if(!effect.dontStop ) {
             cc.audioEngine.stopEffect(effect.id);
+    	    $42.msg2.setString("Stopping effect:"+effect.audio[0]);
             effect.id = null;
         }
     };
@@ -239,6 +247,7 @@ var _MUSIC_MODULE = function(layer) {
             mp.beatLength = mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure : 0;
             cc.audioEngine.playMusic(mp.intro, false);
             cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
+    	    $42.msg1.setString("Now playing background intro '"+mp.intro+"'");
 
             musicPlaying = mp;
         }
@@ -248,6 +257,7 @@ var _MUSIC_MODULE = function(layer) {
                 mp.startTime   = new Date().getTime();
                 mp.beatLength = mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure;
                 cc.audioEngine.playMusic(mp.loop, true);
+    	        $42.msg1.setString("Now playing background loop '"+mp.loop+"'");
                 
             }, (mp.introLength || 0)*1000 );
 
@@ -266,6 +276,7 @@ var _MUSIC_MODULE = function(layer) {
             mp.timeout = null;
             mp.startTime = null;
             musicPlaying = null;
+    	    $42.msg1.setString("Background music stopped!");
         }
     };
 
@@ -281,9 +292,11 @@ var _MUSIC_MODULE = function(layer) {
             volume += step;
             if( direction === -1 && volume < 0 || direction === 1 && volume > $42.MUSIC_VOLUME ) {
                 if( !dontStop ) cc.audioEngine.stopMusic();
+    	        $42.msg1.setString("Background music stopped");
                 clearInterval(interval);
             } else {
                 cc.audioEngine.setMusicVolume(volume);
+    	        $42.msg1.setString("Background music is fading out ... volume "+volume);
             }
         }, $42.MUSIC_VOLUME_GRANULARITY);
     };
