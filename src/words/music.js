@@ -47,7 +47,10 @@ $42.MUSIC_RED_HILLS = {
 // Music for level 2
 $42.MUSIC_FLAMES = {
     background: {
-        intro:          null,
+        intro: res.flames_intro_mp3,
+        introLength:    01.24.661,
+        introTimes:     100,
+        introMeasure:   1,
         loop:           res.flames_loop_mp3,
         loopLength:     82.625306,
         loopTimes:      24,
