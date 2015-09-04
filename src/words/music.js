@@ -260,6 +260,7 @@ var _MUSIC_MODULE = function(layer) {
                 mp.startTime   = new Date().getTime();
                 mp.beatLength = mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure;
                 cc.audioEngine.playMusic(mp.loop, true);
+                cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
     	        if( $42.msg1 ) $42.msg1.setString("Now playing background loop '"+mp.loop+"'");
                 
             }, (mp.introLength || 0)*1000 );
