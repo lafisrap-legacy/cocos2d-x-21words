@@ -94,10 +94,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     setTile:        { audio: res.blue_mountains_set_tile_mp3 },
     swipe:          { 
         audio: res.blue_mountains_swipe_mp3,
-        end:   res.blue_mountains_swipe_end_mp3,
-        minInterval: 2100,
-        intervalTime: 4277,
-        endDelay: 4277
+        dontStop: true
     },
     rotate:         { 
         audio: [res.blue_mountains_rotate_1_mp3, res.blue_mountains_rotate_2_mp3, res.blue_mountains_rotate_3_mp3],
@@ -181,7 +178,7 @@ var _MUSIC_MODULE = function(layer) {
                     }, effect.endDelay-span || 0 );
                 }
             }
-        } else {
+        } else if(!effect.dontStop ) {
             cc.audioEngine.stopEffect(effect.id);
             effect.id = null;
         }
