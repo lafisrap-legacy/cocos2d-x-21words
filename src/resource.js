@@ -62,9 +62,9 @@ var res = {
     flames_rotate_1_mp3:               "res/sounds/levelsounds/flammen_drehen1,1,3.mp3",
     flames_rotate_2_mp3:               "res/sounds/levelsounds/flammen_drehen2,1,3.mp3",
     flames_rotate_3_mp3:               "res/sounds/levelsounds/flammen_drehen3,1,5.mp3",
-    flames_fix_tile_1_mp3:             "res/sounds/levelsounds/flammen_buchstaben_unten0,1,3.mp3",
+    flames_fix_tile_1_mp3:             "res/sounds/levelsounds/flammen_buchstaben_unten0,1,5.mp3",
     flames_selection_mp3:              "res/sounds/levelsounds/flammen_buchstabenkombi0,1,3.mp3",
-    flames_full_word_mp3:              "res/sounds/levelsounds/flammen_wort_fertig0,1,3.mp3",
+    flames_full_word_mp3:              "res/sounds/levelsounds/flammen_wort_fertig0,1,9.mp3",
     flames_last_word_mp3:              "res/sounds/none.mp3",
     flames_delete_row_mp3:             "res/sounds/levelsounds/flammen_reihe_kracht0,1,6lang.mp3",
     // level 5
