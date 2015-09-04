@@ -50,8 +50,8 @@ var res = {
     red_hills_last_word_mp3:          "res/sounds/none.mp3",
     red_hills_delete_row_mp3:         "res/sounds/levelsounds/rote_huegel_reihe_kracht0,1,2.mp3",
     // level 2
-    flames_intro_mp3:                  "res/sounds/none.mp3",
-    flames_loop_mp3:                   "res/sounds/levelsounds/flammen_hintergrund_loop0,1,5.mp3",
+    flames_intro_mp3:                  "res/sounds/levelsounds/flammen_hintergrund_einleitung0,1,9.mp3",
+    flames_loop_mp3:                   "res/sounds/levelsounds/flammen_hintergrund_loop0,1,9.mp3",
     flames_level_words_mp3:            "res/sounds/levelsounds/flammen_drei_worte0,1,3.mp3",
     flames_level_nr_mp3:               "res/sounds/levelsounds/flammen_levelzahl0,1,7.mp3",
     flames_set_tile_mp3:               "res/sounds/levelsounds/flammen_buchstaben_neu0,1,3.mp3",
