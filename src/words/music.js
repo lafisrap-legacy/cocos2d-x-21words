@@ -48,11 +48,11 @@ $42.MUSIC_RED_HILLS = {
 $42.MUSIC_FLAMES = {
     background: {
         intro: res.flames_intro_mp3,
-        introLength:    01.24.661,
+        introLength:    85.140000,
         introTimes:     100,
         introMeasure:   1,
         loop:           res.flames_loop_mp3,
-        loopLength:     82.625306,
+        loopLength:     89.136000,
         loopTimes:      24,
         loopMeasure:    4
     },
