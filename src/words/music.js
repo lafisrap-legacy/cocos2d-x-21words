@@ -41,8 +41,8 @@ $42.MUSIC_FLAMES = {
         loopLength:     82.625306,
         loopTimes:      24,
         loopMeasure:    4,
-        fadeOutDelay:   0.972,
-        fadeOutTime:    0.460
+        fadeOutTime:    0.05,
+        fadeInTime:     0.05
     },
     levelWords:     { 
         audio: res.flames_level_words_mp3,
@@ -80,8 +80,8 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         loopLength:     90.592653,
         loopTimes:      24,
         loopMeasure:    4,
-        fadeOutDelay:   0.566,
-        fadeOutTime:    1.566
+        fadeOutTime:   0.05,
+        fadeInTime:    0.05
     },
     levelWords:     { 
         audio: res.blue_mountains_level_words_mp3,
@@ -187,19 +187,19 @@ var _MUSIC_MODULE = function(layer) {
         }
     };
 
-    layer.callFuncOnNextBeat = function(cb, mp, cnt) {
+    layer.callFuncOnNextBeat = function(cb, mp, granularity, cnt) {
         var mp = mp || musicPlaying,
             time = new Date().getTime();
         if( mp ) {
-            mp.beatLength = mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure : 0;
+            var frame  = mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure * granularity : 0;
             
-            if( mp.beatLength ) {
+            if( frame ) {
                 var span = time - (mp.startTime || time),
-                    beat = Math.floor(span/mp.beatLength),
-                    offset = span - beat * mp.beatLength;
+                    frames = Math.floor(span/frame),
+                    offset = span - frames * frame;
 
-                cc.log("Waiting for next beat for "+(mp.beatLength * (cnt || 1) - offset)+" ms. ("+offset+", "+beat+", "+mp.beatLength+")");
-                setTimeout(cb, mp.beatLength * (cnt || 1) - offset);
+                cc.log("Waiting for next beat for "+(frame * (cnt || 1) - offset)+" ms. ("+offset+", "+frames+", "+frame+")");
+                setTimeout(cb, frame * (cnt || 1) - offset);
             } else {
                 cb();
             }
@@ -252,30 +252,44 @@ var _MUSIC_MODULE = function(layer) {
     };
 
     layer.stopBackgroundMusic = function(time) {
-        var mp = musicPlaying,
-            stopMusic = function() {
-                if( mp.timeout ) clearTimeout(mp.timeout);
-                cc.audioEngine.stopMusic();
-                mp.startTime = null;
-                musicPlaying = null;
-            };
+        var mp = musicPlaying;
 
-        if( mp && time ) {
-            var volume = cc.audioEngine.getMusicVolume(),
-                vg = $42.MUSIC_VOLUME_GRANULARITY,
-                steps = Math.ceil(time * 1000 / vg),
-                step = volume / steps;
-
-            var interval = setInterval(function() {
-                volume -= step;
-                if( volume < 0 ) {
-                    stopMusic();
-                    clearInterval(interval);
-                } else {
-                    cc.audioEngine.setMusicVolume(volume);
-                }
-            }, $42.MUSIC_VOLUME_GRANULARITY);
-        } else if( mp ) stopMusic();
+        if( mp ) {
+            if( time ) layer.fadeOutBackgroundMusic(time);
+            else cc.audioEngine.stopMusic();
+        
+            if( mp.timeout ) clearTimeout(mp.timeout);
+            mp.timeout = null;
+            mp.startTime = null;
+            musicPlaying = null;
+        }
     };
+
+    var fadeBackgroundMusic = function(time, direction, dontStop) {
+        var volume = cc.audioEngine.getMusicVolume(),
+            vg = $42.MUSIC_VOLUME_GRANULARITY,
+            steps = Math.ceil(time * 1000 / vg),
+            step = volume / steps * direction;
+
+        cc.assert(direction === -1 || direction === 1, "Fade direction must be either 1 or -1.");
+
+        var interval = setInterval(function() {
+            volume += step;
+            if( direction === -1 && volume < 0 || direction === 1 && volume > $42.MUSIC_VOLUME ) {
+                if( !dontStop ) cc.audioEngine.stopMusic();
+                clearInterval(interval);
+            } else {
+                cc.audioEngine.setMusicVolume(volume);
+            }
+        }, $42.MUSIC_VOLUME_GRANULARITY);
+    };
+
+    layer.fadeOutBackgroundMusic = function(time, dontStop) {
+        fadeBackgroundMusic(time, -1, dontStop);
+    };
+
+    layer.fadeInBackgroundMusic = function(time, dontStop) {
+        fadeBackgroundMusic(time, 1, dontStop);
+    }
 }
 

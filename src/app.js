@@ -1273,7 +1273,7 @@ var _42GameLayer = cc.Layer.extend({
 
             if( self.hookFuncOnNextBeat ) {
                 this.pauseBuildingTiles = true;
-                self.hookFuncOnNextBeat(buildTile, 2);
+                self.hookFuncOnNextBeat(buildTile, 0.5, 2);
             } else {
                 buildTile();
             }

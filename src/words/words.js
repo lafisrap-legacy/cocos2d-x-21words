@@ -764,7 +764,7 @@ var _42_MODULE = function(_42Layer) {
 
                 $42.SCENE.callFuncOnNextBeat(function() {
                     $42.SCENE.playBackgroundMusic(level.music.background);
-                }, level.music.background, 4);
+                }, level.music.background, 1, 3);
             }, (5.5+i*0.50) * 1000 );
 
             checkForTutorial();
@@ -776,7 +776,6 @@ var _42_MODULE = function(_42Layer) {
         setTimeout(function() {
             $42.SCENE.playEffect(level.music.levelNr);
         }, level.music.levelNr.delay || 4500);
-       //$42.SCENE.playInCount(level.music.fixTile);
     };
 
     ml.fillWordsForTiles = function() {
@@ -2540,9 +2539,9 @@ var _42_MODULE = function(_42Layer) {
         $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTime);
     };
 
-    _42Layer.hookFuncOnNextBeat = function(cb, cnt) {
+    _42Layer.hookFuncOnNextBeat = function(cb, granularity, cnt) {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];	
-        $42.SCENE.callFuncOnNextBeat(cb, level.music.background, cnt);
+        $42.SCENE.callFuncOnNextBeat(cb, level.music.background, granularity, cnt);
     }
 
 _42Layer.hookUpdate = function(dt) {
