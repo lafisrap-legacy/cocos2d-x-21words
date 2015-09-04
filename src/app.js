@@ -226,8 +226,8 @@ var _42GameLayer = cc.Layer.extend({
         $42.msg2.setPosition(0,-20);
 		logMsg.setPosition(cc.width/2,cc.height-50);
 
-		//logMsg.addChild($42.msg1, 1);        	
-		//logMsg.addChild($42.msg2, 1);        	
+		logMsg.addChild($42.msg1, 1);        	
+		logMsg.addChild($42.msg2, 1);        	
         this.addChild(logMsg, 100);
         
 	},
