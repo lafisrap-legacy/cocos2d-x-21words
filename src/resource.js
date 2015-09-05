@@ -30,7 +30,7 @@ var res = {
     title_easy_intro_mp3 : "res/sounds/blaues_titelbild_einleitung0,1,11.mp3",
     title_easy_loop_mp3  : "res/sounds/blaues_titelbild_loop0,1,11.mp3",
     mostafa_out_mp3 :      "res/sounds/mostafa_geht0,1,1.mp3",
-    mostafa_in_mp3 :       "res/sounds/mostafa_kommt0,1,2.mp3",
+    mostafa_in_mp3 :       "res/sounds/mostafa_kommt0,1,4.mp3",
 
     // level 1
     red_hills_intro_mp3:              "res/sounds/none.mp3",
