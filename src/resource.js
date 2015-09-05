@@ -33,8 +33,6 @@ var res = {
     mostafa_in_mp3 :       "res/sounds/mostafa_kommt0,1,4.mp3",
 
     // level 1
-    red_hills_intro_mp3:              "res/sounds/none.mp3",
-    red_hills_loop_mp3:               "res/sounds/none.mp3",
     red_hills_level_words_mp3:        "res/sounds/levelsounds/rote_huegel_drei_worte0,1,1.mp3",
     red_hills_level_nr_mp3:           "res/sounds/levelsounds/rote_huegel_levelzahl0,1,3.mp3",
     red_hills_set_tile_mp3:           "res/sounds/levelsounds/rote_huegel_buchstaben_neu0,1,5.mp3",
@@ -47,7 +45,6 @@ var res = {
     red_hills_fix_tile_1_mp3:         "res/sounds/levelsounds/rote_huegel_buchstaben_unten 0,1,3.mp3",
     red_hills_selection_mp3:          "res/sounds/levelsounds/rote_huegel_buchstabenkombi0,1,1.mp3",
     red_hills_full_word_mp3:          "res/sounds/levelsounds/rote_huegel_wort_fertig0,1,2.mp3",
-    red_hills_last_word_mp3:          "res/sounds/none.mp3",
     red_hills_delete_row_mp3:         "res/sounds/levelsounds/rote_huegel_reihe_kracht0,1,2.mp3",
     // level 2
     flames_intro_mp3:                  "res/sounds/levelsounds/flammen_hintergrund_einleitung0,1,9.mp3",
@@ -55,16 +52,12 @@ var res = {
     flames_level_words_mp3:            "res/sounds/levelsounds/flammen_drei_worte0,1,3.mp3",
     flames_level_nr_mp3:               "res/sounds/levelsounds/flammen_levelzahl0,1,7.mp3",
     flames_set_tile_mp3:               "res/sounds/levelsounds/flammen_buchstaben_neu0,1,3.mp3",
-    flames_swipe_1_mp3:                "res/sounds/none.mp3",
-    flames_swipe_2_mp3:                "res/sounds/none.mp3",
-    flames_swipe_3_mp3:                "res/sounds/none.mp3",
     flames_rotate_1_mp3:               "res/sounds/levelsounds/flammen_drehen1,1,3.mp3",
     flames_rotate_2_mp3:               "res/sounds/levelsounds/flammen_drehen2,1,3.mp3",
     flames_rotate_3_mp3:               "res/sounds/levelsounds/flammen_drehen3,1,5.mp3",
     flames_fix_tile_1_mp3:             "res/sounds/levelsounds/flammen_buchstaben_unten0,1,5.mp3",
     flames_selection_mp3:              "res/sounds/levelsounds/flammen_buchstabenkombi0,1,3.mp3",
     flames_full_word_mp3:              "res/sounds/levelsounds/flammen_wort_fertig0,1,9.mp3",
-    flames_last_word_mp3:              "res/sounds/none.mp3",
     flames_delete_row_mp3:             "res/sounds/levelsounds/flammen_reihe_kracht0,1,7.mp3",
     // level 5
     blue_mountains_intro_mp3:           "res/sounds/levelsounds/blau_berge_einleitung1,1,8.mp3",
@@ -80,9 +73,10 @@ var res = {
     blue_mountains_fix_tile_2_mp3:      "res/sounds/levelsounds/blaue_berge_buchstaben_unten3,1,4.mp3",
     blue_mountains_selection_mp3:       "res/sounds/levelsounds/blaue_berge_buchstabenkombi0,1,5.mp3",
     blue_mountains_full_word_mp3:       "res/sounds/levelsounds/blaue_berge_wort_fertig0,1,9.mp3",
+    blue_mountains_present_word_mp3:    "res/sounds/levelsounds/blaue_berge_wort_praesentieren0,1,17.mp3",
     blue_mountains_last_word_mp3:       "res/sounds/levelsounds/blaue_berge_letztes_wort_fertig0,1,9.mp3",
     blue_mountains_delete_row_mp3:      "res/sounds/levelsounds/blaue_berge_reihe_kracht0,1,4.mp3",
-    blue_mountains_end_mp3:      	"res/sounds/levelsounds/blaue_berge_schlussfanfare0,1,8.mp3",
+    blue_mountains_end_mp3:      	    "res/sounds/levelsounds/blaue_berge_schlussfanfare0,1,8.mp3",
 	
     // fonts
 	amtype24_fnt : "res/fonts/amtype24.fnt",

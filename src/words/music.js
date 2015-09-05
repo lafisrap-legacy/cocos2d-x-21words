@@ -41,6 +41,10 @@ $42.MUSIC_RED_HILLS = {
     fixTile:        { audio: res.red_hills_fix_tile_1_mp3 }, 
     selection:      { audio: res.red_hills_selection_mp3 },
     fullWord:       { audio: res.red_hills_full_word_mp3 },
+    presentWord:    { 
+        audio: res.blue_mountains_present_word_mp3,
+        intervalTime: 3000 
+    },
     lastWord:       { audio: res.red_hills_last_word_mp3 },
     deleteRow:      { audio: res.red_hills_delete_row_mp3 }
 };
@@ -82,6 +86,10 @@ $42.MUSIC_FLAMES = {
     fixTile:        { audio: res.flames_fix_tile_1_mp3 }, 
     selection:      { audio: res.flames_selection_mp3 },
     fullWord:       { audio: res.flames_full_word_mp3 },
+    presentWord:    { 
+        audio: res.blue_mountains_present_word_mp3,
+        intervalTime: 3000 
+    },
     lastWord:       { audio: res.flames_last_word_mp3 },
     deleteRow:      { audio: res.flames_delete_row_mp3 }
 };
@@ -117,7 +125,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     rotate:         { 
         audio: [res.blue_mountains_rotate_1_mp3, res.blue_mountains_rotate_2_mp3, res.blue_mountains_rotate_3_mp3],
-        minInterval: 000 
+        minInterval: 0 
     },
     fixTile:        { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
@@ -125,7 +133,10 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     }, 
     selection:      { audio: res.blue_mountains_selection_mp3 },
     fullWord:       { audio: res.blue_mountains_full_word_mp3 },
-    presentWord:    { audio: res.blue_mountains_present_word_mp3 },
+    presentWord:    { 
+        audio: res.blue_mountains_present_word_mp3,
+        intervalTime: 3000 
+    },
     lastWord:       { audio: res.blue_mountains_last_word_mp3 },
     deleteRow:      { audio: res.blue_mountains_delete_row_mp3 }
 };
@@ -137,6 +148,7 @@ var _MUSIC_MODULE = function(layer) {
         var mp = musicPlaying,
             time = new Date().getTime();
 
+        cc.assert(effect, "In need an effect to play ...");
         if( effect.minInterval ) {
             if( time - (effect.lastPlay || 0) < effect.minInterval ) return;
         }
@@ -149,23 +161,7 @@ var _MUSIC_MODULE = function(layer) {
         else effect.audioSlot = ++effect.audioSlot%effect.audio.length;
 
         var as = effect.audioSlot;
-        if( effect.playOnBeat1 && mp ) {
-            var span = time - mp.startTime,
-                beat = Math.floor(span/mp.beatLength),
-                offset = Math.min( span - beat * mp.beatLength - (effect.shift || 0)*mp.beatLength, mp.beatLength);
-
-            cc.log("Beat offset: "+(offset/mp.beatLength)+"ms");
-            if( effect.maxDelay && effect.maxDelay > offset/mp.beatLength ) {
-                effect.id = cc.audioEngine.playEffect(effect.audio[as]);
-    	        if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[as]);
-            } else {
-                setTimeout(function() {
-                    effect.id = cc.audioEngine.playEffect(effect.audio[as]);
-    	            if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[as]);
-                }, (mp.beatLength - offset)%mp.beatLength);
-                cc.log("Waiting for: "+(mp.beatLength-offset)+"ms");
-            }
-        } else if( effect.intervalTime && !effect.interval ) {
+        if( effect.intervalTime && !effect.interval ) {
             effect.id = cc.audioEngine.playEffect(effect.audio[as]);
     	    if( $42.msg2 ) $42.msg2.setString("Starting interval: "+effect.audio[as]);
             effect.interval = setInterval(function() {
@@ -308,7 +304,7 @@ var _MUSIC_MODULE = function(layer) {
                 clearInterval(interval);
             } else {
                 cc.audioEngine.setMusicVolume(volume);
-    	        if( $42.msg1 ) $42.msg1.setString("Background music is fading out ... volume "+volume);
+    	        if( $42.msg1 ) $42.msg1.setString("Background music is fading out ... volume "+Math.floor(volume*100)/100);
             }
         }, $42.MUSIC_VOLUME_GRANULARITY);
     };

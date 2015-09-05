@@ -390,6 +390,8 @@ var _42_MODULE = function(_42Layer) {
 
                         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
+                        if( level.music.presentWord ) $42.SCENE.stopEffect(level.music.presentWord);
+                        
                         ////////////////////////////////////
                         // Check level conditions
                         if( checkLevelConditions(word, value) ) {
@@ -851,7 +853,7 @@ var _42_MODULE = function(_42Layer) {
 
     var playEndLevelSound = function() {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
-        $42.SCENE.playEffect(level.music.lastWord);
+        $42.SCENE.playEffect(level.music.lastWord); 
         setTimeout(function() {
             $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTime);
         }, level.music.background.fadeOutDelay * 1000);
