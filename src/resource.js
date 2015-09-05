@@ -65,7 +65,7 @@ var res = {
     flames_selection_mp3:              "res/sounds/levelsounds/flammen_buchstabenkombi0,1,3.mp3",
     flames_full_word_mp3:              "res/sounds/levelsounds/flammen_wort_fertig0,1,9.mp3",
     flames_last_word_mp3:              "res/sounds/none.mp3",
-    flames_delete_row_mp3:             "res/sounds/levelsounds/flammen_reihe_kracht0,1,6lang.mp3",
+    flames_delete_row_mp3:             "res/sounds/levelsounds/flammen_reihe_kracht0,1,7.mp3",
     // level 5
     blue_mountains_intro_mp3:           "res/sounds/levelsounds/blau_berge_einleitung1,1,8.mp3",
     blue_mountains_loop_mp3:            "res/sounds/levelsounds/blau_berge_loop2,1,8.mp3",
