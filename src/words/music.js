@@ -109,11 +109,11 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     levelWords:     { 
         audio: res.blue_mountains_level_words_mp3,
-        delay: 1500,
+        delay: 0,
     },
     levelNr:        { 
         audio: res.blue_mountains_level_nr_mp3, 
-        delay: 4500
+        delay: 3000
     },
     setTile:        { 
         audio: res.blue_mountains_set_tile_mp3, 
@@ -130,7 +130,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     fixTile:        { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
-        playOnBeat: 0.5
+        playOnBeat: 0.25
     }, 
     selection:      { audio: res.blue_mountains_selection_mp3 },
     fullWord:       { audio: res.blue_mountains_full_word_mp3 },
