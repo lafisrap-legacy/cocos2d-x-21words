@@ -1271,12 +1271,13 @@ var _42GameLayer = cc.Layer.extend({
                 this.pauseBuildingTiles = false;
             };
 
-            if( self.hookFuncOnNextBeat ) {
-                this.pauseBuildingTiles = true;
-                self.hookFuncOnNextBeat(buildTile, 0.5, 2);
-            } else {
-                buildTile();
-            }
+            if( self.hookGetSoundEffect ) {
+                var effect = self.hookGetSoundEffect("setTile");
+                if( effect && effect.playOnBeat ) {
+                    this.pauseBuildingTiles = true;
+                    self.hookFuncOnNextBeat(buildTile, effect.playOnBeat, 2);
+                } else buildTile();
+            } else buildTile();
         }
         
         if( !t ) return;

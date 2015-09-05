@@ -2210,7 +2210,12 @@ var _42_MODULE = function(_42Layer) {
 		ml.lastBrcs = brcs;
         ml.pauseBuildingTiles = true;
 		
-        $42.SCENE.playEffect(level.music.fixTile);
+        if( level.music.fixTile && level.music.fixTile.playOnBeat ) {
+            $42.SCENE.callFuncOnNextBeat(function() {
+                $42.SCENE.playEffect(level.music.fixTile);
+            }, level.music.background, level.music.fixTile.playOnBeat, 1);
+        } else $42.SCENE.playEffect(level.music.fixTile);
+
 		setSelections(); // OPTIMIZATION: Only look in current lines
        
 		var ret = updateSelectedWord();
@@ -2542,7 +2547,12 @@ var _42_MODULE = function(_42Layer) {
     _42Layer.hookFuncOnNextBeat = function(cb, granularity, cnt) {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];	
         $42.SCENE.callFuncOnNextBeat(cb, level.music.background, granularity, cnt);
-    }
+    };
+
+    _42Layer.hookGetSoundEffect = function(effect) {
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];	
+        return level.music[effect];
+    };
 
 _42Layer.hookUpdate = function(dt) {
     

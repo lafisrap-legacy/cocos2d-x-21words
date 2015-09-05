@@ -8,7 +8,7 @@ $42.MUSIC_TITLE_EASY = {
     loop:  res.title_easy_loop_mp3,
     loopLength:     38.124000,
     fadeOutDelay:   0,
-    fadeOutTime:    5000
+    fadeOutTime:    4000
 }
 
 ////////////////////////////////////////////////
@@ -26,7 +26,10 @@ $42.MUSIC_RED_HILLS = {
         audio: res.red_hills_level_nr_mp3, 
         delay: 4500
     },
-    setTile:        { audio: res.red_hills_set_tile_mp3 },
+    setTile:        { 
+        audio: res.red_hills_set_tile_mp3, 
+        playOnBeat: 0.5
+    },
     swipe:          { 
         audio: [res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
         intervalTime: 450
@@ -64,7 +67,10 @@ $42.MUSIC_FLAMES = {
         audio: res.flames_level_nr_mp3, 
         delay: 4500
     },
-    setTile:        { audio: res.flames_set_tile_mp3 },
+    setTile:        { 
+        audio: res.flames_set_tile_mp3,
+        playOnBeat: 0.5
+    },
     swipe:          { 
         audio: [res.flames_swipe_1_mp3, res.flames_swipe_2_mp3, res.flames_swipe_3_mp3], 
         intervalTime: 450
@@ -101,7 +107,10 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         audio: res.blue_mountains_level_nr_mp3, 
         delay: 4500
     },
-    setTile:        { audio: res.blue_mountains_set_tile_mp3 },
+    setTile:        { 
+        audio: res.blue_mountains_set_tile_mp3, 
+        playOnBeat: 0.5
+    },
     swipe:          { 
         audio: res.blue_mountains_swipe_mp3,
         dontStop: true
@@ -112,9 +121,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     fixTile:        { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
-        playOnBeat:    true,
-        maxDelay:       0.00,
-        shift:          -0.05,
+        playOnBeat: 0.5
     }, 
     selection:      { audio: res.blue_mountains_selection_mp3 },
     fullWord:       { audio: res.blue_mountains_full_word_mp3 },
@@ -141,7 +148,7 @@ var _MUSIC_MODULE = function(layer) {
         else effect.audioSlot = ++effect.audioSlot%effect.audio.length;
 
         var as = effect.audioSlot;
-        if( effect.playOnBeat && mp ) {
+        if( effect.playOnBeat1 && mp ) {
             var span = time - mp.startTime,
                 beat = Math.floor(span/mp.beatLength),
                 offset = Math.min( span - beat * mp.beatLength - (effect.shift || 0)*mp.beatLength, mp.beatLength);
