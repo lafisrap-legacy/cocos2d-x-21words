@@ -341,6 +341,7 @@ var _42_MODULE = function(_42Layer) {
                 ml.tmpLastWordFound = word;
 
                 $42.SCENE.playEffect(level.music.fullWord);
+                if( level.music.presentWord ) $42.SCENE.playEffect(level.music.presentWord);
                 ////////////////////////////////////
                 // FULL WORD FOUND!
 				// First delete word from global word list and selected word list

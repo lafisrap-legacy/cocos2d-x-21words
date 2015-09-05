@@ -125,6 +125,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     }, 
     selection:      { audio: res.blue_mountains_selection_mp3 },
     fullWord:       { audio: res.blue_mountains_full_word_mp3 },
+    presentWord:    { audio: res.blue_mountains_present_word_mp3 },
     lastWord:       { audio: res.blue_mountains_last_word_mp3 },
     deleteRow:      { audio: res.blue_mountains_delete_row_mp3 }
 };
@@ -251,7 +252,7 @@ var _MUSIC_MODULE = function(layer) {
         var time = new Date().getTime();
 
         cc.log("Playing background music of '"+mp.intro+"' and '"+mp.loop+"'.");
-        if( mp.intro ) {
+        if( mp && mp.intro ) {
             mp.startTime   = new Date().getTime(); 
             cc.assert(mp.introLength && mp.introTimes && mp.introMeasure, "");
             mp.beatLength = mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure : 0;
@@ -262,7 +263,7 @@ var _MUSIC_MODULE = function(layer) {
             musicPlaying = mp;
         }
 
-        if( mp.loop ) {
+        if( mp && mp.loop ) {
             mp.timeout = setTimeout(function() {
                 mp.startTime   = new Date().getTime();
                 mp.beatLength = mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure;
