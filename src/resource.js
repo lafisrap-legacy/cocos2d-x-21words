@@ -29,8 +29,9 @@ var res = {
 	// sounds
     title_easy_intro_mp3 : "res/sounds/blaues_titelbild_einleitung0,1,11.mp3",
     title_easy_loop_mp3  : "res/sounds/blaues_titelbild_loop0,1,11.mp3",
-    mostafa_out_mp3 :      "res/sounds/mostafa_geht0,1,1.mp3",
-    mostafa_in_mp3 :       "res/sounds/mostafa_kommt0,1,4.mp3",
+    mostafa_out_mp3 :      "res/sounds/mostafa_geht0,1,5.mp3",
+    mostafa_in_mp3 :       "res/sounds/mostafa_kommt0,1,5.mp3",
+    speech_bubble_mp3 :    "res/sounds/sprechblase1,1,5.mp3",
 
     // level 1
     red_hills_level_words_mp3:        "res/sounds/levelsounds/rote_huegel_drei_worte0,1,1.mp3",
