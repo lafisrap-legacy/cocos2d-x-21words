@@ -1120,9 +1120,6 @@ var _42GameLayer = cc.Layer.extend({
     			
     			colsToCorrect[0] = false;
 
-    			// play sound
-    			//cc.audioEngine.playEffect(res.ritsch_mp3);
-
                 var colsBlocked = [];
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
     				var rd = [];

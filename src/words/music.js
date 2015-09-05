@@ -31,7 +31,7 @@ $42.MUSIC_RED_HILLS = {
         playOnBeat: 0.5
     },
     swipe:          { 
-        audio: [res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
+        audio: [],
         intervalTime: 450
     },
     rotate:         { 
@@ -76,7 +76,7 @@ $42.MUSIC_FLAMES = {
         playOnBeat: 0.5
     },
     swipe:          { 
-        audio: [res.flames_swipe_1_mp3, res.flames_swipe_2_mp3, res.flames_swipe_3_mp3], 
+        audio: [], 
         intervalTime: 450
     },
     rotate:         { 
@@ -95,7 +95,7 @@ $42.MUSIC_FLAMES = {
 };
 
 ////////////////////////////////////////////////
-// Music for level 5
+// Music for level 7
 $42.MUSIC_BLUE_MOUNTAINS = {
     background: {
         intro: res.blue_mountains_intro_mp3,
@@ -148,7 +148,8 @@ var _MUSIC_MODULE = function(layer) {
         var mp = musicPlaying,
             time = new Date().getTime();
 
-        cc.assert(effect, "In need an effect to play ...");
+        cc.assert(effect, "In need an effect with an audio file to play ...");
+        if( !effect.audio || effect.audio.length === 0 ) return;
         if( effect.minInterval ) {
             if( time - (effect.lastPlay || 0) < effect.minInterval ) return;
         }
