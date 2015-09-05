@@ -332,7 +332,8 @@ var _42_MODULE = function(_42Layer) {
             // Full word found?
 			if( j === word.length ) {
 
-                var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+                var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
+                    ll = ml.levelLabels;
 
                 if( word === ml.tmpLastWordFound ) {
                     cc.log("ERROR: Word '"+word+"' found twice.");
@@ -340,8 +341,10 @@ var _42_MODULE = function(_42Layer) {
                 }
                 ml.tmpLastWordFound = word;
 
-                $42.SCENE.playEffect(level.music.fullWord);
+                if( ll.length === 1 && level.type === $42.LEVEL_TYPE_GIVEN ) $42.SCENE.playEffect(level.music.lastWord);
+                else $42.SCENE.playEffect(level.music.fullWord);
                 if( level.music.presentWord ) $42.SCENE.playEffect(level.music.presentWord);
+                
                 ////////////////////////////////////
                 // FULL WORD FOUND!
 				// First delete word from global word list and selected word list
@@ -390,6 +393,12 @@ var _42_MODULE = function(_42Layer) {
 
                         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
+                        if( level.music.presentWord ) $42.SCENE.stopEffect(level.music.presentWord);
+                        
+                        ml.unselectWord(false);
+                        ml.checkForAndRemoveCompleteRows(sw.brc.row);
+                        setSelections();
+                        
                         ////////////////////////////////////
                         // Check level conditions
                         if( checkLevelConditions(word, value) ) {
@@ -435,9 +444,6 @@ var _42_MODULE = function(_42Layer) {
                             ml.fillWordsForTiles();
                         }
 
-                        ml.unselectWord(false);
-                        ml.checkForAndRemoveCompleteRows(sw.brc.row);
-                        setSelections();
                         ml.drawScorebar(false);
 					} else {
                         ml.pauseBuildingTiles = false; 
@@ -822,13 +828,15 @@ var _42_MODULE = function(_42Layer) {
     };
 
     var endLevel = function() {
+        ml.currentLevelForDeleteRow = $42.currentLevel-1;
         switch( ml._gameMode ) {
         case "easy":
             ml.unselectWord();
             for( var i=0 ; i<7 ; i++ ) {
                 setTimeout( function() {
                     ml.checkForAndRemoveCompleteRows([0]);
-                }, $42.MOVE_SPEED * i * 1.1 * 1000);
+                    if( i === 6 ) ml.currentLevelForDeleteRow = null;
+                }, $42.MOVE_SPEED * i * 1.1 * 1000, i );
             }
             break;
         case "intermediate":
@@ -836,7 +844,8 @@ var _42_MODULE = function(_42Layer) {
             for( var i=0 ; i<7 ; i++ ) {
                 setTimeout( function() {
                     ml.checkForAndRemoveCompleteRows([0]);
-                }, $42.MOVE_SPEED * i * 1.1 * 1000);
+                    if( i === 6 ) ml.currentLevelForDeleteRow = null;
+                }, $42.MOVE_SPEED * i * 1.1 * 1000, i);
             }
             break;
         case "expert":
@@ -844,14 +853,15 @@ var _42_MODULE = function(_42Layer) {
             for( var i=0 ; i<7 ; i++ ) {
                 setTimeout( function() {
                     ml.checkForAndRemoveCompleteRows([0]);
-                }, $42.MOVE_SPEED * i * 1.1 * 1000);
+                    if( i === 6 ) ml.currentLevelForDeleteRow = null;
+                }, $42.MOVE_SPEED * i * 1.1 * 1000, i);
             }
         }
     };
 
     var playEndLevelSound = function() {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
-        $42.SCENE.playEffect(level.music.lastWord);
+        $42.SCENE.playEffect(level.music.lastWord); 
         setTimeout(function() {
             $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTime);
         }, level.music.background.fadeOutDelay * 1000);
@@ -2299,7 +2309,7 @@ var _42_MODULE = function(_42Layer) {
 	};
 	
 	_42Layer.hookAllBoxesMovedDown = function(rowsDeleted) {
-        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+        var level = $42.LEVEL_DEVS[ml._gameMode][(ml.currentLevelForDeleteRow || $42.currentLevel)-1];
 		
         setSelections();
 		updateSelectedWord({ rowsDeleted: rowsDeleted});			
