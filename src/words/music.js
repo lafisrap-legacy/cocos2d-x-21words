@@ -125,7 +125,8 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     rotate:         { 
         audio: [res.blue_mountains_rotate_1_mp3, res.blue_mountains_rotate_2_mp3, res.blue_mountains_rotate_3_mp3],
-        minInterval: 0 
+        minInterval: 0,
+        maxEffects: 3 
     },
     fixTile:        { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
@@ -180,7 +181,34 @@ var _MUSIC_MODULE = function(layer) {
             }, effect.intervalTime);
         } else {
             effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+            effect.id.setVolume($42.EFFECTS_VOLUME);
     	    if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[as]);
+        }
+
+        if( effect.maxEffects ) {
+            if( !effect.ids ) effect.ids = [effect.id];
+            else {
+                effect.ids.push(effect.id);
+                if( effect.ids.length > effect.maxEffects ) {
+    	            if( $42.msg2 ) $42.msg2.setString("Deleting effect "+effect.ids[0]+". Currently playing "+effect.ids.length+" effects.");
+                    var delEffect = effect.ids.splice(0,1)[0];
+                    
+                    var delVolume = delEffect.getVolume(),
+                        delStep = delVolume / 10,
+                        delInterval = setInterval(function() {
+                            delVolume -= delStep;
+                            if( delVolume <= 0 ) {
+                                delVolume = 0;
+                                cc.audioEngine.stopEffect( delEffect );
+                                clearInterval(delInterval);
+                                delEffect.setVolume($42.EFFECTS_VOLUME);
+                            } else {
+                                delEffect.setVolume(delVolume);
+                                cc.log("Turning down effect "+delEffect.__instanceId+" volume: "+delVolume);
+                            }
+                        }, 10);
+                }
+            }
         }
         
         effect.lastPlay = time;
