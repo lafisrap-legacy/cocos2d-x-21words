@@ -104,7 +104,7 @@ var res = {
     blue_mountains_loop_mp3:            "res/sounds/levelsounds/blau_berge_loop2,1,9.mp3",
     blue_mountains_level_words_mp3:     "res/sounds/levelsounds/blaue_berge_drei_worte0,1,1.mp3",
     blue_mountains_level_nr_mp3:        "res/sounds/levelsounds/blaue_berge_levelzahl0,1,1.mp3",
-    blue_mountains_set_tile_mp3:        "res/sounds/levelsounds/blaue_berge_buchstaben_neu0,1,4.mp3",
+    blue_mountains_set_tile_mp3:        "res/sounds/levelsounds/blaue_berge_buchstaben_neu0,1,5.mp3",
     blue_mountains_swipe_mp3:           "res/sounds/levelsounds/blaue_berge_wischen0,1,17.mp3",
     blue_mountains_rotate_1_mp3:        "res/sounds/levelsounds/blaue_berge_drehen1,1,9.mp3",
     blue_mountains_rotate_2_mp3:        "res/sounds/levelsounds/blaue_berge_drehen2,1,9.mp3",
