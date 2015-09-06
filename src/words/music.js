@@ -95,6 +95,45 @@ $42.MUSIC_FLAMES = {
 };
 
 ////////////////////////////////////////////////
+// Music for level 6
+$42.MUSIC_INKA_TEMPLE = {
+    background: {
+        intro:  null, 
+        loop:  [res.inka_temple_intro_a_mp3,res.inka_temple_intro_b_mp3,res.inka_temple_intro_c_mp3,res.inka_temple_intro_d_mp3,res.inka_temple_intro_e_mp3,res.inka_temple_intro_f_mp3,res.inka_temple_intro_g_mp3,res.inka_temple_intro_h_mp3],
+        loopLength:     [15.595102, 11.650612, 11.650612, 11.075918, 13.635918, 13.635918, 12.773878, 12.773878],
+        fadeOutTime:    50
+    },
+    levelWords:     { 
+        audio: null 
+    },
+    levelNr:        { 
+        audio: null 
+    },
+    setTile:        { 
+        audio: [res.inka_temple_set_tile_a_mp3, res.inka_temple_set_tile_b_mp3] 
+    },
+    swipe:          { 
+        audio: [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
+        intervalTime: 450
+    },
+    rotate:         { 
+        audio: [res.inka_temple_rotate_1_mp3, res.inka_temple_rotate_2_mp3, res.inka_temple_rotate_3_mp3],
+        minInterval: 0
+    },
+    fixTile:        { 
+        audio: [res.inka_temple_fix_tile_a_mp3, res.inka_temple_fix_tile_b_mp3, res.inka_temple_fix_tile_c_mp3] 
+    }, 
+    selection:      { audio: res.inka_temple_selection_mp3 },
+    fullWord:       { audio: res.inka_temple_full_word_mp3 },
+    presentWord:    { 
+        audio: res.blue_mountains_present_word_mp3,
+        intervalTime: 3000 
+    },
+    lastWord:       { audio: res.inka_temple_last_word_mp3 },
+    deleteRow:      null,
+};
+
+////////////////////////////////////////////////
 // Music for level 7
 $42.MUSIC_BLUE_MOUNTAINS = {
     background: {
@@ -148,7 +187,8 @@ var _MUSIC_MODULE = function(layer) {
         var mp = musicPlaying,
             time = new Date().getTime();
 
-        cc.assert(effect, "In need an effect with an audio file to play ...");
+        if( !effect ) return;
+
         if( !effect.audio || effect.audio.length === 0 ) return;
         if( effect.minInterval ) {
             if( time - (effect.lastPlay || 0) < effect.minInterval ) return;
@@ -156,7 +196,6 @@ var _MUSIC_MODULE = function(layer) {
 
         //cc.log("Now ("+time+") playing effect: "+effect.audio);
         
-        cc.audioEngine.setEffectsVolume($42.EFFECTS_VOLUME);
         if( typeof effect.audio === "string" ) effect.audio = [effect.audio];
         if( effect.audioSlot === undefined ) effect.audioSlot = 0;
         else effect.audioSlot = ++effect.audioSlot%effect.audio.length;
@@ -232,7 +271,6 @@ var _MUSIC_MODULE = function(layer) {
     layer.playInCount = function(effect) {
         var mp = musicPlaying;
 
-        cc.audioEngine.setEffectsVolume($42.EFFECTS_VOLUME);
         if( typeof effect.audio === "string" ) effect.audio = [effect.audio];
         if( effect.audioSlot === undefined ) effect.audioSlot = 0;
         else effect.audioSlot = ++effect.audioSlot%effect.audio.length;
@@ -251,8 +289,10 @@ var _MUSIC_MODULE = function(layer) {
     layer.playBackgroundMusic = function(mp, afterNBeats) {
         var time = new Date().getTime();
 
+        if( !mp ) return;
+
         //cc.log("Playing background music of '"+mp.intro+"' and '"+mp.loop+"'.");
-        if( mp && mp.intro ) {
+        if( mp.intro ) {
             mp.startTime   = new Date().getTime(); 
             cc.assert(mp.introLength && mp.introTimes && mp.introMeasure, "");
             mp.beatLength = mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure : 0;
@@ -263,17 +303,46 @@ var _MUSIC_MODULE = function(layer) {
             musicPlaying = mp;
         }
 
-        if( mp && mp.loop ) {
-            mp.timeout = setTimeout(function() {
-                mp.startTime   = new Date().getTime();
-                mp.beatLength = mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure;
-                cc.audioEngine.playMusic(mp.loop, true);
-                cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
-    	        if( $42.msg1 ) $42.msg1.setString("Now playing background loop '"+mp.loop+"'");
-                
-            }, (mp.introLength || 0)*1000 );
+        if( mp.loop ) {
+            if( typeof mp.loop === "string" ) mp.loop = [mp.loop];
+                mp.loopSlot = 0;
+            
+            if( mp.loop[0].length ) {
+                mp.timeout = setTimeout(function() {
+                    mp.startTime   = new Date().getTime();
+                    mp.beatLength = mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure;
+                    if( mp.loop.length === 1 ) {
+                        cc.audioEngine.playMusic(mp.loop[0], true);
+                        if( $42.msg1 ) $42.msg1.setString("Now playing background loop '"+mp.loop[0]+"'");
+                    } else {
+                        cc.audioEngine.playMusic(mp.loop[0], false);
+                        if( $42.msg1 ) $42.msg1.setString("Now playing background loop '"+mp.loop[0]+"'");
+                        setTimeout(layer.playNextMusicSlot, mp.loopLength[0] * 1000);
+                    }
+                    
+                }, (mp.introLength || 0)*1000 );
 
-            musicPlaying = mp;
+                musicPlaying = mp;
+            }
+        }
+    };
+
+    layer.playNextMusicSlot = function(fadeOut) {
+
+        var mp = musicPlaying;
+        if( !mp || !mp.loopSlot && !mp.loopSlot === 0 ) return;
+
+        setTimeout(function() {
+            mp.loopSlot = ++mp.loopSlot % mp.loop.length;
+            cc.audioEngine.playMusic(mp.loop[mp.loopSlot], false);
+            cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
+            if( $42.msg1 ) $42.msg1.setString("Now playing loop '"+mp.loop[mp.loopSlot]+"'");
+            if( mp.timeout ) clearTimeout( mp.timeout );
+            mp.timeout = setTimeout(layer.playNextMusicSlot, mp.loopLength[mp.loopSlot] * 1000);
+        }, mp.fadeOutTime+10 || 0);
+
+        if( fadeOut && mp.fadeOutTime ) {
+            layer.fadeOutBackgroundMusic(mp.fadeOutTime);
         }
     };
 
@@ -287,6 +356,7 @@ var _MUSIC_MODULE = function(layer) {
             if( mp.timeout ) clearTimeout(mp.timeout);
             mp.timeout = null;
             mp.startTime = null;
+            mp.loopSlot = null;
             musicPlaying = null;
     	    if( $42.msg1 ) $42.msg1.setString("Background music stopped!");
         }

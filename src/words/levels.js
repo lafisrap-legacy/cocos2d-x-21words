@@ -62,7 +62,7 @@ $42.LEVEL_DEVS = {
         wordFreq: 1.0
     },{                             // Level 6
         type: $42.LEVEL_TYPE_PREFIX,
-        music: $42.MUSIC_BLUE_MOUNTAINS,
+        music: $42.MUSIC_INKA_TEMPLE,
         words: 3,
         minValue:   0,
         minDemand:  0,

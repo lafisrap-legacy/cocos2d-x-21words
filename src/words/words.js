@@ -783,6 +783,9 @@ var _42_MODULE = function(_42Layer) {
         setTimeout(function() {
             $42.SCENE.playEffect(level.music.levelNr);
         }, level.music.levelNr.delay || 4500);
+        
+        cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
+        cc.audioEngine.setEffectsVolume($42.EFFECTS_VOLUME);
     };
 
     ml.fillWordsForTiles = function() {
@@ -2140,6 +2143,7 @@ var _42_MODULE = function(_42Layer) {
 		
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
         $42.SCENE.playEffect(level.music.setTile);
+        $42.SCENE.playNextMusicSlot();
 		
         this._nextTile = getProgrammedTile();
 		
@@ -2226,6 +2230,7 @@ var _42_MODULE = function(_42Layer) {
                 $42.SCENE.playEffect(level.music.fixTile);
             }, level.music.background, level.music.fixTile.playOnBeat, 1);
         } else $42.SCENE.playEffect(level.music.fixTile);
+        $42.SCENE.fadeOutBackgroundMusic(40, true);
 
 		setSelections(); // OPTIMIZATION: Only look in current lines
        
