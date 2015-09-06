@@ -135,6 +135,7 @@ $42.MUSIC_INKA_TEMPLE = {
         delayTime: 500 
     },
     lastWord:       { audio: res.inka_temple_last_word_mp3 },
+    nextWord:       { audio: res.inka_temple_next_word_mp3 }, 
     final:          { audio: res.inka_temple_final_mp3 },
     deleteRow:      null,
 };

@@ -441,6 +441,8 @@ var _42_MODULE = function(_42Layer) {
                                 }, $42.BACKGROUND_SPEED*1.2*1000);
                             }
                         } else {
+                            if( level.music.nextWord ) $42.SCENE.playEffect(level.music.nextWord);
+                            
                             ml.pauseBuildingTiles = false; 
                             ml.wordsForTilesCnt = level.wordFreq-1;
                             ml.fillWordsForTiles();
