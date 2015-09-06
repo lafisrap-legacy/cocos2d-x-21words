@@ -406,6 +406,8 @@ var _42_MODULE = function(_42Layer) {
                             
                             for( var i=0 ; level.newLetters && i<level.newLetters ; i++ ) setNextProfileLetter();
 
+                            if( level.music.final ) $42.SCENE.playEffect(level.music.final);
+                            
                             $42.wordTreasure = $42.wordTreasure.concat(ml.levelWords);
                             if( ++$42.currentLevel > $42.LEVEL_DEVS[ml._gameMode].length ) {
                                 ml.drawScorebar(false);
@@ -2143,7 +2145,7 @@ var _42_MODULE = function(_42Layer) {
 		
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
         $42.SCENE.playEffect(level.music.setTile);
-        $42.SCENE.playNextMusicSlot();
+        $42.SCENE.playNextMusicSlot(true);
 		
         this._nextTile = getProgrammedTile();
 		
@@ -2230,7 +2232,6 @@ var _42_MODULE = function(_42Layer) {
                 $42.SCENE.playEffect(level.music.fixTile);
             }, level.music.background, level.music.fixTile.playOnBeat, 1);
         } else $42.SCENE.playEffect(level.music.fixTile);
-        $42.SCENE.fadeOutBackgroundMusic(40, true);
 
 		setSelections(); // OPTIMIZATION: Only look in current lines
        

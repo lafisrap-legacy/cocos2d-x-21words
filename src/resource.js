@@ -90,9 +90,10 @@ var res = {
     inka_temple_fix_tile_c_mp3:        "res/sounds/levelsounds/inka_tempel_buchstaben_unten_c3,1,2.mp3",
     inka_temple_selection_mp3:         "res/sounds/levelsounds/inka_tempel_buchstabenkombi_0,1,3.mp3",
     inka_temple_full_word_mp3:         "res/sounds/levelsounds/inka_tempel_wort_fertig_a1,1,1.mp3",
-    inka_temple_last_word_mp3:         "res/sounds/levelsounds/inka_tempel_wort_waehlen_warten0,1,3.mp3",
+    inka_temple_last_word_mp3:         "res/sounds/levelsounds/inka_tempel_wort_fertig_a1,1,1.mp3",
     inka_temple_final_mp3:             "res/sounds/levelsounds/inka_tempel_abschluss0,1,2.mp3",  
     //inka_temple_delete_row_mp3:        "",
+    inka_temple_present_word_mp3:      "res/sounds/levelsounds/inka_tempel_wort_waehlen_warten0,1,3.mp3",
     inka_temple_end_a_mp3:      	   "res/sounds/levelsounds/inka_tempel_wort_gewaehlt_a+b1,1,2.mp3",  
     inka_temple_end_b_mp3:      	   "res/sounds/levelsounds/inka_tempel_wort_gewaehlt_c2,1,2.mp3",
         
@@ -112,6 +113,7 @@ var res = {
     blue_mountains_full_word_mp3:       "res/sounds/levelsounds/blaue_berge_wort_fertig0,1,9.mp3",
     blue_mountains_last_word_mp3:       "res/sounds/levelsounds/blaue_berge_letztes_wort_fertig0,1,7.mp3",
     blue_mountains_delete_row_mp3:      "res/sounds/levelsounds/blaue_berge_reihe_kracht0,1,4.mp3",
+    blue_mountains_present_word_mp3:    "res/sounds/levelsounds/blaue_berge_wort_praesentieren0,1,17.mp3",
     blue_mountains_end_mp3:      	    "res/sounds/levelsounds/blaue_berge_schlussfanfare0,1,8.mp3",
 
     // fonts
