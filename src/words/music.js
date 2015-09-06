@@ -8,7 +8,7 @@ $42.MUSIC_TITLE_EASY = {
     loop:  res.title_easy_loop_mp3,
     loopLength:     38.124000,
     fadeOutDelay:   0,
-    fadeOutTime:    4000
+    fadeOutTime:    6000
 }
 
 ////////////////////////////////////////////////
