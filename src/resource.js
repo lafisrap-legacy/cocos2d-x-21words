@@ -116,7 +116,7 @@ var res = {
     blue_mountains_last_word_mp3:       "res/sounds/levelsounds/blaue_berge_letztes_wort_fertig0,1,7.mp3",
     blue_mountains_delete_row_mp3:      "res/sounds/levelsounds/blaue_berge_reihe_kracht0,1,4.mp3",
     blue_mountains_present_word_mp3:    "res/sounds/levelsounds/blaue_berge_wort_praesentieren0,1,17.mp3",
-    blue_mountains_final_mp3:      	    "res/sounds/levelsounds/blaue_berge_schlussfanfare0,1,8.mp3",
+    blue_mountains_final_mp3:      	    "res/sounds/levelsounds/blaue_berge_schlussfanfare0,1,9.mp3",
 
     // fonts
 	amtype24_fnt : "res/fonts/amtype24.fnt",
