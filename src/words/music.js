@@ -131,7 +131,6 @@ $42.MUSIC_INKA_TEMPLE = {
     fullWord:       { audio: res.inka_temple_full_word_mp3 },
     presentWord:    { 
         audio: res.inka_temple_present_word_mp3,
-        intervalTime: 3000, 
         delayTime: 500 
     },
     lastWord:       { audio: res.inka_temple_last_word_mp3 },
