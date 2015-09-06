@@ -868,7 +868,6 @@ var _42_MODULE = function(_42Layer) {
 
     var playEndLevelSound = function() {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
-        $42.SCENE.playEffect(level.music.lastWord); 
         setTimeout(function() {
             $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTime);
         }, level.music.background.fadeOutDelay * 1000);
