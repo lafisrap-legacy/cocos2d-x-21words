@@ -125,8 +125,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     rotate:         { 
         audio: [res.blue_mountains_rotate_1_mp3, res.blue_mountains_rotate_2_mp3, res.blue_mountains_rotate_3_mp3],
-        minInterval: 0,
-        maxEffects: 3 
+        minInterval: 0
     },
     fixTile:        { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
@@ -155,7 +154,7 @@ var _MUSIC_MODULE = function(layer) {
             if( time - (effect.lastPlay || 0) < effect.minInterval ) return;
         }
 
-        cc.log("Now ("+time+") playing effect: "+effect.audio);
+        //cc.log("Now ("+time+") playing effect: "+effect.audio);
         
         cc.audioEngine.setEffectsVolume($42.EFFECTS_VOLUME);
         if( typeof effect.audio === "string" ) effect.audio = [effect.audio];
@@ -165,16 +164,17 @@ var _MUSIC_MODULE = function(layer) {
         var as = effect.audioSlot;
         if( effect.intervalTime && !effect.interval ) {
             effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+            effect.id.setVolume($42.EFFECTS_VOLUME);
     	    if( $42.msg2 ) $42.msg2.setString("Starting interval: "+effect.audio[as]);
             effect.interval = setInterval(function() {
                 if( effect.intervalIsEnding ) {
-                    cc.log("Ending interval of "+effect.audio[as]);
+                    //cc.log("Ending interval of "+effect.audio[as]);
     	            if( $42.msg2 ) $42.msg2.setString("Ending interval: "+effect.audio[as]);
                     clearInterval(effect.interval);
                     effect.interval = null;
                     effect.intervalIsEnding = false;
                 } else {
-                    cc.log("Playing in interval: "+effect.audio[as]);
+                    //cc.log("Playing in interval: "+effect.audio[as]);
     	            if( $42.msg2 ) $42.msg2.setString("Playing in interval: "+effect.audio[as]);
                     playEffect(effect);
                 }
@@ -185,46 +185,21 @@ var _MUSIC_MODULE = function(layer) {
     	    if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[as]);
         }
 
-        if( effect.maxEffects ) {
-            if( !effect.ids ) effect.ids = [effect.id];
-            else {
-                effect.ids.push(effect.id);
-                if( effect.ids.length > effect.maxEffects ) {
-    	            if( $42.msg2 ) $42.msg2.setString("Deleting effect "+effect.ids[0]+". Currently playing "+effect.ids.length+" effects.");
-                    var delEffect = effect.ids.splice(0,1)[0];
-                    
-                    var delVolume = delEffect.getVolume(),
-                        delStep = delVolume / 10,
-                        delInterval = setInterval(function() {
-                            delVolume -= delStep;
-                            if( delVolume <= 0 ) {
-                                delVolume = 0;
-                                cc.audioEngine.stopEffect( delEffect );
-                                clearInterval(delInterval);
-                                delEffect.setVolume($42.EFFECTS_VOLUME);
-                            } else {
-                                delEffect.setVolume(delVolume);
-                                cc.log("Turning down effect "+delEffect.__instanceId+" volume: "+delVolume);
-                            }
-                        }, 10);
-                }
-            }
-        }
-        
         effect.lastPlay = time;
     };
 
     layer.stopEffect = function(effect) {
-        cc.log("Now stopping effect "+effect.audio);
+        //cc.log("Now stopping effect "+effect.audio);
         if( effect.interval ) {
             if( !effect.intervalIsEnding ) {
                 effect.intervalIsEnding = true;
                 if( effect.end ) {
                     var span = new Date().getTime() - effect.lastPlay;
                     setTimeout(function() {
-                        cc.log("Playing end of interval: "+effect.end);
+                        //cc.log("Playing end of interval: "+effect.end);
     	                if( $42.msg2 ) $42.msg2.setString("Playing effect end: "+effect.end);
                         layer.playEffect({audio: effect.end});
+                        effect.id.setVolume($42.EFFECTS_VOLUME);
                     }, effect.endDelay-span || 0 );
                 }
             }
@@ -246,7 +221,7 @@ var _MUSIC_MODULE = function(layer) {
                     frames = Math.floor(span/frame),
                     offset = span - frames * frame;
 
-                cc.log("Waiting for next beat for "+(frame * (cnt || 1) - offset)+" ms. ("+offset+", "+frames+", "+frame+")");
+                //cc.log("Waiting for next beat for "+(frame * (cnt || 1) - offset)+" ms. ("+offset+", "+frames+", "+frame+")");
                 setTimeout(cb, frame * (cnt || 1) - offset);
             } else {
                 cb();
@@ -276,7 +251,7 @@ var _MUSIC_MODULE = function(layer) {
     layer.playBackgroundMusic = function(mp, afterNBeats) {
         var time = new Date().getTime();
 
-        cc.log("Playing background music of '"+mp.intro+"' and '"+mp.loop+"'.");
+        //cc.log("Playing background music of '"+mp.intro+"' and '"+mp.loop+"'.");
         if( mp && mp.intro ) {
             mp.startTime   = new Date().getTime(); 
             cc.assert(mp.introLength && mp.introTimes && mp.introMeasure, "");
