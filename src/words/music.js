@@ -43,10 +43,12 @@ $42.MUSIC_RED_HILLS = {
     fullWord:       { audio: res.red_hills_full_word_mp3 },
     presentWord:    { 
         audio: res.blue_mountains_present_word_mp3,
-        intervalTime: 3000 
+        intervalTime: 3000,
+        delayTime: 500 
     },
     lastWord:       { audio: res.red_hills_last_word_mp3 },
-    deleteRow:      { audio: res.red_hills_delete_row_mp3 }
+    deleteRow:      { audio: res.red_hills_delete_row_mp3 },
+    final:          { audio: res.red_hills_final_mp3 },
 };
 
 
@@ -88,10 +90,12 @@ $42.MUSIC_FLAMES = {
     fullWord:       { audio: res.flames_full_word_mp3 },
     presentWord:    { 
         audio: res.blue_mountains_present_word_mp3,
-        intervalTime: 3000 
+        intervalTime: 3000, 
+        delayTime: 500 
     },
     lastWord:       { audio: res.flames_last_word_mp3 },
-    deleteRow:      { audio: res.flames_delete_row_mp3 }
+    deleteRow:      { audio: res.flames_delete_row_mp3 },
+    final:          { audio: res.flames_final_mp3 },
 };
 
 ////////////////////////////////////////////////
@@ -127,7 +131,8 @@ $42.MUSIC_INKA_TEMPLE = {
     fullWord:       { audio: res.inka_temple_full_word_mp3 },
     presentWord:    { 
         audio: res.inka_temple_present_word_mp3,
-        intervalTime: 3000 
+        intervalTime: 3000, 
+        delayTime: 500 
     },
     lastWord:       { audio: res.inka_temple_last_word_mp3 },
     final:          { audio: res.inka_temple_final_mp3 },
@@ -175,10 +180,12 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     fullWord:       { audio: res.blue_mountains_full_word_mp3 },
     presentWord:    { 
         audio: res.blue_mountains_present_word_mp3,
-        intervalTime: 3000 
+        intervalTime: 3000, 
+        delayTime: 500
     },
     lastWord:       { audio: res.blue_mountains_last_word_mp3 },
-    deleteRow:      { audio: res.blue_mountains_delete_row_mp3 }
+    deleteRow:      { audio: res.blue_mountains_delete_row_mp3 },
+    final:          { audio: res.blue_mountains_final_mp3 },
 };
 
 var _MUSIC_MODULE = function(layer) {
@@ -199,31 +206,36 @@ var _MUSIC_MODULE = function(layer) {
         if( effect.audioSlot === undefined ) effect.audioSlot = 0;
         else effect.audioSlot = ++effect.audioSlot%effect.audio.length;
 
-        var as = effect.audioSlot;
-        if( effect.intervalTime && !effect.interval ) {
-            effect.id = cc.audioEngine.playEffect(effect.audio[as]);
-            effect.id.setVolume($42.EFFECTS_VOLUME);
-    	    if( $42.msg2 ) $42.msg2.setString("Starting interval: "+effect.audio[as]);
-            effect.interval = setInterval(function() {
-                if( effect.intervalIsEnding ) {
-                    //cc.log("Ending interval of "+effect.audio[as]);
-    	            if( $42.msg2 ) $42.msg2.setString("Ending interval: "+effect.audio[as]);
-                    clearInterval(effect.interval);
-                    effect.interval = null;
-                    effect.intervalIsEnding = false;
-                } else {
-                    //cc.log("Playing in interval: "+effect.audio[as]);
-    	            if( $42.msg2 ) $42.msg2.setString("Playing in interval: "+effect.audio[as]);
-                    playEffect(effect);
-                }
-            }, effect.intervalTime);
-        } else {
-            effect.id = cc.audioEngine.playEffect(effect.audio[as]);
-            effect.id.setVolume($42.EFFECTS_VOLUME);
-    	    if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[as]);
-        }
+        var play = function() {
+            var as = effect.audioSlot;
+            if( effect.intervalTime && !effect.interval ) {
+                effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+                effect.id.setVolume($42.EFFECTS_VOLUME);
+                if( $42.msg2 ) $42.msg2.setString("Starting interval: "+effect.audio[as]);
+                effect.interval = setInterval(function() {
+                    if( effect.intervalIsEnding ) {
+                        //cc.log("Ending interval of "+effect.audio[as]);
+                        if( $42.msg2 ) $42.msg2.setString("Ending interval: "+effect.audio[as]);
+                        clearInterval(effect.interval);
+                        effect.interval = null;
+                        effect.intervalIsEnding = false;
+                    } else {
+                        //cc.log("Playing in interval: "+effect.audio[as]);
+                        if( $42.msg2 ) $42.msg2.setString("Playing in interval: "+effect.audio[as]);
+                        playEffect(effect);
+                    }
+                }, effect.intervalTime);
+            } else {
+                effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+                effect.id.setVolume($42.EFFECTS_VOLUME);
+                if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[as]);
+            }
 
-        effect.lastPlay = time;
+            effect.lastPlay = time;
+        };
+
+        if( effect.delayTime ) setTimeout(play, effect.delayTime );
+        else play();
     };
 
     layer.stopEffect = function(effect) {
