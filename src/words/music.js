@@ -347,7 +347,7 @@ var _MUSIC_MODULE = function(layer) {
 
         if( mp.loop ) {
             if( typeof mp.loop === "string" ) mp.loop = [mp.loop];
-                mp.loopSlot = 0;
+            mp.loopSlot = 0;
             
             if( mp.loop[0].length ) {
                 mp.timeout = setTimeout(function() {
@@ -372,7 +372,7 @@ var _MUSIC_MODULE = function(layer) {
     layer.playNextMusicSlot = function(fadeOut) {
 
         var mp = musicPlaying;
-        if( !mp || !mp.loopSlot && !mp.loopSlot === 0 ) return;
+        if( !mp || mp.loop.length <= 1 ) return;
 
         var playSlot = function() {
             mp.loopSlot = ++mp.loopSlot % mp.loop.length;
