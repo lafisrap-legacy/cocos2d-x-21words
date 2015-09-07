@@ -16,7 +16,7 @@ $42.MUSIC_TITLE_EASY = {
 $42.MUSIC_RED_HILLS = {
     background: {
         intro:          null,
-        loop:           rote_huegel_hintergrund_a1,1,2_mp3,
+        loop:           red_hills_loop_mp3,
         loopLength:     8.571,
         loopTimes:      4,
         loopMeasure:    4
