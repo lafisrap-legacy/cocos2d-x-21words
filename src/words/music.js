@@ -15,13 +15,13 @@ $42.MUSIC_TITLE_EASY = {
 // Music for level 1
 $42.MUSIC_RED_HILLS = {
     background: {
-        intro:          res.red_hills_loop_mp3,
-        introLength:    8.571000,
-        introTimes:     4,
+        intro:          res.red_hills_intro_mp3,
+        introLength:    2.142000,
+        introTimes:     1,
         introMeasure:   4,
         loop:           res.red_hills_loop_mp3,
-        loopLength:     8.571000,
-        loopTimes:      4,
+        loopLength:     22.232000,
+        loopTimes:      11.375,
         loopMeasure:    4
     },
     levelWords:     { 
