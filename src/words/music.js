@@ -177,7 +177,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     fixTile:        { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
-        playOnBeat: 0.125
+        playOnBeat: 0.250
     }, 
     selection:      { audio: res.blue_mountains_selection_mp3 },
     fullWord:       { audio: res.blue_mountains_full_word_mp3 },
