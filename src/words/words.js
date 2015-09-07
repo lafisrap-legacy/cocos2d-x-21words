@@ -2232,11 +2232,11 @@ var _42_MODULE = function(_42Layer) {
 		ml.lastBrcs = brcs;
         ml.pauseBuildingTiles = true;
 		
-        if( level.music.fixTile && level.music.fixTile.playOnBeat ) {
-            $42.SCENE.callFuncOnNextBeat(function() {
+        //if( level.music.fixTile && level.music.fixTile.playOnBeat ) {
+        //    $42.SCENE.callFuncOnNextBeat(function() {
                 $42.SCENE.playEffect(level.music.fixTile);
-            }, level.music.background, level.music.fixTile.playOnBeat, 1);
-        } else $42.SCENE.playEffect(level.music.fixTile);
+        //    }, level.music.background, level.music.fixTile.playOnBeat, 1);
+        //} else $42.SCENE.playEffect(level.music.fixTile);
 
 		setSelections(); // OPTIMIZATION: Only look in current lines
        

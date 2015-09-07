@@ -770,7 +770,7 @@ var _42GameLayer = cc.Layer.extend({
     	
     	/////////////////////////////////////
     	// Internal function: check if a collision happened
-    	var checkForBottom = function(t, lp) {
+    	var checkForBottom = function(t, lp, cb) {
     		var b = t.rotatedBoxes; // usually four boxes of a tile
     		
             /////////////////////
@@ -790,7 +790,22 @@ var _42GameLayer = cc.Layer.extend({
     				lp.y = Math.round((lp.y - $42.BOXES_Y_OFFSET)/($42.BS/2))*($42.BS/2) + $42.BOXES_Y_OFFSET;
     				
     				// fix tile
-    				if( !t.isDragged && !t.isRotating ) return fixTile(t, lp);
+    				if( !t.isDragged && !t.isRotating ) {
+                        self.tileIsFixing = true;
+                        if( self.hookFuncOnNextBeat ) {
+                            self.hookFuncOnNextBeat(function() {        
+                                var time = new Date().getTime();
+                                cc.log("---Background--- Fixing tile at "+time);
+                                cb(fixTile(t, lp));
+                                self.tileIsFixing = false;
+                            },"fixTile");
+                        } else { 
+                            cb(fixTile(t, lp));
+                            self.tileIsFixing = false;
+                        }
+
+                        return true;
+                    }
     			}
     		}
 
@@ -1272,13 +1287,13 @@ var _42GameLayer = cc.Layer.extend({
             if( self.hookFuncOnNextBeat ) {
                 self.hookFuncOnNextBeat(function() {        
                     var time = new Date().getTime();
-                    cc.log("---Backgound--- Sending tile at "+time);
+                    cc.log("---Background--- Sending tile at "+time);
                     buildTile();
                 },"setTile");
             } else buildTile();
         }
         
-        if( !t ) return;
+        if( !t || self.tileIsFixing ) return;
         
         var lp = t.sprite.getPosition(),
             sp = self.touchStartPoint,
@@ -1363,7 +1378,7 @@ var _42GameLayer = cc.Layer.extend({
         // Check for bottom
         var ret;
         self.pauseBuildingTiles = true;
-        if( ret = checkForBottom(t, lp) ) {
+        if( !checkForBottom(t, lp, function(ret) {
             //////////////////////////////////////////
             // tile landed, release and delete it ...
             var t = self._currentTile.sprite,
@@ -1377,9 +1392,9 @@ var _42GameLayer = cc.Layer.extend({
             if( ret == "gameover" ) {
 
                 var menuItems = [];
-                if( !this.lastGameOverTime || this.lastGameOverTime < new Date().getTime() - 1000 ) {
+                if( !self.lastGameOverTime || self.lastGameOverTime < new Date().getTime() - 1000 ) {
                     
-                    ///////////////////////7
+                    ///////////////////////
                     // Ask player if to go on
                     menuItems.push({
                         label: $42.t.reached_top_continue, 
@@ -1408,17 +1423,18 @@ var _42GameLayer = cc.Layer.extend({
                     }
                 });
                 
-                this.getParent().addChild(
+                self.getParent().addChild(
                     new _42MenuLayer("",menuItems),
                     2);
-                this.pause();
-                this.unscheduleUpdate();
+                self.pause();
+                self.unscheduleUpdate();
             }
             
-        } else {
-            
+        })) {
             t.sprite.setPosition(lp);    			
-        };
+        } else {
+            if( self._currentTile ) t.sprite.setPosition(lp);
+        }
     }
 });
 

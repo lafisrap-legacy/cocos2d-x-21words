@@ -15,15 +15,15 @@ $42.MUSIC_TITLE_EASY = {
 // Music for level 1
 $42.MUSIC_RED_HILLS = {
     background: {
-    background: {
-        intro: red_hills_loop_mp3,
-        loopLength:     8.571000,
-        loopTimes:      4,
-        loopMeasure:    4,
-        loop:           red_hills_loop_mp3,
+        intro:          res.red_hills_loop_mp3,
+        introLength:    8.571000,
+        introTimes:     4,
+        introMeasure:   4,
+        loop:           res.red_hills_loop_mp3,
         loopLength:     8.571000,
         loopTimes:      4,
         loopMeasure:    4
+    },
     levelWords:     { 
         audio: res.red_hills_level_words_mp3,
         delay: 1500,
@@ -34,8 +34,8 @@ $42.MUSIC_RED_HILLS = {
     },
     setTile:        { 
         audio: res.red_hills_set_tile_mp3, 
-        playOnBeat: 0.5,
-        playAfterBeats: 2
+        playOnBeat: 0,
+        playAfterBeats: 1
     },
     swipe:          { 
         audio: [],
@@ -45,7 +45,11 @@ $42.MUSIC_RED_HILLS = {
         audio: [res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
         minInterval: 000 
     },
-    fixTile:        { audio: res.red_hills_fix_tile_1_mp3 }, 
+    fixTile:        { 
+        audio: res.red_hills_fix_tile_1_mp3, 
+        playOnBeat: 0,
+        playAfterBeats: 0 
+    }, 
     selection:      { audio: res.red_hills_selection_mp3 },
     fullWord:       { audio: res.red_hills_full_word_mp3 },
     presentWord:    { 
@@ -83,8 +87,8 @@ $42.MUSIC_FLAMES = {
     },
     setTile:        { 
         audio: res.flames_set_tile_mp3,
-        playOnBeat: 0.5,
-        playAfterBeats: 2
+        playOnBeat: 0,
+        playAfterBeats: 0.5
     },
     swipe:          { 
         audio: [], 
@@ -94,7 +98,11 @@ $42.MUSIC_FLAMES = {
         audio: [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
         minInterval: 0 
     },
-    fixTile:        { audio: res.flames_fix_tile_1_mp3 }, 
+    fixTile:        { 
+        audio: res.flames_fix_tile_1_mp3, 
+        playOnBeat: 0,
+        playAfterBeats: 0 
+    }, 
     selection:      { audio: res.flames_selection_mp3 },
     fullWord:       { audio: res.flames_full_word_mp3 },
     presentWord:    { 
@@ -114,6 +122,7 @@ $42.MUSIC_INKA_TEMPLE = {
         intro:  null, 
         loop:  [res.inka_temple_intro_a_mp3,res.inka_temple_intro_b_mp3,res.inka_temple_intro_c_mp3,res.inka_temple_intro_d_mp3,res.inka_temple_intro_e_mp3,res.inka_temple_intro_f_mp3,res.inka_temple_intro_g_mp3,res.inka_temple_intro_h_mp3],
         loopLength:     [15.595102, 11.650612, 11.650612, 11.075918, 13.635918, 13.635918, 12.773878, 12.773878],
+        loopFrame: 550,
         fadeOutTime:    50
     },
     levelWords:     { 
@@ -124,8 +133,8 @@ $42.MUSIC_INKA_TEMPLE = {
     },
     setTile:        { 
         audio: [res.inka_temple_set_tile_a_mp3, res.inka_temple_set_tile_b_mp3], 
-        playOnBeat: 0.5,
-        playAfterBeats: 2
+        playOnBeat: 0,
+        playAfterBeats: 1
     },
     swipe:          { 
         audio: [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
@@ -136,7 +145,9 @@ $42.MUSIC_INKA_TEMPLE = {
         minInterval: 0
     },
     fixTile:        { 
-        audio: [res.inka_temple_fix_tile_a_mp3, res.inka_temple_fix_tile_b_mp3, res.inka_temple_fix_tile_c_mp3] 
+        audio: [res.inka_temple_fix_tile_a_mp3, res.inka_temple_fix_tile_b_mp3, res.inka_temple_fix_tile_c_mp3], 
+        playOnBeat: 0,
+        playAfterBeats: 0  
     }, 
     selection:      { audio: res.inka_temple_selection_mp3 },
     fullWord:       { audio: res.inka_temple_full_word_mp3 },
@@ -189,7 +200,8 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     fixTile:        { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
-        playOnBeat: 0.250
+        playOnBeat: 0.5,
+        playAfterBeats: 1 
     }, 
     selection:      { audio: res.blue_mountains_selection_mp3 },
     fullWord:       { audio: res.blue_mountains_full_word_mp3 },
@@ -281,7 +293,7 @@ var _MUSIC_MODULE = function(layer) {
         var mp = musicPlaying || null,
             time = new Date().getTime();
         if( mp ) {
-            var frame  = mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure * (sound.playOnBeat || 0) : 0;
+            var frame  = mp.loopFrame || (mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure * (sound.playOnBeat || 1) : 0);
             
             if( frame ) {
                 var span = time - (mp.startTime || time),
@@ -289,7 +301,7 @@ var _MUSIC_MODULE = function(layer) {
                     offset = span - frames * frame;
 
                 //cc.log("Waiting for next beat for "+(frame * (cnt || 1) - offset)+" ms. ("+offset+", "+frames+", "+frame+")");
-                setTimeout(cb, frame * (sound.playAfterBeats || 1) - offset);
+                setTimeout(cb, frame * (sound.playAfterBeats || 0) - (sound.playOnBeat? offset : 0));
             } else {
                 cb();
             }
