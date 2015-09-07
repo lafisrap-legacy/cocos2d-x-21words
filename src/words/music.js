@@ -38,7 +38,7 @@ $42.MUSIC_RED_HILLS = {
         playAfterBeats: 1
     },
     swipe:          { 
-        audio: [],
+        audio: [res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
         intervalTime: 450
     },
     rotate:         { 

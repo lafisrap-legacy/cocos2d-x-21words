@@ -219,7 +219,8 @@ var _42_MODULE = function(_42Layer) {
 	// update markers of selected word, look if a full word was found, process it ...
     //
 	var updateSelectedWord = function(options) {
-		var sw = ml.selectedWord;
+		var sw = ml.selectedWord,
+            level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 		
 		if( ml.wordIsBeingSelected ) return false;
         if( !sw ) {
@@ -332,8 +333,7 @@ var _42_MODULE = function(_42Layer) {
             // Full word found?
 			if( j === word.length ) {
 
-                var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
-                    ll = ml.levelLabels;
+                var ll = ml.levelLabels;
 
                 if( word === ml.tmpLastWordFound ) {
                     cc.log("ERROR: Word '"+word+"' found twice.");
@@ -344,6 +344,7 @@ var _42_MODULE = function(_42Layer) {
                 if( ll.length === 1 && level.type === $42.LEVEL_TYPE_GIVEN ) $42.SCENE.playEffect(level.music.lastWord);
                 else $42.SCENE.playEffect(level.music.fullWord);
                 if( level.music.presentWord ) $42.SCENE.playEffect(level.music.presentWord);
+                ml.playEffectSelection = false;
                 
                 ////////////////////////////////////
                 // FULL WORD FOUND!
@@ -390,8 +391,6 @@ var _42_MODULE = function(_42Layer) {
                             word: word,
                             value: value
                         });
-
-                        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
                         if( level.music.presentWord ) $42.SCENE.stopEffect(level.music.presentWord);
                         
@@ -461,6 +460,11 @@ var _42_MODULE = function(_42Layer) {
 			}
 		}
 		
+        if( ml.playEffectSelection ) {
+            $42.SCENE.playEffect(level.music.selection);
+            ml.playEffectSelection = false;
+        }
+
         ml.pauseBuildingTiles = false;
 		
         return false; // no word was found
@@ -1410,8 +1414,8 @@ var _42_MODULE = function(_42Layer) {
                     sprites: [],
                     maxValue: max
                 } 
+                ml.playEffectSelection = true;
 		        updateSelectedWord();
-                $42.SCENE.playEffect(level.music.selection);
                 return
             }
 		}
@@ -2262,8 +2266,8 @@ var _42_MODULE = function(_42Layer) {
                             brc2 = s[j].brc;
 
                         if( brc1.row == brc2.row && (brc1.col == brc2.col || brc1.col == brc2.col+1 || brc1.col == brc2.col+2) ) {
+                            ml.playEffectSelection = true;
                             moveSelectedWord(brc2, false);
-                            $42.SCENE.playEffect(level.music.selection);
                             return true;
                         }
                     }
