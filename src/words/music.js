@@ -24,6 +24,7 @@ $42.MUSIC_RED_HILLS = {
         loopLength:     22.232000,
         loopTimes:      11.375,
         loopMeasure:    4
+    },
     levelWords:     { 
         audio: res.red_hills_level_words_mp3,
         delay: 1500,
