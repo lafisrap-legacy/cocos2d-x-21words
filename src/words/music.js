@@ -34,7 +34,8 @@ $42.MUSIC_RED_HILLS = {
     },
     setTile:        { 
         audio: res.red_hills_set_tile_mp3, 
-        playOnBeat: 0.5
+        playOnBeat: 0.5,
+        playAfterBeats: 2
     },
     swipe:          { 
         audio: [],
@@ -82,7 +83,8 @@ $42.MUSIC_FLAMES = {
     },
     setTile:        { 
         audio: res.flames_set_tile_mp3,
-        playOnBeat: 0.5
+        playOnBeat: 0.5,
+        playAfterBeats: 2
     },
     swipe:          { 
         audio: [], 
@@ -102,7 +104,6 @@ $42.MUSIC_FLAMES = {
     },
     lastWord:       { audio: res.flames_last_word_mp3 },
     deleteRow:      { audio: res.flames_delete_row_mp3 },
-    deleteLastRows: { audio: res.flames_delete_last_rows_mp3 },
     final:          { audio: res.flames_final_mp3 },
 };
 
@@ -122,7 +123,9 @@ $42.MUSIC_INKA_TEMPLE = {
         audio: null 
     },
     setTile:        { 
-        audio: [res.inka_temple_set_tile_a_mp3, res.inka_temple_set_tile_b_mp3] 
+        audio: [res.inka_temple_set_tile_a_mp3, res.inka_temple_set_tile_b_mp3], 
+        playOnBeat: 0.5,
+        playAfterBeats: 2
     },
     swipe:          { 
         audio: [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
@@ -159,7 +162,9 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         loop:  res.blue_mountains_loop_mp3,
         loopLength:     90.592653,
         loopTimes:      24,
-        loopMeasure:    4
+        loopMeasure:    4,
+        playOnBeat: 0.5,
+        playAfterBeats: 3,
     },
     levelWords:     { 
         audio: res.blue_mountains_level_words_mp3,
@@ -171,6 +176,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     setTile:        { 
         audio: res.blue_mountains_set_tile_mp3, 
+        playAfterBeats: 2,
         playOnBeat: 0.5
     },
     swipe:          { 
@@ -271,11 +277,11 @@ var _MUSIC_MODULE = function(layer) {
         }
     };
 
-    layer.callFuncOnNextBeat = function(cb, mp, granularity, cnt) {
-        var mp = mp || musicPlaying,
+    layer.callFuncOnNextBeat = function(cb, sound) {
+        var mp = musicPlaying || null,
             time = new Date().getTime();
         if( mp ) {
-            var frame  = mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure * granularity : 0;
+            var frame  = mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure * (sound.playOnBeat || 0) : 0;
             
             if( frame ) {
                 var span = time - (mp.startTime || time),
@@ -283,10 +289,12 @@ var _MUSIC_MODULE = function(layer) {
                     offset = span - frames * frame;
 
                 //cc.log("Waiting for next beat for "+(frame * (cnt || 1) - offset)+" ms. ("+offset+", "+frames+", "+frame+")");
-                setTimeout(cb, frame * (cnt || 1) - offset);
+                setTimeout(cb, frame * (sound.playAfterBeats || 1) - offset);
             } else {
                 cb();
             }
+        } else {
+            cb();
         }
     };
 
