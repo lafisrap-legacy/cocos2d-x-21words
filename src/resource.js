@@ -35,7 +35,7 @@ var res = {
 
     // level 1
     //red_hills_intro_mp3:              "res/sounds/none.mp3",
-    //red_hills_loop_mp3:               "res/sounds/none.mp3",
+    //red_hills_loop_mp3:               "res/sounds/rote_huegel_hintergrund_a1,1,2.mp3",
     red_hills_level_words_mp3:        "res/sounds/levelsounds/rote_huegel_drei_worte0,1,7.mp3",
     red_hills_level_nr_mp3:           "res/sounds/levelsounds/rote_huegel_levelzahl0,1,8.mp3",
     red_hills_set_tile_mp3:           "res/sounds/levelsounds/rote_huegel_buchstaben_neu0,1,8.mp3",
