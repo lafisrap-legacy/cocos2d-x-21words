@@ -774,8 +774,10 @@ var _42_MODULE = function(_42Layer) {
                 ml.pauseBuildingTiles = false;
 
                 $42.SCENE.callFuncOnNextBeat(function() {
+                    var time = new Date().getTime();
+                    cc.log("---Backgound--- Starting music at "+time);
                     $42.SCENE.playBackgroundMusic(level.music.background);
-                }, level.music.background, 1, 3);
+                }, level.music.background);
             }, (5.5+i*0.50) * 1000 );
 
             checkForTutorial();
@@ -2028,14 +2030,14 @@ var _42_MODULE = function(_42Layer) {
 
                 ml.stopListeners();
                 ml.unscheduleUpdate();
-                ml._currentTile.sprite.runAction(cc.fadeTo(1,50));
+                if( ml._currentTile ) ml._currentTile.sprite.runAction(cc.fadeTo(1,50));
 
                 $42.SCENE.hookStartAnimation("Story Basic Concepts", {
                     time: 2,
                     cb: function() {
                         ml.initListeners();
                         ml.scheduleUpdate();
-                        ml._currentTile.sprite.runAction(cc.fadeIn(0.5));
+                        if( ml._currentTile ) ml._currentTile.sprite.runAction(cc.fadeIn(0.5));
 
                         td.basicConcepts = true;
                         ls.setItem("tutorialsDone", JSON.stringify(td));
@@ -2047,14 +2049,14 @@ var _42_MODULE = function(_42Layer) {
             setTimeout(function() {
                 ml.stopListeners();
                 ml.unscheduleUpdate();
-                ml._currentTile.sprite.runAction(cc.fadeTo(1,50));
+                if( ml._currentTile ) ml._currentTile.sprite.runAction(cc.fadeTo(1,50));
 
                 $42.SCENE.hookStartAnimation("Story Advanced Concepts", {
                     time: 2,
                     cb: function() {
                         ml.initListeners();
                         ml.scheduleUpdate();
-                        ml._currentTile.sprite.runAction(cc.fadeIn(0.5));
+                        if( ml._currentTile ) ml._currentTile.sprite.runAction(cc.fadeIn(0.5));
 
                         td.advancedConcepts = true;
                         ls.setItem("tutorialsDone", JSON.stringify(td));
@@ -2564,9 +2566,9 @@ var _42_MODULE = function(_42Layer) {
         $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTime);
     };
 
-    _42Layer.hookFuncOnNextBeat = function(cb, granularity, cnt) {
+    _42Layer.hookFuncOnNextBeat = function(cb, effect) {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];	
-        $42.SCENE.callFuncOnNextBeat(cb, level.music.background, granularity, cnt);
+        $42.SCENE.callFuncOnNextBeat(cb, level.music[effect]);
     };
 
     _42Layer.hookGetSoundEffect = function(effect) {
