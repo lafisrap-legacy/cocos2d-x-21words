@@ -48,6 +48,7 @@ $42.MUSIC_RED_HILLS = {
     },
     lastWord:       { audio: res.red_hills_last_word_mp3 },
     deleteRow:      { audio: res.red_hills_delete_row_mp3 },
+    deleteLastRows: { audio: res.red_hills_delete_last_rows_mp3 },
     final:          { audio: res.red_hills_final_mp3 },
 };
 
@@ -95,6 +96,7 @@ $42.MUSIC_FLAMES = {
     },
     lastWord:       { audio: res.flames_last_word_mp3 },
     deleteRow:      { audio: res.flames_delete_row_mp3 },
+    deleteLastRows: { audio: res.flames_delete_last_rows_mp3 },
     final:          { audio: res.flames_final_mp3 },
 };
 
@@ -137,6 +139,7 @@ $42.MUSIC_INKA_TEMPLE = {
     nextWord:       { audio: res.inka_temple_next_word_mp3 }, 
     final:          { audio: res.inka_temple_final_mp3 },
     deleteRow:      null,
+    deleteLastRows: null,
 };
 
 ////////////////////////////////////////////////
@@ -185,6 +188,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     lastWord:       { audio: res.blue_mountains_last_word_mp3 },
     deleteRow:      { audio: res.blue_mountains_delete_row_mp3 },
+    deleteLastRows: { audio: res.blue_mountains_delete_last_rows_mp3 },
     final:          { audio: res.blue_mountains_final_mp3 },
 };
 

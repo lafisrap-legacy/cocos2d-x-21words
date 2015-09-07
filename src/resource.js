@@ -50,6 +50,7 @@ var res = {
     red_hills_full_word_mp3:          "res/sounds/levelsounds/rote_huegel_wort_fertig0,1,5.mp3",
     red_hills_last_word_mp3:          "res/sounds/levelsounds/rote_huegel_letztes_wort_fertig0,1,10.mp3",
     red_hills_delete_row_mp3:         "res/sounds/levelsounds/rote_huegel_reihe_kracht0,1,7.mp3",
+    red_hills_delete_last_rows_mp3:    "res/sounds/levelsounds/rote_huegel_reihe_kracht0,1,7.mp3",
     red_hills_final_mp3:              "res/sounds/levelsounds/rote_huegel_schluss_fanfare1,1,5.mp3",
     // level 2
     flames_intro_mp3:                  "res/sounds/levelsounds/flammen_hintergrund_einleitung0,1,9.mp3",
@@ -68,6 +69,7 @@ var res = {
     flames_full_word_mp3:              "res/sounds/levelsounds/flammen_wort_fertig0,1,9.mp3",
     //flames_last_word_mp3:              "res/sounds/none.mp3",
     flames_delete_row_mp3:             "res/sounds/levelsounds/flammen_reihe_kracht0,1,7.mp3",
+    flames_delete_last_rows_mp3:        "res/sounds/levelsounds/flammen_reihe_kracht0,1,7.mp3",
     flames_final_mp3:                  "res/sounds/levelsounds/flammen_reihe_kracht0,1,7.mp3",
 
     // level 6
@@ -95,6 +97,7 @@ var res = {
     inka_temple_full_word_mp3:         "res/sounds/levelsounds/inka_tempel_wort_fertig_a1,1,1.mp3",
     inka_temple_last_word_mp3:         "res/sounds/levelsounds/inka_tempel_wort_fertig_a1,1,1.mp3",
     //inka_temple_delete_row_mp3:        "",
+    //inka_temple_delete_last_rows_mp3:        "",
     inka_temple_present_word_mp3:      "res/sounds/levelsounds/inka_tempel_wort_waehlen_warten0,1,3.mp3",
     inka_temple_next_word_mp3:         "res/sounds/levelsounds/inka_tempel_wort_gewaehlt_a+b1,1,2.mp3",  
     inka_temple_final_mp3:      	   "res/sounds/levelsounds/inka_tempel_abschluss0,1,10.mp3",
@@ -115,6 +118,7 @@ var res = {
     blue_mountains_full_word_mp3:       "res/sounds/levelsounds/blaue_berge_wort_fertig0,1,9.mp3",
     blue_mountains_last_word_mp3:       "res/sounds/levelsounds/blaue_berge_letztes_wort_fertig0,1,7.mp3",
     blue_mountains_delete_row_mp3:      "res/sounds/levelsounds/blaue_berge_reihe_kracht0,1,4.mp3",
+    blue_mountains_delete_last_rows_mp3:      "res/sounds/levelsounds/blaue_berge_reihe_kracht0,1,4.mp3",
     blue_mountains_present_word_mp3:    "res/sounds/levelsounds/blaue_berge_wort_praesentieren0,1,17.mp3",
     blue_mountains_final_mp3:      	    "res/sounds/levelsounds/blaue_berge_schlussfanfare0,1,9.mp3",
 

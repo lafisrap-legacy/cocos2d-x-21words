@@ -86,7 +86,7 @@ $42.LEVEL_DEVS = {
 
     intermediate: [{                // Intermediate Level 1
         type: $42.LEVEL_TYPE_GIVEN,
-        music: $42.MUSIC_BLUE_MOUNTAINS,
+        music: $42.MUSIC_RED_HILLS,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -97,7 +97,7 @@ $42.LEVEL_DEVS = {
         neededLettersProb: 0.3
     },{                             // Level 2
         type: $42.LEVEL_TYPE_GIVEN,
-        music: $42.MUSIC_BLUE_MOUNTAINS,
+        music: $42.MUSIC_FLAMES,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -143,7 +143,7 @@ $42.LEVEL_DEVS = {
         newLetters: 2,
     },{                             // Level 6
         type: $42.LEVEL_TYPE_PREFIX,
-        music: $42.MUSIC_BLUE_MOUNTAINS,
+        music: $42.MUSIC_INKA_TEMPLE,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -167,7 +167,7 @@ $42.LEVEL_DEVS = {
 
     expert: [{                             // Level 1
         type: $42.LEVEL_TYPE_PREFIX,
-        music: $42.MUSIC_BLUE_MOUNTAINS,
+        music: $42.MUSIC_RED_HILLS,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -178,7 +178,7 @@ $42.LEVEL_DEVS = {
         newLetters: 3,
     },{                             // Level 2
         type: $42.LEVEL_TYPE_PREFIX,
-        music: $42.MUSIC_BLUE_MOUNTAINS,
+        music: $42.MUSIC_FLAMES,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -215,7 +215,7 @@ $42.LEVEL_DEVS = {
         newLetters: 3,
     },{                             // Level 6
         type: $42.LEVEL_TYPE_FREE,
-        music: $42.MUSIC_BLUE_MOUNTAINS,
+        music: $42.MUSIC_INKA_TEMPLE,
         words: 3,
         minValue:   0,
         minDemand:  0,

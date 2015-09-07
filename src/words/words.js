@@ -835,7 +835,9 @@ var _42_MODULE = function(_42Layer) {
     };
 
     var endLevel = function() {
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
         ml.currentLevelForDeleteRow = $42.currentLevel-1;
+        $42.SCENE.playEffect(level.music.deleteLastRows);
         switch( ml._gameMode ) {
         case "easy":
             ml.unselectWord();
@@ -2321,7 +2323,7 @@ var _42_MODULE = function(_42Layer) {
         setSelections();
 		updateSelectedWord({ rowsDeleted: rowsDeleted});			
 
-        $42.SCENE.playEffect(level.music.deleteRow);
+        if( !ml.currentLevelForDeleteRow ) $42.SCENE.playEffect(level.music.deleteRow);
 		// switch to next profile letter candidate
 		getNextProfileCandidate();
 	};
