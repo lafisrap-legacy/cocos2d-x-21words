@@ -40,7 +40,8 @@ $42.MUSIC_RED_HILLS = {
     swipe:          { 
         audio: [res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
         intervalTime: 450,
-        minInterval: 450
+        minInterval: 200,
+        stayWithSound: true
     },
     rotate:         { 
         audio: [res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
@@ -124,13 +125,14 @@ $42.MUSIC_INKA_TEMPLE = {
         loop:  [res.inka_temple_intro_a_mp3,res.inka_temple_intro_b_mp3,res.inka_temple_intro_c_mp3,res.inka_temple_intro_d_mp3,res.inka_temple_intro_e_mp3,res.inka_temple_intro_f_mp3,res.inka_temple_intro_g_mp3,res.inka_temple_intro_h_mp3],
         loopLength:     [15.595102, 11.650612, 11.650612, 11.075918, 13.635918, 13.635918, 12.773878, 12.773878],
         loopFrame: 550,
-        fadeOutTime:    50
+        fadeOutTime:    50,
+        delay: 1000
     },
     levelWords:     { 
-        audio: null 
+        audio: res.inka_temple_level_words_mp3
     },
     levelNr:        { 
-        audio: null 
+        audio: res.inka_temple_level_nr_mp3 
     },
     setTile:        { 
         audio: [res.inka_temple_set_tile_a_mp3, res.inka_temple_set_tile_b_mp3], 
@@ -220,7 +222,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
 var _MUSIC_MODULE = function(layer) {
     var musicPlaying = null;
 
-    layer.playEffect = function playEffect(effect) {
+    layer.playEffect = function playEffect(effect, repeat) {
         var mp = musicPlaying,
             time = new Date().getTime();
 
@@ -229,11 +231,11 @@ var _MUSIC_MODULE = function(layer) {
             if( time - (effect.lastPlay || 0) < effect.minInterval ) return;
         }
 
-        //cc.log("Now ("+time+") playing effect: "+effect.audio);
+        cc.log("Now ("+time+") playing effect: "+effect.audio);
         
         if( typeof effect.audio === "string" ) effect.audio = [effect.audio];
         if( effect.audioSlot === undefined ) effect.audioSlot = 0;
-        else effect.audioSlot = ++effect.audioSlot%effect.audio.length;
+        else if( !repeat || !effect.stayWithSound ) effect.audioSlot = ++effect.audioSlot%effect.audio.length;
 
         var play = function() {
             var as = effect.audioSlot;
@@ -251,7 +253,7 @@ var _MUSIC_MODULE = function(layer) {
                     } else {
                         //cc.log("Playing in interval: "+effect.audio[as]);
                         if( $42.msg2 ) $42.msg2.setString("Playing in interval: "+effect.audio[as]);
-                        playEffect(effect);
+                        playEffect(effect, true);
                     }
                 }, effect.intervalTime);
             } else {

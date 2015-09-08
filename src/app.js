@@ -1325,6 +1325,7 @@ var _42GameLayer = cc.Layer.extend({
             
             if( !t.isRotating && isSwipe() && sp ) {
                 t.isDragged = true;
+                cc.log("Switch on dragging");
     		    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
             } 
             
