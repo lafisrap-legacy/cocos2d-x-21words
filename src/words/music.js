@@ -4,9 +4,9 @@ $42.MUSIC_VOLUME_GRANULARITY = 10;
 // Music for easy title
 $42.MUSIC_TITLE_EASY = {
     intro: res.title_easy_intro_mp3,
-    introLength:    11.386000,
+    introLength:    44.309000,
     loop:  res.title_easy_loop_mp3,
-    loopLength:     38.124000,
+    loopLength:     38.066000,
     fadeOutDelay:   0,
     fadeOutTime:    6000
 }
@@ -175,7 +175,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         loopLength:     90.592653,
         loopTimes:      24,
         loopMeasure:    4,
-        playOnBeat: 0.5,
+        playOnBeat: 0.25,
         playAfterBeats: 3,
     },
     levelWords:     { 
