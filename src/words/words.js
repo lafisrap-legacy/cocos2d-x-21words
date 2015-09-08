@@ -776,17 +776,18 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
-
-                $42.SCENE.callFuncOnNextBeat(function() {
-                    var time = new Date().getTime();
-                    cc.log("---Backgound--- Starting music at "+time);
-                    $42.SCENE.playBackgroundMusic(level.music.background);
-                }, level.music.background);
             }, (5.5+i*0.50) * 1000 );
 
             checkForTutorial();
         };
 
+        setTimeout(function() {
+            $42.SCENE.callFuncOnNextBeat(function() {
+                var time = new Date().getTime();
+                cc.log("---Backgound--- Starting music at "+time);
+                $42.SCENE.playBackgroundMusic(level.music.background);
+            }, level.music.background);
+        }, level.music.background.delay || 7000);
         setTimeout(function() {
             $42.SCENE.playEffect(level.music.levelWords);
         }, level.music.levelWords.delay || 1500);

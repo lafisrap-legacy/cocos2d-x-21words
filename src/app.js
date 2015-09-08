@@ -557,7 +557,8 @@ var _42GameLayer = cc.Layer.extend({
 	            	case $42.KEY_LEFT_CODE:
 	            		self.touchCurrentMove = { 
 	            			x: -$42.BS,
-	            			y: 0
+	            			y: 0,
+                            on: true
 	            		};
                         if( !self.isSwipeLeft && self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
                         self._currentTile.isDragged = true;
@@ -567,7 +568,8 @@ var _42GameLayer = cc.Layer.extend({
 	            	case $42.KEY_RIGHT_CODE:
 	            		self.touchCurrentMove = { 
 	            			x: $42.BS,
-	            			y: 0
+	            			y: 0,
+                            on: true
 	            		};
                         if( !self.isSwipeRight && self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
                         self._currentTile.isDragged = true;
@@ -579,7 +581,8 @@ var _42GameLayer = cc.Layer.extend({
 	            	case $42.KEY_DOWN_CODE:
 	            		self.touchCurrentMove = { 
 	            			x: 0,
-	            			y: -$42.BS/2
+	            			y: -$42.BS,
+                            on: true
 	            		};
                         cc.log("DOWN: self._currentTile.isDragged = "+self._currentTile.isDragged+", self.isSwipeDown = "+self.isSwipeDown);
                         if( !self.isSwipeDown && self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
@@ -593,17 +596,18 @@ var _42GameLayer = cc.Layer.extend({
 	            onKeyReleased:function(key, event) {
 	            	switch(key) {
 	            	case $42.KEY_LEFT_CODE:
-		                self.touchStartPoint = null;
+	            		self.touchCurrentMove.on = false; 
 	            		self.isSwipeLeft = false;
 	            		break;
 	            	case $42.KEY_RIGHT_CODE:
-		                self.touchStartPoint = null;
+	            		self.touchCurrentMove.on = false; 
 	            		self.isSwipeRight = false;
 	            		break;
 	            	case $42.KEY_UP_CODE:
 	            		self.isSwipeUp = false;
 	            		break;
 	            	case $42.KEY_DOWN_CODE:
+	            		self.touchCurrentMove.on = false; 
 	            		self.isSwipeDown = false;
 	            		break;
 	                }
@@ -1321,6 +1325,7 @@ var _42GameLayer = cc.Layer.extend({
             
             if( !t.isRotating && isSwipe() && sp ) {
                 t.isDragged = true;
+                cc.log("Switch on dragging");
     		    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
             } 
             
@@ -1337,13 +1342,14 @@ var _42GameLayer = cc.Layer.extend({
 
         } else {
 
-            if( !sp && cm.x === 0 && cm.y === 0 ) {
+            if( !sp && !cm.on ) {
                 /////////////////////
                 // align to column if player does't touch the tile
                 if( !t.isAligning ) {
                     
                     alignToColumn(t,lp,function() {
                         t.isDragged = false;    					
+                        cc.log("Switch of dragging ...");
     		            if( self.hookStopLevelSound ) self.hookStopLevelSound("swipe");
                     });	
                 }
@@ -1361,15 +1367,11 @@ var _42GameLayer = cc.Layer.extend({
                     t.fallingSpeed = $42.FALLING_SPEED;
                 }
             
-                cm.y = 0;
+                cm.y += t.fallingSpeed;
+                if( cm.y > 0 ) cm.y = 0;
             }
         }
         
-        if( self.isTap ) {
-            self.isTap = false;
-            t.fallingSpeed = $42.FALLING_SPEED;
-        }
-                    
         //////////////////////////////
         // let tile fall down
         lp.y -= t.fallingSpeed;
