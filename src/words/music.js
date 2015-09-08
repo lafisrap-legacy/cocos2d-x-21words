@@ -174,7 +174,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         loopLength:     90.592653,
         loopTimes:      24,
         loopMeasure:    4,
-        playOnBeat: 0.5,
+        playOnBeat: 0.25,
         playAfterBeats: 3,
     },
     levelWords:     { 
