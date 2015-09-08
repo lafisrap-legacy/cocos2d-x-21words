@@ -117,6 +117,60 @@ $42.MUSIC_FLAMES = {
     final:          { audio: res.flames_final_mp3 },
 };
 
+
+////////////////////////////////////////////////
+// Music for level 5
+$42.MUSIC_BLUE_QUADRAT = {
+    background: {
+        //intro: res.blue_quadrat_intro_mp3,
+        //introLength:    85.140000,
+        //introTimes:     100,
+        //introMeasure:   1,
+        loop:           blue_quadrat_loop_mp3,
+        loopLength:     38.064000,
+        //loopTimes:      100,
+        //loopMeasure:    1
+    },
+    levelWords:     { 
+        audio: res.blue_quadrat_level_words_mp3,
+        delay: 1500,
+    },
+    levelNr:        { 
+        audio: res.blue_quadrat_level_nr_mp3, 
+        delay: 4500
+    },
+    setTile:        { 
+        audio: [res.blue_quadrat_set_tile_1_mp3, res.blue_quadrat_set_tile_2_mp3, res.blue_quadrat_set_tile_3_mp3],
+        playOnBeat: 0,
+        playAfterBeats: 0
+    },
+    swipe:          { 
+        audio: [res.blue_quadrat_swipe_1_mp3, res.blue_quadrat_swipe_2_mp3, res.blue_quadrat_swipe_3_mp3],
+        intervalTime: 450
+    },
+    rotate:         { 
+        audio: [res.blue_quadrat_rotate_1_mp3, res.blue_quadrat_rotate_2_mp3, res.blue_quadrat_rotate_3_mp3],
+        minInterval: 0 
+    },
+    fixTile:        { 
+        audio: [res.blue_quadrat_fix_tile_1_mp3, res.blue_quadrat_fix_tile_2_mp3, res.blue_quadrat_fix_tile_3_mp3], 
+        playOnBeat: 0,
+        playAfterBeats: 0 
+    }, 
+    selection:      { audio: [res.blue_quadrat_selection_1_mp3, res.blue_quadrat_selection_2_mp3, res.blue_quadrat_selection_3_mp3], 
+    },
+    fullWord:       { audio: [res.blue_quadrat_full_word_1_mp3, res.blue_quadrat_full_word_2_mp3], 
+    },
+    //presentWord:    { 
+        audio: res.blue_mountains_present_word_mp3,
+        intervalTime: 3000, 
+        delayTime: 500 
+    },
+    lastWord:       { audio: res.blue_quadrat_last_word_mp3 },
+    deleteRow:      { audio: res.blue_quadrat_delete_row_mp3 },
+    final:          { audio: res.blue_quadrat_final_mp3 },
+};
+
 ////////////////////////////////////////////////
 // Music for level 6
 $42.MUSIC_INKA_TEMPLE = {
