@@ -100,7 +100,7 @@ var res = {
     //inka_temple_delete_last_rows_mp3:        "",
     inka_temple_present_word_mp3:      "res/sounds/levelsounds/inka_tempel_wort_waehlen_warten0,1,3.mp3",
     inka_temple_next_word_mp3:         "res/sounds/levelsounds/inka_tempel_wort_gewaehlt_a+b1,1,2.mp3",  
-    inka_temple_final_mp3:      	   "res/sounds/levelsounds/inka_tempel_abschluss0,1,13.mp3",
+    inka_temple_final_mp3:      	   "res/sounds/levelsounds/inka_tempel_abschluss0,1,16.mp3",
         
     // level 7
     blue_mountains_intro_mp3:           "res/sounds/levelsounds/blau_berge_einleitung1,1,9.mp3",
