@@ -238,7 +238,7 @@ var _MUSIC_MODULE = function(layer) {
             var as = effect.audioSlot;
             if( effect.intervalTime && !effect.interval ) {
                 effect.id = cc.audioEngine.playEffect(effect.audio[as]);
-                effect.id.setVolume($42.EFFECTS_VOLUME);
+                //effect.id.setVolume($42.EFFECTS_VOLUME);
                 if( $42.msg2 ) $42.msg2.setString("Starting interval: "+effect.audio[as]);
                 effect.interval = setInterval(function() {
                     if( effect.intervalIsEnding ) {
@@ -255,7 +255,7 @@ var _MUSIC_MODULE = function(layer) {
                 }, effect.intervalTime);
             } else {
                 effect.id = cc.audioEngine.playEffect(effect.audio[as]);
-                effect.id.setVolume($42.EFFECTS_VOLUME);
+                //effect.id.setVolume($42.EFFECTS_VOLUME);
                 if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[as]);
             }
 
@@ -278,7 +278,7 @@ var _MUSIC_MODULE = function(layer) {
                         //cc.log("Playing end of interval: "+effect.end);
     	                if( $42.msg2 ) $42.msg2.setString("Playing effect end: "+effect.end);
                         layer.playEffect({audio: effect.end});
-                        effect.id.setVolume($42.EFFECTS_VOLUME);
+                        //effect.id.setVolume($42.EFFECTS_VOLUME);
                     }, effect.endDelay-span || 0 );
                 }
             }
