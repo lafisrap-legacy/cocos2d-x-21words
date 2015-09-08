@@ -161,7 +161,7 @@ $42.MUSIC_BLUE_QUADRAT = {
     },
     fullWord:       { audio: [res.blue_quadrat_full_word_1_mp3, res.blue_quadrat_full_word_2_mp3], 
     },
-    //presentWord:    { 
+    presentWord:    { 
         audio: res.blue_mountains_present_word_mp3,
         intervalTime: 3000, 
         delayTime: 500 
