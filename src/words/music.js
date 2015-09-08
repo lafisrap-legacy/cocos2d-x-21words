@@ -39,7 +39,8 @@ $42.MUSIC_RED_HILLS = {
     },
     swipe:          { 
         audio: [res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
-        intervalTime: 450
+        intervalTime: 450,
+        minInterval: 450
     },
     rotate:         { 
         audio: [res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
