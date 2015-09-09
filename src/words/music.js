@@ -22,7 +22,8 @@ $42.MUSIC_RED_HILLS = {
         loop:           res.red_hills_loop_mp3,
         loopLength:     22.232000,
         loopTimes:      11.375,
-        loopMeasure:    4
+        loopMeasure:    4,
+        nextSetOn:      [10000,10000,10000]
     },
     levelWords:     { 
         audio: res.red_hills_level_words_mp3,
@@ -39,15 +40,18 @@ $42.MUSIC_RED_HILLS = {
     },
     swipe:          { 
         audioSet: [[res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
-                [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
-                [res.blue_mountains_swipe_mp3]],
+                   [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
+                   [res.blue_mountains_swipe_mp3]],
         nextSetOn: "setTile",
         intervalTime: 450,
         minInterval: 200,
         stayWithSound: true
     },
     rotate:         { 
-        audio: [res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
+        audioSet: [[res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
+                   [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
+                   [res.blue_quadrat_rotate_1_mp3, res.blue_quadrat_rotate_2_mp3, res.blue_quadrat_rotate_3_mp3]],
+        nextSetOn: "time",
         dontStop: true
     },
     fixTile:        { 
@@ -356,8 +360,9 @@ var _MUSIC_MODULE = function(layer) {
         }
     };
 
-    layer.changeAudioSet = function(music, event) {
+    layer.changeAudioSet = function(event) {
 
+        var music = $42.LEVEL_DEVS[$42.SCENE.mainLayer._gameMode][$42.currentLevel-1].music;
         if( !music ) return;
 
         for (var key in music) {
@@ -376,7 +381,7 @@ var _MUSIC_MODULE = function(layer) {
     layer.callFuncOnNextBeat = function(cb, sound) {
         var mp = musicPlaying || null,
             time = new Date().getTime();
-        if( mp ) {
+        if( mp && mp.loop ) {
             var frame  = mp.loopFrame || (mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure * (sound.playOnBeat || 1) : 0);
             
             if( frame ) {
@@ -394,25 +399,7 @@ var _MUSIC_MODULE = function(layer) {
         }
     };
 
-    layer.playInCount = function(effect) {
-        var mp = musicPlaying;
-
-        if( typeof effect.audio === "string" ) effect.audio = [effect.audio];
-        if( effect.currentSlot === undefined ) effect.currentSlot = 0;
-        else effect.currentSlot = ++effect.currentSlot%effect.audio.length;
-
-        var cs = effect.currentSlot, 
-            span = new Date().getTime() - mp.startTime,
-            shift = effect.shift*mp.beatLength + (effect.shift<0? mp.beatLength : 0);
-
-        setTimeout( function() {
-            setInterval(function() {
-                cc.audioEngine.playEffect(effect.audio[cs]);
-            }, mp.beatLength);
-        }, shift);
-    };
-
-    layer.playBackgroundMusic = function(mp, afterNBeats) {
+    layer.playBackgroundMusic = function(mp) {
         var time = new Date().getTime();
 
         if( !mp ) return;
@@ -425,8 +412,6 @@ var _MUSIC_MODULE = function(layer) {
             cc.audioEngine.playMusic(mp.intro, false);
             cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
     	    if( $42.msg1 ) $42.msg1.setString("Now playing background intro '"+mp.intro+"'");
-
-            musicPlaying = mp;
         }
 
         if( mp.loop ) {
@@ -435,6 +420,7 @@ var _MUSIC_MODULE = function(layer) {
             
             if( mp.loop[0].length ) {
                 mp.timeout = setTimeout(function() {
+                    mp.timeout = null;
                     mp.startTime   = new Date().getTime();
                     mp.beatLength = mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure;
                     if( mp.loop.length === 1 ) {
@@ -445,18 +431,32 @@ var _MUSIC_MODULE = function(layer) {
                         if( $42.msg1 ) $42.msg1.setString("Now playing background loop '"+mp.loop[0]+"'");
                         setTimeout(layer.playNextMusicSlot, mp.loopLength[0] * 1000);
                     }
-                    
                 }, (mp.introLength || 0)*1000 );
-
-                musicPlaying = mp;
             }
         }
+        
+        // timeouts for sets
+        if( mp.nextSetOn ) {
+            mp.timeoutSet = setTimeout(function() {
+                mp.timeoutSet = null;
+                mp.nextSetOnSlot = 0;
+                (function nextTimeout() {
+                    mp.nextSetOnTimeout = setTimeout(function() {
+                        layer.changeAudioSet("time");
+                        mp.nextSetOnSlot = ++mp.nextSetOnSlot%mp.nextSetOn.length;
+                        nextTimeout();
+                    }, mp.nextSetOn[mp.nextSetOnSlot]);
+                })();
+            }, (mp.introLength || 0)*1000 );
+        } 
+        
+        musicPlaying = mp;
     };
 
     layer.playNextMusicSlot = function(fadeOut) {
 
         var mp = musicPlaying;
-        if( !mp || mp.loop.length <= 1 ) return;
+        if( !mp || !mp.loop || mp.loop.length <= 1 ) return;
 
         var playSlot = function() {
             mp.loopSlot = ++mp.loopSlot % mp.loop.length;
@@ -482,7 +482,9 @@ var _MUSIC_MODULE = function(layer) {
             else cc.audioEngine.stopMusic();
         
             if( mp.timeout ) clearTimeout(mp.timeout);
-            mp.timeout = null;
+            if( mp.timeoutSet ) clearTimeout(mp.timeoutSet);
+            if( mp.nextSetOnTimeout ) clearTimeout(mp.nextSetOnTimeout); 
+            mp.timeout = mp.timeoutSet = mp.nextSetOnTimeout = null;
             mp.startTime = null;
             mp.loopSlot = null;
             musicPlaying = null;
