@@ -38,7 +38,10 @@ $42.MUSIC_RED_HILLS = {
         playAfterBeats: 1
     },
     swipe:          { 
-        audio: [res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
+        audioSet: [[res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
+                [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
+                [res.blue_mountains_swipe_mp3]],
+        nextSetOn: "setTile",
         intervalTime: 450,
         minInterval: 200,
         stayWithSound: true
@@ -93,7 +96,7 @@ $42.MUSIC_FLAMES = {
         playAfterBeats: 0.5
     },
     swipe:          { 
-        audio: [], 
+        audio: null, 
         intervalTime: 450
     },
     rotate:         { 
@@ -146,7 +149,7 @@ $42.MUSIC_BLUE_QUADRAT = {
         playAfterBeats: 0
     },
     swipe:          { 
-        audio: [],
+        audio: null,
         //audio: [res.blue_quadrat_swipe_1_mp3, res.blue_quadrat_swipe_2_mp3, res.blue_quadrat_swipe_3_mp3],
         intervalTime: 450
     },
@@ -283,48 +286,51 @@ var _MUSIC_MODULE = function(layer) {
         var mp = musicPlaying,
             time = new Date().getTime();
 
-        if( !effect || !effect.audio || effect.audio.length === 0 ) return;
+        if( !effect || !effect.audio && !effect.audioSet ) return;
 
         cc.log("Now ("+time+") playing effect "+(repeat?" with":" without")+" repeat");
         
         if( typeof effect.audio === "string" ) effect.audio = [effect.audio];
-        if( effect.audioSlot === undefined ) effect.audioSlot = 0;
-        else if( !repeat || !effect.stayWithSound ) effect.audioSlot = ++effect.audioSlot%effect.audio.length;
+        if( effect.audioSet ) {
+            if( !effect.currentSet ) effect.currentSet = 0;
+            effect.audio = effect.audioSet[effect.currentSet];
+        }
+        if( effect.currentSlot === undefined ) effect.currentSlot = 0;
+        else if( !repeat || !effect.stayWithSound ) effect.currentSlot = ++effect.currentSlot%effect.audio.length;
 
         var play = function() {
-            var as = effect.audioSlot;
+            var cs = effect.currentSlot;
             if( effect.intervalTime && !effect.interval ) {
                 if( repeat || !effect.minInterval || time - (effect.lastPlay || 0) >= effect.minInterval ) {
-                    effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+                    effect.id = cc.audioEngine.playEffect(effect.audio[cs]);
                 }
                 //effect.id.setVolume($42.EFFECTS_VOLUME);
-                if( $42.msg2 ) $42.msg2.setString("Starting interval: "+effect.audio[as]);
+                if( $42.msg2 ) $42.msg2.setString("Starting interval: "+effect.audio[cs]);
                 effect.interval = setInterval(function() {
                     if( effect.intervalIsEnding ) {
-                        //cc.log("Ending interval of "+effect.audio[as]);
-                        if( $42.msg2 ) $42.msg2.setString("Ending interval: "+effect.audio[as]);
+                        //cc.log("Ending interval of "+effect.audio[cs]);
+                        if( $42.msg2 ) $42.msg2.setString("Ending interval: "+effect.audio[cs]);
                         clearInterval(effect.interval);
                         effect.interval = null;
                         effect.intervalIsEnding = false;
                     } else {
-                        //cc.log("Playing in interval: "+effect.audio[as]);
-                        if( $42.msg2 ) $42.msg2.setString("Playing in interval: "+effect.audio[as]);
+                        //cc.log("Playing in interval: "+effect.audio[cs]);
+                        if( $42.msg2 ) $42.msg2.setString("Playing in interval: "+effect.audio[cs]);
                         playEffect(effect, true);
                     }
                 }, effect.intervalTime);
             } else {
                 if( !effect.minInterval || time - (effect.lastPlay || 0) >= effect.minInterval ) {
-                    effect.id = cc.audioEngine.playEffect(effect.audio[as]);
+                    effect.id = cc.audioEngine.playEffect(effect.audio[cs]);
                 }
                 //effect.id.setVolume($42.EFFECTS_VOLUME);
-                if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[as]);
+                if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[cs]);
             }
 
             effect.lastPlay = time;
         };
 
-        if( effect.delayTime ) setTimeout(play, effect.delayTime );
-        else play();
+        setTimeout(play, effect.delayTime || 0);
     };
 
     layer.stopEffect = function(effect) {
@@ -347,6 +353,23 @@ var _MUSIC_MODULE = function(layer) {
             cc.audioEngine.stopEffect(effect.id);
     	    if( $42.msg2 ) $42.msg2.setString("Stopping effect:"+effect.audio[0]);
             effect.id = null;
+        }
+    };
+
+    layer.changeAudioSet = function(music, event) {
+
+        if( !music ) return;
+
+        for (var key in music) {
+            if (music.hasOwnProperty(key)) {
+                var effect = music[key];
+
+                if( effect.nextSetOn === event ) {
+                    if( !effect.currentSet ) effect.currentSet = 0;
+                    effect.currentSet = ++effect.currentSet%effect.audioSet.length;
+                    effect.currentSlot = 0;
+                }
+            }
         }
     };
 
@@ -375,16 +398,16 @@ var _MUSIC_MODULE = function(layer) {
         var mp = musicPlaying;
 
         if( typeof effect.audio === "string" ) effect.audio = [effect.audio];
-        if( effect.audioSlot === undefined ) effect.audioSlot = 0;
-        else effect.audioSlot = ++effect.audioSlot%effect.audio.length;
+        if( effect.currentSlot === undefined ) effect.currentSlot = 0;
+        else effect.currentSlot = ++effect.currentSlot%effect.audio.length;
 
-        var as = effect.audioSlot, 
+        var cs = effect.currentSlot, 
             span = new Date().getTime() - mp.startTime,
             shift = effect.shift*mp.beatLength + (effect.shift<0? mp.beatLength : 0);
 
         setTimeout( function() {
             setInterval(function() {
-                cc.audioEngine.playEffect(effect.audio[as]);
+                cc.audioEngine.playEffect(effect.audio[cs]);
             }, mp.beatLength);
         }, shift);
     };

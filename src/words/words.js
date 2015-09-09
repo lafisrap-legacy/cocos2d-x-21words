@@ -2159,6 +2159,7 @@ var _42_MODULE = function(_42Layer) {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
         $42.SCENE.playEffect(level.music.setTile);
         $42.SCENE.playNextMusicSlot(true);
+        $42.SCENE.changeAudioSet(level.music, "setTile");
 		
         this._nextTile = getProgrammedTile();
 		
