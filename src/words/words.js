@@ -435,7 +435,7 @@ var _42_MODULE = function(_42Layer) {
                                 playEndLevelSound();
                                 
                                 setTimeout(function() {
-                                    endLevel();
+                                    endLevel($42.currentLevel-1); // level number switched already
                                     startNewLevel();
                                 }, $42.BACKGROUND_SPEED*1.2*1000);
                             }
@@ -841,8 +841,8 @@ var _42_MODULE = function(_42Layer) {
     	//$42.msg1.setString("ml.wordForTiles: "+JSON.stringify(words));
     };
 
-    var endLevel = function() {
-        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+    var endLevel = function(level) {
+        var level = $42.LEVEL_DEVS[ml._gameMode][level-1]; 
         ml.currentLevelForDeleteRow = $42.currentLevel-1;
         $42.SCENE.playEffect(level.music.deleteLastRows);
         switch( ml._gameMode ) {
@@ -2491,7 +2491,7 @@ var _42_MODULE = function(_42Layer) {
             $42.currentLevel = key-48;
             setTimeout(function() {
                 if( ++$42.currentLevel < 8 ) {
-                    endLevel();
+                    endLevel($42.currentLevel-1);
                     startNewLevel();	
                 } else {
                     ml.unscheduleUpdate();
@@ -2533,7 +2533,7 @@ var _42_MODULE = function(_42Layer) {
             playEndLevelSound();
             $42.currentLevel = key-48;
             setTimeout(function() {
-                endLevel();
+                endLevel($42.currentLevel-1);
                 startNewLevel();
             }, $42.BACKGROUND_SPEED*1.2*1000);
             break;

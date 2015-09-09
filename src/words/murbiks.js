@@ -840,7 +840,9 @@ var _MURBIKS_MODULE = function(parentLayer) {
         tile4.stopAllActions();
         tile5.stopAllActions();
         hand.stopAllActions();
-		clearActiveTimeouts();
+        if( level ) $42.SCENE.stopEffect(level.music.swipe);
+        if( level ) $42.SCENE.stopEffect(level.music.rotate);
+        clearActiveTimeouts();
     };
 
     var clearActiveTimeouts = function() {
