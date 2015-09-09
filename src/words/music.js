@@ -241,8 +241,8 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         loopLength:     90.592653,
         loopTimes:      24,
         loopMeasure:    4,
-        playOnBeat: 0.5,
-        playAfterBeats: 0,
+        playOnBeat: 0.25,
+        playAfterBeats: 1,
     },
     levelWords:     { 
         audio: res.blue_mountains_level_words_mp3,
