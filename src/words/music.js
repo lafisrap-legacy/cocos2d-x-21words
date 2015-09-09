@@ -235,13 +235,13 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     background: {
         intro: res.blue_mountains_intro_mp3,
         introLength:    90.592653,
-        introTimes:     24,
+        introTimes:     48,
         introMeasure:   4,
         loop:  res.blue_mountains_loop_mp3,
         loopLength:     90.592653,
-        loopTimes:      24,
+        loopTimes:      48,
         loopMeasure:    4,
-        playOnBeat: 1,
+        playOnBeat: 0.5,
         playAfterBeats: 1,
     },
     levelWords:     { 
