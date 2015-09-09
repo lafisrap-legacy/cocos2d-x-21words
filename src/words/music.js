@@ -126,7 +126,7 @@ $42.MUSIC_BLUE_QUADRAT = {
         //introLength:    85.140000,
         //introTimes:     100,
         //introMeasure:   1,
-        loop:           blue_quadrat_loop_mp3,
+        loop:           res.blue_quadrat_loop_mp3,
         loopLength:     38.064000,
         //loopTimes:      100,
         //loopMeasure:    1
