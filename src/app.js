@@ -1332,7 +1332,7 @@ var _42GameLayer = cc.Layer.extend({
             if( !self.isSwipeDown ) {
                 ////////////////////////////////////////
                 // go back to normal falling speed if tile is not dragged
-                if( lp.y < cc.height - $42.BS ) {
+                if( lp.y < cc.height + $42.BS ) {
                     t.fallingSpeed = Math.max( t.fallingSpeed *0.93 , $42.FALLING_SPEED );
                 } else {
                     // Let tile fall faster at top border
@@ -1374,7 +1374,6 @@ var _42GameLayer = cc.Layer.extend({
         //////////////////////////////
         // let tile fall down
         lp.y -= t.fallingSpeed;
-        cc.log("t.fallingSpeed: "+t.fallingSpeed);
         
         //////////////////////////////
         // Check for bottom
