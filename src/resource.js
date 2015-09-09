@@ -95,7 +95,7 @@ var res = {
     blue_quadrat_selection_3_mp3:              "res/sounds/levelsounds/L5_blaues_quadrat_buchstaben_kombi_c_1,1,2.mp3",
     blue_quadrat_full_word_1_mp3:              "res/sounds/levelsounds/L5_blaues_quadrat_wort_fertig_a_1,1,2.mp3",
     blue_quadrat_full_word_2_mp3:              "res/sounds/levelsounds/L5_blaues_quadrat_wort_fertig_b_1,1,2.mp3",
-    blue_quadrat_last_word_mp3:              "res/sounds/L5_blaues_quadrat_wort_fertig_a_1,1,2.mp3",
+    blue_quadrat_last_word_mp3:              "res/sounds/levelsounds/L5_blaues_quadrat_wort_fertig_a_1,1,2.mp3",
     blue_quadrat_delete_row_mp3:             "res/sounds/levelsounds/L5_blaues_quadrat_reihe_kracht_a_1,1,2.mp3",
     blue_quadrat_delete_last_rows_mp3:        "res/sounds/levelsounds/L5_blaues_quadrat_buchstaben_unten_a_1,1,2.mp3",
     blue_quadrat_final_mp3:                  "res/sounds/levelsounds/L5_blaues_quadrat_letztes_wort_1,1,2.mp3",

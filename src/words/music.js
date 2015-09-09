@@ -145,7 +145,8 @@ $42.MUSIC_BLUE_QUADRAT = {
         playAfterBeats: 0
     },
     swipe:          { 
-        audio: [res.blue_quadrat_swipe_1_mp3, res.blue_quadrat_swipe_2_mp3, res.blue_quadrat_swipe_3_mp3],
+        audio: [],
+        //audio: [res.blue_quadrat_swipe_1_mp3, res.blue_quadrat_swipe_2_mp3, res.blue_quadrat_swipe_3_mp3],
         intervalTime: 450
     },
     rotate:         { 
