@@ -519,6 +519,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
                     cc.delayTime(time5),
                     cc.callFunc(function() {
                         wordframe.setOpacity(255);
+                        $42.SCENE.playEffect(level.music.fullWord);
                     }),
                     cc.callFunc(cb)
                 )

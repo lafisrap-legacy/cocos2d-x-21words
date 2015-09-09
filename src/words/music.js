@@ -218,8 +218,8 @@ $42.MUSIC_INKA_TEMPLE = {
     lastWord:       { audio: res.inka_temple_last_word_mp3 },
     nextWord:       { audio: res.inka_temple_next_word_mp3 }, 
     final:          { audio: res.inka_temple_final_mp3 },
-    deleteRow:      null,
-    deleteLastRows: null,
+    deleteRow:      { audio: res.inka_temple_delete_row_mp3 },
+    deleteLastRows: { audio: res.inka_temple_delete_last_rows_mp3 },
 };
 
 ////////////////////////////////////////////////

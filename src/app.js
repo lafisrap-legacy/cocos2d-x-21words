@@ -1333,7 +1333,7 @@ var _42GameLayer = cc.Layer.extend({
                 ////////////////////////////////////////
                 // go back to normal falling speed if tile is not dragged
                 if( lp.y < cc.height - $42.BS ) {
-                    t.fallingSpeed = $42.FALLING_SPEED;
+                    t.fallingSpeed = Math.max( t.fallingSpeed *0.93 , $42.FALLING_SPEED );
                 } else {
                     // Let tile fall faster at top border
                     t.fallingSpeed = $42.FALLING_SPEED * 36;
@@ -1363,18 +1363,18 @@ var _42GameLayer = cc.Layer.extend({
                 
                 if(cm.y < 0 && !t.isRotating) {
                     t.fallingSpeed = Math.min( -cm.y , $42.FALLING_SPEED * 32);
+                    cm.y += t.fallingSpeed;
+                    if( cm.y > 0 ) cm.y = 0;
                 } else {
                     t.fallingSpeed = $42.FALLING_SPEED;
                 }
-            
-                cm.y += t.fallingSpeed;
-                if( cm.y > 0 ) cm.y = 0;
             }
         }
         
         //////////////////////////////
         // let tile fall down
         lp.y -= t.fallingSpeed;
+        cc.log("t.fallingSpeed: "+t.fallingSpeed);
         
         //////////////////////////////
         // Check for bottom
