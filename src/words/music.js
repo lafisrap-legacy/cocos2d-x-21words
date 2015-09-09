@@ -171,6 +171,7 @@ $42.MUSIC_BLUE_QUADRAT = {
     lastWord:       { audio: res.blue_quadrat_last_word_mp3 },
     deleteRow:      { audio: res.blue_quadrat_delete_row_mp3 },
     final:          { audio: res.blue_quadrat_final_mp3 },
+    deleteLastRows: { audio: res.blue_quadrat_delete_last_rows_mp3 },
 };
 
 ////////////////////////////////////////////////
