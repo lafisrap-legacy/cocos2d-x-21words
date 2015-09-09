@@ -110,7 +110,7 @@ var res = {
     inka_temple_intro_g_mp3:           "res/sounds/levelsounds/inka_tempel_hintergrund_g1,1,2.mp3",
     inka_temple_intro_h_mp3:           "res/sounds/levelsounds/inka_tempel_hintergrund_h1,1,2.mp3",
     inka_temple_level_words_mp3:       "res/sounds/levelsounds/blaue_berge_drei_worte0,1,1.mp3",
-    inka_temple_level_nr_mp3:          "res/sounds/levelsounds/blaue_berge_letztes_wort_fertig0,1,7.mp3",
+    inka_temple_level_nr_mp3:          "res/sounds/levelsounds/blaue_berge_levelzahl0,1,1.mp3",
     inka_temple_set_tile_a_mp3:        "res/sounds/levelsounds/inka_tempel_buchstaben_neu_a-c1,1,4.mp3",
     inka_temple_set_tile_b_mp3:        "res/sounds/levelsounds/inka_tempel_buchstaben_neu_d1,1,4.mp3",
     inka_temple_swipe_a_mp3:           "res/sounds/levelsounds/inka_tempel_wischen_a1,1,2.mp3",
