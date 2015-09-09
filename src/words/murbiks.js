@@ -374,10 +374,13 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 cc.sequence(
                     cc.delayTime(time0),
                     cc.moveBy(time1+time2+time3,cc.p(0,-250)),
+                    cc.callFunc(function() { $42.SCENE.playEffect(level.music.swipe); }),
                     cc.moveBy(time4,cc.p(-100,-280)),
                     cc.callFunc(function() {
                         marker[3].setOpacity(255)
                         //marker[4].setOpacity(255)
+                        $42.SCENE.stopEffect(level.music.swipe);
+                        $42.SCENE.playEffect(level.music.fixTile);
                     })
                 )
             );
@@ -488,7 +491,10 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 cc.sequence(
                     cc.delayTime(time0),
                     cc.moveBy(time1+time2+time3, cc.p(0,-260)),
-                    cc.moveTo(time4, cc.p(560,220))
+                    cc.callFunc(function() { $42.SCENE.playEffect(level.music.swipe); }),
+                    cc.moveTo(time4, cc.p(560,220)),
+                    cc.callFunc(function() { $42.SCENE.stopEffect(level.music.swipe); }),
+                    cc.callFunc(function() { $42.SCENE.playEffect(level.music.deleteRow); })
                 )
             );
 
