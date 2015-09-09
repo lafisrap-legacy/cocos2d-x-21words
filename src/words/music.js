@@ -130,6 +130,7 @@ $42.MUSIC_BLUE_QUADRAT = {
         loopLength:     38.064000,
         //loopTimes:      100,
         //loopMeasure:    1
+        delay: 1000
     },
     levelWords:     { 
         audio: res.blue_quadrat_level_words_mp3,
