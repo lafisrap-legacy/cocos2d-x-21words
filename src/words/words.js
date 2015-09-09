@@ -2026,6 +2026,7 @@ var _42_MODULE = function(_42Layer) {
 
     var checkForTutorial = function() {
         var td = $42.tutorialsDone,
+            level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             ls = cc.sys.localStorage;
 
         if( !td.basicConcepts && $42.currentLevel == 1 ) {
@@ -2047,7 +2048,8 @@ var _42_MODULE = function(_42Layer) {
                         td.basicConcepts = true;
                         ls.setItem("tutorialsDone", JSON.stringify(td));
                         ml.levelLabels[0].setString(oldLabel);
-                    }
+                    },
+                    level: level
                 });
            }, 9000); 
          } else if( !td.advancedConcepts && $42.currentLevel == 6 ) {
@@ -2065,7 +2067,8 @@ var _42_MODULE = function(_42Layer) {
 
                         td.advancedConcepts = true;
                         ls.setItem("tutorialsDone", JSON.stringify(td));
-                    }
+                    },
+                    level: level
                 });
            }, 9000); 
             

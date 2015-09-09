@@ -43,6 +43,7 @@ $42.STORY_SCALE_PRESS_FINGER = 0.9;
 var _MURBIKS_MODULE = function(parentLayer) {
 	var pl = parentLayer,
 		mul = null, // murbics layer
+        level = null,
 		curTileProgram = null,
 		curTileProgramCnt = null,
 		curProgram = null,
@@ -128,7 +129,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 
         var sb = storyBackground;
 
-        var page1 = function(time,cb) {
+        var page1 = function(time,cb, repeat) {
             var size = sb.getContentSize(),
                 time0 = time,
                 time1 = 1,
@@ -151,12 +152,14 @@ var _MURBIKS_MODULE = function(parentLayer) {
             tile1.runAction(
                 cc.sequence(
                     cc.delayTime(time0+time1+time2+time3+time4),
+                    cc.callFunc(function() { $42.SCENE.playEffect(level.music.swipe); }),
                     cc.moveBy(time5,cc.p(-200,0)),
                     cc.moveBy(time5*2,cc.p(400,0)),
                     cc.moveBy(time5,cc.p(-200,0)),
                     cc.delayTime(time6),
                     cc.moveBy(time7,cc.p( 100,-100)),
-                    cc.moveBy(time7,cc.p(-150, -50))
+                    cc.moveBy(time7,cc.p(-150, -50)),
+                    cc.callFunc(function() { $42.SCENE.stopEffect(level.music.swipe); })
                 )
             );
 
@@ -180,12 +183,10 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );    
 
-            activeTimeouts.push( setTimeout(function() {
-               showSpeechBubble(0, $42.t.mostafa.basic1, mostafa.getPosition(), 320); 
-            }, time0 * 1000) );
+            if( !repeat ) showSpeechBubble(0, $42.t.mostafa.basic1, mostafa.getPosition(), 320); 
         };
 
-        var page2 = function(time, cb) {
+        var page2 = function(time, cb, repeat) {
             var size = sb.getContentSize(),
                 time0 = 1,
                 time1 = 1.1,
@@ -201,9 +202,13 @@ var _MURBIKS_MODULE = function(parentLayer) {
             tile1.runAction(
                 cc.sequence(
                     cc.delayTime(time0+time1+time2),
+                    cc.callFunc(function() { $42.SCENE.playEffect(level.music.rotate); }),
                     cc.rotateBy(time3,180),
+                    cc.callFunc(function() { $42.SCENE.stopEffect(level.music.rotate); }),
                     cc.delayTime(time4+time2),
-                    cc.rotateBy(time3,180)
+                    cc.callFunc(function() { $42.SCENE.playEffect(level.music.rotate); }),
+                    cc.rotateBy(time3,180),
+                    cc.callFunc(function() { $42.SCENE.stopEffect(level.music.rotate); })
                 )
             );
 
@@ -230,12 +235,10 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );    
 
-            activeTimeouts.push( setTimeout(function() {
-               showSpeechBubble(0, $42.t.mostafa.basic2, mostafa.getPosition(), 320); 
-            }, time0 * 1000) );
+            if( !repeat ) showSpeechBubble(0, $42.t.mostafa.basic2, mostafa.getPosition(), 320); 
         };
 
-        var page3 = function(time, cb) {
+        var page3 = function(time, cb, repeat) {
             var ml = $42.SCENE.mainLayer,
                 size = sb.getContentSize(),
                 time0 = 1,
@@ -263,7 +266,9 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 cc.sequence(
                     cc.delayTime(time0),
                     cc.moveBy(time1+time2+time3, cc.p(0,-264)),
-                    cc.moveBy(time4, cc.p(-65,-205))
+                    cc.callFunc(function() { $42.SCENE.playEffect(level.music.swipe); }),
+                    cc.moveBy(time4, cc.p(-65,-205)),
+                    cc.callFunc(function() { $42.SCENE.stopEffect(level.music.swipe); })
                 )
             );
 
@@ -279,6 +284,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
                     cc.moveBy(time4, cc.p(-65,-205)),
                     cc.callFunc(function() {
                         wordframe.setOpacity(255);
+                        $42.SCENE.playEffect(level.music.fullWord);
                     }),
                     cc.scaleTo(time3,1),
                     cc.EaseSineIn.create(cc.moveTo(time2, cc.p(700, 320))),
@@ -286,9 +292,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );    
 
-            activeTimeouts.push( setTimeout(function() {
-               showSpeechBubble(0, $42.t.mostafa.basic3, mostafa.getPosition(), 350); 
-            }, time0 * 1000) );
+           if( !repeat ) showSpeechBubble(0, $42.t.mostafa.basic3, mostafa.getPosition(), 350); 
         };
 
         var pages = [page1, page2, page3]
@@ -318,7 +322,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
         });
     };
 
-    var animStoryAdvancedConcepts = function(options) {
+    var animStoryAdvancedConcepts = function(options) { 
         stopActionsAndTimeouts();
 
         var sb = storyBackground,
@@ -333,7 +337,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
             sb.addChild(marker[i], 6, $42.MARKER_TAG+i);
         }
 
-        var page1 = function(time,cb) {
+        var page1 = function(time,cb, repeat) {
             var size = sb.getContentSize(),
                 time0 = time || 1,
                 time1 = 4.5,
@@ -390,12 +394,10 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );    
 
-            activeTimeouts.push( setTimeout(function() {
-               showSpeechBubble(0, $42.t.mostafa.advanced1, mostafa.getPosition(), 350); 
-            }, time0 * 1000) );
+            if( !repeat ) showSpeechBubble(0, $42.t.mostafa.advanced1, mostafa.getPosition(), 350); 
         };
 
-        var page2 = function(time, cb) {
+        var page2 = function(time, cb, repeat) {
             var size = sb.getContentSize(),
                 time0 = 1,
                 time1 = 1.1,
@@ -440,12 +442,10 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );    
 
-            activeTimeouts.push( setTimeout(function() {
-               showSpeechBubble(0, $42.t.mostafa.advanced2, mostafa.getPosition(), 350); 
-            }, time0 * 1000) );
+           if( !repeat ) showSpeechBubble(0, $42.t.mostafa.advanced2, mostafa.getPosition(), 350); 
         };
 
-        var page3 = function(time, cb) {
+        var page3 = function(time, cb, repeat) {
             var size = sb.getContentSize(),
                 time0 = 1,
                 time1 = 4.1,
@@ -518,9 +518,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );    
 
-            activeTimeouts.push( setTimeout(function() {
-               showSpeechBubble(0, $42.t.mostafa.advanced3, mostafa.getPosition(), 350); 
-            }, time0 * 1000) );
+           if( !repeat ) showSpeechBubble(0, $42.t.mostafa.advanced3, mostafa.getPosition(), 350); 
         };
 
         var pages = [page1, page2, page3]
@@ -563,6 +561,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 
 		curProgram = program;
         finalCallback = options.cb;
+        level = options.level;
 
 		programs[program](options);
 	};
@@ -734,11 +733,12 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 stopActionsAndTimeouts();
                 item1.setOpacity(0);
                 item1.setEnabled(false);
+                $42.SCENE.playEffect({ audio: res.tutorial_again_mp3 });
                 pages[page](0.3, function() {
                     item1.setOpacity(255);
                     item1.setEnabled(true);
                     //hideSpeechBubble();
-                });
+                }, true);
             }, mul),
             item2 = new cc.MenuItemFont($42.t.story_continue, function() {
                 stopActionsAndTimeouts();

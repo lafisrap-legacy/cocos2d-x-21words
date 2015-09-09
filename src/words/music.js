@@ -45,7 +45,7 @@ $42.MUSIC_RED_HILLS = {
     },
     rotate:         { 
         audio: [res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
-        minInterval: 000 
+        dontStop: true
     },
     fixTile:        { 
         audio: res.red_hills_fix_tile_1_mp3, 

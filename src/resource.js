@@ -32,6 +32,7 @@ var res = {
     mostafa_out_mp3 :      "res/sounds/mostafa_geht0,1,5.mp3",
     mostafa_in_mp3 :       "res/sounds/mostafa_kommt0,1,5.mp3",
     speech_bubble_mp3 :    "res/sounds/sprechblase1,1,5.mp3",
+    tutorial_again_mp3 :   "res/sounds/tutorial_nochmal1,1,4.mp3",
 
     // level 1                                               
     //red_hills_intro_mp3:              "res/sounds/levelsounds/rote_huegel_hintergrund_intro3,1,4.mp3",
