@@ -48,7 +48,7 @@ var res = {
     red_hills_fix_tile_1_mp3:         "res/sounds/levelsounds/rote_huegel_buchstaben_unten 0,1,6.mp3",
     red_hills_selection_mp3:          "res/sounds/levelsounds/rote_huegel_buchstabenkombi0,1,3.mp3",
     red_hills_full_word_mp3:          "res/sounds/levelsounds/rote_huegel_wort_fertig0,1,5.mp3",
-    red_hills_last_word_mp3:          "res/sounds/levelsounds/rote_huegel_letztes_wort_fertig0,1,13.mp3",
+    red_hills_last_word_mp3:          "res/sounds/levelsounds/rote_huegel_letztes_wort_fertig0,1,15.mp3",
     red_hills_delete_row_mp3:         "res/sounds/levelsounds/rote_huegel_reihe_kracht0,1,7.mp3",
     red_hills_delete_last_rows_mp3:   "res/sounds/levelsounds/rote_huegel_reihe_kracht0,1,7.mp3",
     red_hills_final_mp3:              "res/sounds/levelsounds/rote_huegel_schluss_fanfare1,1,5.mp3",
