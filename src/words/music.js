@@ -147,19 +147,19 @@ $42.TEST = {
         delay: 4500
     },
     setTile:         { 
-        audioSet: [[test_set_tile_1_mp3],
-                   [test_set_tile_2_mp3],
-                   [test_set_tile_3_mp3],
-                   [test_set_tile_4_mp3]],
+        audioSet: [[res.test_set_tile_1_mp3],
+                   [res.test_set_tile_2_mp3],
+                   [res.test_set_tile_3_mp3],
+                   [res.test_set_tile_4_mp3]],
         nextSetOn: "time",
         playOnBeat: 0.5,
         playAfterBeats: 1
     },
     swipe:          { 
-         audioSet: [[test_rotate_1_mp3],
-                   [test_rotate_1_mp3],
-                   [test_rotate_1_mp3],
-                   [test_rotate_1_mp3]],
+         audioSet: [[res.test_rotate_1_mp3],
+                   [res.test_rotate_1_mp3],
+                   [res.test_rotate_1_mp3],
+                   [res.test_rotate_1_mp3]],
         nextSetOn: "time",
         dontStop: true,
         intervalTime: 450
@@ -169,10 +169,10 @@ $42.TEST = {
         minInterval: 0 
     },
     fixTile:        { 
-        audioSet: [[test_fix_tile_1_mp3],
-                   [test_fix_tile_1_mp3],
-                   [test_fix_tile_1_mp3],
-                   [test_fix_tile_1_mp3]],
+        audioSet: [[res.test_fix_tile_1_mp3],
+                   [res.test_fix_tile_1_mp3],
+                   [res.test_fix_tile_1_mp3],
+                   [res.test_fix_tile_1_mp3]],
         nextSetOn: "time",
         playOnBeat: 0.25,
         playAfterBeats: 1
