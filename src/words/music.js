@@ -142,7 +142,7 @@ $42.TEST = {
                    [res.test_trumpet_3_mp3],
                    [res.test_trumpet_4_mp3]],
         nextSetOn: "time",
-        dontStop: true
+        dontStop: true,
         playOnBeat: 0,
         playAfterBeats: 0.5
     },
@@ -152,7 +152,7 @@ $42.TEST = {
                    [res.test_horns_down_3_mp3],
                    [res.test_horns_down_4_mp3]],
         nextSetOn: "time",
-        dontStop: true
+        dontStop: true,
         intervalTime: 450
     },
     fixTile:        { 
@@ -161,7 +161,7 @@ $42.TEST = {
                    [res.test_trombone_3_mp3],
                    [res.test_trombone_4_mp3]],
         nextSetOn: "time",
-        dontStop: true
+        dontStop: true,
         playOnBeat: 0,
         playAfterBeats: 0 
     }, 
