@@ -132,9 +132,10 @@ $42.TEST = {
         loop:           res.test_background_loop_mp3,
         loopLength:     18.461000,
         loopTimes:      4,
-        loopMeasure:    4,
-        playOnBeat: 0.5,
+        loopMeasure:    1,
+        playOnBeat: 1,
         playAfterBeats: 1,
+        nextSetOn:      [4615.15,4615.15,4615.15,4615.15]
     },
     setTile:         { 
         audioSet: [[res.test_trumpet_1_mp3],
@@ -143,8 +144,8 @@ $42.TEST = {
                    [res.test_trumpet_4_mp3]],
         nextSetOn: "time",
         dontStop: true,
-        playOnBeat: 0,
-        playAfterBeats: 0.5
+        playOnBeat: 0.5,
+        playAfterBeats: 0
     },
     swipe:          { 
          audioSet: [[res.test_horns_down_1_mp3],
@@ -162,8 +163,8 @@ $42.TEST = {
                    [res.test_trombone_4_mp3]],
         nextSetOn: "time",
         dontStop: true,
-        playOnBeat: 0,
-        playAfterBeats: 0 
+        playOnBeat: 0.25,
+        playAfterBeats: 0
     }, 
     }; 
 
