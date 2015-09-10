@@ -138,13 +138,20 @@ $42.TEST = {
         nextSetOn:      [4615.15,4615.15,4615.15,4615.15],
         delay: 1000
     },
+    levelWords:     { 
+        audio: res.red_hills_level_words_mp3,
+        delay: 1500,
+    },
+    levelNr:        { 
+        audio: res.red_hills_level_nr_mp3, 
+        delay: 4500
+    },
     setTile:         { 
         audioSet: [[res.test_trumpet_1_mp3],
                    [res.test_trumpet_2_mp3],
                    [res.test_trumpet_3_mp3],
                    [res.test_trumpet_4_mp3]],
         nextSetOn: "time",
-        dontStop: true,
         playOnBeat: 0.5,
         playAfterBeats: 1
     },
@@ -157,16 +164,29 @@ $42.TEST = {
         dontStop: true,
         intervalTime: 450
     },
+    rotate:         { 
+        audio: [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
+        minInterval: 0 
+    },
     fixTile:        { 
         audioSet: [[res.test_trombone_1_mp3],
                    [res.test_trombone_2_mp3],
                    [res.test_trombone_3_mp3],
                    [res.test_trombone_4_mp3]],
         nextSetOn: "time",
-        dontStop: true,
         playOnBeat: 0.25,
         playAfterBeats: 1
     }, 
+    selection:      { audio: res.flames_selection_mp3 },
+    fullWord:       { audio: res.flames_full_word_mp3 },
+    presentWord:    { 
+        audio: res.blue_mountains_present_word_mp3,
+        intervalTime: 3000, 
+        delayTime: 500 
+    },
+    lastWord:       { audio: res.flames_last_word_mp3 },
+    deleteRow:      { audio: res.flames_delete_row_mp3 },
+    final:          { audio: res.flames_final_mp3 },
     }; 
 
 
