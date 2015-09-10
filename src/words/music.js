@@ -135,7 +135,7 @@ $42.TEST = {
         loopMeasure:    1,
         playOnBeat: 1,
         playAfterBeats: 1,
-        nextSetOn:      [4615.15,4615.15,4615.15,4615.15]
+        nextSetOn:      [4615.15,4615.15,4615.15,4615.15],
         delay: 1000
     },
     setTile:         { 
