@@ -132,7 +132,9 @@ $42.TEST = {
         loop:           res.test_background_loop_mp3,
         loopLength:     18.461000,
         loopTimes:      4,
-        loopMeasure:    4
+        loopMeasure:    4,
+        playOnBeat: 0.5,
+        playAfterBeats: 1,
     },
     setTile:         { 
         audioSet: [[res.test_trumpet_1_mp3],
