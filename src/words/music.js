@@ -136,6 +136,7 @@ $42.TEST = {
         playOnBeat: 1,
         playAfterBeats: 1,
         nextSetOn:      [4615.15,4615.15,4615.15,4615.15]
+        delay: 1000
     },
     setTile:         { 
         audioSet: [[res.test_trumpet_1_mp3],
@@ -145,7 +146,7 @@ $42.TEST = {
         nextSetOn: "time",
         dontStop: true,
         playOnBeat: 0.5,
-        playAfterBeats: 0
+        playAfterBeats: 1
     },
     swipe:          { 
          audioSet: [[res.test_horns_down_1_mp3],
@@ -164,7 +165,7 @@ $42.TEST = {
         nextSetOn: "time",
         dontStop: true,
         playOnBeat: 0.25,
-        playAfterBeats: 0
+        playAfterBeats: 1
     }, 
     }; 
 
