@@ -130,12 +130,12 @@ $42.MUSIC_FLAMES = {
 $42.TEST = {
     background: {
         loop:           res.test_background_loop_mp3,
-        loopLength:     18.461000,
+        loopLength:     18.504000,
         loopTimes:      4,
         loopMeasure:    1,
         playOnBeat: 1,
         playAfterBeats: 1,
-        nextSetOn:      [4615.15,4615.15,4615.15,4615.15],
+        nextSetOn:      [4626,4626,4626,4626],
         delay: 1000
     },
     levelWords:     { 
@@ -152,17 +152,17 @@ $42.TEST = {
                    [res.test_set_tile_3_mp3],
                    [res.test_set_tile_4_mp3]],
         nextSetOn: "time",
-        playOnBeat: 0.5,
+        playOnBeat: 1,
         playAfterBeats: 1
     },
     swipe:          { 
-         audioSet: [[res.test_rotate_1_mp3],
-                   [res.test_rotate_1_mp3],
-                   [res.test_rotate_1_mp3],
-                   [res.test_rotate_1_mp3]],
-        nextSetOn: "time",
-        dontStop: true,
-        intervalTime: 450
+        audio: null,
+         //audioSet: [[res.test_rotate_1_mp3],
+                   //[res.test_rotate_1_mp3],
+                   //[res.test_rotate_1_mp3],
+                   //[res.test_rotate_1_mp3]],
+        //nextSetOn: "time",
+        //dontStop: true,
     },
     rotate:         { 
         audio: [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
