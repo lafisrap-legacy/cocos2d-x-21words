@@ -74,6 +74,21 @@ var res = {
     flames_delete_last_rows_mp3:        "res/sounds/levelsounds/flammen_reihe_kracht0,1,7.mp3",
     flames_final_mp3:                  "res/sounds/levelsounds/flammen_reihe_kracht0,1,7.mp3",
 
+    // level 3
+    test_background_loop_mp3:               "res/sounds/levelsounds/test_background1,1.mp3",
+    test_set_tile_1_mp3:                    "res/sounds/levelsounds/test_trumpet_1.mp3",
+    test_set_tile_2_mp3:                    "res/sounds/levelsounds/test_trumpet_2.mp3",
+    test_set_tile_3_mp3:                    "res/sounds/levelsounds/test_trumpet_3.mp3",
+    test_set_tile_4_mp3:                    "res/sounds/levelsounds/test_trumpet_4.mp3",
+    test_rotate_1_mp3:                      "res/sounds/levelsounds/test_horns_down_1.mp3",
+    test_rotate_2_mp3:                      "res/sounds/levelsounds/test_horns_down_2.mp3",
+    test_rotate_3_mp3:                      "res/sounds/levelsounds/test_horns_down_3.mp3",
+    test_rotate_4_mp3:                      "res/sounds/levelsounds/test_horns_down_4.mp3",
+    test_fix_tile_1_mp3:                    "res/sounds/levelsounds/test_trombone_1.mp3",
+    test_fix_tile_2_mp3:                    "res/sounds/levelsounds/test_trombone_2.mp3",
+    test_fix_tile_3_mp3:                    "res/sounds/levelsounds/test_trombone_3.mp3",
+    test_fix_tile_4_mp3:                    "res/sounds/levelsounds/test_trombone_4.mp3",
+
     // level 5
     //blue_quadrat_intro_mp3:                  "res/sounds/none.mp3",
     blue_quadrat_loop_mp3:                   "res/sounds/levelsounds/L5_blaues_quadrat_hintergrund_loop1,1,2.mp3",

@@ -126,6 +126,46 @@ $42.MUSIC_FLAMES = {
 
 
 ////////////////////////////////////////////////
+// Music for level 3
+$42.TEST = {
+    background: {
+        loop:           res.test_background_loop_mp3,
+        loopLength:     18.461000,
+        loopTimes:      4,
+        loopMeasure:    4
+    },
+    setTile:         { 
+        audioSet: [[res.test_trumpet_1_mp3],
+                   [res.test_trumpet_2_mp3],
+                   [res.test_trumpet_3_mp3],
+                   [res.test_trumpet_4_mp3]],
+        nextSetOn: "time",
+        dontStop: true
+        playOnBeat: 0,
+        playAfterBeats: 0.5
+    },
+    swipe:          { 
+         audioSet: [[res.test_horns_down_1_mp3],
+                   [res.test_horns_down_2_mp3],
+                   [res.test_horns_down_3_mp3],
+                   [res.test_horns_down_4_mp3]],
+        nextSetOn: "time",
+        dontStop: true
+        intervalTime: 450
+    },
+    fixTile:        { 
+        audioSet: [[res.test_trombone_1_mp3],
+                   [res.test_trombone_2_mp3],
+                   [res.test_trombone_3_mp3],
+                   [res.test_trombone_4_mp3]],
+        nextSetOn: "time",
+        dontStop: true
+        playOnBeat: 0,
+        playAfterBeats: 0 
+    }, 
+
+
+////////////////////////////////////////////////
 // Music for level 5
 $42.MUSIC_BLUE_QUADRAT = {
     background: {
