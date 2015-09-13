@@ -508,8 +508,8 @@ var _MUSIC_MODULE = function(layer) {
                     else {
                         cc.audioEngine.playMusic(mp.loop[0], false);
                         setTimeout(function() {
-                            layer.playNextMusicSlot(null, true);
-                        }, mp.loopLength[0] * 1000);
+                            layer.playNextMusicSlot(null, !!mp.fadeOutTime);
+                        }, mp.loopLength[0] * 1000 - (mp.fadeOutTime || 0));
                     }
                 }, (mp.introLength || 0)*1000 );
             }
@@ -555,8 +555,8 @@ var _MUSIC_MODULE = function(layer) {
             mp.timeout = setTimeout(function() {
                 cc.log("SOUNDTIMING 1:                                                               ended at "+mp.endTime);
                 mp.timeout = null;
-                nextSlot(null, true);
-            }, mp.loopLength[mp.loopSlot] * 1000 + diff);
+                nextSlot(null, !!mp.fadeOutTime);
+            }, mp.loopLength[mp.loopSlot] * 1000 + diff - (mp.fadeOutTime || 0));
         };
 
         if( fadeOut && mp.fadeOutTime ) {
