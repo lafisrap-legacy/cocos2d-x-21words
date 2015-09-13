@@ -1,3 +1,4 @@
+$42.MUSIC_LOOP_OFFSET = 0;
 $42.MUSIC_VOLUME_GRANULARITY = 10;
 
 ////////////////////////////////////////////////
@@ -129,14 +130,15 @@ $42.MUSIC_FLAMES = {
 // Music for level 3
 $42.TEST = {
     background: {
-        loop:           res.test_background_loop_mp3,
-        loopLength:     18.504000,
+        loop:           [res.test_background_loop_mp3,res.test_background_loop1_mp3],
+        loopLength:     [18.504000,18.504000],
         loopTimes:      4,
         loopMeasure:    1,
         playOnBeat: 1,
         playAfterBeats: 1,
         nextSetOn:      [4626,4626,4626,4626],
-        delay: 1000
+        delay:          1000,
+        fadeOutTime:    50
     },
     levelWords:     { 
         audio: res.red_hills_level_words_mp3,
@@ -153,7 +155,8 @@ $42.TEST = {
                    [res.test_set_tile_4_mp3]],
         nextSetOn: "time",
         playOnBeat: 1,
-        playAfterBeats: 1
+        playAfterBeats: 1,
+        playNextSlot: false
     },
     swipe:          { 
         audio: null,
@@ -266,7 +269,8 @@ $42.MUSIC_INKA_TEMPLE = {
     setTile:        { 
         audio: [res.inka_temple_set_tile_a_mp3, res.inka_temple_set_tile_b_mp3], 
         playOnBeat: 0,
-        playAfterBeats: 1
+        playAfterBeats: 1,
+        playNextSlot: true
     },
     swipe:          { 
         audio: [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
@@ -357,7 +361,7 @@ var _MUSIC_MODULE = function(layer) {
 
         if( !effect || !effect.audio && !effect.audioSet ) return;
 
-        cc.log("Now ("+time+") playing effect "+(repeat?" with":" without")+" repeat");
+        //cc.log("Now ("+time+") playing effect "+(repeat?" with":" without")+" repeat");
         
         if( typeof effect.audio === "string" ) effect.audio = [effect.audio];
         if( effect.audioSet ) {
@@ -447,15 +451,23 @@ var _MUSIC_MODULE = function(layer) {
         var mp = musicPlaying || null,
             time = new Date().getTime();
         if( mp && mp.loop ) {
-            var frame  = mp.loopFrame || (mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure * (sound.playOnBeat || 1) : 0);
+            var frame  = mp.loopFrame || (mp.loopLength[mp.loopSlot]? mp.loopLength[mp.loopSlot]*1000 / mp.loopTimes / mp.loopMeasure * (sound.playOnBeat || 1) : 0);
             
             if( frame ) {
                 var span = time - (mp.startTime || time),
                     frames = Math.floor(span/frame),
                     offset = span - frames * frame;
+                cc.log("SOUNDTIMING 2: Time is "+time+". Distance from "+sound.playOnBeat+" frame start : "+offset+", frames played: "+frames+", distance from music start: "+span);
 
                 //cc.log("Waiting for next beat for "+(frame * (cnt || 1) - offset)+" ms. ("+offset+", "+frames+", "+frame+")");
-                setTimeout(cb, frame * (sound.playAfterBeats || 0) - (sound.playOnBeat? offset : 0));
+                setTimeout(function(time, offset) {
+                    var now = new Date().getTime(),
+                        shouldbe = time+frame-offset;
+                    cc.log("SOUNDTIMING 2: Supposed to by playing sound at "+shouldbe);
+                    cc.log("SOUNDTIMING 2:         Really playing sound at "+now);
+                    cc.log("SOUNDTIMING 2: Difference:  "+(shouldbe-now));
+                    cb();
+                }, frame * (sound.playAfterBeats || 0) - (sound.playOnBeat? offset : 0), time, offset);
             } else {
                 cb();
             }
@@ -480,21 +492,24 @@ var _MUSIC_MODULE = function(layer) {
         }
 
         if( mp.loop ) {
-            if( typeof mp.loop === "string" ) mp.loop = [mp.loop];
+            if( typeof mp.loop === "string" ) {
+                mp.loop = [mp.loop];
+                mp.loopLength = [mp.loopLength];
+            }
             mp.loopSlot = 0;
             
-            if( mp.loop[0].length ) {
+            if( mp.loop.length ) {
                 mp.timeout = setTimeout(function() {
                     mp.timeout = null;
                     mp.startTime   = new Date().getTime();
-                    mp.beatLength = mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure;
-                    if( mp.loop.length === 1 ) {
-                        cc.audioEngine.playMusic(mp.loop[0], true);
-                        if( $42.msg1 ) $42.msg1.setString("Now playing background loop '"+mp.loop[0]+"'");
-                    } else {
+                    
+                    if( $42.msg1 ) $42.msg1.setString("Now playing background loop '"+mp.loop[0]+"'");
+                    if( mp.loop.length === 1 ) cc.audioEngine.playMusic(mp.loop[0], true);
+                    else {
                         cc.audioEngine.playMusic(mp.loop[0], false);
-                        if( $42.msg1 ) $42.msg1.setString("Now playing background loop '"+mp.loop[0]+"'");
-                        setTimeout(layer.playNextMusicSlot, mp.loopLength[0] * 1000);
+                        setTimeout(function() {
+                            layer.playNextMusicSlot(null, true);
+                        }, mp.loopLength[0] * 1000);
                     }
                 }, (mp.introLength || 0)*1000 );
             }
@@ -518,18 +533,30 @@ var _MUSIC_MODULE = function(layer) {
         musicPlaying = mp;
     };
 
-    layer.playNextMusicSlot = function(fadeOut) {
+    layer.playNextMusicSlot = function nextSlot(effect, fadeOut) {
 
         var mp = musicPlaying;
-        if( !mp || !mp.loop || mp.loop.length <= 1 ) return;
+        if( !mp || !mp.loop || mp.loop.length < 1 ) return;
+
+        if( effect && !effect.playNextSlot ) return;
 
         var playSlot = function() {
             mp.loopSlot = ++mp.loopSlot % mp.loop.length;
-            cc.audioEngine.playMusic(mp.loop[mp.loopSlot], false);
+            mp.startTime   = new Date().getTime();
+
+            diff = mp.endTime || mp.endTime === 0? mp.endTime - mp.startTime : 0;
+            mp.endTime = mp.startTime + mp.loopLength[mp.loopSlot]*1000 + diff;
+
+            cc.log("SOUNDTIMING 1: Starting new slot ("+mp.loopSlot+"). Time: "+mp.startTime+", ending at "+mp.endTime+", diff was "+diff);
+            cc.audioEngine.playMusic(mp.loop[mp.loopSlot]);
             cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
             if( $42.msg1 ) $42.msg1.setString("Now playing loop '"+mp.loop[mp.loopSlot]+"'");
             if( mp.timeout ) clearTimeout( mp.timeout );
-            mp.timeout = setTimeout(layer.playNextMusicSlot, mp.loopLength[mp.loopSlot] * 1000);
+            mp.timeout = setTimeout(function() {
+                cc.log("SOUNDTIMING 1:                                                               ended at "+mp.endTime);
+                mp.timeout = null;
+                nextSlot(null, true);
+            }, mp.loopLength[mp.loopSlot] * 1000 + diff);
         };
 
         if( fadeOut && mp.fadeOutTime ) {

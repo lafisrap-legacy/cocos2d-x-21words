@@ -443,6 +443,7 @@ var _42_MODULE = function(_42Layer) {
                             if( level.music.nextWord ) $42.SCENE.playEffect(level.music.nextWord);
                             
                             ml.pauseBuildingTiles = false; 
+                            cc.log("pauseBuildingtiles set to "+this.pauseBuildingTiles+" at nextTile no new level." );
                             ml.wordsForTilesCnt = level.wordFreq-1;
                             ml.fillWordsForTiles();
                         }
@@ -450,6 +451,7 @@ var _42_MODULE = function(_42Layer) {
                         ml.drawScorebar(false);
 					} else {
                         ml.pauseBuildingTiles = false; 
+                        cc.log("pauseBuildingtiles set to "+this.pauseBuildingTiles+" at rejected word." );
 						ml.checkForAndRemoveCompleteRows();
 						ml.unselectWord(true);
 						moveSelectedWord(sw.brc);
@@ -466,6 +468,7 @@ var _42_MODULE = function(_42Layer) {
         }
 
         ml.pauseBuildingTiles = false;
+        cc.log("pauseBuildingtiles set to "+this.pauseBuildingTiles+" at no word found." );
 		
         return false; // no word was found
 	};
@@ -776,6 +779,7 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
+                cc.log("pauseBuildingtiles set to "+this.pauseBuildingTiles+" at new level start." );
             }, (5.5+i*0.50) * 1000 );
 
             checkForTutorial();
@@ -784,7 +788,7 @@ var _42_MODULE = function(_42Layer) {
         setTimeout(function() {
             $42.SCENE.callFuncOnNextBeat(function() {
                 var time = new Date().getTime();
-                cc.log("---Backgound--- Starting music at "+time);
+                //cc.log("---Backgound--- Starting music at "+time);
                 $42.SCENE.playBackgroundMusic(level.music.background);
             }, level.music.background);
         }, level.music.background.delay || 7000);
@@ -2120,6 +2124,7 @@ var _42_MODULE = function(_42Layer) {
 		ml.dontAutoSelectWord = false;
 	    
         ml.pauseBuildingTiles = true;
+        cc.log("pauseBuildingtiles set to "+this.pauseBuildingTiles+" at start of game." );
         startNewLevel();    
 	};
 	
@@ -2158,7 +2163,7 @@ var _42_MODULE = function(_42Layer) {
 		
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
         $42.SCENE.playEffect(level.music.setTile);
-        $42.SCENE.playNextMusicSlot(true);
+        $42.SCENE.playNextMusicSlot(level.music.setTile, true);
         $42.SCENE.changeAudioSet("setTile");
 		
         this._nextTile = getProgrammedTile();
@@ -2240,6 +2245,7 @@ var _42_MODULE = function(_42Layer) {
 
 		ml.lastBrcs = brcs;
         ml.pauseBuildingTiles = true;
+        cc.log("pauseBuildingtiles set to "+this.pauseBuildingTiles+" at hookTileFixed." );
 		
         //if( level.music.fixTile && level.music.fixTile.playOnBeat ) {
         //    $42.SCENE.callFuncOnNextBeat(function() {
@@ -2287,6 +2293,7 @@ var _42_MODULE = function(_42Layer) {
 
         if( !sw && !ml.wordIsBeingSelected ) {
             ml.pauseBuildingTiles = false;
+            cc.log("pauseBuildingtiles set to "+this.pauseBuildingTiles+" at moveToNewWord." );
         }
 	};
 

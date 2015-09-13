@@ -76,6 +76,7 @@ var res = {
 
     // level 3
     test_background_loop_mp3:               "res/sounds/levelsounds/test_background1,1.mp3",
+    test_background_loop1_mp3:              "res/sounds/levelsounds/test_background1,1a.mp3",
     test_set_tile_1_mp3:                    "res/sounds/levelsounds/test_trumpet_1.mp3",
     test_set_tile_2_mp3:                    "res/sounds/levelsounds/test_trumpet_2.mp3",
     test_set_tile_3_mp3:                    "res/sounds/levelsounds/test_trumpet_3.mp3",

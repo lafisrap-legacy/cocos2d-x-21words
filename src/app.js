@@ -370,7 +370,7 @@ var _42GameLayer = cc.Layer.extend({
 			var file = $42.LETTER_NAMES[$42.LETTERS.indexOf(word[i])],
 				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
 				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
-			if( !sprite ) cc.log("File '"+file+".png' couldn't be opened. Letter: "+word[i]);
+			//if( !sprite ) cc.log("File '"+file+".png' couldn't be opened. Letter: "+word[i]);
             sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
             //  ERROR: JS: assets/src/app.js:370:TypeError: sprite is null
 			wordFrameSprite.addChild( sprite );
@@ -584,7 +584,7 @@ var _42GameLayer = cc.Layer.extend({
 	            			y: -$42.BS,
                             on: true
 	            		};
-                        cc.log("DOWN: self._currentTile.isDragged = "+self._currentTile.isDragged+", self.isSwipeDown = "+self.isSwipeDown);
+                        //cc.log("DOWN: self._currentTile.isDragged = "+self._currentTile.isDragged+", self.isSwipeDown = "+self.isSwipeDown);
                         if( !self.isSwipeDown && self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
                         self._currentTile.isDragged = true;
 	            		self.isSwipeDown = true;
@@ -1025,7 +1025,7 @@ var _42GameLayer = cc.Layer.extend({
     			newBrcs = [],
     			ret = "ok";
     		
-            cc.log("Fixing tile at "+JSON.stringify(lp));
+            //cc.log("Fixing tile at "+JSON.stringify(lp));
     		// check if a tile is too high
     		for( var i=0,minRow ; i<b.length ; i++ ) {
 				var brc = getRowCol(b[i], lp);
@@ -1077,7 +1077,7 @@ var _42GameLayer = cc.Layer.extend({
     	        //$42.msg1.setString($42.msg2.getString());
     	        //$42.msg2.setString("userData: "+JSON.stringify(t.userData)+", brcs: "+JSON.stringify(newBrcs));
     		} else {
-                cc.log("GAME OVER! Row = "+minRow);
+                //cc.log("GAME OVER! Row = "+minRow);
             }
     		
     		var tileRet = false;
@@ -1291,7 +1291,7 @@ var _42GameLayer = cc.Layer.extend({
             if( self.hookFuncOnNextBeat ) {
                 self.hookFuncOnNextBeat(function() {        
                     var time = new Date().getTime();
-                    cc.log("---Background--- Sending tile at "+time);
+                    //cc.log("---Background--- Sending tile at "+time);
                     buildTile();
                 },"setTile");
             } else buildTile();
@@ -1325,7 +1325,7 @@ var _42GameLayer = cc.Layer.extend({
             
             if( !t.isRotating && isSwipe() && sp ) {
                 t.isDragged = true;
-                cc.log("Switch on dragging");
+                //cc.log("Switch on dragging");
     		    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
             } 
             
@@ -1349,7 +1349,7 @@ var _42GameLayer = cc.Layer.extend({
                     
                     alignToColumn(t,lp,function() {
                         t.isDragged = false;    					
-                        cc.log("Switch of dragging ...");
+                        //cc.log("Switch of dragging ...");
     		            if( self.hookStopLevelSound ) self.hookStopLevelSound("swipe");
                     });	
                 }
