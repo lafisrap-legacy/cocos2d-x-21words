@@ -809,10 +809,18 @@ var _42_MODULE = function(_42Layer) {
         var wordList = ml.levelPool,
             level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             prefixes = [],
-            indizes = [],
             words = [];
 
         if( level.type === $42.LEVEL_TYPE_FREE ) return;
+        if( level.type === $42.LEVEL_TYPE_GIVEN && $42.currentLevel === 1 ) {
+            for( prefix in wordList ) {
+                ml.wordsForTiles = {
+                    index: 0,
+                    words: [wordList[prefix][0].word]
+                };
+                return;
+            }
+        }
 
         //////////////////////////////////
         // Get all available prefixes in random order
@@ -820,7 +828,6 @@ var _42_MODULE = function(_42Layer) {
         
         ml.wordsForTiles = {
             index: 0,
-            indizes: indizes,
             words: words
         };
         
@@ -838,8 +845,6 @@ var _42_MODULE = function(_42Layer) {
                 }
                 // if nothing found, take the last ...
                 if( j === prefix.length ) words.push(prefix[prefix.length-1].word);
-
-                indizes.push(0);
             } 
         }
 
