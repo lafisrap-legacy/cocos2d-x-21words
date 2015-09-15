@@ -1,4 +1,4 @@
-
+//////////////////////////////////////////////////////////////////////////////////
 // Main app holding a plain vanilla tetris game
 //
 //  LAYERS
@@ -799,7 +799,7 @@ var _42GameLayer = cc.Layer.extend({
                         if( self.hookFuncOnNextBeat ) {
                             self.hookFuncOnNextBeat(function() {        
                                 var time = new Date().getTime();
-                                cc.log("---Background--- Fixing tile at "+time);
+                                cc.log("---Fixing tile music--- Fixing tile at "+time);
                                 cb(fixTile(t, lp));
                                 self.tileIsFixing = false;
                             },"fixTile");
@@ -1290,8 +1290,6 @@ var _42GameLayer = cc.Layer.extend({
             this.pauseBuildingTiles = true;
             if( self.hookFuncOnNextBeat ) {
                 self.hookFuncOnNextBeat(function() {        
-                    var time = new Date().getTime();
-                    //cc.log("---Background--- Sending tile at "+time);
                     buildTile();
                 },"setTile");
             } else buildTile();

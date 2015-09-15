@@ -35903,8 +35903,6 @@ rettete 0,8
 retteten 0,8
 Rettich 0
 Rettung 0
-Rettungs 0
-Return 0
 Retuschen 0
 Reue 0
 reuig 0

@@ -1,59 +1,8 @@
 ////////////////////////////////////////////////////////////////////
 // words.js contains the basic code for the 42words game, built upon the plain vanilla tetris app in app.js
 //
-//
-//  Level 1:  3 given words, length 4              
-//  Level 2:  4 given words, length 5-6            
-//  Level 3:  5 given words, length 7-9           
-//  Level 4:  5 prefixed words, length 5+         
-//  Level 5:  5 prefixed words, length 6+       
-//  Level 6:  5 prefixed words, value 10+      
-//  Level 7:  5 free words, length 4+     
-//  Level 8:  5 free words, value 10+
-//  Level 9:  4 free words, value 12, 15, 20, 25
-//  Level 10: 1 free word, value 42 
-//
-//  PLAN
-//
-//  Level system
-//
-//  Select given words:
-//
-//      Make pool by searching all 50000+ words for words of
-//
-//      1. Group system
-//          - verbs
-//          - nouns
-//          - adjectives
-//          - names
-//          - cities
-//
-//  - In given mode word should just fly away without asking
-//
-//  GIVEN
-//
-//  PREFIXED
-//  
-//  FREE
-//  
-//
-// Make a word with new introduced letters
-// 
-// MOSTAFA
-//
-// Bring new letters
-//
-//
-//
-// GOT WORD!
-//
-// - More animations
-// - pimp word
-//
-//
-//
-// $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
 
+// $42.LETTER_NAMES and $42.LETTERS must have corresponding elements 
 $42.LETTER_NAMES = ["space","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","ae","oe","ue","6","ao"];
 $42.LETTERS =      [" ","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Ä" ,"Ö" ,"Ü" ,"Õ","Å"];
 $42.MARKER_SET = 1;                         // Marker under a letter is set, meaning that the letter is obligatory
@@ -788,8 +737,6 @@ var _42_MODULE = function(_42Layer) {
 
         setTimeout(function() {
             $42.SCENE.callFuncOnNextBeat(function() {
-                var time = new Date().getTime();
-                //cc.log("---Backgound--- Starting music at "+time);
                 $42.SCENE.playBackgroundMusic(level.music.background);
             }, level.music.background);
         }, level.music.background.delay || 7000);
@@ -2250,11 +2197,9 @@ var _42_MODULE = function(_42Layer) {
         ml.pauseBuildingTiles = true;
         cc.log("pauseBuildingtiles set to "+this.pauseBuildingTiles+" at hookTileFixed." );
 		
-        //if( level.music.fixTile && level.music.fixTile.playOnBeat ) {
-        //    $42.SCENE.callFuncOnNextBeat(function() {
-                $42.SCENE.playEffect(level.music.fixTile);
-        //    }, level.music.background, level.music.fixTile.playOnBeat, 1);
-        //} else $42.SCENE.playEffect(level.music.fixTile);
+        $42.SCENE.playEffect(level.music.fixTile);
+        var time = new Date().getTime();
+        cc.log("---Fixing Tile Music--- Playing sound for fixing tile at "+time);
 
 		setSelections(); // OPTIMIZATION: Only look in current lines
        
@@ -2595,9 +2540,9 @@ var _42_MODULE = function(_42Layer) {
         return level.music[effect];
     };
 
-_42Layer.hookUpdate = function(dt) {
+    _42Layer.hookUpdate = function(dt) {
     
-    if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);					
-};
+        if( ml.hookMurbiksUpdate ) ml.hookMurbiksUpdate(dt);					
+    };
 };
 

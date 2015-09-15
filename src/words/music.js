@@ -1,3 +1,58 @@
+/////////////////////////////////////////////////////////////
+// music.js holds all the music logic, playing background music and sound effects
+//
+// The first part defines defines the music of the single levels. The second is the actual code.
+// Following parameters can be used for defining the music metric
+//
+// Only for background music (background parameter)
+//
+// intro:           Introduction music, played once
+// introLength:     Length of intro music in seconds
+// introTimes:      How many full [Takte]
+// introMeasure:    How many beats per [Takt], typically 3, 4, 8, 16
+// loop:            Music that is looping, can be set as array
+// loopLength:      Length of loop music (must be same data type (string/array( as loop
+// loopMeasure:     How many beats per [Takt], typically 3, 4, 8, 16
+// loopBeat:        Length of one beat, only used to set length directly when there is no background music
+// fadeOutDelay:    Delay time to start fade out
+// fadeOutTime:     Time of fade out / should not overlay the start of any level music
+// nextSetOn:       times after sound effects that use "time" option change there sets
+// 
+// Only for effects:
+
+// audio:           One or more sound files, changed after each call to playEffect() or after intervalTime
+// audioSet:        A set of sound file groups. Can't be used together with audio. A sound file groupcan be changed after certain events defined by nextSetOn
+// nextSetOn:       Defines when a sound file group is changes. Possible values are:
+//                  time:       After time specified in nextSetOn parameter array of background
+//                  setTile:    When a new tile is issued
+// playNextSlot:    Change the background music: play next slot. Currently only works with setTile effect 
+// intervalTime:    Time until the next sound file is played, same file is played when stayWithSound is true
+// minInterval:     Sounds are not played when they follow a preliminary sound faster as this 
+// stayWithSound:   Prevents switching the sound file when an interval plays a sound
+// dontStop:        Doesn't stop the sound at the end on an interval
+// delayTime:       Time after which a sound effect starts
+// playOnBeat:      Array that defines the beats when a sound is played, in a 4/4 rhythm that is e.g. [1,3] or [1,2,3,4]
+//                  playOnBeat currently works with:
+//                  setTile
+//                  fixTile
+// playAfterBeats:  Wait for number of beats. Cannot be used together with playOnBeat
+//
+// Effects:
+//
+// levelWords:      When the (mostly) three words appear at the beginning of each level
+// levelNr:         When the level number rotates
+// setTile:         When a new tile is build
+// swipe:           When a tile is dragged by the player
+// rotate:          When a tile rotates
+// fixTile:         When a tile has landed
+// selection:       When a three letter selection appears 
+// fullWord:        When a word is completed
+// presentWord:     When a completed word flies
+// lastWord:        When the last word of a level is completed
+// deleteRow:       When a row is deleted
+// deleteLastRows:  When (mostly seven) rows get destroyed at level end
+// final:           When a level is left
+
 $42.MUSIC_LOOP_OFFSET = 0;
 $42.MUSIC_VOLUME_GRANULARITY = 10;
 
@@ -9,7 +64,7 @@ $42.MUSIC_TITLE_EASY = {
     loop:  res.title_easy_loop_mp3,
     loopLength:     38.066000,
     fadeOutDelay:   0,
-    fadeOutTime:    6000
+    fadeOutTime:    4000
 }
 
 ////////////////////////////////////////////////
@@ -24,7 +79,7 @@ $42.MUSIC_RED_HILLS = {
         loopLength:     22.232000,
         loopTimes:      11.375,
         loopMeasure:    4,
-        nextSetOn:      [10000,10000,10000]
+        loopBeat:       22.232 / 4 / 11.375 * 1000 // tmp
     },
     levelWords:     { 
         audio: res.red_hills_level_words_mp3,
@@ -35,9 +90,8 @@ $42.MUSIC_RED_HILLS = {
         delay: 4500
     },
     setTile:        { 
-        audio: res.red_hills_set_tile_mp3, 
-        playOnBeat: 0,
-        playAfterBeats: 1
+        audio: res.red_hills_set_tile_mp3,
+        playAfterBeats: 1 
     },
     swipe:          { 
         audioSet: [[res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
@@ -56,9 +110,7 @@ $42.MUSIC_RED_HILLS = {
         dontStop: true
     },
     fixTile:        { 
-        audio: res.red_hills_fix_tile_1_mp3, 
-        playOnBeat: 0,
-        playAfterBeats: 0 
+        audio: res.red_hills_fix_tile_1_mp3 
     }, 
     selection:      { audio: res.red_hills_selection_mp3 },
     fullWord:       { audio: res.red_hills_full_word_mp3 },
@@ -97,8 +149,7 @@ $42.MUSIC_FLAMES = {
     },
     setTile:        { 
         audio: res.flames_set_tile_mp3,
-        playOnBeat: 0,
-        playAfterBeats: 0.5
+        playAfterBeats: 1 
     },
     swipe:          { 
         audio: null, 
@@ -110,8 +161,6 @@ $42.MUSIC_FLAMES = {
     },
     fixTile:        { 
         audio: res.flames_fix_tile_1_mp3, 
-        playOnBeat: 0,
-        playAfterBeats: 0 
     }, 
     selection:      { audio: res.flames_selection_mp3 },
     fullWord:       { audio: res.flames_full_word_mp3 },
@@ -215,8 +264,7 @@ $42.MUSIC_BLUE_QUADRAT = {
     },
     setTile:        { 
         audio: [res.blue_quadrat_set_tile_1_mp3, res.blue_quadrat_set_tile_2_mp3, res.blue_quadrat_set_tile_3_mp3],
-        playOnBeat: 0,
-        playAfterBeats: 0
+        playAfterBeats: 1 
     },
     swipe:          { 
         audio: null,
@@ -228,9 +276,7 @@ $42.MUSIC_BLUE_QUADRAT = {
         minInterval: 0 
     },
     fixTile:        { 
-        audio: [res.blue_quadrat_fix_tile_1_mp3, res.blue_quadrat_fix_tile_2_mp3, res.blue_quadrat_fix_tile_3_mp3], 
-        playOnBeat: 0,
-        playAfterBeats: 0 
+        audio: [res.blue_quadrat_fix_tile_1_mp3, res.blue_quadrat_fix_tile_2_mp3, res.blue_quadrat_fix_tile_3_mp3] 
     }, 
     selection:      { audio: [res.blue_quadrat_selection_1_mp3, res.blue_quadrat_selection_2_mp3, res.blue_quadrat_selection_3_mp3], 
     },
@@ -254,9 +300,9 @@ $42.MUSIC_INKA_TEMPLE = {
         intro:  null, 
         loop:  [res.inka_temple_intro_a_mp3,res.inka_temple_intro_b_mp3,res.inka_temple_intro_c_mp3,res.inka_temple_intro_d_mp3,res.inka_temple_intro_e_mp3,res.inka_temple_intro_f_mp3,res.inka_temple_intro_g_mp3,res.inka_temple_intro_h_mp3],
         loopLength:     [15.595102, 11.650612, 11.650612, 11.075918, 13.635918, 13.635918, 12.773878, 12.773878],
-        loopFrame: 550,
+        loopBeat: 550,
         fadeOutTime:    50,
-        delay: 1000
+        delay: 6000
     },
     levelWords:     { 
         audio: res.inka_temple_level_words_mp3
@@ -266,7 +312,6 @@ $42.MUSIC_INKA_TEMPLE = {
     },
     setTile:        { 
         audio: [res.inka_temple_set_tile_a_mp3, res.inka_temple_set_tile_b_mp3], 
-        playOnBeat: 0,
         playAfterBeats: 1,
         playNextSlot: true
     },
@@ -279,9 +324,7 @@ $42.MUSIC_INKA_TEMPLE = {
         minInterval: 0
     },
     fixTile:        { 
-        audio: [res.inka_temple_fix_tile_a_mp3, res.inka_temple_fix_tile_b_mp3, res.inka_temple_fix_tile_c_mp3], 
-        playOnBeat: 0,
-        playAfterBeats: 0  
+        audio: [res.inka_temple_fix_tile_a_mp3, res.inka_temple_fix_tile_b_mp3, res.inka_temple_fix_tile_c_mp3] 
     }, 
     selection:      { audio: res.inka_temple_selection_mp3 },
     fullWord:       { audio: res.inka_temple_full_word_mp3 },
@@ -302,14 +345,12 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     background: {
         intro: res.blue_mountains_intro_mp3,
         introLength:    90.592653,
-        introTimes:     48,
-        introMeasure:   4,
+        introTimes:     24,
+        introMeasure:   8,
         loop:  res.blue_mountains_loop_mp3,
         loopLength:     90.592653,
-        loopTimes:      48,
-        loopMeasure:    4,
-        playOnBeat: 0.5,
-        playAfterBeats: 1,
+        loopTimes:      24,
+        loopMeasure:    8
     },
     levelWords:     { 
         audio: res.blue_mountains_level_words_mp3,
@@ -321,8 +362,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     setTile:        { 
         audio: res.blue_mountains_set_tile_mp3, 
-        playAfterBeats: 2,
-        playOnBeat: 0.5
+        playAfterBeats: 1
     },
     swipe:          { 
         audio: res.blue_mountains_swipe_mp3,
@@ -334,8 +374,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     fixTile:        { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
-        playOnBeat: 0.5,
-        playAfterBeats: 1 
+        playOnBeat: [1,2,3,4,5,6,7,8]
     }, 
     selection:      { audio: res.blue_mountains_selection_mp3 },
     fullWord:       { audio: res.blue_mountains_full_word_mp3 },
@@ -448,13 +487,13 @@ var _MUSIC_MODULE = function(layer) {
     layer.callFuncOnNextBeat = function(cb, sound) {
         var mp = musicPlaying || null,
             time = new Date().getTime();
-        if( mp && mp.loop ) {
-            var frame  = mp.loopFrame || (mp.loopLength[mp.loopSlot]? mp.loopLength[mp.loopSlot]*1000 / mp.loopTimes / mp.loopMeasure: 0);
+        if( mp && (mp.loop || mp.loopBeat) ) {
+            var frame  = mp.loopBeat || (mp.loopLength[mp.loopSlot]? mp.loopLength[mp.loopSlot]*1000 / mp.loopTimes / mp.loopMeasure: 0);
             
             if( frame ) {
                 var span = time - (mp.startTime || time),
                     frames = Math.floor(span/frame),
-                    timeToNextFrame = (frames+1) * frame - span,
+                    timeToNextFrame = sound.playOnBeat? (frames+1) * frame - span : sound.playAfterBeats * frame || 0,
                     nextFrame = (frames+1) % mp.loopMeasure,
                     pob = sound && sound.playOnBeat || null;
 
@@ -465,7 +504,7 @@ var _MUSIC_MODULE = function(layer) {
                     timeToNextFrame += ((pob[i%pob.length]-nextFrame-1) + Math.floor(i/pob.length) * mp.loopMeasure) * frame;
                 }
 
-                cc.log("SOUNDTIMING 2: Time is "+time+". Distance from "+sound.playOnBeat+" frame start : "+offset+", frames played: "+frames+", distance from music start: "+span);
+                cc.log("SOUNDTIMING 2: Time is "+time+". Distance to next frame : "+timeToNextFrame+", frames played: "+frames);
 
                 setTimeout(function(shouldbe) {
                     var now = new Date().getTime();
@@ -505,6 +544,7 @@ var _MUSIC_MODULE = function(layer) {
             mp.loopSlot = 0;
             
             if( mp.loop.length ) {
+                if( mp.timeout ) clearTimeout(mp.timeout);
                 mp.timeout = setTimeout(function() {
                     mp.timeout = null;
                     mp.startTime   = new Date().getTime();
@@ -513,7 +553,7 @@ var _MUSIC_MODULE = function(layer) {
                     if( mp.loop.length === 1 ) cc.audioEngine.playMusic(mp.loop[0], true);
                     else {
                         cc.audioEngine.playMusic(mp.loop[0], false);
-                        setTimeout(function() {
+                        mp.timeout = setTimeout(function() {
                             layer.playNextMusicSlot(null, !!mp.fadeOutTime);
                         }, mp.loopLength[0] * 1000 - (mp.fadeOutTime || 0));
                     }
