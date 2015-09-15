@@ -133,9 +133,9 @@ $42.TEST = {
         loop:           [res.test_background_loop_mp3,res.test_background_loop1_mp3],
         loopLength:     [18.504000,18.504000],
         loopTimes:      4,
-        loopMeasure:    1,
-        playOnBeat: 1,
-        playAfterBeats: 1,
+        loopMeasure:    8,
+        //playOnBeat:     1,
+        //playAfterBeats: 1,
         nextSetOn:      [4626,4626,4626,4626],
         delay:          1000,
         fadeOutTime:    50
@@ -154,8 +154,7 @@ $42.TEST = {
                    [res.test_set_tile_3_mp3],
                    [res.test_set_tile_4_mp3]],
         nextSetOn: "time",
-        playOnBeat: 1,
-        playAfterBeats: 1,
+        playOnBeat: [3,7],
         playNextSlot: false
     },
     swipe:          { 
@@ -177,8 +176,7 @@ $42.TEST = {
                    [res.test_fix_tile_1_mp3],
                    [res.test_fix_tile_1_mp3]],
         nextSetOn: "time",
-        playOnBeat: 0.25,
-        playAfterBeats: 1
+        playOnBeat: [1,3,7]
     }, 
     selection:      { audio: res.flames_selection_mp3 },
     fullWord:       { audio: res.flames_full_word_mp3 },
@@ -451,23 +449,31 @@ var _MUSIC_MODULE = function(layer) {
         var mp = musicPlaying || null,
             time = new Date().getTime();
         if( mp && mp.loop ) {
-            var frame  = mp.loopFrame || (mp.loopLength[mp.loopSlot]? mp.loopLength[mp.loopSlot]*1000 / mp.loopTimes / mp.loopMeasure * (sound.playOnBeat || 1) : 0);
+            var frame  = mp.loopFrame || (mp.loopLength[mp.loopSlot]? mp.loopLength[mp.loopSlot]*1000 / mp.loopTimes / mp.loopMeasure: 0);
             
             if( frame ) {
                 var span = time - (mp.startTime || time),
                     frames = Math.floor(span/frame),
-                    offset = span - frames * frame;
+                    timeToNextFrame = (frames+1) * frame - span,
+                    nextFrame = (frames+1) % mp.loopMeasure,
+                    pob = sound && sound.playOnBeat || null;
+
+                if( pob && Object.prototype.toString.call( pob ) === '[object Array]' && pob.length > 0 ) {
+                    var i = 0, offset = 0;
+                    for( var i=0 ; i < pob.length ; i++ ) if( nextFrame <= pob[i]-1 ) break;
+
+                    timeToNextFrame += ((pob[i%pob.length]-nextFrame-1) + Math.floor(i/pob.length) * mp.loopMeasure) * frame;
+                }
+
                 cc.log("SOUNDTIMING 2: Time is "+time+". Distance from "+sound.playOnBeat+" frame start : "+offset+", frames played: "+frames+", distance from music start: "+span);
 
-                //cc.log("Waiting for next beat for "+(frame * (cnt || 1) - offset)+" ms. ("+offset+", "+frames+", "+frame+")");
-                setTimeout(function(time, offset) {
-                    var now = new Date().getTime(),
-                        shouldbe = time+frame-offset;
+                setTimeout(function(shouldbe) {
+                    var now = new Date().getTime();
                     cc.log("SOUNDTIMING 2: Supposed to by playing sound at "+shouldbe);
                     cc.log("SOUNDTIMING 2:         Really playing sound at "+now);
                     cc.log("SOUNDTIMING 2: Difference:  "+(shouldbe-now));
                     cb();
-                }, frame * (sound.playAfterBeats || 0) - (sound.playOnBeat? offset : 0), time, offset);
+                }, timeToNextFrame, time+timeToNextFrame);
             } else {
                 cb();
             }

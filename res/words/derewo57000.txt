@@ -44199,7 +44199,6 @@ Trupp 0
 Truppe 0
 Truppen 0
 Trupps 0
-Trust 0
 Truthahn 0
 Trutzburg 0
 Tschad 0
