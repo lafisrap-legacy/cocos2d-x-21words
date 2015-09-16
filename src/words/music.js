@@ -244,6 +244,73 @@ $42.TEST = {
 
 
 ////////////////////////////////////////////////
+// Music for level 4
+$42.MUSIC_RED_NOSES = {
+    background: {
+        intro:          res.red_noses_background_intro_mp3,
+        loop:           [res.red_noses_background_loop_1a_mp3,res.red_noses_background_loop_1b_mp3],
+        loopLength:     [18.504000,18.504000],
+        loopTimes:      4,
+        loopMeasure:    16,
+        //playOnBeat:     1,
+        //playAfterBeats: 1,
+        nextSetOn:      [4626,4626,4626,4626],
+        delay:          1000,
+        fadeOutTime:    50
+    },
+    levelWords:     { 
+        audio: res.red_hills_level_words_mp3,
+        delayTime: 4500,
+    },
+    levelNr:        { 
+        audio: res.red_hills_level_nr_mp3, 
+        delayTime: 1500
+    },
+    setTile:         { 
+        audioSet: res.red_noses_set_tile_1_mp3,
+        //audioSet: [[res.red_noses_set_tile_1_mp3],
+                   //[res.red_noses_set_tile_2_mp3]],
+        nextSetOn: "time",
+        playOnBeat: [1],
+        playNextSlot: false
+    },
+    swipe:          { 
+        audio: [res.red_noses_swipe_1a_mp3, res.red_noses_swipe_1b_mp3],
+         //audioSet: [[res.test_rotate_1_mp3],
+                   //[res.test_rotate_1_mp3],
+                   //[res.test_rotate_1_mp3],
+                   //[res.test_rotate_1_mp3]],
+        //nextSetOn: "time",
+        //dontStop: true,
+        playOnBeat: [2,4,6,8,10,12,14,16] 
+    },
+    rotate:         { 
+        audio: [res.red_noses_rotate_1a_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1c_mp3],
+        minInterval: 0,
+        playOnBeat: [2,4,6,8,10,12,14,16] 
+    },
+    fixTile:        { 
+        audioSet: [[res.test_fix_tile_1_mp3],
+                   [res.test_fix_tile_1_mp3],
+                   [res.test_fix_tile_1_mp3],
+                   [res.test_fix_tile_1_mp3]],
+        nextSetOn: "time",
+        playOnBeat: [1,3,5,7,9,11,13,15]
+    }, 
+    selection:      { audio: res.red_noses_selection_1_mp3 },
+    fullWord:       { audio: res.red_noses_full_word_1_mp3 },
+    presentWord:    { 
+        audio: res.blue_mountains_present_word_mp3,
+        intervalTime: 3000, 
+        delayTime: 500 
+    },
+    lastWord:       { audio: res.red_noses_full_word_1_mp3 },
+    deleteRow:      { audio: res.red_noses_delete_row_1_mp3 },
+    final:          { audio: res.flames_final_mp3 },
+    deleteLastRows: { audio: res.red_noses_delete_last_row_1_mp3 },
+    }; 
+
+////////////////////////////////////////////////
 // Music for level 5
 $42.MUSIC_BLUE_QUADRAT = {
     background: {
