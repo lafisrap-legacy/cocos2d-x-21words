@@ -179,7 +179,8 @@ var res = {
         
     // level 7
     blue_mountains_intro_mp3:           "res/sounds/levelsounds/blau_berge_einleitung1,1,9.mp3",
-    blue_mountains_loop_mp3:            "res/sounds/levelsounds/blau_berge_loop2,1,9.mp3",
+    blue_mountains_loop_a_mp3:          "res/sounds/levelsounds/blau_berge_loop_a_2,2,1.mp3",
+    blue_mountains_loop_b_mp3:          "res/sounds/levelsounds/blau_berge_loop_b_2,2,1.mp3",
     blue_mountains_level_words_mp3:     "res/sounds/levelsounds/blaue_berge_drei_worte0,1,1.mp3",
     blue_mountains_level_nr_mp3:        "res/sounds/levelsounds/blaue_berge_levelzahl0,1,1.mp3",
     blue_mountains_set_tile_mp3:        "res/sounds/levelsounds/blaue_berge_buchstaben_neu0,1,5.mp3",
