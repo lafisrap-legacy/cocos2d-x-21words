@@ -267,10 +267,9 @@ $42.MUSIC_RED_NOSES = {
         delayTime: 1500
     },
     setTile:         { 
-        audioSet: res.red_noses_set_tile_1_mp3,
+        audio: res.red_noses_set_tile_1_mp3,
         //audioSet: [[res.red_noses_set_tile_1_mp3],
                    //[res.red_noses_set_tile_2_mp3]],
-        nextSetOn: "time",
         playOnBeat: [1],
         playNextSlot: false
     },
