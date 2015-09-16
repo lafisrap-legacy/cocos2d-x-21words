@@ -295,6 +295,7 @@ var _42_MODULE = function(_42Layer) {
                 else {
                     $42.SCENE.callFuncOnNextBeat(function() {
                         $42.SCENE.playEffect(level.music.fullWord);
+                        $42.SCENE.changeAudioSet("fullWord");
                     }, level.music.fullWord);
                 }
                 if( level.music.presentWord ) $42.SCENE.playEffect(level.music.presentWord);
