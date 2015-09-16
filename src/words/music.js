@@ -8,12 +8,11 @@
 //
 // intro:           Introduction music, played once
 // introLength:     Length of intro music in seconds
-// introTimes:      How many full [Takte]
-// introMeasure:    How many beats per [Takt], typically 3, 4, 8, 16
 // loop:            Music that is looping, can be set as array
 // loopLength:      Length of loop music (must be same data type (string/array( as loop
-// loopMeasure:     How many beats per [Takt], typically 3, 4, 8, 16
-// loopBeat:        Length of one beat, only used to set length directly when there is no background music
+// loopBars:        Number of bars in a loop piece
+// loopBeat:        Number of beats per bar, typically 3, 4, 8, 16
+// loopBeatLength:  Length of one beat, only used to set length directly when there is no background music
 // fadeOutDelay:    Delay time to start fade out
 // fadeOutTime:     Time of fade out / should not overlay the start of any level music
 // nextSetOn:       times after sound effects that use "time" option change there sets
@@ -38,6 +37,9 @@
 //                  fixTile
 //                  rotate
 //                  swipe
+//                  selection
+//                  fullWord
+//                  deleteRow
 //
 // playAfterBeats:  Wait for number of beats. Cannot be used together with playOnBeat
 //
@@ -77,13 +79,10 @@ $42.MUSIC_RED_HILLS = {
     background: {
         intro:          res.red_hills_intro_mp3,
         introLength:    2.142000,
-        introTimes:     1,
-        introMeasure:   4,
         loop:           res.red_hills_loop_mp3,
         loopLength:     22.232000,
-        loopTimes:      11.375,
-        loopMeasure:    4,
-        loopBeat:       22.232 / 4 / 11.375 * 1000 // tmp
+        loopBars:       11.375,
+        loopBeat:       4,
     },
     levelWords:     { 
         audio: res.red_hills_level_words_mp3,
@@ -136,12 +135,10 @@ $42.MUSIC_FLAMES = {
     background: {
         intro: res.flames_intro_mp3,
         introLength:    85.140000,
-        introTimes:     100,
-        introMeasure:   1,
         loop:           res.flames_loop_mp3,
         loopLength:     89.136000,
-        loopTimes:      24,
-        loopMeasure:    4
+        loopBars:      24,
+        loopBeat:    4
     },
     levelWords:     { 
         audio: res.flames_level_words_mp3,
@@ -185,8 +182,8 @@ $42.TEST = {
     background: {
         loop:           [res.test_background_loop_mp3,res.test_background_loop1_mp3],
         loopLength:     [18.504000,18.504000],
-        loopTimes:      4,
-        loopMeasure:    8,
+        loopBars:      4,
+        loopBeat:    8,
         //playOnBeat:     1,
         //playAfterBeats: 1,
         nextSetOn:      [4626,4626,4626,4626],
@@ -252,12 +249,10 @@ $42.MUSIC_BLUE_QUADRAT = {
     background: {
         //intro: res.blue_quadrat_intro_mp3,
         //introLength:    85.140000,
-        //introTimes:     100,
-        //introMeasure:   1,
         loop:           res.blue_quadrat_loop_mp3,
         loopLength:     38.064000,
-        //loopTimes:      100,
-        //loopMeasure:    1
+        //loopBars:      100,
+        //loopBeat:    1
         delay: 1000
     },
     levelWords:     { 
@@ -306,7 +301,7 @@ $42.MUSIC_INKA_TEMPLE = {
         intro:  null, 
         loop:  [res.inka_temple_intro_a_mp3,res.inka_temple_intro_b_mp3,res.inka_temple_intro_c_mp3,res.inka_temple_intro_d_mp3,res.inka_temple_intro_e_mp3,res.inka_temple_intro_f_mp3,res.inka_temple_intro_g_mp3,res.inka_temple_intro_h_mp3],
         loopLength:     [15.595102, 11.650612, 11.650612, 11.075918, 13.635918, 13.635918, 12.773878, 12.773878],
-        loopBeat: 550,
+        loopBeatLength: 550,
         fadeOutTime:    50,
         delay: 6000
     },
@@ -353,12 +348,10 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     background: {
         intro: res.blue_mountains_intro_mp3,
         introLength:    90.592653,
-        introTimes:     24,
-        introMeasure:   8,
         loop:  res.blue_mountains_loop_mp3,
         loopLength:     90.592653,
-        loopTimes:      24,
-        loopMeasure:    8
+        loopBars:      24,
+        loopBeat:    8
     },
     levelWords:     { 
         audio: res.blue_mountains_level_words_mp3,
@@ -495,21 +488,21 @@ var _MUSIC_MODULE = function(layer) {
     layer.callFuncOnNextBeat = function(cb, sound) {
         var mp = musicPlaying || null,
             time = new Date().getTime();
-        if( mp && (mp.loop || mp.loopBeat) ) {
-            var frame  = mp.loopBeat || (mp.loopLength[mp.loopSlot]? mp.loopLength[mp.loopSlot]*1000 / mp.loopTimes / mp.loopMeasure: 0);
+        if( mp && (mp.loop || mp.loopBeatLength) ) {
+            var frame  = mp.loopBeatLength || (mp.loopLength[mp.loopSlot]? mp.loopLength[mp.loopSlot]*1000 / mp.loopBars / mp.loopBeat: 0);
             
             if( frame ) {
                 var span = time - (mp.startTime || time),
                     frames = Math.floor(span/frame),
                     timeToNextFrame = sound.playOnBeat? (frames+1) * frame - span : sound.playAfterBeats * frame || 0,
-                    nextFrame = (frames+1) % mp.loopMeasure,
+                    nextFrame = (frames+1) % mp.loopBeat,
                     pob = sound && sound.playOnBeat || null;
 
                 if( pob && Object.prototype.toString.call( pob ) === '[object Array]' && pob.length > 0 ) {
                     var i = 0, offset = 0;
                     for( var i=0 ; i < pob.length ; i++ ) if( nextFrame <= pob[i]-1 ) break;
 
-                    timeToNextFrame += ((pob[i%pob.length]-nextFrame-1) + Math.floor(i/pob.length) * mp.loopMeasure) * frame;
+                    timeToNextFrame += ((pob[i%pob.length]-nextFrame-1) + Math.floor(i/pob.length) * mp.loopBeat) * frame;
                 }
 
                 cc.log("SOUNDTIMING 2: Time is "+time+". Distance to next frame : "+timeToNextFrame+", frames played: "+frames);
@@ -537,8 +530,6 @@ var _MUSIC_MODULE = function(layer) {
         //cc.log("Playing background music of '"+mp.intro+"' and '"+mp.loop+"'.");
         if( mp.intro ) {
             mp.startTime   = new Date().getTime(); 
-            cc.assert(mp.introLength && mp.introTimes && mp.introMeasure, "");
-            mp.beatLength = mp.loopLength? mp.loopLength*1000 / mp.loopTimes / mp.loopMeasure : 0;
             cc.audioEngine.playMusic(mp.intro, false);
             cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
     	    if( $42.msg1 ) $42.msg1.setString("Now playing background intro '"+mp.intro+"'");
@@ -547,7 +538,9 @@ var _MUSIC_MODULE = function(layer) {
         if( mp.loop ) {
             if( typeof mp.loop === "string" ) {
                 mp.loop = [mp.loop];
-                mp.loopLength = [mp.loopLength];
+                mp.loopLength = [mp.loopLength],
+                mp.loopBars = [mp.loopBars];
+                mp.loopBeat = [mp.loopBeat];
             }
             mp.loopSlot = 0;
             

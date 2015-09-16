@@ -292,7 +292,11 @@ var _42_MODULE = function(_42Layer) {
                 ml.tmpLastWordFound = word;
 
                 if( ll.length === 1 && level.type === $42.LEVEL_TYPE_GIVEN ) $42.SCENE.playEffect(level.music.lastWord);
-                else $42.SCENE.playEffect(level.music.fullWord);
+                else {
+                    $42.SCENE.callFuncOnNextBeat(function() {
+                        $42.SCENE.playEffect(level.music.fullWord);
+                    }, level.music.fullWord);
+                }
                 if( level.music.presentWord ) $42.SCENE.playEffect(level.music.presentWord);
                 ml.playEffectSelection = false;
                 
@@ -413,7 +417,9 @@ var _42_MODULE = function(_42Layer) {
 		}
 		
         if( ml.playEffectSelection ) {
-            $42.SCENE.playEffect(level.music.selection);
+            $42.SCENE.callFuncOnNextBeat(function() {
+                $42.SCENE.playEffect(level.music.selection);
+            }, level.music.selection);
             ml.playEffectSelection = false;
         }
 
@@ -800,16 +806,18 @@ var _42_MODULE = function(_42Layer) {
         case "easy":
             ml.unselectWord();
             for( var i=0 ; i<7 ; i++ ) {
-                setTimeout( function() {
+                setTimeout( function(i) {
                     ml.checkForAndRemoveCompleteRows([0]);
-                    if( i === 6 ) ml.currentLevelForDeleteRow = null;
+                    if( i === 6 ) {
+                        ml.currentLevelForDeleteRow = null;
+                    }
                 }, $42.MOVE_SPEED * i * 1.1 * 1000, i );
             }
             break;
         case "intermediate":
             ml.unselectWord();
             for( var i=0 ; i<7 ; i++ ) {
-                setTimeout( function() {
+                setTimeout( function(i) {
                     ml.checkForAndRemoveCompleteRows([0]);
                     if( i === 6 ) ml.currentLevelForDeleteRow = null;
                 }, $42.MOVE_SPEED * i * 1.1 * 1000, i);
@@ -818,7 +826,7 @@ var _42_MODULE = function(_42Layer) {
         case "expert":
             ml.unselectWord();
             for( var i=0 ; i<7 ; i++ ) {
-                setTimeout( function() {
+                setTimeout( function(i) {
                     ml.checkForAndRemoveCompleteRows([0]);
                     if( i === 6 ) ml.currentLevelForDeleteRow = null;
                 }, $42.MOVE_SPEED * i * 1.1 * 1000, i);
@@ -2283,7 +2291,11 @@ var _42_MODULE = function(_42Layer) {
         setSelections();
 		updateSelectedWord({ rowsDeleted: rowsDeleted});			
 
-        if( !ml.currentLevelForDeleteRow ) $42.SCENE.playEffect(level.music.deleteRow);
+        if( !ml.currentLevelForDeleteRow ) {
+            $42.SCENE.callFuncOnNextBeat(function() {
+                $42.SCENE.playEffect(level.music.deleteRow);
+            }, level.music.deleteRow);
+        }
 		// switch to next profile letter candidate
 		getNextProfileCandidate();
 	};
