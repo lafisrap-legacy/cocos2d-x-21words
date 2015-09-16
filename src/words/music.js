@@ -17,6 +17,7 @@
 // fadeOutDelay:    Delay time to start fade out
 // fadeOutTime:     Time of fade out / should not overlay the start of any level music
 // nextSetOn:       times after sound effects that use "time" option change there sets
+// delayTime:       Time till start, default 7000
 // 
 // Only for effects:
 
@@ -28,13 +29,16 @@
 // playNextSlot:    Change the background music: play next slot. Currently only works with setTile effect 
 // intervalTime:    Time until the next sound file is played, same file is played when stayWithSound is true
 // minInterval:     Sounds are not played when they follow a preliminary sound faster as this 
-// stayWithSound:   Prevents switching the sound file when an interval plays a sound
+// stayWithSound:   Prevents switching the sound file when an interval plays next sound
 // dontStop:        Doesn't stop the sound at the end on an interval
 // delayTime:       Time after which a sound effect starts
 // playOnBeat:      Array that defines the beats when a sound is played, in a 4/4 rhythm that is e.g. [1,3] or [1,2,3,4]
 //                  playOnBeat currently works with:
 //                  setTile
 //                  fixTile
+//                  rotate
+//                  swipe
+//
 // playAfterBeats:  Wait for number of beats. Cannot be used together with playOnBeat
 //
 // Effects:
@@ -64,7 +68,7 @@ $42.MUSIC_TITLE_EASY = {
     loop:  res.title_easy_loop_mp3,
     loopLength:     38.066000,
     fadeOutDelay:   0,
-    fadeOutTime:    4000
+    fadeOutTime:    4000      // must not be more than any delayTime of backgrounds
 }
 
 ////////////////////////////////////////////////
@@ -83,11 +87,11 @@ $42.MUSIC_RED_HILLS = {
     },
     levelWords:     { 
         audio: res.red_hills_level_words_mp3,
-        delay: 1500,
+        delayTime: 4500,
     },
     levelNr:        { 
         audio: res.red_hills_level_nr_mp3, 
-        delay: 4500
+        delayTime: 1500
     },
     setTile:        { 
         audio: res.red_hills_set_tile_mp3,
@@ -141,11 +145,11 @@ $42.MUSIC_FLAMES = {
     },
     levelWords:     { 
         audio: res.flames_level_words_mp3,
-        delay: 1500,
+        delayTime: 4500,
     },
     levelNr:        { 
         audio: res.flames_level_nr_mp3, 
-        delay: 4500
+        delayTime: 1500
     },
     setTile:        { 
         audio: res.flames_set_tile_mp3,
@@ -191,11 +195,11 @@ $42.TEST = {
     },
     levelWords:     { 
         audio: res.red_hills_level_words_mp3,
-        delay: 1500,
+        delayTime: 4500,
     },
     levelNr:        { 
         audio: res.red_hills_level_nr_mp3, 
-        delay: 4500
+        delayTime: 1500
     },
     setTile:         { 
         audioSet: [[res.test_set_tile_1_mp3],
@@ -207,17 +211,19 @@ $42.TEST = {
         playNextSlot: false
     },
     swipe:          { 
-        audio: null,
+        audio: [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
          //audioSet: [[res.test_rotate_1_mp3],
                    //[res.test_rotate_1_mp3],
                    //[res.test_rotate_1_mp3],
                    //[res.test_rotate_1_mp3]],
         //nextSetOn: "time",
         //dontStop: true,
+        playOnBeat: [1,3,5,7] 
     },
     rotate:         { 
         audio: [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
-        minInterval: 0 
+        minInterval: 0,
+        playOnBeat: [1,2,3,4,5,6,7,8] 
     },
     fixTile:        { 
         audioSet: [[res.test_fix_tile_1_mp3],
@@ -256,11 +262,11 @@ $42.MUSIC_BLUE_QUADRAT = {
     },
     levelWords:     { 
         audio: res.blue_quadrat_level_words_mp3,
-        delay: 1500,
+        delayTime: 4500,
     },
     levelNr:        { 
         audio: res.blue_quadrat_level_nr_mp3, 
-        delay: 4500
+        delayTime: 1500
     },
     setTile:        { 
         audio: [res.blue_quadrat_set_tile_1_mp3, res.blue_quadrat_set_tile_2_mp3, res.blue_quadrat_set_tile_3_mp3],
@@ -305,10 +311,12 @@ $42.MUSIC_INKA_TEMPLE = {
         delay: 6000
     },
     levelWords:     { 
-        audio: res.inka_temple_level_words_mp3
+        audio: res.inka_temple_level_words_mp3,
+        delayTime: 4500
     },
     levelNr:        { 
-        audio: res.inka_temple_level_nr_mp3 
+        audio: res.inka_temple_level_nr_mp3,
+        delayTime: 1500
     },
     setTile:        { 
         audio: [res.inka_temple_set_tile_a_mp3, res.inka_temple_set_tile_b_mp3], 
@@ -354,11 +362,11 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     levelWords:     { 
         audio: res.blue_mountains_level_words_mp3,
-        delay: 0,
+        delayTime: 4500,
     },
     levelNr:        { 
         audio: res.blue_mountains_level_nr_mp3, 
-        delay: 3000
+        delayTime: 1500
     },
     setTile:        { 
         audio: res.blue_mountains_set_tile_mp3, 
@@ -553,6 +561,7 @@ var _MUSIC_MODULE = function(layer) {
                     if( mp.loop.length === 1 ) cc.audioEngine.playMusic(mp.loop[0], true);
                     else {
                         cc.audioEngine.playMusic(mp.loop[0], false);
+                        cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
                         mp.timeout = setTimeout(function() {
                             layer.playNextMusicSlot(null, !!mp.fadeOutTime);
                         }, mp.loopLength[0] * 1000 - (mp.fadeOutTime || 0));

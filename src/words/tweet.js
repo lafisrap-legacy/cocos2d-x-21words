@@ -90,7 +90,7 @@ var _TWEET_MODULE = function(layer) {
         tLayer.setCascadeOpacityEnabled(true);
         tLayer.setOpacity(0);
         _42_retain(tLayer, "Tweet layer");
-		var background = cc.Sprite.create(res.twitter_png);
+		var background = new cc.Sprite(res.twitter_png);
         background.setPosition(cc.width/2,cc.height/2);
         tLayer.addChild(background);
 
@@ -112,7 +112,7 @@ var _TWEET_MODULE = function(layer) {
 
         ///////////////////////////////////////
         // Cursor sprite
-		touchMovingCursor = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("cursor.png"));
+		touchMovingCursor = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("cursor.png"));
         touchMovingCursor.setOpacity(0);
         txLayer.addChild(touchMovingCursor);
         _42_retain(touchMovingCursor, "moving cursor");
@@ -319,7 +319,7 @@ var _TWEET_MODULE = function(layer) {
                     menuTweetConfirm = true;
                     menuTweetItem.setString($42.t.tweet_tweet_confirm.label);
 
-                    menuTweety = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tweety.png"));
+                    menuTweety = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("tweety.png"));
                     menuTweety.setPosition($42.TWEET_TWEETY_POS);
                     menuTweety.setOpacity(0);
                     tLayer.addChild(menuTweety,5);

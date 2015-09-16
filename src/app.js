@@ -86,7 +86,8 @@ var _42_GLOBALS = {
 		[{x:-1.0*64,y: 0.5*64},{x: 0.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
 		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64},{x: 1.0*64,y: 0.5*64}],
 	],
-	TILE_OCCURANCES : [10,5,7,7,4,2,2,0,0], // How often the tiles appear, when selected randomly
+	TILE_OCCURANCES : [10,5,7,7,4,2,2], // How often the tiles appear, when selected randomly
+	TILE_OCCURANCES_EASY : [10,5,7,7,1,0,0], 
     TILE_5_6_MAX_ROW : 11,
     MUSIC_VOLUME: 0.4,
     EFFECTS_VOLUME: 0.8,
@@ -345,7 +346,7 @@ var _42GameLayer = cc.Layer.extend({
 
 		if( !wordSprite ) {
 			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
-				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
+				wordFrameSprite = new cc.Sprite(wordFrameFrame),
 				rect = wordFrameSprite.getTextureRect();
             _42_retain(wordFrameSprite,"wordFrameSprite "+word);	
 			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
@@ -369,7 +370,7 @@ var _42GameLayer = cc.Layer.extend({
 			
 			var file = $42.LETTER_NAMES[$42.LETTERS.indexOf(word[i])],
 				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
-				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
+				sprite = new cc.Sprite(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
 			//if( !sprite ) cc.log("File '"+file+".png' couldn't be opened. Letter: "+word[i]);
             sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
             //  ERROR: JS: assets/src/app.js:370:TypeError: sprite is null
@@ -560,7 +561,13 @@ var _42GameLayer = cc.Layer.extend({
 	            			y: 0,
                             on: true
 	            		};
-                        if( !self.isSwipeLeft && self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                        if( !self.isSwipeLeft && self.hookPlayLevelSound ) {
+                            if( self.hookFuncOnNextBeat ) {
+                                self.hookFuncOnNextBeat(function() {
+                                    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                                },"swipe");
+                            }
+                        }
                         self._currentTile.isDragged = true;
 	            		self.isSwipeLeft = true;
 	            		break;
@@ -571,7 +578,13 @@ var _42GameLayer = cc.Layer.extend({
 	            			y: 0,
                             on: true
 	            		};
-                        if( !self.isSwipeRight && self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                        if( !self.isSwipeRight && self.hookPlayLevelSound )  {
+                            if( self.hookFuncOnNextBeat ) {
+                                self.hookFuncOnNextBeat(function() {
+                                    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                                },"swipe");
+                            }
+                        }
                         self._currentTile.isDragged = true;
 	            		self.isSwipeRight = true;
 	            		break;
@@ -585,7 +598,13 @@ var _42GameLayer = cc.Layer.extend({
                             on: true
 	            		};
                         //cc.log("DOWN: self._currentTile.isDragged = "+self._currentTile.isDragged+", self.isSwipeDown = "+self.isSwipeDown);
-                        if( !self.isSwipeDown && self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                        if( !self.isSwipeDown && self.hookPlayLevelSound ) {
+                            if( self.hookFuncOnNextBeat ) {
+                                self.hookFuncOnNextBeat(function() {
+                                    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                                },"swipe");
+                            }
+                        }
                         self._currentTile.isDragged = true;
 	            		self.isSwipeDown = true;
 	            		break;
@@ -636,7 +655,7 @@ var _42GameLayer = cc.Layer.extend({
         ////////////////////////////
 		// select a random tile type
 		var self = this,
-			newTile = self.hookSetTile? self.hookSetTile() : this.getRandomValue($42.TILE_OCCURANCES),
+			newTile = this.hookSetTile? this.hookSetTile() : this.getRandomValue($42.TILE_OCCURANCES),
 			tileBoxes = $42.TILE_BOXES[newTile],
 			userData = {};
 		
@@ -654,7 +673,7 @@ var _42GameLayer = cc.Layer.extend({
         // draw plain vanilla tiles
 		else {
 			// create sprite for tile and set is size 0, we only use its position and rotation
-			var tileSprite = cc.Sprite.create(res.tiles_png,cc.rect(0,0,0,0));
+			var tileSprite = new cc.Sprite(res.tiles_png,cc.rect(0,0,0,0));
 			
 			_42_retain(tileSprite, "buildTile: tileSprite");
 	        tileSprite.setPosition(p);
@@ -664,7 +683,7 @@ var _42GameLayer = cc.Layer.extend({
 	        for( var i=0 ; i<tileBoxes.length ; i++) {
 	        	
 	    		spriteFrame = cc.spriteFrameCache.getSpriteFrame(newTile+".png"),
-	    		sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
+	    		sprite = new cc.Sprite(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
 
 	    		_42_retain(sprite, "builTile: sprite "+i);
 	        	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
@@ -797,7 +816,7 @@ var _42GameLayer = cc.Layer.extend({
     				if( !t.isDragged && !t.isRotating ) {
                         self.tileIsFixing = true;
                         if( self.hookFuncOnNextBeat ) {
-                            self.hookFuncOnNextBeat(function() {        
+                            self.hookFuncOnNextBeat(function() {
                                 var time = new Date().getTime();
                                 cc.log("---Fixing tile music--- Fixing tile at "+time);
                                 cb(fixTile(t, lp));
@@ -933,7 +952,11 @@ var _42GameLayer = cc.Layer.extend({
 				}
 				
 				// play sound
-    		    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("rotate");
+                if( self.hookFuncOnNextBeat ) {
+                    self.hookFuncOnNextBeat(function() {
+                        if( self.hookPlayLevelSound ) self.hookPlayLevelSound("rotate");
+                    },"rotate");
+                }
 
 				t.sprite.runAction(cc.sequence( 
 						cc.rotateTo($42.MOVE_SPEED*2,t.rotation),
@@ -1057,7 +1080,7 @@ var _42GameLayer = cc.Layer.extend({
         		for( var i=0 ; i<b.length ; i++) {
             		// create a new sprite from the old child sprite
         			var sprite = t.sprite.children[i],
-        				newSprite = cc.Sprite.create(sprite.getSpriteFrame(), cc.rect(0,0,$42.BS,$42.BS));
+        				newSprite = new cc.Sprite(sprite.getSpriteFrame(), cc.rect(0,0,$42.BS,$42.BS));
 
         			_42_retain(newSprite, "box sprite"+i);
         			
@@ -1289,7 +1312,7 @@ var _42GameLayer = cc.Layer.extend({
 
             this.pauseBuildingTiles = true;
             if( self.hookFuncOnNextBeat ) {
-                self.hookFuncOnNextBeat(function() {        
+                self.hookFuncOnNextBeat(function() {
                     buildTile();
                 },"setTile");
             } else buildTile();
@@ -1324,7 +1347,11 @@ var _42GameLayer = cc.Layer.extend({
             if( !t.isRotating && isSwipe() && sp ) {
                 t.isDragged = true;
                 //cc.log("Switch on dragging");
-    		    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                if( self.hookFuncOnNextBeat ) {
+                    self.hookFuncOnNextBeat(function() {
+                        if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                    },"swipe");
+                }
             } 
             
             if( !self.isSwipeDown ) {
@@ -1514,7 +1541,7 @@ var _42TitleLayer = cc.Layer.extend({
 		cc.spriteFrameCache.addSpriteFrames(res.letters_plist);
 		cc.spriteFrameCache.addSpriteFrames(res.circles_plist);
 		
-        var titleBg = this._titleBg = cc.Sprite.create(res.title_easy_png);
+        var titleBg = this._titleBg = new cc.Sprite(res.title_easy_png);
         titleBg.setOpacity(0);
         titleBg.setPosition(cc.p(cc.width/2, cc.height/2));
         titleBg.setScale(1.1);

@@ -331,7 +331,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
         var markersInit = [0,0,0,1,-1,1,1,1,1];
         var resetMarker = function(i,type) {
             sb.removeChild(marker[i]);
-            marker[i] = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame(type || "marker"+markersInit[i]+".png"));
+            marker[i] = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame(type || "marker"+markersInit[i]+".png"));
             marker[i].setPosition(cc.p(i*60+50, 104));
             marker[i].setScale(0.9375);
             sb.addChild(marker[i], 6, $42.MARKER_TAG+i);
@@ -361,7 +361,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		    if( !sb.getChildByTag($42.MARKER_TAG) ) {
                 var markersInit = [0,0,0,1,1,1,1,1,1];
                 for( var i=0 ; i<9 ; i++ ) {
-                    marker[i] = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker"+markersInit[i]+".png"));
+                    marker[i] = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("marker"+markersInit[i]+".png"));
                     marker[i].setPosition(cc.p(i*60+50, 104));
                     marker[i].setScale(0.9375);
                     sb.addChild(marker[i], 6, $42.MARKER_TAG+i);
@@ -938,7 +938,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 
             cc.log("file: '"+file+"', name: '"+name+"', index: "+index+", frame: "+frame);
 
-            var sprite = cc.Sprite.create(frame);    
+            var sprite = new cc.Sprite(frame);    
             sprite.setPosition(boxes[i]);
             sprite._orgPos = boxes[i];
             tile.addChild(sprite);
@@ -969,7 +969,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		loadFrames("mostafa_fly",9);
 		loadFrames("mostafa_land",7);
 		
-        mostafa = cc.Sprite.create(res.murbiks_single_png);        
+        mostafa = new cc.Sprite(res.murbiks_single_png);        
         mostafa.setScale(0.75);
         mostafa.attr({
         	x: 0,
@@ -981,7 +981,9 @@ var _MURBIKS_MODULE = function(parentLayer) {
     	mul.addChild(mostafa, 5);
     	
 		// speech bubble load cloud and text object
-		speechBubbleCloud = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("wordcloud.png"),cc.rect(0,0,480,300));
+        var frame = cc.spriteFrameCache.getSpriteFrame("wordcloud.png");
+        cc.log("Frame: "+frame);
+		speechBubbleCloud = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("wordcloud.png"));
 		_42_retain(speechBubbleCloud, "speechBubbleCloud");
 		speechBubble = cc.LabelTTF.create("", _42_getFontName(res.exo_regular_ttf), $42.SPEECH_BUBBLE_FONTSIZE, cc.size($42.SPEECH_BUBBLE_WIDTH,0),cc.TEXT_ALIGNMENT_CENTER, cc.VERTICAL_TEXT_ALIGNMENT_CENTER);
 		_42_retain(speechBubble, "speechBubble");
@@ -990,19 +992,19 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		_42_retain(speechBubbleLine, "speechBubbleLine");
         
 		// load hand
-		hand = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("hand.png"));
+		hand = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("hand.png"));
 		hand.setRotation($42.HAND_ROTATION);
 		_42_retain(hand, "Hand");
         hand.setAnchorPoint(0.285, 0.94);
 
         // load tiles and story background
-		tile1 = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tile1.png"));
-		tile2 = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tile2.png"));
-		tile3 = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("tile3.png"));
+		tile1 = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("tile1.png"));
+		tile2 = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("tile2.png"));
+		tile3 = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("tile3.png"));
 		tile4 = createTile(" AXT", [{x: 0.5*64,y: 1.0*64},{x: 0.5*64,y: 0.0*64},{x:-0.5*64,y:-1.0*64},{x: 0.5*64,y:-1.0*64}]); 
 		tile5 = createTile("GD Q", [{x:-0.5*64,y: 1.0*64},{x:-0.5*64,y: 0.0*64},{x: 0.5*64,y: 0.0*64},{x: 0.5*64,y:-1.0*64}]); 
-        wordframe = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("wordframe.png"));
-        storyBackground = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("story_background.png"));
+        wordframe = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("wordframe.png"));
+        storyBackground = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("story_background.png"));
 		_42_retain(tile1, "Story: Tile 1");
 		_42_retain(tile2, "Story: Tile 2");
 		_42_retain(tile3, "Story: Tile 3");

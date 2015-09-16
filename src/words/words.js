@@ -38,7 +38,7 @@ $42.WORDFOUND_COLOR = cc.color(0,0,50);
 $42.WORDFOUND_MOSTAFA_SPACE = 70;  
 $42.WORDS_FLYING_IN_COLOR1 = cc.color(255,255,255);
 $42.WORDS_FLYING_IN_COLOR2 = cc.color(233,255,233);
-$42.MAX_BOXES_CHECKED = 12;
+$42.MAX_BOXES_CHECKED = 15;
 
 // Order of multipliers
 $42.MULTIPLIER = [[2,"letter"],[2,"letter"],[2,"letter"],[3,"letter"],[2,"word"],[3,"letter"],[5,"letter"],[3,"word"],[3,"letter"],[5,"letter"],[10,"letter"]];
@@ -183,7 +183,7 @@ var _42_MODULE = function(_42Layer) {
 			selMarkerFrame = cc.spriteFrameCache.getSpriteFrame("marker3.png");
 				
 		if( !sw.startMarker ) {
-			sw.startMarker = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("marker2.png"),cc.rect(0,0,$42.BS,$42.BS));
+			sw.startMarker = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("marker2.png"),cc.rect(0,0,$42.BS,$42.BS));
 			_42_retain(sw.startMarker, "words: sw.startMarker.png");	
 			sw.startMarker.setPosition(cc.p($42.BOXES_X_OFFSET + sw.brc.col * $42.BS + $42.START_MARKER_X_OFFSET,
 											$42.BOXES_Y_OFFSET + sw.brc.row * $42.BS + $42.START_MARKER_Y_OFFSET));
@@ -236,12 +236,12 @@ var _42_MODULE = function(_42Layer) {
 			//if( sw.markers[col] === $42.MARKER_SET || col < 3 ) {
             if( sw.markers[col] === $42.MARKER_SEL && hits > 0 ) {
 				// if the user marked the letter, than show marker select sprite
-				sw.sprites[col] = cc.Sprite.create(selMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
+				sw.sprites[col] = new cc.Sprite(selMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
 				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
 			} else if( hits === curWords.length ) {
 				// letter in box matches with all words, draw sprite
 				sw.markers[col] = $42.MARKER_SET;
-				sw.sprites[col] = cc.Sprite.create(setMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
+				sw.sprites[col] = new cc.Sprite(setMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));
 				ml.boxes[sw.brc.row][i].sprite.setOpacity(255);	
 				sw.markers[col] = $42.MARKER_SET;
 			} else if( hits === 0 ) {
@@ -250,7 +250,7 @@ var _42_MODULE = function(_42Layer) {
 			} else {
 				// letter in box matches with some words, draw marker option
 				sw.markers[col] = $42.MARKER_OPT;
-				sw.sprites[col] = cc.Sprite.create(optMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));					
+				sw.sprites[col] = new cc.Sprite(optMarkerFrame,cc.rect(0,0,$42.BS,$42.BS));					
 				ml.boxes[sw.brc.row][i].sprite.setOpacity($42.UNSELECTED_BOX_OPACITY);	
 			}
 			
@@ -482,7 +482,7 @@ var _42_MODULE = function(_42Layer) {
         var prepareLevel = function() {
             /////////////////////////////
             // Draw sun
-            var element1 = cc.Sprite.create(res.background_element1_png);
+            var element1 = new cc.Sprite(res.background_element1_png);
             element1.setPosition(cc.p(cc.width/2,cc.height*0.67));
             element1.setOpacity(0);
             element1.setScale(0.5);
@@ -548,7 +548,7 @@ var _42_MODULE = function(_42Layer) {
                 )
             );
 
-            var element2 = cc.Sprite.create(res.background_element2_png);
+            var element2 = new cc.Sprite(res.background_element2_png);
             element2.setPosition(cc.p(cc.width/2,cc.height*0.67));
             element2.setOpacity(0);
             element2.setScale(0.5);
@@ -598,8 +598,8 @@ var _42_MODULE = function(_42Layer) {
 
             ////////////////////////////
             // Introduce new background
-            var background = cc.Sprite.create(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]) ||
-                             cc.Sprite.create(res.background01_png);
+            var background = new cc.Sprite(res["background"+("0"+$42.currentLevel).slice(-2)+"_png"]) ||
+                             new cc.Sprite(res.background01_png);
             background.attr({
                 x: cc.width/2 - movement.x,
                 y: cc.height/2 - movement.y,
@@ -618,7 +618,7 @@ var _42_MODULE = function(_42Layer) {
                 )
             );
 
-            var levelnrCorner  = cc.Sprite.create(res.background_levelnr_png);
+            var levelnrCorner  = new cc.Sprite(res.background_levelnr_png);
             levelnrCorner.setPosition(cc.p(46,cc.height-41));
             levelnrCorner.setOpacity(180);
             background.addChild(levelnrCorner,5);
@@ -736,16 +736,10 @@ var _42_MODULE = function(_42Layer) {
         };
 
         setTimeout(function() {
-            $42.SCENE.callFuncOnNextBeat(function() {
-                $42.SCENE.playBackgroundMusic(level.music.background);
-            }, level.music.background);
-        }, level.music.background.delay || 7000);
-        setTimeout(function() {
-            $42.SCENE.playEffect(level.music.levelWords);
-        }, level.music.levelWords.delay || 1500);
-        setTimeout(function() {
-            $42.SCENE.playEffect(level.music.levelNr);
-        }, level.music.levelNr.delay || 4500);
+            $42.SCENE.playBackgroundMusic(level.music.background);
+        }, level.music.background.delayTime || 7000);
+        $42.SCENE.playEffect(level.music.levelWords);
+        $42.SCENE.playEffect(level.music.levelNr);
         
         cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
         cc.audioEngine.setEffectsVolume($42.EFFECTS_VOLUME);
@@ -1072,7 +1066,7 @@ var _42_MODULE = function(_42Layer) {
 		// create yellow frame sprite
 		var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png");
 		
-		var	wordFrameSprite = cc.Sprite.create(wordFrameFrame),
+		var	wordFrameSprite = new cc.Sprite(wordFrameFrame),
 			rect = wordFrameSprite.getTextureRect();
 		_42_retain(wordFrameSprite, "words: wordFrameSprite");	
 		rect.width = width + $42.WORD_FRAME_WIDTH * 2;
@@ -1087,13 +1081,13 @@ var _42_MODULE = function(_42Layer) {
 			cc.assert( ml.boxes[brc.row][brc.col+i].sprite , "42words, showFullword: Sprite is missing in box at position "+brc.row+"/"+brc.col );
 			
 			var orgSprite = ml.boxes[brc.row][brc.col+i].sprite,
-				sprite = cc.Sprite.create(orgSprite.getTexture(),orgSprite.getTextureRect());
+				sprite = new cc.Sprite(orgSprite.getTexture(),orgSprite.getTextureRect());
 			sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
 			_42_retain(sprite, "words: sprite "+i);	
 			wordFrameSprite.addChild( sprite );
 		}
 		
-        var background = cc.Sprite.create(res.wordfound_png);
+        var background = new cc.Sprite(res.wordfound_png);
         _42_retain(background, "Word found background");
         background.setPosition(cc.p(cc.width/2, cc.height/2));
         background.setScale(0);
@@ -1218,11 +1212,11 @@ var _42_MODULE = function(_42Layer) {
 
     	            if( ml.hookResumeAskForWord ) ml.hookResumeAskForWord( resume , menuLayer );
     	            
-    				sprite = cc.Sprite.create(this.getTexture(),this.getTextureRect());
+    				sprite = new cc.Sprite(this.getTexture(),this.getTextureRect());
     				var children = this.getChildren(),
     					childSprites = [];
     				for( var i=0 ; i<children.length ; i++ ) {
-    					childSprites[i] = cc.Sprite.create(children[i].getTexture(),children[i].getTextureRect());
+    					childSprites[i] = new cc.Sprite(children[i].getTexture(),children[i].getTextureRect());
     					_42_retain(childSprites[i],"words: childSprites["+i+"] ");	
     					childSprites[i].setPosition(children[i].getPosition());
     					childSprites[i].setColor(children[i].getColor());
@@ -1275,7 +1269,7 @@ var _42_MODULE = function(_42Layer) {
         for( var i=0,x=cc.width-$42.WORDFOUND_PADDING,y=$42.WORDFOUND_PADDING ; i<words.length ; i++ ) {
 
 		    var word = cc.LabelTTF.create(words[i].word, _42_getFontName(res.exo_regular_ttf), 32),
-                mostafa = cc.Sprite.create(res.murbiks_single_png),        
+                mostafa = new cc.Sprite(res.murbiks_single_png),        
                 width = word.getContentSize().width;
 
             x = x - width/2;
@@ -1516,7 +1510,7 @@ var _42_MODULE = function(_42Layer) {
 
         ml._wordFoundCircles = [];
         for( var i=0 ; i<8 ; i++ ) {
-            var c = ml._wordFoundCircles[i] = cc.Sprite.create(cc.spriteFrameCache.getSpriteFrame("circle"+(i+1)+".png"));
+            var c = ml._wordFoundCircles[i] = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("circle"+(i+1)+".png"));
             ml.addChild(c, zIndex[i]);
             c.setPosition(cc.p(cc.width*1.2, cc.height/2));
             _42_retain(c, "Circle "+i);
@@ -1630,7 +1624,7 @@ var _42_MODULE = function(_42Layer) {
             ///////////////////////////
             // create frame around letter
             var letterFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
-                letterFrameSprite = cc.Sprite.create(letterFrameFrame),
+                letterFrameSprite = new cc.Sprite(letterFrameFrame),
                 rect = letterFrameSprite.getTextureRect();
             _42_retain(letterFrameSprite, "letterFrameSprite ("+i+")");	
             rect.width  = ($42.BS + $42.WORD_FRAME_WIDTH*2) * options.scale;
@@ -1644,7 +1638,7 @@ var _42_MODULE = function(_42Layer) {
             var letter = wpl[i],
                 file = $42.LETTER_NAMES[$42.LETTERS.indexOf(letter)],
                 spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
-                sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS)),
+                sprite = new cc.Sprite(spriteFrame,cc.rect(0,0,$42.BS,$42.BS)),
                 pos = cc.p(($42.BS/2+$42.WORD_FRAME_WIDTH)*options.scale,
                            ($42.BS/2+$42.WORD_FRAME_WIDTH)*options.scale);
             
@@ -1730,7 +1724,8 @@ var _42_MODULE = function(_42Layer) {
         // Fit in words from wordsForTiles list
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             sw = ml.selectedWord,
-            wft = ml.wordsForTiles;
+            wft = ml.wordsForTiles,
+            easy = $42.currentLevel < 4 && level.type === $42.LEVEL_TYPE_GIVEN;
 
         if( level.type === $42.LEVEL_TYPE_FREE ) return null;
         
@@ -1801,7 +1796,7 @@ var _42_MODULE = function(_42Layer) {
 
                 // start a new word
                 if( !ret.brc ) return { 
-                    tile:       Math.floor(Math.random()*tb.length),
+                    tile:       ml.getRandomValue(easy? $42.TILE_OCCURANCES_EASY : $42.TILE_OCCURANCES),
                     boxIndex:   0
                 };
 
@@ -1928,11 +1923,10 @@ var _42_MODULE = function(_42Layer) {
 //                dir: 0
 //            };
 
-
             var word = wft.words[wft.wordIndex],
                 tb = $42.TILE_BOXES,
                 tile = { 
-                    tile: fittingTile && fittingTile.tile || Math.floor(Math.random()*tb.length),
+                    tile: fittingTile && fittingTile.tile || ml.getRandomValue(easy? $42.TILE_OCCURANCES_EASY : $42.TILE_OCCURANCES),
                     letters: []
                 },
                 tileBoxes = $42.TILE_BOXES[tile.tile],
@@ -2132,7 +2126,7 @@ var _42_MODULE = function(_42Layer) {
 	 */
 	_42Layer.hookSetTileImages = function(tileBoxes, pos, userData) {
 
-		var tileSprite = cc.Sprite.create(res.letters_png,cc.rect(0,0,0,0)),
+		var tileSprite = new cc.Sprite(res.letters_png,cc.rect(0,0,0,0)),
             level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             nlp = level.neededLettersProb || $42.NEEDED_LETTERS_PROBABILITY,
             sw = ml.selectedWord,
@@ -2171,7 +2165,7 @@ var _42_MODULE = function(_42Layer) {
         	}
        					
     		var	spriteFrame = cc.spriteFrameCache.getSpriteFrame($42.LETTER_NAMES[val]+".png"),
-    			sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
+    			sprite = new cc.Sprite(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
     		
     		cc.assert(sprite, "42words, hookSetTileImages: sprite must not be null. (var = "+val+", name="+$42.LETTER_NAMES[val]+" )");
     		_42_retain(sprite, "words: sprite");
