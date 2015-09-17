@@ -936,8 +936,6 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 file = name+".png",
                 frame = cc.spriteFrameCache.getSpriteFrame(file);
 
-            cc.log("file: '"+file+"', name: '"+name+"', index: "+index+", frame: "+frame);
-
             var sprite = new cc.Sprite(frame);    
             sprite.setPosition(boxes[i]);
             sprite._orgPos = boxes[i];

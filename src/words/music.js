@@ -563,13 +563,13 @@ var _MUSIC_MODULE = function(layer) {
                     timeToNextFrame += ((pob[i%pob.length]-nextFrame-1) + Math.floor(i/pob.length) * mp.loopBeat[mp.loopSlot]) * frame;
                 }
 
-                cc.log("SOUNDTIMING 2: Time is "+time+". Distance to next frame : "+timeToNextFrame+", frames played: "+frames);
+                //cc.log("SOUNDTIMING 2: Time is "+time+". Distance to next frame : "+timeToNextFrame+", frames played: "+frames);
 
                 setTimeout(function(shouldbe) {
                     var now = new Date().getTime();
-                    cc.log("SOUNDTIMING 2: Supposed to by playing sound at "+shouldbe);
-                    cc.log("SOUNDTIMING 2:         Really playing sound at "+now);
-                    cc.log("SOUNDTIMING 2: Difference:  "+(shouldbe-now));
+                    //cc.log("SOUNDTIMING 2: Supposed to by playing sound at "+shouldbe);
+                    //cc.log("SOUNDTIMING 2:         Really playing sound at "+now);
+                    //cc.log("SOUNDTIMING 2: Difference:  "+(shouldbe-now));
                     cb();
                 }, timeToNextFrame, time+timeToNextFrame);
             } else {
@@ -653,13 +653,13 @@ var _MUSIC_MODULE = function(layer) {
             diff = mp.endTime || mp.endTime === 0? mp.endTime - mp.startTime : 0;
             mp.endTime = mp.startTime + mp.loopLength[mp.loopSlot]*1000 + diff;
 
-            cc.log("SOUNDTIMING 1: Starting new slot ("+mp.loopSlot+"). Time: "+mp.startTime+", ending at "+mp.endTime+", diff was "+diff);
+            //cc.log("SOUNDTIMING 1: Starting new slot ("+mp.loopSlot+"). Time: "+mp.startTime+", ending at "+mp.endTime+", diff was "+diff);
             cc.audioEngine.playMusic(mp.loop[mp.loopSlot]);
             cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
             if( $42.msg1 ) $42.msg1.setString("Now playing loop '"+mp.loop[mp.loopSlot]+"'");
             if( mp.timeout ) clearTimeout( mp.timeout );
             mp.timeout = setTimeout(function() {
-                cc.log("SOUNDTIMING 1:                                                               ended at "+mp.endTime);
+                //cc.log("SOUNDTIMING 1:                                                               ended at "+mp.endTime);
                 mp.timeout = null;
                 nextSlot(null, !!mp.fadeOutTime);
             }, mp.loopLength[mp.loopSlot] * 1000 + diff - (mp.fadeOutTime || 0));

@@ -204,7 +204,6 @@ var _42_MODULE = function(_42Layer) {
 		for( var i=sw.brc.col ; i<$42.BOXES_PER_ROW ; i++) {
 			var col = i-sw.brc.col;
 			if( sw.markers[col] === $42.MARKER_SEL ) {
-                //cc.log("updateSelectedWord, col: "+col+", i: "+i+", row: "+sw.brc.row);
 				var letter = ml.boxes[sw.brc.row][i].userData;
 				// take out all words that don't match the letters where markers
 				// are set
@@ -1797,6 +1796,7 @@ var _42_MODULE = function(_42Layer) {
             var getFittingTile = function(words, brc) {
                 var tb = $42.TILE_BOXES,
                     fittingTiles = [],
+                    yPosTotal = 0,
                     ret;
 
                 ret = findPossibleWord(words, brc);
@@ -1826,10 +1826,13 @@ var _42_MODULE = function(_42Layer) {
                             var clear = true,
                                 grounded = false,
                                 groundedAt = [],
-                                letters = 0;
+                                letters = 0,
+                                yPos = 0;
                             for( var k=0 ; k<rb.length ; k++ ) {
                                 var rowOff = (rb[k].y - rb[j].y) / $42.BS,
                                     colOff = (rb[k].x - rb[j].x) / $42.BS;
+
+                                yPos += rowOff;  
 
                                 if( brc.row + rowOff < 0 || brc.row + rowOff >= $42.BOXES_PER_COL ||
                                     brc.col + colOff < 0 || brc.col + colOff >= $42.BOXES_PER_ROW ) {
@@ -1865,17 +1868,29 @@ var _42_MODULE = function(_42Layer) {
                                     tile:       i,
                                     boxIndex:   j,
                                     dir:        r/90,
-                                    groundedAt: groundedAt
+                                    groundedAt: groundedAt,
+                                    yPos:       yPos
                                 });
+
+                                yPosTotal += yPos;
                             } 
                         }
                     }
                 }
 
+                var ft = fittingTiles;
+
+                ///////////////////////////
+                // Take out the tiles that are too low (cause they might not be reachable anyway)
+                yPosTotal = Math.ceil(yPosTotal/ft.length);
+                for( var i=ft.length-1 ; i>=0 ; i-- ) if( ft[i].yPos < 0 && ft[i].yPos < yPosTotal ) {
+                    ft.splice(i,1);
+                }
+
                 //cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",JSON.stringify(fittingTiles));
-                var tile = Math.floor(Math.random()*fittingTiles.length);
-                cc.log("Fitting tiles: "+JSON.stringify(fittingTiles[tile]));
-                if( fittingTiles.length ) return fittingTiles[tile];
+                var tile = Math.floor(Math.random()*ft.length);
+                //cc.log("Fitting tiles: "+JSON.stringify(fittingTiles[tile]));
+                if( ft.length ) return ft[tile];
                 else return null;
             };
 
@@ -1921,7 +1936,7 @@ var _42_MODULE = function(_42Layer) {
                 }
    
                 var w = Math.floor(Math.random()*words.length);
-                cc.log("Possible Words: "+JSON.stringify(rets)+". Took #"+w);
+                //cc.log("Possible Words: "+JSON.stringify(rets)+". Took #"+w);
                 return rets[w] || { index: 0, wordIndex: w };
             };
 
@@ -1936,7 +1951,7 @@ var _42_MODULE = function(_42Layer) {
             var word = wft.words[wft.wordIndex],
                 tb = $42.TILE_BOXES,
                 tile = { 
-                    tile: fittingTile && fittingTile.tile || ml.getRandomValue(easy? $42.TILE_OCCURANCES_EASY : $42.TILE_OCCURANCES),
+                    tile: fittingTile? fittingTile.tile : ml.getRandomValue(easy? $42.TILE_OCCURANCES_EASY : $42.TILE_OCCURANCES),
                     letters: []
                 },
                 tileBoxes = $42.TILE_BOXES[tile.tile],
@@ -1944,6 +1959,23 @@ var _42_MODULE = function(_42Layer) {
                 boxIndex = dirFixed? fittingTile.boxIndex : Math.floor(Math.random()*tileBoxes.length),
                 dir = dirFixed? fittingTile.dir : Math.floor(Math.random()*4),
                 direction = directions[dir];
+            
+            // weirdness check
+            if( dirFixed ) {
+                var rand1 = Math.random() * (level.weirdness || 0),
+                    rand2 = Math.random() * (level.weirdness || 0);
+
+                if( rand1 > 0.40 && sw || rand1 > 0.70 ) {
+                    cc.log("WEIRDNESS! rand1 = "+rand1+". Setting wft.indx from "+wft.index+" to ...");
+                    wft.index = Math.floor(Math.random() * word.length);
+                    cc.log("... "+wft.index);
+                }
+                if( rand2 > 0.25 && sw || rand2 > 0.40 ) {
+                    cc.log("WEIRDNESS! rand2 = "+rand2+". Setting boxIndex from "+boxIndex+" to ...");
+                    boxIndex  = Math.floor(Math.random() * tileBoxes.length);
+                    cc.log("... "+boxIndex);
+                }
+            } 
             
             tile.letters[boxIndex] = word[wft.index++];
 
@@ -2262,7 +2294,7 @@ var _42_MODULE = function(_42Layer) {
 					break;
 			if( i<lb.length ) newBox = true;
 		}
-        if( sw && sw.brc.row === brc.row ) cc.log("hookDeleteBox: Box in col "+brc.col+" is marked "+sw.markers[brc.col-sw.brc.col]);
+        //if( sw && sw.brc.row === brc.row ) cc.log("hookDeleteBox: Box in col "+brc.col+" is marked "+sw.markers[brc.col-sw.brc.col]);
 		if( sw && sw.brc.row === brc.row && (
 				sw.markers[brc.col-sw.brc.col] === $42.MARKER_SET || 
 				sw.markers[brc.col-sw.brc.col] === $42.MARKER_SEL || 
