@@ -295,6 +295,7 @@ var _42_MODULE = function(_42Layer) {
                 else {
                     $42.SCENE.callFuncOnNextBeat(function() {
                         $42.SCENE.playEffect(level.music.fullWord);
+                        $42.SCENE.playNextMusicSlot(level.music.fullWord, true);
                         $42.SCENE.changeAudioSet("fullWord");
                     }, level.music.fullWord);
                 }
@@ -1759,7 +1760,7 @@ var _42_MODULE = function(_42Layer) {
                 if( j < 3 ) {
                     ////////////////////
                     // free space around?
-                    for( var j=0, fs=0; j<6; j++ ) if( ml.boxes[sw.brc.row+Math.floor(j/3)][sw.brc.col+index+j%3] ) fs++;
+                    for( var j=0, fs=0; j<6; j++ ) if( ml.boxes[sw.brc.row+Math.floor(j/3)][sw.brc.col+index+j%3] && sw.brc.col+index+j%3 < $42.BOXES_PER_ROW ) fs++;
 
                     if( fs <= 2 || !ml.boxes[sw.brc.row+1][sw.brc.col+index] ) {
                         words.push(word);

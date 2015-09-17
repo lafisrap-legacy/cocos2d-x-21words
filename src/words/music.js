@@ -24,8 +24,11 @@
 // audioSet:        A set of sound file groups. Can't be used together with audio. A sound file groupcan be changed after certain events defined by nextSetOn
 // nextSetOn:       Defines when a sound file group is changes. Possible values are:
 //                  time:       After time specified in nextSetOn parameter array of background
-//                  setTile:    When a new tile is issued
-// playNextSlot:    Change the background music: play next slot. Currently only works with setTile effect 
+//                  setTile
+//                  fullWord
+// playNextSlot:    Change the background music: play next slot. Currently only works with:
+//                  setTile 
+//                  fullWord 
 // intervalTime:    Time until the next sound file is played, same file is played when stayWithSound is true
 // minInterval:     Sounds are not played when they follow a preliminary sound faster as this 
 // stayWithSound:   Prevents switching the sound file when an interval plays next sound
@@ -33,13 +36,13 @@
 // delayTime:       Time after which a sound effect starts
 // playOnBeat:      Array that defines the beats when a sound is played, in a 4/4 rhythm that is e.g. [1,3] or [1,2,3,4]
 //                  playOnBeat currently works with:
-//                  setTile
-//                  fixTile
-//                  rotate
-//                  swipe
-//                  selection
-//                  fullWord
-//                  deleteRow
+//                  setTile     (new tile comes aligned with sound)
+//                  fixTile     (tile fixes aligned with sound)
+//                  rotate      (only sound aligned)
+//                  swipe       (  "    "      "   )
+//                  selection   (  "    "      "   )
+//                  fullWord    (  "    "      "   )
+//                  deleteRow   (  "    "      "   )
 //
 // playAfterBeats:  Wait for number of beats. Cannot be used together with playOnBeat
 //
@@ -59,7 +62,6 @@
 // deleteLastRows:  When (mostly seven) rows get destroyed at level end
 // final:           When a level is left
 
-$42.MUSIC_LOOP_OFFSET = 0;
 $42.MUSIC_VOLUME_GRANULARITY = 10;
 
 ////////////////////////////////////////////////
@@ -84,48 +86,46 @@ $42.MUSIC_RED_HILLS = {
         loopBars:       11.375,
         loopBeat:       4,
     },
-    levelWords:     { 
-        audio: res.red_hills_level_words_mp3,
-        delayTime: 4500,
+    levelWords: { 
+        audio:          res.red_hills_level_words_mp3,
+        delayTime:      4500,
     },
-    levelNr:        { 
-        audio: res.red_hills_level_nr_mp3, 
-        delayTime: 1500
+    levelNr: { 
+        audio:          res.red_hills_level_nr_mp3, 
+        delayTime:      1500
     },
-    setTile:        { 
-        audio: res.red_hills_set_tile_mp3,
+    setTile: { 
+        audio:          res.red_hills_set_tile_mp3,
         playAfterBeats: 1 
     },
-    swipe:          { 
-        audioSet: [[res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
-                   [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
-                   [res.blue_mountains_swipe_mp3]],
-        nextSetOn: "fullWord",
-        intervalTime: 450,
-        minInterval: 200,
-        stayWithSound: true
+    swipe: { 
+        audioSet:      [[res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
+                        [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
+                        [res.blue_mountains_swipe_mp3]],
+        nextSetOn:      "fullWord",
+        intervalTime:   450,
+        minInterval:    200,
+        stayWithSound:  true
     },
-    rotate:         { 
-        audioSet: [[res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
-                   [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
-                   [res.blue_quadrat_rotate_1_mp3, res.blue_quadrat_rotate_2_mp3, res.blue_quadrat_rotate_3_mp3]],
-        nextSetOn: "time",
-        dontStop: true
+    rotate: { 
+        audioSet:      [[res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
+                        [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
+                        [res.blue_quadrat_rotate_1_mp3, res.blue_quadrat_rotate_2_mp3, res.blue_quadrat_rotate_3_mp3]],
+        nextSetOn:      "time",
+        dontStop:       true
     },
-    fixTile:        { 
-        audio: res.red_hills_fix_tile_1_mp3 
-    }, 
-    selection:      { audio: res.red_hills_selection_mp3 },
-    fullWord:       { audio: res.red_hills_full_word_mp3 },
-    presentWord:    { 
-        audio: res.blue_mountains_present_word_mp3,
-        intervalTime: 3000,
-        delayTime: 500 
+    fixTile:            { audio: res.red_hills_fix_tile_1_mp3 }, 
+    selection:          { audio: res.red_hills_selection_mp3 },
+    fullWord:           { audio: res.red_hills_full_word_mp3 },
+    presentWord: { 
+        audio:          res.blue_mountains_present_word_mp3,
+        intervalTime:   3000,
+        delayTime:      500 
     },
-    lastWord:       { audio: res.red_hills_last_word_mp3 },
-    deleteRow:      { audio: res.red_hills_delete_row_mp3 },
-    deleteLastRows: { audio: res.red_hills_delete_last_rows_mp3 },
-    final:          { audio: res.red_hills_final_mp3 },
+    lastWord:           { audio: res.red_hills_last_word_mp3 },
+    deleteRow:          { audio: res.red_hills_delete_row_mp3 },
+    deleteLastRows:     { audio: res.red_hills_delete_last_rows_mp3 },
+    final:              { audio: res.red_hills_final_mp3 },
 };
 
 
@@ -133,46 +133,44 @@ $42.MUSIC_RED_HILLS = {
 // Music for level 2
 $42.MUSIC_FLAMES = {
     background: {
-        intro: res.flames_intro_mp3,
+        intro:          res.flames_intro_mp3,
         introLength:    85.140000,
         loop:           res.flames_loop_mp3,
         loopLength:     89.136000,
-        loopBars:      24,
-        loopBeat:    4
+        loopBars:       24,
+        loopBeat:       4
     },
-    levelWords:     { 
-        audio: res.flames_level_words_mp3,
-        delayTime: 4500,
+    levelWords: { 
+        audio:          res.flames_level_words_mp3,
+        delayTime:      4500,
     },
-    levelNr:        { 
-        audio: res.flames_level_nr_mp3, 
-        delayTime: 1500
+    levelNr: { 
+        audio:          res.flames_level_nr_mp3, 
+        delayTime:      1500
     },
-    setTile:        { 
-        audio: res.flames_set_tile_mp3,
+    setTile: { 
+        audio:          res.flames_set_tile_mp3,
         playAfterBeats: 1 
     },
-    swipe:          { 
-        audio: null, 
-        intervalTime: 450
+    swipe: { 
+        audio:          null, 
+        intervalTime:   450
     },
-    rotate:         { 
-        audio: [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
-        minInterval: 0 
+    rotate: { 
+        audio:          [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
+        minInterval:    0 
     },
-    fixTile:        { 
-        audio: res.flames_fix_tile_1_mp3, 
-    }, 
-    selection:      { audio: res.flames_selection_mp3 },
-    fullWord:       { audio: res.flames_full_word_mp3 },
-    presentWord:    { 
-        audio: res.blue_mountains_present_word_mp3,
-        intervalTime: 3000, 
-        delayTime: 500 
+    fixTile:            { audio: res.flames_fix_tile_1_mp3 }, 
+    selection:          { audio: res.flames_selection_mp3 },
+    fullWord:           { audio: res.flames_full_word_mp3 },
+    presentWord: { 
+        audio:          res.blue_mountains_present_word_mp3,
+        intervalTime:   3000, 
+        delayTime:      500 
     },
-    lastWord:       { audio: res.flames_last_word_mp3 },
-    deleteRow:      { audio: res.flames_delete_row_mp3 },
-    final:          { audio: res.flames_final_mp3 },
+    lastWord:           { audio: res.flames_last_word_mp3 },
+    deleteRow:          { audio: res.flames_delete_row_mp3 },
+    final:              { audio: res.flames_final_mp3 },
 };
 
 
@@ -182,76 +180,72 @@ $42.TEST = {
     background: {
         loop:           [res.test_background_loop_mp3,res.test_background_loop1_mp3],
         loopLength:     [18.504000,18.504000],
-        loopBars:      4,
-        loopBeat:    8,
-        //playOnBeat:     1,
-        //playAfterBeats: 1,
+        loopBars:       [4,4],
+        loopBeat:       [8,8],
         nextSetOn:      [4626,4626,4626,4626],
         delay:          1000,
         fadeOutTime:    50
     },
-    levelWords:     { 
-        audio: res.red_hills_level_words_mp3,
-        delayTime: 4500,
+    levelWords: { 
+        audio:          res.red_hills_level_words_mp3,
+        delayTime:      4500,
     },
-    levelNr:        { 
-        audio: res.red_hills_level_nr_mp3, 
-        delayTime: 1500
+    levelNr: { 
+        audio:          res.red_hills_level_nr_mp3, 
+        delayTime:      1500
     },
-    setTile:         { 
-        audioSet: [[res.test_set_tile_1_mp3],
-                   [res.test_set_tile_2_mp3],
-                   [res.test_set_tile_3_mp3],
-                   [res.test_set_tile_4_mp3]],
-        nextSetOn: "time",
-        playOnBeat: [3,7],
-        playNextSlot: false
+    setTile: { 
+        audioSet:      [[res.test_set_tile_1_mp3],
+                        [res.test_set_tile_2_mp3],
+                        [res.test_set_tile_3_mp3],
+                        [res.test_set_tile_4_mp3]],
+        nextSetOn:      "time",
+        playOnBeat:     [3,7],
+        playNextSlot:   false
     },
-    swipe:          { 
-        audio: [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
-         //audioSet: [[res.test_rotate_1_mp3],
-                   //[res.test_rotate_1_mp3],
-                   //[res.test_rotate_1_mp3],
-                   //[res.test_rotate_1_mp3]],
-        //nextSetOn: "time",
-        //dontStop: true,
-        playOnBeat: [1,3,5,7] 
+    swipe: { 
+        audio:          [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
+        //audioSet:    [[res.test_rotate_1_mp3],
+                        //[res.test_rotate_1_mp3],
+                        //[res.test_rotate_1_mp3],
+                        //[res.test_rotate_1_mp3]],
+                        //nextSetOn: "time",
+                        //dontStop: true,
+        playOnBeat:     [1,3,5,7] 
     },
-    rotate:         { 
-        audio: [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
-        minInterval: 0,
-        playOnBeat: [1,2,3,4,5,6,7,8] 
+    rotate: { 
+        audio:          [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
+        minInterval:    0,
+        playOnBeat:     [1,2,3,4,5,6,7,8] 
     },
-    fixTile:        { 
-        audioSet: [[res.test_fix_tile_1_mp3],
-                   [res.test_fix_tile_1_mp3],
-                   [res.test_fix_tile_1_mp3],
-                   [res.test_fix_tile_1_mp3]],
-        nextSetOn: "time",
-        playOnBeat: [1,3,7]
+    fixTile: { 
+        audioSet:      [[res.test_fix_tile_1_mp3],
+                        [res.test_fix_tile_1_mp3],
+                        [res.test_fix_tile_1_mp3],
+                        [res.test_fix_tile_1_mp3]],
+        nextSetOn:      "time",
+        playOnBeat:     [1,3,7]
     }, 
-    selection:      { audio: res.flames_selection_mp3 },
-    fullWord:       { audio: res.flames_full_word_mp3 },
-    presentWord:    { 
-        audio: res.blue_mountains_present_word_mp3,
-        intervalTime: 3000, 
-        delayTime: 500 
+    selection:          { audio: res.flames_selection_mp3 },
+    fullWord:           { audio: res.flames_full_word_mp3 },
+    presentWord: { 
+        audio:          res.blue_mountains_present_word_mp3,
+        intervalTime:   3000, 
+        delayTime:      500 
     },
-    lastWord:       { audio: res.flames_last_word_mp3 },
-    deleteRow:      { audio: res.flames_delete_row_mp3 },
-    final:          { audio: res.flames_final_mp3 },
-    }; 
-
+    lastWord:           { audio: res.flames_last_word_mp3 },
+    deleteRow:          { audio: res.flames_delete_row_mp3 },
+    final:              { audio: res.flames_final_mp3 }, }; 
 
 ////////////////////////////////////////////////
 // Music for level 4
 $42.MUSIC_RED_NOSES = {
     background: {
         intro:          res.red_noses_background_intro_mp3,
-        loop:           [res.red_noses_background_loop_1a_mp3,res.red_noses_background_loop_1b_mp3],
-        loopLength:     [18.504000,18.504000],
-        loopTimes:      4,
-        loopMeasure:    16,
+        loop:           [res.red_noses_background_loop_C_1a_mp3,res.red_noses_background_loop_C_1b_mp3, res.red_noses_background_loop_F_1a_mp3, res.red_noses_background_loop_F_1b_mp3],
+        loopLength:     [17.208000, 25.776000, 17.208000, 25.776000],
+        loopBars:       [4, 6, 4, 6],
+        loopBeat:       [16,16,16,16],
         //playOnBeat:     1,
         //playAfterBeats: 1,
         nextSetOn:      [4626,4626,4626,4626],
@@ -306,7 +300,8 @@ $42.MUSIC_RED_NOSES = {
     deleteRow:      { audio: res.red_noses_delete_row_1_mp3 },
     final:          { audio: res.flames_final_mp3 },
     deleteLastRows: { audio: res.red_noses_delete_last_row_1_mp3 },
-    }; 
+}; 
+
 
 ////////////////////////////////////////////////
 // Music for level 5
@@ -320,35 +315,33 @@ $42.MUSIC_BLUE_QUADRAT = {
         //loopBeat:    1
         delay: 1000
     },
-    levelWords:     { 
+    levelWords: { 
         audio: res.blue_quadrat_level_words_mp3,
         delayTime: 4500,
     },
-    levelNr:        { 
+    levelNr: { 
         audio: res.blue_quadrat_level_nr_mp3, 
         delayTime: 1500
     },
-    setTile:        { 
+    setTile: { 
         audio: [res.blue_quadrat_set_tile_1_mp3, res.blue_quadrat_set_tile_2_mp3, res.blue_quadrat_set_tile_3_mp3],
         playAfterBeats: 1 
     },
-    swipe:          { 
+    swipe: { 
         audio: null,
         //audio: [res.blue_quadrat_swipe_1_mp3, res.blue_quadrat_swipe_2_mp3, res.blue_quadrat_swipe_3_mp3],
         intervalTime: 450
     },
-    rotate:         { 
+    rotate: { 
         audio: [res.blue_quadrat_rotate_1_mp3, res.blue_quadrat_rotate_2_mp3, res.blue_quadrat_rotate_3_mp3],
         minInterval: 0 
     },
-    fixTile:        { 
+    fixTile: { 
         audio: [res.blue_quadrat_fix_tile_1_mp3, res.blue_quadrat_fix_tile_2_mp3, res.blue_quadrat_fix_tile_3_mp3] 
     }, 
-    selection:      { audio: [res.blue_quadrat_selection_1_mp3, res.blue_quadrat_selection_2_mp3, res.blue_quadrat_selection_3_mp3], 
-    },
-    fullWord:       { audio: [res.blue_quadrat_full_word_1_mp3, res.blue_quadrat_full_word_2_mp3], 
-    },
-    presentWord:    { 
+    selection:      { audio: [res.blue_quadrat_selection_1_mp3, res.blue_quadrat_selection_2_mp3, res.blue_quadrat_selection_3_mp3], },
+    fullWord:       { audio: [res.blue_quadrat_full_word_1_mp3, res.blue_quadrat_full_word_2_mp3], },
+    presentWord: { 
         audio: res.blue_mountains_present_word_mp3,
         intervalTime: 3000, 
         delayTime: 500 
@@ -370,28 +363,28 @@ $42.MUSIC_INKA_TEMPLE = {
         fadeOutTime:    50,
         delay: 6000
     },
-    levelWords:     { 
+    levelWords: { 
         audio: res.inka_temple_level_words_mp3,
         delayTime: 4500
     },
-    levelNr:        { 
+    levelNr: { 
         audio: res.inka_temple_level_nr_mp3,
         delayTime: 1500
     },
-    setTile:        { 
+    setTile: { 
         audio: [res.inka_temple_set_tile_a_mp3, res.inka_temple_set_tile_b_mp3], 
         playAfterBeats: 1,
         playNextSlot: true
     },
-    swipe:          { 
+    swipe: { 
         audio: [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
         intervalTime: 450
     },
-    rotate:         { 
+    rotate: { 
         audio: [res.inka_temple_rotate_1_mp3, res.inka_temple_rotate_2_mp3, res.inka_temple_rotate_3_mp3],
         minInterval: 0
     },
-    fixTile:        { 
+    fixTile: { 
         audio: [res.inka_temple_fix_tile_a_mp3, res.inka_temple_fix_tile_b_mp3, res.inka_temple_fix_tile_c_mp3] 
     }, 
     selection:      { audio: res.inka_temple_selection_mp3 },
@@ -416,29 +409,29 @@ $42.MUSIC_BLUE_MOUNTAINS = {
         loop:  [res.blue_mountains_loop_a_mp3, res.blue_mountains_loop_b_mp3],
         loopLength:     [45.324000,45.324000],
         loopBars:       [12,12],
-        loopBeat:    8
+        loopBeat:    [8,8]
     },
-    levelWords:     { 
+    levelWords: { 
         audio: res.blue_mountains_level_words_mp3,
         delayTime: 4500,
     },
-    levelNr:        { 
+    levelNr: { 
         audio: res.blue_mountains_level_nr_mp3, 
         delayTime: 1500
     },
-    setTile:        { 
+    setTile: { 
         audio: res.blue_mountains_set_tile_mp3, 
         playAfterBeats: 1
     },
-    swipe:          { 
+    swipe: { 
         audio: res.blue_mountains_swipe_mp3,
         dontStop: true
     },
-    rotate:         { 
+    rotate: { 
         audio: [res.blue_mountains_rotate_1_mp3, res.blue_mountains_rotate_2_mp3, res.blue_mountains_rotate_3_mp3],
         minInterval: 0
     },
-    fixTile:        { 
+    fixTile: { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
         playOnBeat: [1,2,3,4,5,6,7,8]
     }, 
@@ -554,20 +547,20 @@ var _MUSIC_MODULE = function(layer) {
         var mp = musicPlaying || null,
             time = new Date().getTime();
         if( mp && (mp.loop || mp.loopBeatLength) ) {
-            var frame  = mp.loopBeatLength || (mp.loopLength[mp.loopSlot]? mp.loopLength[mp.loopSlot]*1000 / mp.loopBars / mp.loopBeat: 0);
+            var frame  = mp.loopBeatLength || (mp.loopLength[mp.loopSlot]? mp.loopLength[mp.loopSlot]*1000 / mp.loopBars[mp.loopSlot] / mp.loopBeat[mp.loopSlot]: 0);
             
             if( frame ) {
                 var span = time - (mp.startTime || time),
                     frames = Math.floor(span/frame),
                     timeToNextFrame = sound.playOnBeat? (frames+1) * frame - span : sound.playAfterBeats * frame || 0,
-                    nextFrame = (frames+1) % mp.loopBeat,
+                    nextFrame = (frames+1) % mp.loopBeat[mp.loopSlot],
                     pob = sound && sound.playOnBeat || null;
 
                 if( pob && Object.prototype.toString.call( pob ) === '[object Array]' && pob.length > 0 ) {
                     var i = 0, offset = 0;
                     for( var i=0 ; i < pob.length ; i++ ) if( nextFrame <= pob[i]-1 ) break;
 
-                    timeToNextFrame += ((pob[i%pob.length]-nextFrame-1) + Math.floor(i/pob.length) * mp.loopBeat) * frame;
+                    timeToNextFrame += ((pob[i%pob.length]-nextFrame-1) + Math.floor(i/pob.length) * mp.loopBeat[mp.loopSlot]) * frame;
                 }
 
                 cc.log("SOUNDTIMING 2: Time is "+time+". Distance to next frame : "+timeToNextFrame+", frames played: "+frames);
