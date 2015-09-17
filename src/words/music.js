@@ -100,7 +100,7 @@ $42.MUSIC_RED_HILLS = {
         audioSet: [[res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
                    [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
                    [res.blue_mountains_swipe_mp3]],
-        nextSetOn: "setTile",
+        nextSetOn: "fullWord",
         intervalTime: 450,
         minInterval: 200,
         stayWithSound: true
@@ -290,10 +290,9 @@ $42.MUSIC_RED_NOSES = {
     },
     fixTile:        { 
         audioSet: [[res.test_fix_tile_1_mp3],
-                   [res.test_fix_tile_1_mp3],
-                   [res.test_fix_tile_1_mp3],
+                   [res.test_fix_tile_2_mp3],
                    [res.test_fix_tile_1_mp3]],
-        nextSetOn: "time",
+        nextSetOn: "fullWord",
         playOnBeat: [1,3,5,7,9,11,13,15]
     }, 
     selection:      { audio: res.red_noses_selection_1_mp3 },
