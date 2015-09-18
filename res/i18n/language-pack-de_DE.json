@@ -53,7 +53,9 @@
             "basic3":   "Versuche die Worte zu bilden, die auf dem Spielfeld stehen.",
             "advanced1": "Manchmal passen die Buchstaben nicht sofort ...",
             "advanced2": "Dann kann man die Buchstaben markieren, die man behalten möchte ...",
-            "advanced3": "... und dann die Reihe löschen."
+            "advanced3": "... und dann die Reihe löschen.",
+            "advanced4a": "Eins noch!\nEins noch!",
+            "advanced4b": "Hier unten findest du ab jetzt die Buchstaben, die du verwenden kannst."
         },
         "story_again":          "Nochmal",
         "story_continue":       "Weiter" 
