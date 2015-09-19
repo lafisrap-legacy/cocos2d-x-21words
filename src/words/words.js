@@ -59,6 +59,18 @@ var _42_MODULE = function(_42Layer) {
 			sw = ml.selectedWord,
 			nsw = null;
 
+        /*
+        //////////////////////////////////
+        // First clear all "..." sprites
+        for( var i=0 ; i<ml.selections.length ; i++ ) {
+            var sl = ml.selections[i];
+            if( sl.sprite ) {
+                var row = sl.brc.row 
+                ml.boxes[sl.brc.row][sl.brc.col].sprite.removeChild(sl.sprite);
+                _42_release(sl.sprite);
+            }
+        }*/
+
         //////////////////////////////////
         // Look through all rows ...
 		for( var i=0 ; i<$42.BOXES_PER_COL ; i++) {
@@ -103,6 +115,12 @@ var _42_MODULE = function(_42Layer) {
 					
                     /////////////////////////////////
 					// fill the possible selection and put it on the list
+                    /*
+                    var sprite = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("marker4.png"));
+                    sprite.setPosition(cc.p(96,-26));
+                    ml.boxes[brc.row][brc.col].sprite.addChild(sprite);
+                    _42_retain(sprite, "... sprite");
+                    */
 					s.push({
 						brc: brc,
 						width: $42.BS * 3,
@@ -116,8 +134,10 @@ var _42_MODULE = function(_42Layer) {
 					      	ml.boxes[brc.row][brc.col],
 					      	ml.boxes[brc.row][brc.col+1],
 					      	ml.boxes[brc.row][brc.col+2],
-						]
+						],
+                        //sprite: sprite
 					});
+
 				});
 			}
 		}
@@ -387,7 +407,7 @@ var _42_MODULE = function(_42Layer) {
                                 ls.setItem("currentLevel",$42.currentLevel);
                                 ls.setItem("wordProfile",$42.wordProfile);
 
-                                playEndLevelSound();
+                                stopBackgroundMusic();
                                 
                                 setTimeout(function() {
                                     endLevel($42.currentLevel-1); // level number switched already
@@ -836,7 +856,7 @@ var _42_MODULE = function(_42Layer) {
         }
     };
 
-    var playEndLevelSound = function() {
+    var stopBackgroundMusic = function() {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
         setTimeout(function() {
             $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTime);
@@ -2475,7 +2495,7 @@ var _42_MODULE = function(_42Layer) {
 				
                 ml.unselectWord(true);
                 ml.fillWordsForTiles();
-                if( level.type === $42.LEVEL_TYPE_FREE ) ml.dontAutoSelectWord = true;
+                if( level.type !== $42.LEVEL_TYPE_GIVEN ) ml.dontAutoSelectWord = true;
 			}
 		} else {
 			for( var i=ml.selections.length-1 ; i>=0 ; i--) {
@@ -2503,7 +2523,7 @@ var _42_MODULE = function(_42Layer) {
         var self = this; 
         switch( key ) {
         case 78:  
-            playEndLevelSound();
+            stopBackgroundMusic();
             $42.currentLevel = key-48;
             setTimeout(function() {
                 if( ++$42.currentLevel < 8 ) {
@@ -2546,7 +2566,7 @@ var _42_MODULE = function(_42Layer) {
         case 53:
         case 54:
         case 55:
-            playEndLevelSound();
+            stopBackgroundMusic();
             $42.currentLevel = key-48;
             setTimeout(function() {
                 endLevel($42.currentLevel-1);
