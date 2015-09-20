@@ -242,7 +242,7 @@ $42.TEST = {
 // Music for level 4
 $42.MUSIC_RED_NOSES = {
     background: {
-        audio:           [res.red_noses_background_loop_C_mp3,  res.red_noses_background_loop_F_mp3],
+        audio:           [red_noses_background_C_loop_1,4,2_mp3,  res.red_noses_background_C_loop_1,4,3_mp3],
         audioLoopStart:  0,
         audioLength:     [45.714000, 45.714000],
         audioBars:       [14,14],
