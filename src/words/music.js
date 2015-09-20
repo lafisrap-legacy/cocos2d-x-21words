@@ -514,7 +514,9 @@ var _MUSIC_MODULE = function(layer) {
                 }
             }
         } else if(!effect.dontStop ) {
-            cc.audioEngine.stopEffect(effect.id);
+            if (!cc.sys.isNative) {
+                cc.audioEngine.stopEffect(effect.id);
+            }
     	    if( $42.msg2 ) $42.msg2.setString("Stopping effect:"+effect.audio[0]);
             effect.id = null;
         }
