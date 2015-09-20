@@ -242,11 +242,11 @@ $42.TEST = {
 // Music for level 4
 $42.MUSIC_RED_NOSES = {
     background: {
-        audio:           [res.red_noses_background_intro_mp3,res.red_noses_background_loop_C_mp3,  res.red_noses_background_loop_F_mp3],
-        audioLoopStart:  1,
-        audioLength:     [0.75600, 17.208000, 17.208000],
-        audioBars:       [1, 14,14],
-        audioBeat:       [16,16,16],
+        audio:           [res.red_noses_background_loop_C_mp3,  res.red_noses_background_loop_F_mp3],
+        audioLoopStart:  0,
+        audioLength:     [45.714000, 45.714000],
+        audioBars:       [14,14],
+        audioBeat:       [16,16],
         delayTime:      1000,
         fadeOutTime:    50
     },
@@ -276,7 +276,7 @@ $42.MUSIC_RED_NOSES = {
         playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16] 
     },
     rotate:         { 
-        audio: [res.red_noses_rotate_1a_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1c_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1b_mp3
+        audio: [res.red_noses_rotate_1a_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1c_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1d_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1e_mp3, res.red_noses_rotate_1b_mp3
         //, res.red_noses_rotate_1f_mp3, res.red_noses_rotate_1g_mp3, res.red_noses_rotate_1h_mp3, res.red_noses_rotate_1g_mp3
         ],
         minInterval: 2.142,
