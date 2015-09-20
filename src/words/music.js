@@ -554,7 +554,7 @@ var _MUSIC_MODULE = function(layer) {
                 var span = time - (mp.startTime || time),
                     frames = Math.floor(span/frame),
                     timeToNextFrame = sound.playOnBeat? (frames+1) * frame - span : sound.playAfterBeats * frame || 0,
-                    nextFrame = (frames+1) % mp.loopBeat[mp.loopSlot],
+                    nextFrame = (frames+1) % (mp.loopBeatLength || mp.loopBeat[mp.loopSlot]),
                     pob = sound && sound.playOnBeat || null;
 
                 if( pob && Object.prototype.toString.call( pob ) === '[object Array]' && pob.length > 0 ) {

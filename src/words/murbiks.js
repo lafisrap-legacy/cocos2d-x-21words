@@ -528,31 +528,50 @@ var _MURBIKS_MODULE = function(parentLayer) {
            if( !repeat ) showSpeechBubble(0, $42.t.mostafa.advanced3, mostafa.getPosition(), 350); 
         };
 
-        var pages = [page1, page2, page3]
-
+        var mostafaFliesTo = function(x,y) {
+            mostafaFlyTo({
+                time: options.time || 2,
+                bezier: [
+                    cc.p(500,250),
+                    cc.p(200,500),
+                    cc.p(x,y) 
+                ]
+            });
+        };
+        
         mostafa.setPosition(cc.p(750,576)); 
-        mostafa.setFlippedX(true);
-        mostafaFlyTo({
-            time: options.time || 2,
-            bezier: [
-                cc.p(500,650),
-                cc.p(200,200),
-                cc.p(550,130) 
-            ]
-        });
+        mostafa.setFlippedX(false);
+        mostafaFliesTo(550,130);
+
+        var pages = [page1, page2, page3];
 
         showConcepts(pages, function() {
-            mostafa.setFlippedX(false);
+
+            var mostafaReturns = function() {
+                mostafa.setFlippedX(false);
+                mostafaFliesTo(222,130);
+                setTimeout(function() {
+                    showSpeechBubble(3, $42.t.mostafa.advanced4a, mostafa.getPosition(), 350); 
+                }, 2000);
+                setTimeout(function() {
+                    showSpeechBubble(8, $42.t.mostafa.advanced4b, mostafa.getPosition(), 350);
+                }, 5000);
+                setTimeout(function() {
+                    if( typeof options.cb === "function" ) options.cb();
+                    mostafaFliesTo(-100,200); 
+                }, 13000);
+            }
+
+            mostafa.setFlippedX(true);
             mostafaFlyTo({
                 time: options.time || 2,
                 bezier: [
                     cc.p(550,430), 
                     cc.p(500,650),
                     cc.p(-100,200)
-                ]
-            });
-        
-            if( typeof options.cb === "function" ) options.cb();
+                ],
+                cb: mostafaReturns
+            }); 
         });
     };
 
@@ -756,7 +775,6 @@ var _MURBIKS_MODULE = function(parentLayer) {
                     pages[page](0.3, function() {
                         item1.setOpacity(255);
                         item1.setEnabled(true);
-                        //hideSpeechBubble();
                     });
                 } else {
                     hideConcepts();

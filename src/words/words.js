@@ -436,7 +436,8 @@ var _42_MODULE = function(_42Layer) {
     //
     var startNewLevel = function() {
 
-        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+        var self = this,
+            level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 
         //////////////////////////
         // Set globals ...
@@ -736,7 +737,7 @@ var _42_MODULE = function(_42Layer) {
             ml.fillWordsForTiles();
             setTimeout( function() {
                 ml.pauseBuildingTiles = false;
-                cc.log("pauseBuildingtiles set to "+this.pauseBuildingTiles+" at new level start." );
+                cc.log("pauseBuildingtiles set to "+self.pauseBuildingTiles+" at new level start." );
             }, (5.5+i*0.50) * 1000 );
 
             checkForTutorial();
@@ -1878,13 +1879,24 @@ var _42_MODULE = function(_42Layer) {
                     }
                 }
 
-                var ft = fittingTiles;
+                var ft = fittingTiles,
+                    allNegative = true,
+                    longTile = false;
 
                 ///////////////////////////
                 // Take out the tiles that are too low (cause they might not be reachable anyway)
                 yPosTotal = Math.ceil(yPosTotal/ft.length);
-                for( var i=ft.length-1 ; i>=0 ; i-- ) if( ft[i].yPos < 0 && ft[i].yPos < yPosTotal ) {
-                    ft.splice(i,1);
+                for( var i=ft.length-1 ; i>=0 ; i-- ) {
+                    if( ft[i].yPos >= 0 ) allNegative = false;
+                    if( ft[i].tile === 0 ) longTile = true;
+                    if( ft[i].yPos < 0 && ft[i].yPos < yPosTotal ) ft.splice(i,1);
+                }
+
+                ///////////////////////////
+                // Clear selection if tile 0 is not possible and all tiles are negative
+                if( sw && allNegative && !longTile && !sw.selectedByUser && brc.col>=8 && level.type===$42.LEVEL_TYPE_GIVEN ) { 
+                    ml.unselectWord(true);
+                    return null;
                 }
 
                 //cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",JSON.stringify(fittingTiles));
@@ -2341,6 +2353,8 @@ var _42_MODULE = function(_42Layer) {
             lw = ml.levelWords || [],
 			wpl = $42.wordProfileLetters;
 
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+        
         ///////////////////////////////////
         // Add values of word treasure and level words
         for( var i=0,tv=0,bw=null ; i<wt.length ; i++ ) {
@@ -2352,16 +2366,18 @@ var _42_MODULE = function(_42Layer) {
             if( !bw || bw.value <= lw[i].value ) bw = lw[i];
         }
 
-        drawLetterBoxes({
-            pos : cc.p(
-                20,
-                wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
-            ),
-            scale : $42.SCOREBAR_LETTERS_SCALE,
-            padding : $42.SCOREBAR_LETTERS_PADDING,
-            boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
-            boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL
-        });
+        if( level.type !== $42.LEVEL_TYPE_GIVEN ) {
+            drawLetterBoxes({
+                pos : cc.p(
+                    20,
+                    wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
+                ),
+                scale : $42.SCOREBAR_LETTERS_SCALE,
+                padding : $42.SCOREBAR_LETTERS_PADDING,
+                boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
+                boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL
+            });
+        }
         
         // draw points, left, back side
         ml.score_words_mini = ml.drawScorebarText("(0 "+$42.t.scorebar_words[1]+")", cc.p(100,111) , 24 , $42.SCORE_COLOR_BRIGHT );
@@ -2385,6 +2401,8 @@ var _42_MODULE = function(_42Layer) {
 			wpl = $42.wordProfileLetters,
 			rl = $42.rollingLayer;
 	
+        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+
         ///////////////////////////////////
         // Add values of word treasure and level words
         for( var i=0,tv=0,bw=null ; i<wt.length ; i++ ) {
@@ -2404,18 +2422,20 @@ var _42_MODULE = function(_42Layer) {
         ml.bestWordValue.setString($42.t.scorebar_mvw+ (bw?": "+bw.value:""));
         ml.bestWordSprite = ml.drawScorebarWord(bw? bw.word:"",cc.p(400,157),ml.bestWordSprite,0.60);
 
-        drawLetterBoxes({
-            pos : cc.p(
-                20,
-                wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
-            ),
-            scale : $42.SCOREBAR_LETTERS_SCALE,
-            padding : $42.SCOREBAR_LETTERS_PADDING,
-            boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
-            boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL,
-            delay: highlight? $42.SCOREBAR_ROLLING_LAYER_DELAY-0.5 : 0,
-            parent : rl
-        });
+        if( level.type !== $42.LEVEL_TYPE_GIVEN ) {
+            drawLetterBoxes({
+                pos : cc.p(
+                    20,
+                    wpl.length>$42.SCOREBAR_LETTERS_PER_ROW*$42.SCOREBAR_LETTERS_PER_COL? 56 : 68
+                ),
+                scale : $42.SCOREBAR_LETTERS_SCALE,
+                padding : $42.SCOREBAR_LETTERS_PADDING,
+                boxesPerRow: $42.SCOREBAR_LETTERS_PER_ROW,
+                boxesPerCol: $42.SCOREBAR_LETTERS_PER_COL,
+                delay: highlight? $42.SCOREBAR_ROLLING_LAYER_DELAY-0.5 : 0,
+                parent : rl
+            });
+        }
         
         // highlight things
         switch(highlight) {
