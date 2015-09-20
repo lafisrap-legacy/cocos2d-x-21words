@@ -92,7 +92,8 @@ var res = {
 
     // level 4
     red_noses_background_intro_mp3:             "res/sounds/levelsounds/red_noses_background_C-intro_1,3,3.mp3",
-    red_noses_background_loop_C_mp3:           "res/sounds/levelsounds/red_noses_background_C_loop_1,4,2.mp3",
+    red_noses_background_loop_C_1_mp3:           "res/sounds/levelsounds/red_noses_background_C_loop_1,4,2.mp3",
+    red_noses_background_loop_C_2_mp3:           "res/sounds/levelsounds/red_noses_background_C_loop_1,4,3.mp3",
     red_noses_background_loop_F_mp3:           "res/sounds/levelsounds/red_noses_background_F_loop_1,4,2.mp3",
     red_noses_background_full_word_1_mp3:       "res/sounds/levelsounds/red_noses_background_C-F_transsition_1,3,5.mp3",
     red_noses_background_full_word_2_mp3:       "res/sounds/levelsounds/red_noses_background_F-C_transsition_1,3,6.mp3",
