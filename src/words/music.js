@@ -182,7 +182,7 @@ $42.TEST = {
         audioBars:       [4,4],
         audioBeat:       [8,8],
         nextSetOn:      [4626,4626,4626,4626],
-        delay:          1000,
+        delay:          7000,
         fadeOutTime:    50
     },
     levelWords: { 
@@ -244,10 +244,10 @@ $42.MUSIC_RED_NOSES = {
     background: {
         audio:           [res.red_noses_background_loop_C_1_mp3, res.red_noses_background_loop_C_2_mp3],
         audioLoopStart:  0,
-        audioLength:     [45.803000, 45.803000],
+        audioLength:     [17.208000, 17.208000],
         audioBars:       [16,16],
         audioBeat:       [16,16],
-        delayTime:      1000,
+        delayTime:      6000,
         fadeOutTime:    50
     },
     levelWords:     { 
@@ -276,10 +276,9 @@ $42.MUSIC_RED_NOSES = {
         playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16] 
     },
     rotate:         { 
-        audio: [res.red_noses_rotate_1a_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1c_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1d_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1e_mp3, res.red_noses_rotate_1b_mp3
-        //, res.red_noses_rotate_1f_mp3, res.red_noses_rotate_1g_mp3, res.red_noses_rotate_1h_mp3, res.red_noses_rotate_1g_mp3
+        audio: [res.red_noses_rotate_1a_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1c_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1d_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1e_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1f_mp3, res.red_noses_rotate_1g_mp3, res.red_noses_rotate_1h_mp3, res.red_noses_rotate_1g_mp3
         ],
-        minInterval: 2.142,
+        minInterval: 2.8,
         playOnBeat: [2,4,6,8,10,12,14,16] 
     },
     fixTile:        { 
@@ -309,7 +308,7 @@ $42.MUSIC_BLUE_QUADRAT = { // Hier gehts weiter ... Musik stopped
         audio:           [res.blue_quadrat_loop_mp3],
         audioLoopStart:  0,
         audioLength:     [38.064000],
-        delayTime:       1000
+        delayTime:       6000
     },
     levelWords: { 
         audio: res.blue_quadrat_level_words_mp3,
@@ -326,7 +325,7 @@ $42.MUSIC_BLUE_QUADRAT = { // Hier gehts weiter ... Musik stopped
     swipe: { 
         audio: null,
         //audio: [res.blue_quadrat_swipe_1_mp3, res.blue_quadrat_swipe_2_mp3, res.blue_quadrat_swipe_3_mp3],
-        intervalTime: 450
+        //intervalTime: 450
     },
     rotate: { 
         audio: [res.blue_quadrat_rotate_1_mp3, res.blue_quadrat_rotate_2_mp3, res.blue_quadrat_rotate_3_mp3],
