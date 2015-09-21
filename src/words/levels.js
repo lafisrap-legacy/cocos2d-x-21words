@@ -5,7 +5,7 @@ $42.LEVEL_MIN_PREFIX_CANDIDATES = 5;
 $42.LEVEL_DEVS = {
     easy: [{                        // Easy Level 1
         type: $42.LEVEL_TYPE_GIVEN,
-        music: $42.MUSIC_RED_HILLS,
+        music: $42.MUSIC_RED_NOSES,
         words: 3,
         minValue:   0,        // min word value that is shown
         minDemand:  0,        // min word value that is enough for winning
@@ -40,7 +40,7 @@ $42.LEVEL_DEVS = {
         wordFreq: 1.0
     },{                             // Level 4
         type: $42.LEVEL_TYPE_GIVEN,
-        music: $42.MUSIC_RED_NOSES,
+        music: $42.MUSIC_GREEN_FOREST,
         words: 3,
         minValue:   0,
         minDemand:  0,
