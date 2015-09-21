@@ -81,8 +81,8 @@ $42.MUSIC_RED_NOSES = {
     background: {
         audio:           [res.red_noses_background_loop_C_1_mp3, res.red_noses_background_loop_C_2_mp3],
         audioLoopStart:  0,
-        audioLength:     [17.208000, 17.208000],
-        audioBars:       [16,16],
+        audioLength:     [37.142000, 5.714000],
+        audioBars:       [13,2],
         audioBeat:       [16,16],
         delayTime:      6000,
         fadeOutTime:    50
@@ -254,7 +254,7 @@ $42.MUSIC_GREEN_FOREST = {
     background: {
         audio:          [res.green_forest_intro_mp3, res.green_forest_loop_mp3],
         audioLoopStart: 1,
-        audioLength:    [85.140000, 89.136000],
+        audioLength:    [30.267000, 35.714000],
         audioBars:      [23, 24],
         audioBeat:      [4, 4],
     },
