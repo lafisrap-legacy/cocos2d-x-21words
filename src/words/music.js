@@ -180,6 +180,7 @@ $42.MUSIC_FLAMES = {
     lastWord:           { audio: res.flames_last_word_mp3 },
     deleteRow:          { audio: res.flames_delete_row_mp3 },
     final:              { audio: res.flames_final_mp3 },
+    deleteLastRows:     { audio: res.flames_delete_last_rows_mp3 },
 };
 
 
@@ -260,45 +261,41 @@ $42.MUSIC_GREEN_FOREST = {
         audioBeat:      [4, 4],
     },
     levelWords: { 
-        audio:          res.red_hills_level_words_mp3,
+        audio:          res.green_forest_level_words_mp3,
         delayTime:      4500,
     },
     levelNr: { 
-        audio:          res.red_hills_level_nr_mp3, 
+        audio:          res.green_forest_level_nr_mp3, 
         delayTime:      1500
     },
     setTile: { 
-        audio:          res.red_hills_set_tile_mp3,
+        audio:          res.green_forest_set_tile_mp3,
         playAfterBeats: 1 
     },
     swipe: { 
-        audioSet:      [[res.red_hills_swipe_1_mp3, res.red_hills_swipe_2_mp3, res.red_hills_swipe_3_mp3],
-                        [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
-                        [res.blue_mountains_swipe_mp3]],
-        nextSetOn:      "fullWord",
+        audioSet:      [res.green_forest_swipe_1_mp3, res.green_forest_swipe_2_mp3],
         intervalTime:   450,
         minInterval:    200,
         stayWithSound:  true
     },
     rotate: { 
-        audioSet:      [[res.red_hills_rotate_1_mp3, res.red_hills_rotate_2_mp3, res.red_hills_rotate_3_mp3],
-                        [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
-                        [res.blue_quadrat_rotate_1_mp3, res.blue_quadrat_rotate_2_mp3, res.blue_quadrat_rotate_3_mp3]],
-        nextSetOn:      "time",
+        audioSet:      [res.green_forest_rotate_1_mp3, res.green_forest_rotate_2_mp3, res.green_forest_rotate_3_mp3],
         dontStop:       true
     },
-    fixTile:            { audio: res.red_hills_fix_tile_1_mp3 }, 
-    selection:          { audio: res.red_hills_selection_mp3 },
-    fullWord:           { audio: res.red_hills_full_word_mp3 },
+    fixTile:            { audio: res.green_forest_fix_tile_1_mp3 }, 
+    selection:          { audio: res.green_forest_selection_mp3 },
+    fullWord:           { audio: res.green_forest_full_word_mp3 },
     presentWord: { 
-        audio:          res.blue_mountains_present_word_mp3,
+        audio:          null
+        //audio:          res.blue_mountains_present_word_mp3,
         intervalTime:   3000,
         delayTime:      500 
     },
-    lastWord:           { audio: res.red_hills_last_word_mp3 },
-    deleteRow:          { audio: res.red_hills_delete_row_mp3 },
-    deleteLastRows:     { audio: res.red_hills_delete_last_rows_mp3 },
-    final:              { audio: res.red_hills_final_mp3 },
+    lastWord:           { audio: res.green_forest_full_word_mp3 },
+    deleteRow:          { audio: res.green_forest_delete_row_mp3 },
+    deleteLastRows:     { audio: res.green_forest_delete_last_rows_mp3 },
+    final:              null
+    //final:              { audio: res.green_forest_final_mp3 },
 };
 
 
