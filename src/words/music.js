@@ -172,9 +172,10 @@ $42.MUSIC_FLAMES = {
     selection:          { audio: res.flames_selection_mp3 },
     fullWord:           { audio: res.flames_full_word_mp3 },
     presentWord: { 
-        audio:          res.blue_mountains_present_word_mp3,
-        intervalTime:   3000, 
-        delayTime:      500 
+        audio:          null
+        //audio:          res.blue_mountains_present_word_mp3,
+        //intervalTime:   3000, 
+        //delayTime:      500 
     },
     lastWord:           { audio: res.flames_last_word_mp3 },
     deleteRow:          { audio: res.flames_delete_row_mp3 },
