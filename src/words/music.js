@@ -230,7 +230,7 @@ $42.TEST = {
                         //[res.test_rotate_1_mp3]],
                         //nextSetOn: "time",
                         //dontStop: true,
-        playOnBeat:     [1,3,5,7,
+        playOnBeat:     [1,3,5,7],
         stayWithSound:  true,
         dontStop:       true
     },
