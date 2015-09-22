@@ -270,10 +270,12 @@ $42.MUSIC_GREEN_FOREST = {
     },
     setTile: { 
         audio:          res.green_forest_set_tile_mp3,
+        stayWithSound:  true
         playAfterBeats: 1 
     },
     swipe: { 
         audio:      [res.green_forest_swipe_1_mp3, res.green_forest_swipe_2_mp3],
+        stayWithSound:  true
         //intervalTime:   450,
         //minInterval:    200,
         //stayWithSound:  true
