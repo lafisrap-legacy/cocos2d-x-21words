@@ -294,8 +294,10 @@ $42.MUSIC_GREEN_FOREST = {
     lastWord:           { audio: res.green_forest_full_word_mp3 },
     deleteRow:          { audio: res.green_forest_delete_row_mp3 },
     deleteLastRows:     { audio: res.green_forest_delete_last_rows_mp3 },
-    final:              null,
+    final:      { 
+        audio:          null,
     //final:              { audio: res.green_forest_final_mp3 },
+    },
 };
 
 
