@@ -273,13 +273,13 @@ $42.MUSIC_GREEN_FOREST = {
         playAfterBeats: 1 
     },
     swipe: { 
-        audioSet:      [res.green_forest_swipe_1_mp3, res.green_forest_swipe_2_mp3],
+        audio:      [res.green_forest_swipe_1_mp3, res.green_forest_swipe_2_mp3],
         //intervalTime:   450,
         //minInterval:    200,
         //stayWithSound:  true
     },
     rotate: { 
-        audioSet:      [res.green_forest_rotate_1_mp3, res.green_forest_rotate_2_mp3, res.green_forest_rotate_3_mp3],
+        audio:      [res.green_forest_rotate_1_mp3, res.green_forest_rotate_2_mp3, res.green_forest_rotate_3_mp3],
         //dontStop:       true
     },
     fixTile:            { audio: res.green_forest_fix_tile_1_mp3 }, 
