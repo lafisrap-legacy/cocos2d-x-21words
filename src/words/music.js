@@ -110,13 +110,17 @@ $42.MUSIC_RED_NOSES = {
                    //[res.test_rotate_1_mp3]],
         //nextSetOn: "time",
         //dontStop: true,
-        playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16] 
+        playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16] ,
+        stayWithSound:  true,
+        dontStop:       true
     },
     rotate:         { 
         audio: [res.red_noses_rotate_1a_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1c_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1d_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1e_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1f_mp3, res.red_noses_rotate_1g_mp3, res.red_noses_rotate_1h_mp3, res.red_noses_rotate_1g_mp3
         ],
         minInterval: 2.8,
-        playOnBeat: [2,4,6,8,10,12,14,16] 
+        playOnBeat: [2,4,6,8,10,12,14,16],
+        stayWithSound:  true,
+        dontStop:       true
     },
     fixTile:        { 
         audioSet: [[res.red_noses_fix_tile_1_mp3],
@@ -162,11 +166,15 @@ $42.MUSIC_FLAMES = {
     },
     swipe: { 
         audio:          null, 
-        intervalTime:   450
+        intervalTime:   450,
+        stayWithSound:  true,
+        dontStop:       true
     },
     rotate: { 
         audio:          [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
-        minInterval:    0 
+        minInterval:    0,
+        stayWithSound:  true,
+        dontStop:       true
     },
     fixTile:            { audio: res.flames_fix_tile_1_mp3 }, 
     selection:          { audio: res.flames_selection_mp3 },
@@ -222,12 +230,16 @@ $42.TEST = {
                         //[res.test_rotate_1_mp3]],
                         //nextSetOn: "time",
                         //dontStop: true,
-        playOnBeat:     [1,3,5,7] 
+        playOnBeat:     [1,3,5,7,
+        stayWithSound:  true,
+        dontStop:       true
     },
     rotate: { 
         audio:          [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
         minInterval:    0,
-        playOnBeat:     [1,2,3,4,5,6,7,8] 
+        playOnBeat:     [1,2,3,4,5,6,7,8],
+        stayWithSound:  true,
+        dontStop:       true
     },
     fixTile: { 
         audioSet:      [[res.test_fix_tile_1_mp3],
@@ -332,7 +344,7 @@ $42.MUSIC_BLUE_QUADRAT = { // Hier gehts weiter ... Musik stopped
     },
     rotate: { 
         audio: [res.blue_quadrat_rotate_1_mp3, res.blue_quadrat_rotate_2_mp3, res.blue_quadrat_rotate_3_mp3],
-        minInterval: 0 
+        minInterval: 0
     },
     fixTile: { 
         audio: [res.blue_quadrat_fix_tile_1_mp3, res.blue_quadrat_fix_tile_2_mp3, res.blue_quadrat_fix_tile_3_mp3] 
@@ -376,11 +388,15 @@ $42.MUSIC_INKA_TEMPLE = {
     },
     swipe: { 
         audio: [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
-        intervalTime: 450
+        intervalTime: 450,
+        stayWithSound:  true,
+        dontStop:       true
     },
     rotate: { 
         audio: [res.inka_temple_rotate_1_mp3, res.inka_temple_rotate_2_mp3, res.inka_temple_rotate_3_mp3],
-        minInterval: 0
+        minInterval: 0,
+        stayWithSound:  true,
+        dontStop:       true
     },
     fixTile: { 
         audio: [res.inka_temple_fix_tile_a_mp3, res.inka_temple_fix_tile_b_mp3, res.inka_temple_fix_tile_c_mp3] 
@@ -422,11 +438,14 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     swipe: { 
         audio: res.blue_mountains_swipe_mp3,
-        dontStop: true
+        stayWithSound:  true,
+        dontStop:       true
     },
     rotate: { 
         audio: [res.blue_mountains_rotate_1_mp3, res.blue_mountains_rotate_2_mp3, res.blue_mountains_rotate_3_mp3],
-        minInterval: 0
+        minInterval: 0,
+        stayWithSound:  true,
+        dontStop:       true
     },
     fixTile: { 
         audio: [res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_1_mp3, res.blue_mountains_fix_tile_2_mp3], 
