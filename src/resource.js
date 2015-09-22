@@ -103,8 +103,8 @@ var res = {
     test_fix_tile_4_mp3:                    "res/sounds/levelsounds/test_trombone_4.mp3",
 
     // level 4                                               
-    green_forest_intro_mp3:              "res/sounds/levelsounds/green_forest_background_intro_1,1,2.mp3",
-    green_forest_loop_mp3:               "res/sounds/levelsounds/green_forest_background_loop_1,1,2.mp3",
+    green_forest_intro_mp3:              "res/sounds/levelsounds/green_forest_background_intro_1,1,3.mp3",
+    green_forest_loop_mp3:               "res/sounds/levelsounds/green_forest_background_loop_1,1,3.mp3",
     green_forest_level_words_mp3:        "res/sounds/levelsounds/green_forest_level_words_1,1,2.mp3",
     green_forest_level_nr_mp3:           "res/sounds/levelsounds/green_forest_level_nr_1,1,2.mp3",
     green_forest_set_tile_mp3:           "res/sounds/levelsounds/green_forest_set_tile_1,1,2.mp3",
