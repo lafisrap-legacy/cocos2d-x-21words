@@ -262,7 +262,7 @@ $42.MUSIC_GREEN_FOREST = {
     },
     levelWords: { 
         audio:          res.green_forest_level_words_mp3,
-        delayTime:      4500,
+        delayTime:      4500
     },
     levelNr: { 
         audio:          res.green_forest_level_nr_mp3, 
@@ -286,15 +286,15 @@ $42.MUSIC_GREEN_FOREST = {
     selection:          { audio: res.green_forest_selection_mp3 },
     fullWord:           { audio: res.green_forest_full_word_mp3 },
     presentWord: { 
-        audio:          null
+        audio:          null,
         //audio:          res.blue_mountains_present_word_mp3,
-        intervalTime:   3000,
-        delayTime:      500 
+        //intervalTime:   3000,
+        //delayTime:      500 
     },
     lastWord:           { audio: res.green_forest_full_word_mp3 },
     deleteRow:          { audio: res.green_forest_delete_row_mp3 },
     deleteLastRows:     { audio: res.green_forest_delete_last_rows_mp3 },
-    final:              null
+    final:              null,
     //final:              { audio: res.green_forest_final_mp3 },
 };
 
