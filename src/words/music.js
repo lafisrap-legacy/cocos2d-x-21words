@@ -67,10 +67,9 @@ $42.MUSIC_VOLUME_GRANULARITY = 10;
 ////////////////////////////////////////////////
 // Music for easy title
 $42.MUSIC_TITLE_EASY = {
-    intro: res.title_easy_intro_mp3,
-    introLength:    44.309000,
-    audio:  res.title_easy_loop_mp3,
-    audioLength:     38.066000,
+    audio:  [res.title_easy_intro_mp3, res.title_easy_loop_1_mp3, res.title_easy_loop_2_mp3],
+    audioLoopStart:  1,
+    audioLength:     [28.956000, 4.158000, 32.580000],
     fadeOutDelay:   0,
     fadeOutTime:    4000      // must not be more than any delayTime of backgrounds
 }

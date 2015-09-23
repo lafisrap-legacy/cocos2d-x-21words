@@ -27,12 +27,13 @@ var res = {
 	amtype72_png : "res/fonts/amtype72.png",
 
 	// sounds
-    title_easy_intro_mp3 : "res/sounds/blaues_titelbild_einleitung0,1,16.mp3",
-    title_easy_loop_mp3  : "res/sounds/blaues_titelbild_loop0,1,14.mp3",
-    mostafa_out_mp3 :      "res/sounds/mostafa_geht0,1,5.mp3",
-    mostafa_in_mp3 :       "res/sounds/mostafa_kommt0,1,5.mp3",
-    speech_bubble_mp3 :    "res/sounds/sprechblase1,1,5.mp3",
-    tutorial_again_mp3 :   "res/sounds/tutorial_nochmal1,1,4.mp3",
+    title_easy_intro_mp3:      "res/sounds/blue_easy_title_intro_1,1,6.mp3",
+    title_easy_loop_1_mp3:     "res/sounds/blue_easy_title_loop_a_1,1,6.mp3",
+    title_easy_loop_2_mp3:     "res/sounds/blue_easy_title_loop_b_1,1,6.mp3",
+    mostafa_out_mp3 :          "res/sounds/mostafa_geht0,1,5.mp3",
+    mostafa_in_mp3 :           "res/sounds/mostafa_kommt0,1,5.mp3",
+    speech_bubble_mp3 :        "res/sounds/sprechblase1,1,5.mp3",
+    tutorial_again_mp3 :       "res/sounds/tutorial_nochmal1,1,4.mp3",
 
     // level 1
     red_noses_background_loop_C_1_mp3:           "res/sounds/levelsounds/red_noses_background_C_loop_a_1,4,4.mp3",
