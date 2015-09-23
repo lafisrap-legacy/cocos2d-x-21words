@@ -408,9 +408,9 @@ var _42_MODULE = function(_42Layer) {
                                 ls.setItem("currentLevel",$42.currentLevel);
                                 ls.setItem("wordProfile",$42.wordProfile);
 
-                                stopBackgroundMusic($42.currentLevel-1);
                                 
                                 setTimeout(function() {
+                                    stopBackgroundMusic($42.currentLevel-1);
                                     endLevel($42.currentLevel-1); // level number switched already
                                     startNewLevel();
                                 }, $42.BACKGROUND_SPEED*1.2*1000);
