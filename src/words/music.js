@@ -70,12 +70,12 @@ $42.MUSIC_TITLE_EASY = {
     audio:  [res.title_easy_intro_mp3, res.title_easy_loop_1_mp3, res.title_easy_loop_2_mp3],
     audioLoopStart:  1,
     audioLength:     [29.520000, 4.824000, 32.652000],
-    fadeOutDelay:   0,
+    fadeOutDelay:    0,
 <<<<<<< HEAD
-    fadeOutTime:    50,      
+    fadeOutTime:     50,      
 =======
 >>>>>>> b33b321fa5689c3e92b0e65f6c48d15e40e0045a
-    fadeOutTimeEnd: 4000    // must not be more than any delayTime of backgrounds
+    fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
 }
 
 ////////////////////////////////////////////////
@@ -295,7 +295,7 @@ $42.MUSIC_GREEN_FOREST = {
         playAfterBeats: 1 
     },
     swipe: { 
-        audio:          [res.green_forest_swipe_1_mp3, res.green_forest_swipe_2_mp3],
+        audio:          [res.green_forest_swipe_1_mp3, res.green_forest_swipe_2_mp3, res.green_forest_swipe_3_mp3, res.green_forest_swipe_4_mp3, res.green_forest_swipe_5_mp3, res.green_forest_swipe_6_mp3],
         //intervalTime:   450,
         //minInterval:    200,
         stayWithSound:  true,
