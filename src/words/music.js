@@ -71,7 +71,8 @@ $42.MUSIC_TITLE_EASY = {
     audioLoopStart:  1,
     audioLength:     [28.956000, 4.158000, 32.580000],
     fadeOutDelay:   0,
-    fadeOutTime:    4000      // must not be more than any delayTime of backgrounds
+    fadeOutTime:    50      
+    fadeOutTimeEnd: 4000    // must not be more than any delayTime of backgrounds
 }
 
 ////////////////////////////////////////////////
