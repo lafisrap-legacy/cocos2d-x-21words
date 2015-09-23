@@ -388,7 +388,7 @@ $42.MUSIC_INKA_TEMPLE = {
     },
     swipe: { 
         audio: [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
-        intervalTime: 450,
+        intervalTime: 4500,
         stayWithSound:  true,
         dontStop:       true
     },
@@ -434,6 +434,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     setTile: { 
         audio: res.blue_mountains_set_tile_mp3, 
+        playOnBeat: [1,4],
         playAfterBeats: 1
     },
     swipe: { 
