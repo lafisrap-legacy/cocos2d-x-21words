@@ -408,7 +408,7 @@ var _42_MODULE = function(_42Layer) {
                                 ls.setItem("currentLevel",$42.currentLevel);
                                 ls.setItem("wordProfile",$42.wordProfile);
 
-                                stopBackgroundMusic();
+                                stopBackgroundMusic($42.currentLevel-1);
                                 
                                 setTimeout(function() {
                                     endLevel($42.currentLevel-1); // level number switched already
@@ -857,11 +857,11 @@ var _42_MODULE = function(_42Layer) {
         }
     };
 
-    var stopBackgroundMusic = function() {
-        var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
+    var stopBackgroundMusic = function(currentLevel) {
+        var level = $42.LEVEL_DEVS[ml._gameMode][(currentLevel || $42.currentLevel)-1];
         setTimeout(function() {
             $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTimeEnd);
-        }, level.music.background.fadeOutDelay * 1000);
+        }, level.music.background.fadeOutDelay);
     };
 
     var checkLevelConditions = function(word, value) {
