@@ -71,7 +71,6 @@ $42.MUSIC_TITLE_EASY = {
     audioLoopStart:  1,
     audioLength:     [28.956000, 4.158000, 32.580000],
     fadeOutDelay:   0,
-    fadeOutTime:    50      
     fadeOutTimeEnd: 4000    // must not be more than any delayTime of backgrounds
 }
 
@@ -84,8 +83,10 @@ $42.MUSIC_RED_NOSES = {
         audioLength:     [37.142000, 5.714000],
         audioBars:       [13,2],
         audioBeat:       [16,16],
-        delayTime:      6000,
-        fadeOutTime:    50
+        delayTime:       6000,
+        fadeOutTime:     50,
+        fadeOutDelay:    5000,
+        fadeOutTimeEnd:  1000
     },
     levelWords:     { 
         audio: res.red_hills_level_words_mp3, 
