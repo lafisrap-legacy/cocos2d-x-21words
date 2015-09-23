@@ -300,14 +300,16 @@ $42.MUSIC_GREEN_FOREST = {
     },
     fixTile:            { audio: res.green_forest_fix_tile_1_mp3 }, 
     selection:          { audio: res.green_forest_selection_mp3 },
-    fullWord:           { audio: res.green_forest_full_word_mp3 },
+    fullWord:           {
+        audio:          [res.green_forest_full_word_a_mp3, res.green_forest_full_word_b_mp3],
+    },
     presentWord: { 
         audio:          null,
         //audio:          res.blue_mountains_present_word_mp3,
         //intervalTime:   3000,
         //delayTime:      500 
     },
-    lastWord:           { audio: res.green_forest_full_word_mp3 },
+    lastWord:           { audio: res.green_forest_last_word_mp3 },
     deleteRow:          { audio: res.green_forest_delete_row_mp3 },
     deleteLastRows:     { audio: res.green_forest_delete_last_rows_mp3 },
     final:      { 
