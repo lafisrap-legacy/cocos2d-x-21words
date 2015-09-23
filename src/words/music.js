@@ -71,10 +71,7 @@ $42.MUSIC_TITLE_EASY = {
     audioLoopStart:  1,
     audioLength:     [29.520000, 4.824000, 32.652000],
     fadeOutDelay:    0,
-<<<<<<< HEAD
     fadeOutTime:     50,      
-=======
->>>>>>> b33b321fa5689c3e92b0e65f6c48d15e40e0045a
     fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
 }
 
@@ -88,14 +85,9 @@ $42.MUSIC_RED_NOSES = {
         audioBars:       [13,2],
         audioBeat:       [16,16],
         delayTime:       6000,
-<<<<<<< HEAD
-        fadeOutDelay:    3600,
-        fadeOutTimeEnd:  3600
-=======
         fadeOutTime:     50,
         fadeOutDelay:    5000,
         fadeOutTimeEnd:  1000
->>>>>>> b33b321fa5689c3e92b0e65f6c48d15e40e0045a
     },
     levelWords:     { 
         audio: res.red_noses_words_mp3, 
