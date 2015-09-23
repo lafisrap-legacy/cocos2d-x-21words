@@ -72,7 +72,8 @@ $42.MUSIC_TITLE_EASY = {
     audio:  res.title_easy_loop_mp3,
     audioLength:     38.066000,
     fadeOutDelay:   0,
-    fadeOutTime:    4000      // must not be more than any delayTime of backgrounds
+    fadeOutTime:    50      
+    fadeOutTimeEnd: 4000    // must not be more than any delayTime of backgrounds
 }
 
 ////////////////////////////////////////////////

@@ -383,6 +383,7 @@ var _42_MODULE = function(_42Layer) {
                             if( level.music.final ) $42.SCENE.playEffect(level.music.final);
                             
                             $42.wordTreasure = $42.wordTreasure.concat(ml.levelWords);
+                            ml.levelWords = [];
                             if( ++$42.currentLevel > $42.LEVEL_DEVS[ml._gameMode].length ) {
                                 ml.drawScorebar(false);
 
@@ -781,7 +782,7 @@ var _42_MODULE = function(_42Layer) {
             words = [];
 
         if( level.type === $42.LEVEL_TYPE_FREE ) return;
-        if( level.type === $42.LEVEL_TYPE_GIVEN && $42.currentLevel === 1 ) {
+        if( level.type === $42.LEVEL_TYPE_GIVEN && $42.currentLevel <= 3 ) {
             for( prefix in wordList ) {
                 ml.wordsForTiles = {
                     index: 0,
@@ -859,7 +860,7 @@ var _42_MODULE = function(_42Layer) {
     var stopBackgroundMusic = function() {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
         setTimeout(function() {
-            $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTime);
+            $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTimeEnd);
         }, level.music.background.fadeOutDelay * 1000);
     };
 
@@ -2607,7 +2608,7 @@ var _42_MODULE = function(_42Layer) {
     
     _42Layer.hookStopBackgroundMusic = function() {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
-        $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTime);
+        $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTimeEnd);
     };
 
     _42Layer.hookFuncOnNextBeat = function(cb, effect) {

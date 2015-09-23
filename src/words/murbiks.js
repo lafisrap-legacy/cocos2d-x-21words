@@ -2,75 +2,75 @@
  * Murbiks Module
  * 
  * Tutorials
- * 
- * 
- * 
+ * Mostafa (Mosquito)
  * 
  * */
-$42.MURBIKS_LAYER_TAG = 103;
-$42.SPEECH_BUBBLE_WIDTH = 540;
-$42.SPEECH_BUBBLE_HEIGHT = 450;
-$42.SPEECH_BUBBLE_COLOR = cc.color(0,0,70);
-$42.SPEECH_BUBBLE_FONTSIZE = 48;
-$42.SPEECH_BUBBLE_OPACITY = 230;
-$42.SPEECH_BUBBLE_LINE_COLOR = cc.color(170,170,185);
-$42.SPEECH_BUBBLE_TAG = 201;
-$42.SPEECH_BUBBLE_LINE_TAG = 202;
-$42.SPEECH_BUBBLE_CLOUD_TAG = 203;
-$42.SPEECH_BUBBLE_BUTTON_TAG = 204;
-$42.HAND_TAG = 205;
-$42.HAND_ROTATION = -60;
-$42.HAND_CONTACT_SIZE = 40;
-$42.HAND_CONTACT_COLOR = cc.color(0,0,70);
-$42.HAND_CONTACT_TIME = 0.3;
-$42.HAND_CONTACT_TIME = 0.3;
-$42.TILE1_TAG = 206;
-$42.TILE2_TAG = 207;
-$42.TILE3_TAG = 208;
-$42.TILE4_TAG = 209;
-$42.TILE5_TAG = 210;
-$42.MARKER_TAG = 211; // -220
-$42.WORDFRAME_TAG = 221;
-$42.BUBBLE_BUTTON_SCALE = 0.7;
-$42.STORY_BACKGROUND_POS = cc.p(320,832);
-$42.STORY_BACKGROUND_OPACITY = 90;
-$42.STORY_BACKGROUND_SPEED = 1.33;
-$42.STORY_MENU_FONT_SIZE = 48;
-$42.STORY_MENU_PADDING = 20;
-$42.STORY_MENU_TAG = 222;
-$42.STORY_SCALE_PRESS_FINGER = 0.9;
+$42.MURBIKS_LAYER_TAG = 103;                            // sprite tag for layer
+$42.SPEECH_BUBBLE_WIDTH = 540;                          // speech bubble 
+$42.SPEECH_BUBBLE_HEIGHT = 450;                         //
+$42.SPEECH_BUBBLE_COLOR = cc.color(0,0,70);             //
+$42.SPEECH_BUBBLE_FONTSIZE = 48;                        //
+$42.SPEECH_BUBBLE_OPACITY = 230;                        //
+$42.SPEECH_BUBBLE_LINE_COLOR = cc.color(170,170,185);   //
+$42.SPEECH_BUBBLE_TAG = 201;                            //
+$42.SPEECH_BUBBLE_LINE_TAG = 202;                       //
+$42.SPEECH_BUBBLE_CLOUD_TAG = 203;                      //
+$42.SPEECH_BUBBLE_BUTTON_TAG = 204;                     //
+$42.HAND_TAG = 205;                                     // hand
+$42.HAND_ROTATION = -60;                                //
+$42.TILE1_TAG = 206;                                    // tiles
+$42.TILE2_TAG = 207;                                    //
+$42.TILE3_TAG = 208;                                    //
+$42.TILE4_TAG = 209;                                    //
+$42.TILE5_TAG = 210;                                    //
+$42.MARKER_TAG = 211;                                   // markers (211-220)
+$42.WORDFRAME_TAG = 221;                                // wordframe
+$42.STORY_BACKGROUND_POS = cc.p(320,832);               // background
+$42.STORY_BACKGROUND_OPACITY = 90;                      //
+$42.STORY_BACKGROUND_SPEED = 1.33;                      // animation speed
+$42.STORY_MENU_FONT_SIZE = 48;                          // menu
+$42.STORY_MENU_PADDING = 20;                            //
+$42.STORY_MENU_TAG = 222;                               //
+$42.STORY_SCALE_PRESS_FINGER = 0.9;                     // scale to show finger pressed
 
+////////////////////////////////////////////////////////////////////////////////////////
+// Murbiks module: Included by main game scene
+//
 var _MURBIKS_MODULE = function(parentLayer) {
-	var pl = parentLayer,
-		mul = null, // murbics layer
-        level = null,
-		curTileProgram = null,
-		curTileProgramCnt = null,
-		curProgram = null,
-		anims = {},
-        finalCallback = null,
-        activeTimeouts = [],
+    ////////////////////////////////////////////////////
+    // Module variables
+    //
+	var pl = parentLayer,                   // = game scene
+		mul = null,                         // murbiks layer
+        level = null,                       // level information
+		curProgram = null,                  // id for running animation
+		anims = {},                         // predefined animations 
+        finalCallback = null,               // callback called after end of animation
+        activeTimeouts = [],                // list of all timeouts
 		
-        mostafa = null,
-		hand = null,
-		speechBubbleCloud = null,
-		speechBubbleLine = null,
-		speechBubble = null,
-        tile1 = null,
+        mostafa = null,                     // mostafa sprite
+		hand = null,                        // hand
+		speechBubbleCloud = null,           // cloud
+		speechBubbleLine = null,            // line
+		speechBubble = null,                // bubble
+        tile1 = null,                       // tiles
         tile2 = null,
         tile3 = null,
         tile4 = null,
         tile5 = null,
-        wordframe = null,
-        storyBackground = null;
+        wordframe = null,                   // wordframe
+        storyBackground = null;             // background
 
     //////////////////////////////////////////////////////////////////////////////////////
     // Animation programs
     // (full list at end of this file)
     //
+    // 1) Greeting on title screen
     var animMostafasGreeting = function(options) {
         stopActionsAndTimeouts();
 
+        ////////////////////////////
+        // Say hello!
         var chatWithPlayer = function() {
             var text = $42.t.mostafa.greeting,
                 pos = mostafa.getPosition();
@@ -83,6 +83,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
             if( typeof options.cb === "function" ) options.cb();
         };
 
+        ///////////////////////////////////
+        // Let mostafa fly in
         mostafa.setPosition(cc.p(50, 1400));    
         mostafaFlyTo({
             time: options.time, 
@@ -97,12 +99,18 @@ var _MURBIKS_MODULE = function(parentLayer) {
         });
     };
 
+    ////////////////////////////////////
+    // 2) Flying away
     var animMostafaFlyingAway = function(options) {
         stopActionsAndTimeouts();
         hideSpeechBubble();
 
+        ///////////////////////////////////////
+        // Move him to the left side
         if( mostafa.getPosition().x > cc.width+70 ) mostafa.setPosition(cc.p(-70,cc.height/2));
 
+        //////////////////////////////////////
+        // Prepare animation
         var animAction = mostafa.runAction(cc.repeatForever(anims.mostafa_fly)),
 			bezier = options.bezier || [
 				cc.p( 360, 480),
@@ -111,7 +119,13 @@ var _MURBIKS_MODULE = function(parentLayer) {
 			];
 	    _42_retain(animAction, "mostafa animAction fly");
 	
+        //////////////////////////////////////
+        // Play Mostafa sound
         $42.SCENE.playEffect({ audio: res.mostafa_out_mp3 });
+        
+        ///////////////////////////////////////
+        // Let him fly
+        mostafa.setFlippedX(false);
 	    mostafa.runAction(
             cc.sequence(
                 cc.bezierTo(options.time, bezier),
@@ -124,12 +138,20 @@ var _MURBIKS_MODULE = function(parentLayer) {
         ); 
     };
 
+    ////////////////////////////////////////////////////////
+    // 3) Story animation - basic concepts 
     var animStoryBasicConcepts = function(options) {
+        ///////////////////////////////
+        // Everything stops
         stopActionsAndTimeouts();
 
         var sb = storyBackground;
 
+        ///////////////////////////////////////////////////////////////////////////////
+        // Page 1 Definition
         var page1 = function(time,cb, repeat) {
+            ///////////////////////////////////
+            // Definining time delays
             var size = sb.getContentSize(),
                 time0 = time,
                 time1 = 1,
@@ -142,6 +164,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 time8 = 0.3,
                 time9 = time2;
             
+            //////////////////////////////////////
+            // Put first tile and hand in place
             tile1.setPosition(cc.p(size.width/2, size.height/2));
             if( !sb.getChildByTag($42.TILE1_TAG) ) sb.addChild(tile1,5,$42.TILE1_TAG);
             
@@ -149,6 +173,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
             hand.setOpacity(0);
             if( !sb.getChildByTag($42.HAND_TAG) ) sb.addChild(hand,10,$42.HAND_TAG);
 
+            /////////////////////////////////////
+            // Tile 1 animation
             tile1.runAction(
                 cc.sequence(
                     cc.delayTime(time0+time1+time2+time3+time4),
@@ -163,6 +189,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );
 
+            //////////////////////////////////////
+            // Hand animation
             var tPos = tile1.getPosition();
             hand.runAction(
                 cc.sequence(
@@ -186,7 +214,11 @@ var _MURBIKS_MODULE = function(parentLayer) {
             if( !repeat ) showSpeechBubble(0, $42.t.mostafa.basic1, mostafa.getPosition(), 320); 
         };
 
+        ///////////////////////////////////////////////////////////////////////////////
+        // Page 2 Definition
         var page2 = function(time, cb, repeat) {
+            /////////////////////////////
+            // Defining time delays
             var size = sb.getContentSize(),
                 time0 = 1,
                 time1 = 1.1,
@@ -194,11 +226,15 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 time3 = 0.6,
                 time4 = 0.3;
             
+            /////////////////////////////
+            // Setting first tile and hand in position
             tile1.setPosition(cc.p(270,170));
             
             hand.setPosition(cc.p(size.width, size.height/4));
             hand.setOpacity(0);
 
+            ///////////////////////////////
+            // Animate first tile (rotate)
             tile1.runAction(
                 cc.sequence(
                     cc.delayTime(time0+time1+time2),
@@ -212,6 +248,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );
 
+            ////////////////////////////////
+            // Animate hand
             var tPos = tile1.getPosition();
             hand.runAction(
                 cc.sequence(
@@ -235,9 +273,13 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );    
 
+            //////////////////////////
+            // Show speech bubble only the first time
             if( !repeat ) showSpeechBubble(0, $42.t.mostafa.basic2, mostafa.getPosition(), 320); 
         };
 
+        ///////////////////////////////////////////////////////////////////////////////
+        // Page 3 Definition
         var page3 = function(time, cb, repeat) {
             var ml = $42.SCENE.mainLayer,
                 size = sb.getContentSize(),
@@ -247,6 +289,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 time3 = 0.3,
                 time4 = 1.1;
             
+            ////////////////////////////////
+            // Putting tiles and hand in place
             if( !sb.getChildByTag($42.TILE2_TAG) ) sb.addChild(tile2,5,$42.TILE2_TAG);
             if( !sb.getChildByTag($42.WORDFRAME_TAG) ) sb.addChild(wordframe,0,$42.WORDFRAME_TAG);
             
@@ -262,6 +306,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
             hand.setPosition(cc.p(size.width, size.height/4));
             hand.setOpacity(0);
 
+            ////////////////////////////////////
+            // Animate second tile
             tile2.runAction(
                 cc.sequence(
                     cc.delayTime(time0),
@@ -272,6 +318,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );
 
+            ////////////////////////////////////
+            // Animate hand
             hand.runAction(
                 cc.sequence(
                     cc.delayTime(time0+time1),
@@ -295,8 +343,12 @@ var _MURBIKS_MODULE = function(parentLayer) {
            if( !repeat ) showSpeechBubble(0, $42.t.mostafa.basic3, mostafa.getPosition(), 350); 
         };
 
+        //////////////////////////////////
+        // Three pages of basic concepts ...
         var pages = [page1, page2, page3]
 
+        //////////////////////////////////
+        // Let Mostafa fly in
         mostafa.setPosition(cc.p(750,576)); 
         mostafa.setFlippedX(true);
         mostafaFlyTo({
@@ -308,6 +360,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
             ]
         });
 
+        //////////////////////////////////
+        // Animate pages and show menu
         showConcepts(pages, function() {
             mostafaFlyTo({
                 time: options.time || 2,
@@ -322,22 +376,41 @@ var _MURBIKS_MODULE = function(parentLayer) {
         });
     };
 
+    ////////////////////////////////////////////////////////
+    // 4) Story animation - advanced concepts 
     var animStoryAdvancedConcepts = function(options) { 
+        //////////////////////////////
+        // Stop everything
         stopActionsAndTimeouts();
 
         var sb = storyBackground,
             marker = [];
 
+        /////////////////////////////////
+        // Set markers to a start position (in case user pressed "go on" early)
         var markersInit = [0,0,0,1,-1,1,1,1,1];
         var resetMarker = function(i,type) {
-            sb.removeChild(marker[i]);
+            //////////////////////
+            // Delete old sprites if there are any
+            if( marker[i] ) sb.removeChild(marker[i]);
+
+            if( markersInit[i] === -1 ) return;
+
+            cc.log( "resetMarker: "+(type || "marker"+markersInit[i]+".png"))
+
+            //////////////////////
+            // Make new ones
             marker[i] = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame(type || "marker"+markersInit[i]+".png"));
             marker[i].setPosition(cc.p(i*60+50, 104));
             marker[i].setScale(0.9375);
             sb.addChild(marker[i], 6, $42.MARKER_TAG+i);
         }
 
+        ///////////////////////////////////////////////////////////////////////////////
+        // Page 1 Definition
         var page1 = function(time,cb, repeat) {
+            /////////////////////////////////
+            // Animation Timing 
             var size = sb.getContentSize(),
                 time0 = time || 1,
                 time1 = 4.5,
@@ -346,6 +419,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 time4 = 1.3,
                 time5 = 1.1;
             
+            //////////////////////
+            // Bring two tiles and hand in position and set markers
             tile3.setPosition(cc.p(290, 160));
             tile3.setScale(0.9375);
             if( !sb.getChildByTag($42.TILE3_TAG) ) sb.addChild(tile3,5,$42.TILE3_TAG);
@@ -358,18 +433,11 @@ var _MURBIKS_MODULE = function(parentLayer) {
             hand.setOpacity(0);
             if( !sb.getChildByTag($42.HAND_TAG) ) sb.addChild(hand,10,$42.HAND_TAG);
 
-		    if( !sb.getChildByTag($42.MARKER_TAG) ) {
-                var markersInit = [0,0,0,1,1,1,1,1,1];
-                for( var i=0 ; i<9 ; i++ ) {
-                    marker[i] = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("marker"+markersInit[i]+".png"));
-                    marker[i].setPosition(cc.p(i*60+50, 104));
-                    marker[i].setScale(0.9375);
-                    sb.addChild(marker[i], 6, $42.MARKER_TAG+i);
-                }
-            }
+		    if( !sb.getChildByTag($42.MARKER_TAG) ) for( var i=0 ; i<9 ; i++ ) resetMarker(i);
             marker[3].setOpacity(0);
-            marker[4].setOpacity(0);
 
+            //////////////////////////
+            // Move tile
             tile4.runAction(
                 cc.sequence(
                     cc.delayTime(time0),
@@ -385,6 +453,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 )
             );
 
+            ///////////////////////////
+            // Move hand
             hand.runAction(
                 cc.sequence(
                     cc.delayTime(time0+time1),
@@ -400,7 +470,11 @@ var _MURBIKS_MODULE = function(parentLayer) {
             if( !repeat ) showSpeechBubble(0, $42.t.mostafa.advanced1, mostafa.getPosition(), 350); 
         };
 
+        ///////////////////////////////////////////////////////////////////////////////
+        // Page 2 Definition
         var page2 = function(time, cb, repeat) {
+            /////////////////////////
+            // Animation timing
             var size = sb.getContentSize(),
                 time0 = 1,
                 time1 = 1.1,
@@ -408,14 +482,20 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 time3 = 0.6,
                 time4 = 0.3;
             
+            //////////////////////////
+            // Set markers in start position
             for( var i=0 ; i<9 ; i++ ) resetMarker(i);
 
+            //////////////////////////
+            // Set tile and hand in position 
             tile4.setPosition(cc.p(260, 220));
             tile4.setScale(0.9375);
-            
+        
             hand.setPosition(cc.p(size.width, size.height/4));
             hand.setOpacity(0);
 
+            //////////////////////////////
+            // Move hand
             hand.runAction(
                 cc.sequence(
                     cc.delayTime(time0),
@@ -448,6 +528,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
            if( !repeat ) showSpeechBubble(0, $42.t.mostafa.advanced2, mostafa.getPosition(), 350); 
         };
 
+        ///////////////////////////////////////////////////////////////////////////////
+        // Page 3 Definition
         var page3 = function(time, cb, repeat) {
             var size = sb.getContentSize(),
                 time0 = 1,
@@ -932,18 +1014,6 @@ var _MURBIKS_MODULE = function(parentLayer) {
 		moveHandTo( time, pos, bezierPoint, true );
 	};
 	
-	var startTileProgram = function(program) {
-	    // start program
-	    curTileProgram = program;
-	    curTileProgramCnt = 0;
-	};
-
-	var stopTileProgram = function() {
-	    // start program
-	    curTileProgram = null;
-	    curTileProgramCnt = null;
-	};
-
     var createTile = function(letters, boxes) {
         var tile = cc.Node.create();
     
