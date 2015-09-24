@@ -229,6 +229,9 @@ var _42GameLayer = cc.Layer.extend({
 
 		logMsg.addChild($42.msg1, 1);        	
 		logMsg.addChild($42.msg2, 1);        	
+        
+        _42_retain($42.msg1, "msg1");
+        _42_retain($42.msg2, "msg2");
         this.addChild(logMsg, 100);
         
 	},
@@ -513,14 +516,13 @@ var _42GameLayer = cc.Layer.extend({
 	                	} else {
                             var t = self._currentTile,
                                 boxes = t && t.sprite.getChildren() || [];
-                                        
-                            for( var i=0 ; i<boxes.length ; i++ ) {
-                                var rect = boxes[i].getBoundingBox(),
-                                    loc1 = t.sprite.convertToNodeSpace(loc);
-                                if( cc.rectContainsPoint(rect, loc1) ) {
-                                    self.isSwipeUp = true;
-                                    break;
-                                }                              
+                            
+                            var col = Math.floor((loc.x - $42.BOXES_X_OFFSET) / $42.BS),
+                                row = Math.floor((loc.y - $42.BOXES_Y_OFFSET) / $42.BS),
+                                box = self.boxes[row][col];
+
+                            if( !box && row >=0 ) { 
+                                self.isSwipeUp = true;
                             }
 
 		                	self.isTap = true;
@@ -719,9 +721,9 @@ var _42GameLayer = cc.Layer.extend({
     ///////////////////////////////////////////////////////////////////
     // getRandomValue returns a weighted random number
     //
-	getRandomValue: function(occs, sum) {
+	getRandomValue: function(occs, sum, max) {
 		
-		if( !sum ) for( var i=0, sum=0 ; i<occs.length ; i++ ) sum += occs[i];
+		if( !sum ) for( var i=0, sum=0 ; i<(max || occs.length) ; i++ ) sum += occs[i];
 		
 		var rnd = Math.round(Math.random()*sum),
 			r = 0, i = 0;

@@ -39,6 +39,7 @@ $42.WORDFOUND_MOSTAFA_SPACE = 70;
 $42.WORDS_FLYING_IN_COLOR1 = cc.color(255,255,255);
 $42.WORDS_FLYING_IN_COLOR2 = cc.color(233,255,233);
 $42.MAX_BOXES_CHECKED = 15;
+$42.MAX_ROW_FOR_WEIRD_TILES = 9;
 
 // Order of multipliers
 $42.MULTIPLIER = [[2,"letter"],[2,"letter"],[2,"letter"],[3,"letter"],[2,"word"],[3,"letter"],[5,"letter"],[3,"word"],[3,"letter"],[5,"letter"],[10,"letter"]];
@@ -2187,7 +2188,7 @@ var _42_MODULE = function(_42Layer) {
 		
         this._nextTile = getProgrammedTile();
 		
-		if( !this._nextTile || this._nextTile.tile === undefined ) return ml.getRandomValue($42.TILE_OCCURANCES);
+		if( !this._nextTile || this._nextTile.tile === undefined ) return ml.getRandomValue($42.TILE_OCCURANCES, undefined, ml.maxRow > $42.MAX_ROW_FOR_WEIRD_TILES? 5:undefined);
         else return this._nextTile.tile; 
 	};
 
@@ -2269,6 +2270,9 @@ var _42_MODULE = function(_42Layer) {
         $42.SCENE.playEffect(level.music.fixTile);
         var time = new Date().getTime();
         cc.log("---Fixing Tile Music--- Playing sound for fixing tile at "+time);
+
+        ml.maxRow = 0;
+        for( var i=0 ; i<brcs.length ; i++ ) ml.maxRow = Math.max(ml.maxRow, brcs[i].row);
 
 		setSelections(); // OPTIMIZATION: Only look in current lines
        

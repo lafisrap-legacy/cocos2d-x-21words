@@ -86,7 +86,7 @@ $42.LEVEL_DEVS = {
 
     intermediate: [{                // Intermediate Level 1
         type: $42.LEVEL_TYPE_GIVEN,
-        music: $42.MUSIC_RED_HILLS,
+        music: $42.MUSIC_RED_NOSES,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -124,7 +124,7 @@ $42.LEVEL_DEVS = {
         neededLettersProb: 0.5
     },{                             // Level 4
         type: $42.LEVEL_TYPE_PREFIX,
-        music: $42.MUSIC_FLAMES,
+        music: $42.MUSIC_GREEN_FOREST,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -174,7 +174,7 @@ $42.LEVEL_DEVS = {
 
     expert: [{                             // Level 1
         type: $42.LEVEL_TYPE_PREFIX,
-        music: $42.MUSIC_RED_HILLS,
+        music: $42.MUSIC_RED_NOSES,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -206,7 +206,7 @@ $42.LEVEL_DEVS = {
         newLetters: 3,
     },{                             // Level 4
         type: $42.LEVEL_TYPE_FREE,
-        music: $42.MUSIC_FLAMES,
+        music: $42.MUSIC_GREEN_FOREST,
         words: 3,
         minValue:   0,
         minDemand:  0,
