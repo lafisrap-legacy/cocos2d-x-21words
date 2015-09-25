@@ -86,8 +86,8 @@ $42.MUSIC_RED_NOSES = {
         audioBeat:       [16,16],
         delayTime:       6000,
         fadeOutTime:     50,
-        //fadeOutDelay:    5000,
-        fadeOutTimeEnd:     1000
+        fadeOutDelay:    50,
+        //fadeOutTimeEnd:  1000
     },
     levelWords:     { 
         audio: res.red_noses_words_mp3, 
@@ -131,14 +131,15 @@ $42.MUSIC_RED_NOSES = {
         playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
     }, 
     selection:      { audio: res.red_noses_selection_1_mp3 },
-    fullWord:       { audio: res.red_noses_full_word_1_mp3 },
+    fullWord:       { 
+        audio: [res.red_noses_full_word_1_mp3, res.red_noses_full_word_2_mp3],
         playOnBeat: [1,3,5,7,9,11,13,15],
     //presentWord:    { 
         //audio: res.blue_mountains_present_word_mp3,
         //intervalTime: 3000, 
         //delayTime: 500 
-    //},
-    lastWord:       { audio: res.red_noses_full_word_1_mp3 },
+    },
+    lastWord:       { audio: res.red_noses_last_word_mp3 },
         playOnBeat: [1,3,5,7,9,11,13,15],
     deleteRow:      { audio: res.red_noses_delete_row_1_mp3 },
     final:          { audio: res.red_noses_delete_row_1_mp3 },
@@ -157,7 +158,7 @@ $42.MUSIC_FLAMES = {
         audioBeat:       [4,4],
         delayTime:       5000,
         fadeOutTime:     50,
-        fadeOutTimeEnd:  1000
+        fadeOutTimeEnd:  1200
     },
     levelWords: { 
         audio:          res.flames_level_words_mp3,
@@ -174,6 +175,7 @@ $42.MUSIC_FLAMES = {
     swipe: { 
         audio:          [res.flames_swipe_1_mp3, res.flames_swipe_2_mp3, res.flames_swipe_3_mp3, res.flames_swipe_4_mp3, res.flames_swipe_5_mp3, res.flames_swipe_6_mp3],
         //intervalTime:   2000,
+        minInterval:    280,
         dontStop:       true
     },
     rotate: { 
@@ -352,7 +354,7 @@ $42.MUSIC_BLUE_QUADRAT = { // Hier gehts weiter ... Musik stopped
         playAfterBeats: 1 
     },
     swipe: { 
-        audio: [res.blue_quadrat_swipe_1_mp3, res.blue_quadrat_swipe_2_mp3, res.blue_quadrat_swipe_3_mp3],
+        audio: [res.blue_quadrat_swipe_1_mp3, res.blue_quadrat_swipe_2_mp3, res.blue_quadrat_swipe_3_mp3, res.blue_quadrat_swipe_4_mp3],
         minInterval:    450,
         dontStop:       true,
     },
