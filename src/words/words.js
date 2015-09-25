@@ -408,7 +408,6 @@ var _42_MODULE = function(_42Layer) {
                                 ls.setItem("wordTreasure",JSON.stringify($42.wordTreasure));
                                 ls.setItem("currentLevel",$42.currentLevel);
                                 ls.setItem("wordProfile",$42.wordProfile);
-
                                 
                                 setTimeout(function() {
                                     stopBackgroundMusic($42.currentLevel-1);
@@ -2447,7 +2446,7 @@ var _42_MODULE = function(_42Layer) {
         ml.bestWordValue.setString($42.t.scorebar_mvw+ (bw?": "+bw.value:""));
         ml.bestWordSprite = ml.drawScorebarWord(bw? bw.word:"",cc.p(400,157),ml.bestWordSprite,0.60);
 
-        if( level.type !== $42.LEVEL_TYPE_GIVEN ) {
+        if( level && level.type !== $42.LEVEL_TYPE_GIVEN ) {
             drawLetterBoxes({
                 pos : cc.p(
                     20,
@@ -2617,6 +2616,7 @@ var _42_MODULE = function(_42Layer) {
 
     _42Layer.hookFuncOnNextBeat = function(cb, effect) {
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];	
+        //  ERROR after level 7 D/cocos2d-x debug info(13621): D/cocos2d-x debug info(13621): JS: assets/src/words/words.js:2620:TypeError: level is undefined
         $42.SCENE.callFuncOnNextBeat(cb, level.music[effect]);
     };
 

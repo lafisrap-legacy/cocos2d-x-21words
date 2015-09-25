@@ -25,7 +25,7 @@ $42.LEVEL_DEVS = {
         minLength:  5,
         maxLength:  5,
         newLetters: 1,
-        weirdness:  0.2,
+        weirdness:  0.1,
         wordFreq: 1.0
     },{                             // Level 3
         type: $42.LEVEL_TYPE_GIVEN,
@@ -36,7 +36,7 @@ $42.LEVEL_DEVS = {
         minLength:  6,
         maxLength:  6,
         newLetters: 1,
-        weirdness:  0.3,
+        weirdness:  0.1,
         wordFreq: 1.0
     },{                             // Level 4
         type: $42.LEVEL_TYPE_GIVEN,
@@ -47,7 +47,7 @@ $42.LEVEL_DEVS = {
         minLength:  6,
         maxLength:  6,
         newLetters: 1,
-        weirdness:  0.4,
+        weirdness:  0.2,
         wordFreq: 1.0
     },{                             // Level 5
         type: $42.LEVEL_TYPE_GIVEN,
@@ -58,7 +58,7 @@ $42.LEVEL_DEVS = {
         minLength:  7,
         maxLength:  7,
         newLetters: 1,
-        weirdness:  0.5,
+        weirdness:  0.3,
         wordFreq: 1.0
     },{                             // Level 6
         type: $42.LEVEL_TYPE_PREFIX,
@@ -69,7 +69,7 @@ $42.LEVEL_DEVS = {
         minLength:  4,
         maxLength:  0,
         newLetters: 1,
-        weirdness:  0.6,
+        weirdness:  0.2,
         wordFreq: 1.0
     },{                             // Level 7
         type: $42.LEVEL_TYPE_PREFIX,
@@ -80,7 +80,7 @@ $42.LEVEL_DEVS = {
         minLength:  5,
         maxLength:  0,
         newLetters: 1,
-        weirdness:  0.7,
+        weirdness:  0.2,
         wordFreq: 1.0
     }],
 

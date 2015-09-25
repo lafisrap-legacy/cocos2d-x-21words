@@ -1656,8 +1656,8 @@ var _42TitleLayer = cc.Layer.extend({
         this._titleBg.setTexture(res["title_"+cDiff+"_png"]);
         this.addChild(this._menu);
         if( cDiff === "easy" ) this.backgroundMusic = $42.MUSIC_TITLE_EASY;
-        else if( cDiff === "intermediate" ) /* */;
-        else if( cDiff === "expert" ) /* */;
+        else if( cDiff === "intermediate" ) this.backgroundMusic = $42.MUSIC_TITLE_INTERMEDIATE;
+        else if( cDiff === "expert" ) this.backgroundMusic = $42.MUSIC_TITLE_EXPERT;
 
         $42.SCENE.playBackgroundMusic(this.backgroundMusic);
         
@@ -1731,7 +1731,7 @@ var _42TitleLayer = cc.Layer.extend({
 
         if( this.backgroundMusic ) {
             setTimeout(function() {
-                $42.SCENE.stopBackgroundMusic(self.backgroundMusic.fadeOutTime);
+                $42.SCENE.stopBackgroundMusic(self.backgroundMusic.fadeOutTimeEnd);
                 this.backgroundMusic = null; 
             }, this.backgroundMusic.fadeOutDelay || 0);
         }

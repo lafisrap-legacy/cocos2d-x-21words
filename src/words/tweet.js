@@ -186,6 +186,10 @@ var _TWEET_MODULE = function(layer) {
             _42_retain(mnLayer, "Tweet menu layer");
             initMenu();
         });
+
+        ///////////////////////////////////////////
+        // Background music
+        $42.SCENE.playBackgroundMusic($42.MUSIC_TWEET);
     };
 
     var hide = function(pos, cb) {
@@ -209,6 +213,8 @@ var _TWEET_MODULE = function(layer) {
                 cc.fadeOut($42.TWEET_TEXT_HIDING_TIME)
             )
         );
+
+        $42.SCENE.stopBackgroundMusic($42.MUSIC_TWEET.fadeOutTime);
     };
 
     var exit = function() {
