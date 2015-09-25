@@ -158,7 +158,7 @@ $42.MUSIC_FLAMES = {
         audioBeat:       [4,4],
         delayTime:       5000,
         fadeOutTime:     50,
-        fadeOutTimeEnd:  1200
+        fadeOutTimeEnd:  800
     },
     levelWords: { 
         audio:          res.flames_level_words_mp3,
@@ -322,11 +322,8 @@ $42.MUSIC_GREEN_FOREST = {
     },
     lastWord:           { audio: res.green_forest_last_word_mp3 },
     deleteRow:          { audio: res.green_forest_delete_row_mp3 },
+    final:              { audio: res.green_forest_final_mp3 },
     deleteLastRows:     { audio: res.green_forest_delete_last_rows_mp3 },
-    final:      { 
-        audio:          null,
-    //final:              { audio: res.green_forest_final_mp3 },
-    },
 };
 
 

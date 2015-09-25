@@ -122,11 +122,11 @@ var res = {
     green_forest_selection_mp3:          "res/sounds/levelsounds/green_forest_selection_1,1,2.mp3",
     green_forest_full_word_a_mp3:        "res/sounds/levelsounds/green_forest_full_word_a_1,1,3.mp3",
     green_forest_full_word_b_mp3:        "res/sounds/levelsounds/green_forest_full_word_b_1,1,3.mp3",
-    green_forest_last_word_mp3:          "res/sounds/levelsounds/green_forest_last_word_1,1,3.mp3",
+    green_forest_last_word_mp3:          "res/sounds/levelsounds/green_forest_last_word_1,1,4.mp3",
     //red_hills_last_word_mp3:             "res/sounds/levelsounds/rote_huegel_letztes_wort_fertig0,1,15.mp3",
     green_forest_delete_row_mp3:         "res/sounds/levelsounds/green_forest_delete_row1,1,2.mp3",
-    green_forest_delete_last_rows_mp3:   "res/sounds/levelsounds/green_forest_delete_last_rows_1,1,2.mp3",
-    //red_hills_final_mp3:                 "res/sounds/levelsounds/rote_huegel_schluss_fanfare1,1,5.mp3",
+    green_forest_delete_last_rows_mp3:   "res/sounds/levelsounds/green_forest_delete_last_rows_1,1,3.mp3",
+    green_forest_final_mp3:              "res/sounds/levelsounds/green_forest_final_1,1,2.mp3",
 
     // level 5
     //blue_quadrat_intro_mp3:                  "res/sounds/none.mp3",
