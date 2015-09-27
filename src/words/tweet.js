@@ -32,6 +32,7 @@ $42.TWEET_MENU_BIG_FONT_SIZE = 40;
 $42.TWEET_MENU_SMALL_FONT_SIZE = 28;
 $42.TWEET_MENU_PADDING = 10;
 $42.TWEET_TWEETY_POS = cc.p(320,576);
+$42.TWEET_CONNECTION_CHECK = 5000;
 
 var _TWEET_MODULE = function(layer) {
 	var tLayer = null,      // tweet layer
@@ -68,7 +69,6 @@ var _TWEET_MODULE = function(layer) {
         menuNamesChoose = false,
         menuNamesItem = null,
         finalCallback = null;
-        
 
     cc.spriteFrameCache.addSpriteFrames(res.tweet_plist);
 
@@ -153,43 +153,46 @@ var _TWEET_MODULE = function(layer) {
 
         /////////////////////////////////////
         // Look which words are still free to be names
-        var mw = movableWords,
-            sw = selectableWords,
-            names = [],
-            sprites = [];
-        for( var i=1,cnt=0 ; i<mw.length ; i++,cnt++ ) {
-            names.push(mw[i].getString());
-            sprites.push(mw[i]);
-        }
-        for( var i=0 ; i<sw.length ; i++,cnt++ ) {
-            var name = sw[i].getString();
-            if( name.length > 3 ) {
-                names.push(name);
-                sprites.push(sw[i]);
-            }
-        }
 
-        _42_sendMessage("checkNames", {Names:names}, function(data) {
+        _42_sendMessage("checkNames", {Names:getNames()}, function(data) {
             if( !data ) {
                 $42.webConnected = false;
             } else {
                 menuNames = data.Names;
                 menuNames.sort();
+                changeMenu(true);     
             }
-            
-            ////////////////////////////////////
-            // init menu layer
-            mnLayer = new cc.LayerColor($42.TWEET_MENU_COLOR, $42.TWEET_MENU_WIDTH, $42.TWEET_MENU_HEIGHT);
-            layer.addChild(mnLayer,20);
-            mnLayer.setPosition($42.TWEET_MENU_POS);
-            mnLayer.setCascadeOpacityEnabled(true);
-            _42_retain(mnLayer, "Tweet menu layer");
-            initMenu();
         });
+
+        ////////////////////////////////////
+        // init menu layer
+        mnLayer = new cc.LayerColor($42.TWEET_MENU_COLOR, $42.TWEET_MENU_WIDTH, $42.TWEET_MENU_HEIGHT);
+        layer.addChild(mnLayer,20);
+        mnLayer.setPosition($42.TWEET_MENU_POS);
+        mnLayer.setCascadeOpacityEnabled(true);
+        _42_retain(mnLayer, "Tweet menu layer");
+        initMenu();
 
         ///////////////////////////////////////////
         // Background music
         $42.SCENE.playBackgroundMusic($42.MUSIC_TWEET);
+    };
+
+    var getNames = function() {
+        var mw = movableWords
+            sw = selectableWords,
+            names = [];
+        for( var i=1,cnt=0 ; i<mw.length ; i++,cnt++ ) {
+            names.push(mw[i].getString());
+        }
+        for( var i=0 ; i<sw.length ; i++,cnt++ ) {
+            var name = sw[i].getString();
+            if( name.length > 3 ) {
+                names.push(name);
+            }
+        }
+
+        return names;
     };
 
     var hide = function(pos, cb) {
@@ -320,7 +323,7 @@ var _TWEET_MODULE = function(layer) {
         ////////////////////////////////////////////////////////////////////////
         // Menu function "TWEET"
         addMenuItem($42.webConnected? $42.t.tweet_tweet : $42.t.tweet_no_internet, 214, function(sender) {
-            if( true || $42.webConnected && !menuNamesChoose) {
+            if( $42.webConnected && !menuNamesChoose) {
                 if( !menuTweetConfirm ) {
                     menuTweetConfirm = true;
                     menuTweetItem.setString($42.t.tweet_tweet_confirm.label);
@@ -355,6 +358,21 @@ var _TWEET_MODULE = function(layer) {
         menu = new cc.Menu(menuItems);
         menu.setPosition(cc.p($42.TWEET_MENU_WIDTH/2,$42.TWEET_MENU_HEIGHT/2));
         mnLayer.addChild(menu);
+    };
+
+    var changeMenu = function(internetOn) {
+
+        if( internetOn ) {
+            menuNamesItem.setString($42.t.tweet_name.label);
+            menuTweetItem.setString($42.t.tweet_tweet.label);
+            menuTweetItem.setFontSize($42.TWEET_MENU_BIG_FONT_SIZE);
+            $42.webConnected = true;
+        } else {
+            menuNamesItem.setString($42.t.tweet_no_internet.label);
+            menuTweetItem.setString($42.t.tweet_no_internet.label);
+            menuTweetItem.setFontSize($42.TWEET_MENU_SMALL_FONT_SIZE);
+            $42.webConnected = true;
+        }
     }
 
     var sendTweet = function() {
@@ -872,7 +890,9 @@ var _TWEET_MODULE = function(layer) {
         return hash;
     }
     
-    var updateCnt = 0; 
+    var updateCnt = 0,
+        prevTime = 0;
+
     var update = function(dt) {
         if( touchShortiesXPos !== null ) {
             touchShortiesSpeed = touchShortiesSpeed*0.8 + (shortiesXPos - touchShortiesLastX)*0.2;
@@ -895,6 +915,40 @@ var _TWEET_MODULE = function(layer) {
             }
 
             mvLayer.setPosition(shortiesXPos, 0);
+        }
+
+        var time = new Date().getTime();
+
+        if( time - $42.TWEET_CONNECTION_CHECK > prevTime ) {
+            prevTime = time;
+            ack = false;
+
+            cc.log("Testing connection. Web is "+($42.webConnected?"":"not ")+"connected.");
+
+            if( $42.webConnected === true ) {
+                _42_sendMessage("testConnection", {}, function(data) {
+                    cc.log("Connection is good.");
+                    ack = true;
+                    if( menuNames.length === 0 ) {
+                        _42_sendMessage("checkNames", {Names:getNames()}, function(data) {
+                            cc.log("Got names!")
+                            menuNames = data.Names;
+                            menuNames.sort();
+                        });
+                    }
+
+                    changeMenu(true);     
+                });
+                setTimeout(function() {
+                    if( ack === false ) {
+                        cc.log("Connection lost.");
+                        changeMenu(false);     
+                        $42.webConnected = false;
+                    }
+                },$42.TWEET_CONNECTION_CHECK * 0.9);
+            } else {
+                _42_webConnect();
+            }
         }
     };
 };    
