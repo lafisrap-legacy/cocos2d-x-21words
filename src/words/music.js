@@ -310,11 +310,10 @@ $42.TEST = {
 // Music for level 4
 $42.MUSIC_GREEN_FOREST = {
     background: {
-        audioSet:      [[res.green_forest_loop_a_mp3],
-                        [res.green_forest_loop_b_mp3],
-        playNextSlot:   "fullWord",
+        audio:          [res.green_forest_loop_a_mp3, res.green_forest_loop_b_mp3],
+        //playNextSlot:   "fullWord",
         audioLoopStart: 0,
-        audioLength:    [51.160000, 34.687000],
+        audioLength:    [29.999000, 34.685000],
         audioBars:      [23, 24],
         audioBeat:      [4, 4],
         delay:          7000,
@@ -342,7 +341,7 @@ $42.MUSIC_GREEN_FOREST = {
         dontStop:       true
     },
     rotate: { 
-        audio:      [res.green_forest_rotate_1_mp3, res.green_forest_rotate_2_mp3, res.green_forest_rotate_3_mp3, res.green_forest_rotate_4_mp3],
+        audio:          [res.green_forest_rotate_1_mp3, res.green_forest_rotate_2_mp3, res.green_forest_rotate_3_mp3, res.green_forest_rotate_4_mp3, res.green_forest_rotate_5_mp3, res.green_forest_rotate_6_mp3],
         minInterval:    600,
         stayWithSound:  true,
         dontStop:       true
