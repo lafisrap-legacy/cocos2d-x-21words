@@ -1656,8 +1656,8 @@ var _42TitleLayer = cc.Layer.extend({
         this._titleBg.setTexture(res["title_"+cDiff+"_png"]);
         this.addChild(this._menu);
         if( cDiff === "easy" ) this.backgroundMusic = $42.MUSIC_TITLE_EASY;
-        else if( cDiff === "intermediate" ) /* */;
-        else if( cDiff === "expert" ) /* */;
+        else if( cDiff === "intermediate" ) this.backgroundMusic = $42.MUSIC_TITLE_INTERMEDIATE;
+        else if( cDiff === "expert" ) this.backgroundMusic = $42.MUSIC_TITLE_EXPERT;
 
         $42.SCENE.playBackgroundMusic(this.backgroundMusic);
         
@@ -1731,7 +1731,7 @@ var _42TitleLayer = cc.Layer.extend({
 
         if( this.backgroundMusic ) {
             setTimeout(function() {
-                $42.SCENE.stopBackgroundMusic(self.backgroundMusic.fadeOutTime);
+                $42.SCENE.stopBackgroundMusic(self.backgroundMusic.fadeOutTimeEnd);
                 this.backgroundMusic = null; 
             }, this.backgroundMusic.fadeOutDelay || 0);
         }
@@ -1811,10 +1811,7 @@ _42_webConnect = function() {
 }
 
 _42_sendMessage = function( command, message, cb ) {
-    if( !$42.webConnected ) {
-       if( typeof cb === "function" ) cb(null);
-       return
-    } 
+    if( !$42.webConnected ) return;
 
     var id = message.Id = _42_getId();
 
@@ -1826,9 +1823,9 @@ _42_sendMessage = function( command, message, cb ) {
 _42_onOpen = function(evt) {
     $42.webConnected = true;
     
-    _42_sendMessage("checkNames", {test:"TEST"}, function(data) {
-        cc.log("$42.webConnected message test ok.");
-    });
+//    _42_sendMessage("testConnection", {}, function(data) {
+//        cc.log("$42.webConnected message test ok.");
+//    });
 }
 
 _42_onMessage = function(evt) {
@@ -1848,6 +1845,7 @@ _42_onMessage = function(evt) {
 }
 
 _42_onError = function(evt) {
+    $42.webConnected = false;
 }
 
 _42_onClose = function(evt) {

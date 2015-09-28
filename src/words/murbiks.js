@@ -240,11 +240,11 @@ var _MURBIKS_MODULE = function(parentLayer) {
                     cc.delayTime(time0+time1+time2),
                     cc.callFunc(function() { $42.SCENE.playEffect(level.music.rotate); }),
                     cc.rotateBy(time3,180),
-                    cc.callFunc(function() { $42.SCENE.stopEffect(level.music.rotate); }),
-                    cc.delayTime(time4+time2),
+                    cc.delayTime(time4+time2+time3),
                     cc.callFunc(function() { $42.SCENE.playEffect(level.music.rotate); }),
-                    cc.rotateBy(time3,180),
-                    cc.callFunc(function() { $42.SCENE.stopEffect(level.music.rotate); })
+                    cc.rotateBy(time3/2,90),
+                    cc.delayTime(time2+time2),
+                    cc.rotateBy(time3/2,90)
                 )
             );
 
@@ -262,12 +262,12 @@ var _MURBIKS_MODULE = function(parentLayer) {
                         cc.scaleTo(time4,1),
                         cc.moveTo(time4, cc.p(size.width/2, size.height/2))
                     ),
-                    cc.scaleTo(time2,$42.STORY_SCALE_PRESS_FINGER),
-                    cc.EaseSineOut.create(cc.moveTo(time3,cc.p(size.width/2,size.height*0.75))),
-                    cc.spawn(
-                        cc.scaleTo(time4,1),
-                        cc.moveTo(time4, cc.p(size.width/2, size.height/2))
-                    ),
+                    cc.delayTime(time3),
+                    cc.EaseSineOut.create(cc.scaleTo(time2,$42.STORY_SCALE_PRESS_FINGER)),
+                    cc.EaseSineIn.create(cc.scaleTo(time2,1)),
+                    cc.delayTime(time3/2),
+                    cc.EaseSineOut.create(cc.scaleTo(time2,$42.STORY_SCALE_PRESS_FINGER)),
+                    cc.EaseSineIn.create(cc.scaleTo(time2,1)),
                     cc.EaseSineIn.create(cc.moveTo(time1,cc.p(size.width*1.2,size.height*0.25))),
                     cc.callFunc(cb)
                 )

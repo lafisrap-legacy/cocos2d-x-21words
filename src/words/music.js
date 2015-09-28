@@ -76,6 +76,41 @@ $42.MUSIC_TITLE_EASY = {
 }
 
 ////////////////////////////////////////////////
+// Music for intemediate title
+$42.MUSIC_TITLE_INTERMEDIATE = {
+    audio:  [res.title_easy_intro_mp3, res.title_easy_loop_1_mp3, res.title_easy_loop_2_mp3],
+    audioLoopStart:  1,
+    audioLength:     [29.520000, 4.824000, 32.652000],
+    fadeOutDelay:    0,
+    fadeOutTime:     50,      
+    fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
+}
+
+////////////////////////////////////////////////
+// Music for expert title
+$42.MUSIC_TITLE_EXPERT = {
+    audio:  [res.title_easy_intro_mp3, res.title_easy_loop_1_mp3, res.title_easy_loop_2_mp3],
+    audioLoopStart:  1,
+    audioLength:     [29.520000, 4.824000, 32.652000],
+    fadeOutDelay:    0,
+    fadeOutTime:     50,      
+    fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
+}
+
+////////////////////////////////////////////////
+// Music for tweeting
+$42.MUSIC_TWEET = {
+    audio:  [res.green_forest_intro_mp3, res.green_forest_loop_mp3],
+    audioLoopStart: 1,
+    audioLength:    [30.267000, 35.714000],
+    audioBars:      [23, 24],
+    audioBeat:      [4, 4],
+    audioLoopStart:  1,
+    fadeOutTimeEnd:  2000
+}
+
+
+////////////////////////////////////////////////
 // Music for level 1
 $42.MUSIC_RED_NOSES = {
     background: {
@@ -438,7 +473,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     background: {
         audio:          [res.blue_mountains_intro_mp3,res.blue_mountains_loop_a_mp3, res.blue_mountains_loop_b_mp3],
         audioLoopStart: 1,
-        audioLength:    [90.59265, 345.324000,45.324000],
+        audioLength:    [90.59265, 45.324000,45.324000],
         audioBars:      [24,12,12],
         audioBeat:      [8,8,8],
         fadeOutTime:     50,
