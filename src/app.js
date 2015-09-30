@@ -91,6 +91,9 @@ var _42_GLOBALS = {
     TILE_5_6_MAX_ROW : 11,
     MUSIC_VOLUME: 0.4,
     EFFECTS_VOLUME: 0.8,
+    SETTINGS_HIDDEN: 0,
+    SETTINGS_MOVING: 1,
+    SETTINGS_SHOWN: 2
 };
 var $42 = _42_GLOBALS;
 $42.webCallbacks = [];
@@ -1549,6 +1552,9 @@ var _42TitleLayer = cc.Layer.extend({
         titleBg.setScale(1.1);
         _42_retain(this._titleBg,"Title background");
 
+        this.storyBackground = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("story_background.png"));
+        _42_retain(this.storyBackground, "Storybackground of title layer");
+
         // Show menu items
 		var addMenu = function(name, fontSize, color, cb) {
 	        var item = new cc.MenuItemFont(name, cb, self);
@@ -1628,6 +1634,7 @@ var _42TitleLayer = cc.Layer.extend({
         $42.menuItemTweet = item4;
         _42_retain(item4, "Menu Item Tweet");
 
+        this.initListeners();
         this.show();
 
         return true;
@@ -1752,6 +1759,136 @@ var _42TitleLayer = cc.Layer.extend({
 		for( var i=0 ; i<nodes.length ; i++ ) {
 			if( nodes[i] ) _42_release(nodes[i]);
 		}    
+    },
+
+    initListeners: function() {
+        var self = this;
+
+        this._keyboardListener = cc.EventListener.create({
+            event: cc.EventListener.KEYBOARD,
+            onKeyPressed:function(key, event) {
+                // check for BACK key (ESC on web)
+                switch( key ) {
+                case 27:
+                case 8: // or 6
+                    if( !self._settingsShown ) {
+                        self._settingsShown = $42.SETTINGS_MOVING;
+                        self.showSettings(function() {
+                            self._settingsShown = $42.SETTINGS_SHOWN;
+                        });
+                    } else if( self._settingsShown === $42.SETTINGS_SHOWN ) {
+                        self._settingsShown = $42.SETTINGS_MOVING;
+                        self.hideSettings(function() {
+                            self._settingsShown = $42.SETTINGS_HIDDEN;
+                        });
+                    }
+                    break; 
+                case 18:
+                    //self.showExitMenu();
+                    break;
+                default:
+                    cc.log(key);
+                } 
+            }
+        });
+
+	    cc.eventManager.addListener(this._keyboardListener, this);
+    },
+
+    initMenuListeners: function(sender, type) {
+        var self = this;
+        switch (type) {
+            case ccui.Slider.EVENT_PERCENT_CHANGED:
+                var slider = sender,
+                    percent = slider.getPercent();
+                    
+                if( slider.isMusicSlider ) {
+                    cc.audioEngine.setMusicVolume(percent/100);
+                } else {
+                    cc.audioEngine.setEffectsVolume(percent/100);
+                }
+                break;
+            default:
+                break;
+        }
+    },
+
+    showSettings: function(cb) {
+        
+        sb = this.storyBackground;
+
+        this.addChild(sb);
+        sb.setPosition(cc.p(cc.width,cc.height));
+        sb.setOpacity($42.STORY_BACKGROUND_OPACITY);
+        sb.setScale(0);
+        sb.runAction(
+            cc.sequence(
+                cc.EaseQuinticActionOut.create(
+                    cc.spawn(
+                        cc.scaleTo($42.STORY_BACKGROUND_SPEED, 1),
+                        cc.moveTo($42.STORY_BACKGROUND_SPEED, $42.STORY_BACKGROUND_POS)
+                    )
+                ),
+                cc.callFunc(function() {
+                    cb();
+                })
+            )
+        );
+
+        if( sb.children.length < 4 ) {
+            var s = sb.getContentSize();
+
+            var label = new cc.LabelTTF( $42.t.music_slider , _42_getFontName(res.exo_regular_ttf), 72);
+            label.setPosition(cc.p(s.width/2,480));
+            sb.addChild(label);
+            
+            var sl = new ccui.Slider();
+            sl.setPercent($42.MUSIC_VOLUME*100);
+            sl.setTouchEnabled(true);
+            sl.loadBarTexture("res/images/ui/slider_pressbar.png");
+            sl.loadSlidBallTextures("res/images/ui/slider_node_normal.png", "res/images/ui/slider_node_pressed.png", "");
+            sl.loadProgressBarTexture("res/images/ui/slider_background.png");
+            sl.setPosition(cc.p(s.width/2, 380));
+            sl.addEventListener(this.initMenuListeners, this);
+            sl.isMusicSlider = true;
+            sb.addChild(sl);
+            
+            var label = new cc.LabelTTF( $42.t.effects_slider , _42_getFontName(res.exo_regular_ttf), 72);
+            label.setPosition(cc.p(s.width/2,250));
+            sb.addChild(label);
+            
+            var sl = this.effectsSlider = new ccui.Slider();
+            sl.setPercent($42.EFFECTS_VOLUME*100);
+            sl.setTouchEnabled(true);
+            sl.loadBarTexture("res/images/ui/slider_pressbar.png");
+            sl.loadSlidBallTextures("res/images/ui/slider_node_normal.png", "res/images/ui/slider_node_pressed.png", "");
+            sl.loadProgressBarTexture("res/images/ui/slider_background.png");
+            sl.setPosition(cc.p(s.width/2, 150));
+            sl.addEventListener(this.initMenuListeners, this);
+            sl.isMusicSlider = false;
+            sb.addChild(sl);
+        }
+    },
+ 
+    hideSettings: function(cb) {
+        
+        var self = this;
+        sb = this.storyBackground;
+
+        sb.runAction(
+            cc.EaseQuinticActionOut.create(
+                cc.sequence(
+                    cc.spawn(
+                        cc.scaleTo($42.STORY_BACKGROUND_SPEED/2, 0),
+                        cc.moveTo($42.STORY_BACKGROUND_SPEED/2,cc.p(cc.width,cc.height))
+                    ),
+                    cc.callFunc(function() {
+                        self.removeChild(sb);
+                        cb();
+                    })
+                )
+            )
+        );
     }
 });
 
