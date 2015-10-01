@@ -193,7 +193,7 @@ $42.MUSIC_FLAMES = {
         audioBeat:       [4,4],
         delayTime:       5000,
         fadeOutTime:     50,
-        fadeOutTimeEnd:  1200
+        fadeOutTimeEnd:  800
     },
     levelWords: { 
         audio:          res.flames_level_words_mp3,
@@ -310,11 +310,13 @@ $42.TEST = {
 // Music for level 4
 $42.MUSIC_GREEN_FOREST = {
     background: {
-        audio:          [res.green_forest_intro_mp3, res.green_forest_loop_mp3],
-        audioLoopStart: 1,
-        audioLength:    [30.267000, 35.714000],
+        audio:          [res.green_forest_loop_a_mp3, res.green_forest_loop_b_mp3],
+        //playNextSlot:   "fullWord",
+        audioLoopStart: 0,
+        audioLength:    [29.999000, 34.685000],
         audioBars:      [23, 24],
         audioBeat:      [4, 4],
+        delay:          7000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  500
     },
@@ -334,13 +336,13 @@ $42.MUSIC_GREEN_FOREST = {
     swipe: { 
         audio:          [res.green_forest_swipe_1_mp3, res.green_forest_swipe_2_mp3, res.green_forest_swipe_3_mp3, res.green_forest_swipe_4_mp3, res.green_forest_swipe_5_mp3, res.green_forest_swipe_6_mp3],
         //intervalTime:   450,
-        minInterval:    1200,
+        minInterval:    600,
         stayWithSound:  true,
         dontStop:       true
     },
     rotate: { 
-        audio:      [res.green_forest_rotate_1_mp3, res.green_forest_rotate_2_mp3, res.green_forest_rotate_3_mp3],
-        minInterval:    1200,
+        audio:          [res.green_forest_rotate_1_mp3, res.green_forest_rotate_2_mp3, res.green_forest_rotate_3_mp3, res.green_forest_rotate_4_mp3, res.green_forest_rotate_5_mp3, res.green_forest_rotate_6_mp3],
+        minInterval:    600,
         stayWithSound:  true,
         dontStop:       true
     },
@@ -357,11 +359,8 @@ $42.MUSIC_GREEN_FOREST = {
     },
     lastWord:           { audio: res.green_forest_last_word_mp3 },
     deleteRow:          { audio: res.green_forest_delete_row_mp3 },
+    final:              { audio: res.green_forest_final_mp3 },
     deleteLastRows:     { audio: res.green_forest_delete_last_rows_mp3 },
-    final:      { 
-        audio:          null,
-    //final:              { audio: res.green_forest_final_mp3 },
-    },
 };
 
 
