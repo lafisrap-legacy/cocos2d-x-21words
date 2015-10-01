@@ -29,7 +29,7 @@ $42.LEVEL_DEVS = {
         wordFreq: 1.0
     },{                             // Level 3
         type: $42.LEVEL_TYPE_GIVEN,
-        music: $42.TEST,
+        music: $42.MUSIC_YELLOW_STEPS,
         words: 3,
         minValue:   0,
         minDemand:  0,
