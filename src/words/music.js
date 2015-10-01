@@ -657,8 +657,10 @@ var _MUSIC_MODULE = function(layer) {
                 mp.startTime   = new Date().getTime();
                 
                 if( $42.msg1 ) $42.msg1.setString("Now playing background audio '"+mp.audio[0]+"'");
-                if( mp.audio.length === 1 && !mp.audioLoopStart ) cc.audioEngine.playMusic(mp.audio[0], true);
-                else {
+                if( mp.audio.length === 1 && !mp.audioLoopStart ) {
+                    cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
+                    cc.audioEngine.playMusic(mp.audio[0], true);
+                } else {
                     cc.audioEngine.playMusic(mp.audio[0], false);
                     cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
                     mp.timeout = setTimeout(function() {

@@ -44,6 +44,7 @@ var _42_GLOBALS = {
 	TAG_SPRITE_MANAGER : 1,                 // Sprite Ids
 	TAG_GAME_LAYER : 3,                     //
 	TAG_TITLE_LAYER : 4,                    //
+	TAG_SETTINGS_LAYER : 5,                 //
 	TAG_NONE : 100,                         // 
 	TAG_BACKGROUND_SPRITE : 101,            //
 	TAG_MENU_QUESTION : 102,                //
@@ -1552,9 +1553,6 @@ var _42TitleLayer = cc.Layer.extend({
         titleBg.setScale(1.1);
         _42_retain(this._titleBg,"Title background");
 
-        this.storyBackground = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("story_background.png"));
-        _42_retain(this.storyBackground, "Storybackground of title layer");
-
         // Show menu items
 		var addMenu = function(name, fontSize, color, cb) {
 	        var item = new cc.MenuItemFont(name, cb, self);
@@ -1634,7 +1632,6 @@ var _42TitleLayer = cc.Layer.extend({
         $42.menuItemTweet = item4;
         _42_retain(item4, "Menu Item Tweet");
 
-        this.initListeners();
         this.show();
 
         return true;
@@ -1760,6 +1757,24 @@ var _42TitleLayer = cc.Layer.extend({
 			if( nodes[i] ) _42_release(nodes[i]);
 		}    
     },
+});
+
+
+//////////////////////////////////////////////////////////////////////////////////
+// The Settings layer of the game
+//
+var _42SettingsLayer = cc.Layer.extend({
+    
+    ctor:function () {
+        this._super();
+
+        var self = this;
+
+        this.storyBackground = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("story_background.png"));
+        _42_retain(this.storyBackground, "Storybackground of title layer");
+        
+        this.initListeners();
+    },
 
     initListeners: function() {
         var self = this;
@@ -1784,7 +1799,6 @@ var _42TitleLayer = cc.Layer.extend({
                     }
                     break; 
                 case 18:
-                    //self.showExitMenu();
                     break;
                 default:
                     cc.log(key);
@@ -1796,7 +1810,6 @@ var _42TitleLayer = cc.Layer.extend({
     },
 
     initMenuListeners: function(sender, type) {
-        var self = this;
         switch (type) {
             case ccui.Slider.EVENT_PERCENT_CHANGED:
                 var slider = sender,
@@ -2006,6 +2019,9 @@ var _42Scene = cc.Scene.extend({
         this.loadWords(function() {
             $42._titleLayer = new _42TitleLayer();
             self.addChild($42._titleLayer, 2, $42.TAG_TITLE_LAYER);
+            
+            $42._settingsLayer = new _42SettingsLayer();
+            self.addChild($42._settingsLayer,10, $42.TAG_SETTINGS_LAYER);
         });
 
         _42_webConnect();
