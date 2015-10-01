@@ -44,6 +44,7 @@ var _42_GLOBALS = {
 	TAG_SPRITE_MANAGER : 1,                 // Sprite Ids
 	TAG_GAME_LAYER : 3,                     //
 	TAG_TITLE_LAYER : 4,                    //
+	TAG_SETTINGS_LAYER : 5,                 //
 	TAG_NONE : 100,                         // 
 	TAG_BACKGROUND_SPRITE : 101,            //
 	TAG_MENU_QUESTION : 102,                //
@@ -91,6 +92,9 @@ var _42_GLOBALS = {
     TILE_5_6_MAX_ROW : 11,
     MUSIC_VOLUME: 0.4,
     EFFECTS_VOLUME: 0.8,
+    SETTINGS_HIDDEN: 0,
+    SETTINGS_MOVING: 1,
+    SETTINGS_SHOWN: 2
 };
 var $42 = _42_GLOBALS;
 $42.webCallbacks = [];
@@ -1752,6 +1756,152 @@ var _42TitleLayer = cc.Layer.extend({
 		for( var i=0 ; i<nodes.length ; i++ ) {
 			if( nodes[i] ) _42_release(nodes[i]);
 		}    
+    },
+});
+
+
+//////////////////////////////////////////////////////////////////////////////////
+// The Settings layer of the game
+//
+var _42SettingsLayer = cc.Layer.extend({
+    
+    ctor:function () {
+        this._super();
+
+        var self = this;
+
+        this.storyBackground = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("story_background.png"));
+        _42_retain(this.storyBackground, "Storybackground of title layer");
+        
+        this.initListeners();
+    },
+
+    initListeners: function() {
+        var self = this;
+
+        this._keyboardListener = cc.EventListener.create({
+            event: cc.EventListener.KEYBOARD,
+            onKeyPressed:function(key, event) {
+                // check for BACK key (ESC on web)
+                switch( key ) {
+                case 27:
+                case 8: // or 6
+                    if( !self._settingsShown ) {
+                        self._settingsShown = $42.SETTINGS_MOVING;
+                        self.showSettings(function() {
+                            self._settingsShown = $42.SETTINGS_SHOWN;
+                        });
+                    } else if( self._settingsShown === $42.SETTINGS_SHOWN ) {
+                        self._settingsShown = $42.SETTINGS_MOVING;
+                        self.hideSettings(function() {
+                            self._settingsShown = $42.SETTINGS_HIDDEN;
+                        });
+                    }
+                    break; 
+                case 18:
+                    break;
+                default:
+                    cc.log(key);
+                } 
+            }
+        });
+
+	    cc.eventManager.addListener(this._keyboardListener, this);
+    },
+
+    initMenuListeners: function(sender, type) {
+        switch (type) {
+            case ccui.Slider.EVENT_PERCENT_CHANGED:
+                var slider = sender,
+                    percent = slider.getPercent();
+                    
+                if( slider.isMusicSlider ) {
+                    cc.audioEngine.setMusicVolume(percent/100);
+                } else {
+                    cc.audioEngine.setEffectsVolume(percent/100);
+                }
+                break;
+            default:
+                break;
+        }
+    },
+
+    showSettings: function(cb) {
+        
+        sb = this.storyBackground;
+
+        this.addChild(sb);
+        sb.setPosition(cc.p(cc.width,cc.height));
+        sb.setOpacity($42.STORY_BACKGROUND_OPACITY);
+        sb.setScale(0);
+        sb.runAction(
+            cc.sequence(
+                cc.EaseQuinticActionOut.create(
+                    cc.spawn(
+                        cc.scaleTo($42.STORY_BACKGROUND_SPEED, 1),
+                        cc.moveTo($42.STORY_BACKGROUND_SPEED, $42.STORY_BACKGROUND_POS)
+                    )
+                ),
+                cc.callFunc(function() {
+                    cb();
+                })
+            )
+        );
+
+        if( sb.children.length < 4 ) {
+            var s = sb.getContentSize();
+
+            var label = new cc.LabelTTF( $42.t.music_slider , _42_getFontName(res.exo_regular_ttf), 72);
+            label.setPosition(cc.p(s.width/2,480));
+            sb.addChild(label);
+            
+            var sl = new ccui.Slider();
+            sl.setPercent($42.MUSIC_VOLUME*100);
+            sl.setTouchEnabled(true);
+            sl.loadBarTexture("res/images/ui/slider_pressbar.png");
+            sl.loadSlidBallTextures("res/images/ui/slider_node_normal.png", "res/images/ui/slider_node_pressed.png", "");
+            sl.loadProgressBarTexture("res/images/ui/slider_background.png");
+            sl.setPosition(cc.p(s.width/2, 380));
+            sl.addEventListener(this.initMenuListeners, this);
+            sl.isMusicSlider = true;
+            sb.addChild(sl);
+            
+            var label = new cc.LabelTTF( $42.t.effects_slider , _42_getFontName(res.exo_regular_ttf), 72);
+            label.setPosition(cc.p(s.width/2,250));
+            sb.addChild(label);
+            
+            var sl = this.effectsSlider = new ccui.Slider();
+            sl.setPercent($42.EFFECTS_VOLUME*100);
+            sl.setTouchEnabled(true);
+            sl.loadBarTexture("res/images/ui/slider_pressbar.png");
+            sl.loadSlidBallTextures("res/images/ui/slider_node_normal.png", "res/images/ui/slider_node_pressed.png", "");
+            sl.loadProgressBarTexture("res/images/ui/slider_background.png");
+            sl.setPosition(cc.p(s.width/2, 150));
+            sl.addEventListener(this.initMenuListeners, this);
+            sl.isMusicSlider = false;
+            sb.addChild(sl);
+        }
+    },
+ 
+    hideSettings: function(cb) {
+        
+        var self = this;
+        sb = this.storyBackground;
+
+        sb.runAction(
+            cc.EaseQuinticActionOut.create(
+                cc.sequence(
+                    cc.spawn(
+                        cc.scaleTo($42.STORY_BACKGROUND_SPEED/2, 0),
+                        cc.moveTo($42.STORY_BACKGROUND_SPEED/2,cc.p(cc.width,cc.height))
+                    ),
+                    cc.callFunc(function() {
+                        self.removeChild(sb);
+                        cb();
+                    })
+                )
+            )
+        );
     }
 });
 
@@ -1869,6 +2019,9 @@ var _42Scene = cc.Scene.extend({
         this.loadWords(function() {
             $42._titleLayer = new _42TitleLayer();
             self.addChild($42._titleLayer, 2, $42.TAG_TITLE_LAYER);
+            
+            $42._settingsLayer = new _42SettingsLayer();
+            self.addChild($42._settingsLayer,10, $42.TAG_SETTINGS_LAYER);
         });
 
         _42_webConnect();

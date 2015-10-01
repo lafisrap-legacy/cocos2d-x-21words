@@ -861,7 +861,7 @@ var _42_MODULE = function(_42Layer) {
         var level = $42.LEVEL_DEVS[ml._gameMode][(currentLevel || $42.currentLevel)-1];
         setTimeout(function() {
             $42.SCENE.stopBackgroundMusic(level.music.background.fadeOutTimeEnd);
-        }, level.music.background.fadeOutDelay);
+        }, level.music.background.fadeOutDelay || 1);
     };
 
     var checkLevelConditions = function(word, value) {

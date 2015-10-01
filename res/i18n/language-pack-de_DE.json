@@ -46,6 +46,8 @@
         "tweet_tweet_confirm":  {"label":"Senden!"     ,"size":"big"},
         "tweet_no_internet":    {"label":"Kein\nInternet","size":"small"},
         "tweet_no_server":      {"label":"Server\nweg","size":"small"},
+        "music_slider":         "Musik",
+        "effects_slider":       "Effekte",
         "mostafa": {
             "greeting": ["Hallo!\nIch bin Mostafa.", "Wenn du spielen willst,\ndrücke START!" ],
             "basic1":   "Du kannst die Bausteine nach links, rechts und nach unten bewegen.",
