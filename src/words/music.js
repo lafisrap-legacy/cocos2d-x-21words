@@ -100,9 +100,9 @@ $42.MUSIC_TITLE_EXPERT = {
 ////////////////////////////////////////////////
 // Music for tweeting
 $42.MUSIC_TWEET = {
-    audio:  [res.green_forest_intro_mp3, res.green_forest_loop_mp3],
+    audio:  [res.flames_intro_mp3, res.flames_loop_mp3],
     audioLoopStart: 1,
-    audioLength:    [30.267000, 35.714000],
+    audioLength:    [85.140000,89.136000],
     audioBars:      [23, 24],
     audioBeat:      [4, 4],
     audioLoopStart:  1,
