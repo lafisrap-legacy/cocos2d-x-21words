@@ -1703,18 +1703,40 @@ var _42_MODULE = function(_42Layer) {
         }
 
         $42.displayedProfileLetters = dpl;
-	}
+	};
 	
+	var animateLetterBoxes = function(options) {
+
+        var dpl = $42.displayedProfileLetters;
+
+        for( var i=0 ; i<dpl.length ; i++ ) {
+            dpl[i].runAction(
+                cc.sequence(
+                    cc.delayTime(i*0.16),
+                    cc.repeat(
+                        cc.sequence(
+                            cc.EaseSineIn.create(
+                                cc.scaleTo(0.3, 2)
+                            ),
+                            cc.EaseSineOut.create(
+                                cc.scaleTo(0.3, 1)
+                            ),
+                            cc.delayTime((dpl.length-3) * 0.16)
+                        ), 3
+                    )
+                )
+            );
+        }
+    };
+
 	var getNextProfileLetters = function() {
 		
 		var i=0,
-			next = [],
-			tmp = "";
+			next = [];
 		
 		for( var letter in $42.letterOrder ) {
 			if( $42.wordProfile < ($42.wordProfile | 1<<i) ) {
 				next.push({letter:$42.letterOrder[letter],order:i});
-				tmp += $42.letterOrder[letter]+",";
 				if( next.length === $42.NEXT_PROFILE_LETTERS ) break;
 			}
 			i++;
@@ -2091,7 +2113,8 @@ var _42_MODULE = function(_42Layer) {
                         td.advancedConcepts = true;
                         ls.setItem("tutorialsDone", JSON.stringify(td));
                     },
-                    level: level
+                    level: level,
+                    cb_boxes: animateLetterBoxes
                 });
            }, 9000); 
             
@@ -2115,7 +2138,7 @@ var _42_MODULE = function(_42Layer) {
         var ls = cc.sys.localStorage,
             wtJSON = ls.getItem("wordTreasure"),
         	wt = $42.wordTreasure = wtJSON? JSON.parse(wtJSON) : [],
-            lv = $42.currentLevel = ls.getItem("currentLevel") || 3,
+            lv = $42.currentLevel = ls.getItem("currentLevel") || 6,
 		    wp = $42.wordProfile = parseInt(ls.getItem("wordProfile")) || 0x7f, // 127 == first 7 letters in the letter order
             lo = $42.letterOrder;
 
