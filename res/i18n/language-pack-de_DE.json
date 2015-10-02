@@ -13,6 +13,8 @@
         "level_min_length":     "(min. %d Buchstaben lang)",
         "reached_top_continue": "WEITER SPIELEN",
         "reached_top_end_game": "SPIEL BEENDEN",
+        "want_to_end_game":    "SPIEL ABBRECHEN",
+        "want_to_continue":     "WEITER",
         "won_continue": 		"WEITER SPIELEN",
         "won_end_game": 		"SPIEL BEENDEN",
         "won_congrats":			"DU HAST GEWONNEN!",

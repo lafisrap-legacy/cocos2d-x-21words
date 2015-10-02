@@ -1715,12 +1715,8 @@ var _42_MODULE = function(_42Layer) {
                     cc.delayTime(i*0.16),
                     cc.repeat(
                         cc.sequence(
-                            cc.EaseSineIn.create(
-                                cc.scaleTo(0.3, 2)
-                            ),
-                            cc.EaseSineOut.create(
-                                cc.scaleTo(0.3, 1)
-                            ),
+                            cc.EaseSineIn.create( cc.scaleTo(0.3, 2) ),
+                            cc.EaseSineOut.create( cc.scaleTo(0.3, 1) ),
                             cc.delayTime((dpl.length-3) * 0.16)
                         ), 3
                     )
