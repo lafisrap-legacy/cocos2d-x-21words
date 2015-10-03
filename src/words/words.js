@@ -1768,13 +1768,243 @@ var _42_MODULE = function(_42Layer) {
 		}
 	};
 	
+    var getFittingTile = function( wft, easy ) {
+        var words = wft.words,
+            brc = wft.brc,
+            tb = $42.TILE_BOXES,
+            sw = ml.selectedWord,
+            fittingTiles = [],
+            yPosTotal = 0,
+            ret;
+
+        ret = findPossibleWord(words, brc);
+        
+        wft.index = ret.index;
+        wft.wordIndex = ret.wordIndex;
+
+        // start a new word
+        if( !ret.brc ) return { 
+            tile:       ml.getRandomValue(easy? $42.TILE_OCCURANCES_EASY : $42.TILE_OCCURANCES),
+            boxIndex:   0
+        };
+
+        brc = {row: ret.brc.row, col: ret.brc.col+wft.index};
+        for( var i=0 ; i<tb.length - (brc.row<$42.TILE_5_6_MAX_ROW?0:2) ; i++ ) {
+            var t = {
+                    boxes: tb[i],
+                    rotatedBoxes: null,
+                    rotation:  null
+                };
+            for( r=0 ; r<360 ; r+=90 ) {
+                t.rotation = r;
+                ml.rotateBoxes(t);
+
+                var rb = t.rotatedBoxes;
+                for( var j=0 ; j<rb.length ; j++ ) {
+                    var clear = true,
+                        grounded = false,
+                        groundedAt = [],
+                        letters = 0,
+                        yPos = 0;
+                    for( var k=0 ; k<rb.length ; k++ ) {
+                        var rowOff = (rb[k].y - rb[j].y) / $42.BS,
+                            colOff = (rb[k].x - rb[j].x) / $42.BS;
+
+                        yPos += rowOff;  
+
+                        if( brc.row + rowOff < 0 || brc.row + rowOff >= $42.BOXES_PER_COL ||
+                            brc.col + colOff < 0 || brc.col + colOff >= $42.BOXES_PER_ROW ) {
+                            clear = false;
+                            break;
+                        } 
+
+                        var box = ml.boxes[brc.row + rowOff][brc.col + colOff];
+
+                        if( box && box.userData ) {
+                            clear = false;
+                            break;
+                        }
+                        var row = brc.row + rowOff,
+                            col = brc.col + colOff;
+
+                        if( row === 0 || (ml.boxes[row-1][col] && ml.boxes[row-1][col].userData) ) {
+                            grounded = true;
+                            groundedAt.push({
+                                row: row? row-1:0,
+                                col: col,
+                                box: row? ml.boxes[row-1][col].userData:null
+                            });
+                        }
+
+                        ////////////////////////
+                        // Count how many letters can be placed in current line
+                        if( rb[j].y === rb[k].y ) letters++;
+                    }
+
+                    if( clear && grounded && letters < 3 ) {
+                        fittingTiles.push({
+                            tile:       i,
+                            boxIndex:   j,
+                            dir:        r/90,
+                            groundedAt: groundedAt,
+                            yPos:       yPos,
+                            brc:        {
+                                row: ret.brc.row,
+                                col: ret.brc.col + ret.index
+                            }
+                        });
+
+                        yPosTotal += yPos;
+                    } 
+                }
+            }
+        }
+
+        var ft = fittingTiles,
+            allNegative = true,
+            longTile = false;
+
+        ///////////////////////////
+        // Take out the tiles that are too low (cause they might not be reachable anyway)
+        yPosTotal = Math.ceil(yPosTotal/ft.length);
+        for( var i=ft.length-1 ; i>=0 ; i-- ) {
+            if( ft[i].yPos >= 0 ) allNegative = false;
+            if( ft[i].tile === 0 ) longTile = true;
+            if( ft[i].yPos < 0 && ft[i].yPos < yPosTotal ) ft.splice(i,1);
+        }
+
+        //////////////////////////
+        // Check path of tile
+        for( var i=ft.length-1 ; i>=0 ; i-- ) {
+            if( !checkPaths(ft[i]) ) {
+                ft.splice(i,1);
+            }
+        }
+
+        ///////////////////////////
+        // Clear selection if tile 0 is not possible and all tiles are negative
+        if( sw && allNegative && !longTile && !sw.selectedByUser && brc.col>=8 && level.type===$42.LEVEL_TYPE_GIVEN ) { 
+            ml.unselectWord(true);
+            return null;
+        }
+
+        //cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",JSON.stringify(fittingTiles));
+        var tile = Math.floor(Math.random()*ft.length);
+        //cc.log("Fitting tiles: "+JSON.stringify(fittingTiles[tile]));
+        if( ft.length ) return ft[tile];
+        else {
+            wft.index = 0;
+            return null;
+        }
+    };
+
+    var checkPaths = function(tile) {
+        var tb = $42.TILE_BOXES,
+            t = {
+                boxes: tb[tile.tile],
+                rotation: tile.dir * 90
+            },
+            targetBrc = tile.brc,
+            startBrc = {
+                row: 15,
+                col: targetBrc.col
+            };
+
+        ml.rotateBoxes(t);
+
+        if( !checkPath(t, tile.boxIndex, startBrc, targetBrc) ) {
+           for( var i=targetBrc.col+1 ; i<$42.BOXES_PER_ROW ; i++ ) {
+               startBrc.col = i;
+               if( checkPath( t, tile.boxIndex, startBrc, targetBrc ) ) return true;
+            }
+
+            return false;
+        }
+
+        return true;
+    };
+
+    var checkPath = function(t, index, startBrc, targetBrc) {
+        var rb = t.rotatedBoxes,
+            brcOffset = rb[index];
+
+        // first check if direct way is possible
+        for( var i=startBrc.row ; i>=targetBrc.row ; i-- ) {
+            for( var j=0 ; j<rb.length ; j++ ) {
+                var row = i + Math.round((rb[j].y - brcOffset.y)/$42.BS),
+                    col = startBrc.col + Math.round((rb[j].x - brcOffset.x)/$42.BS),
+                    box = ml.boxes[row][col];
+
+                if( col >= $42.BOXES_PER_ROW || box ) return false;
+            }
+        }
+
+        for( var i=startBrc.col-1 ; i>=targetBrc.col ; i-- ) {
+            for( var j=0 ; j<rb.length ; j++ ) {
+                var row = startBrc.row + Math.round((rb[j].y - brcOffset.y)/$42.BS),
+                    col = i + Math.round((rb[j].x - brcOffset.x)/$42.BS),
+                    box = ml.boxes[row][col];
+
+                if( box ) return false;
+            } 
+        }
+
+        return true;
+    };
+
+    var findPossibleWord = function(words,brc) {
+        var boxesChecked = 0,
+            rets = [],
+            maxIndices = [],
+            row = brc? brc.row : $42.BOXES_PER_COL-1,
+            untilRow = brc? brc.row : 0,
+            col = brc? brc.col : $42.BOXES_PER_ROW-1,
+            untilCol = brc? brc.col : 0;
+
+        checkBoxes:
+        for( var i=row ; i>= untilRow ; i-- ) {
+            for( var j=col ; j>= untilCol ; j-- ) {
+                if( ml.boxes[i][j] ) {
+                    if( ++boxesChecked > $42.MAX_BOXES_CHECKED ) break checkBoxes;
+
+                    for( var w=0 ; w<words.length ; w++ ) {
+                        
+                        var word = words[w];
+                        if( ml.boxes[i][j].userData === word[0] ) {
+                            var index = 1,
+                                k = 0;
+                            while( j+index<$42.BOXES_PER_ROW && ml.boxes[i][j+index] && ml.boxes[i][j+index].userData === word[index] && index<word.length ) index++; 
+                            while( j+index+k<$42.BOXES_PER_ROW && !ml.boxes[i][j+index+k] && index+k<word.length ) k++;
+
+                            if( index+k === word.length && (!maxIndices[w] || index > maxIndices[w]) ) {
+                                rets[w] = {          // collect possible positions for each word
+                                    index: index,
+                                    wordIndex: w,
+                                    brc: {
+                                        row: i,
+                                        col: j
+                                    }
+                                };
+                                maxIndices[w] = index;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        var w = Math.floor(Math.random()*words.length);
+        //cc.log("Possible Words: "+JSON.stringify(rets)+". Took #"+w);
+        return rets[w] || { index: 0, wordIndex: w };
+    };
+
 	var getProgrammedTile = function(isCalledAgain) {
         ////////////////////////////////
         // Fit in words from wordsForTiles list
         var level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1],
             sw = ml.selectedWord,
             wft = ml.wordsForTiles,
-            easy = $42.currentLevel < 4 && level.type === $42.LEVEL_TYPE_GIVEN;
+            easy = $42.currentLevel < 3 && level.type === $42.LEVEL_TYPE_GIVEN;
 
         if( level.type === $42.LEVEL_TYPE_FREE ) return null;
         
@@ -1833,165 +2063,7 @@ var _42_MODULE = function(_42Layer) {
         if( wft.words.length > 0 ) {
             var directions = [{x: $42.BS, y:0}, {x:0, y:$42.BS}, {x:-$42.BS, y:0}, {x:0, y:-$42.BS}];
             
-            var getFittingTile = function(words, brc) {
-                var tb = $42.TILE_BOXES,
-                    fittingTiles = [],
-                    yPosTotal = 0,
-                    ret;
-
-                ret = findPossibleWord(words, brc);
-                
-                wft.index = ret.index;
-                wft.wordIndex = ret.wordIndex;
-
-                // start a new word
-                if( !ret.brc ) return { 
-                    tile:       ml.getRandomValue(easy? $42.TILE_OCCURANCES_EASY : $42.TILE_OCCURANCES),
-                    boxIndex:   0
-                };
-
-                brc = {row: ret.brc.row, col: ret.brc.col+wft.index};
-                for( var i=0 ; i<tb.length - (brc.row<$42.TILE_5_6_MAX_ROW?0:2) ; i++ ) {
-                    var t = {
-                            boxes: tb[i],
-                            rotatedBoxes: null,
-                            rotation:  null
-                        };
-                    for( r=0 ; r<360 ; r+=90 ) {
-                        t.rotation = r;
-                        ml.rotateBoxes(t);
-
-                        var rb = t.rotatedBoxes;
-                        for( var j=0 ; j<rb.length ; j++ ) {
-                            var clear = true,
-                                grounded = false,
-                                groundedAt = [],
-                                letters = 0,
-                                yPos = 0;
-                            for( var k=0 ; k<rb.length ; k++ ) {
-                                var rowOff = (rb[k].y - rb[j].y) / $42.BS,
-                                    colOff = (rb[k].x - rb[j].x) / $42.BS;
-
-                                yPos += rowOff;  
-
-                                if( brc.row + rowOff < 0 || brc.row + rowOff >= $42.BOXES_PER_COL ||
-                                    brc.col + colOff < 0 || brc.col + colOff >= $42.BOXES_PER_ROW ) {
-                                    clear = false;
-                                    break;
-                                } 
-
-                                var box = ml.boxes[brc.row + rowOff][brc.col + colOff];
-
-                                if( box && box.userData ) {
-                                    clear = false;
-                                    break;
-                                }
-                                var row = brc.row + rowOff,
-                                    col = brc.col + colOff;
-
-                                if( row === 0 || (ml.boxes[row-1][col] && ml.boxes[row-1][col].userData) ) {
-                                    grounded = true;
-                                    groundedAt.push({
-                                        row: row? row-1:0,
-                                        col: col,
-                                        box: row? ml.boxes[row-1][col].userData:null
-                                    });
-                                }
-
-                                ////////////////////////
-                                // Count how many letters can be placed in current line
-                                if( rb[j].y === rb[k].y ) letters++;
-                            }
-
-                            if( clear && grounded && letters < 3 ) {
-                                fittingTiles.push({
-                                    tile:       i,
-                                    boxIndex:   j,
-                                    dir:        r/90,
-                                    groundedAt: groundedAt,
-                                    yPos:       yPos
-                                });
-
-                                yPosTotal += yPos;
-                            } 
-                        }
-                    }
-                }
-
-                var ft = fittingTiles,
-                    allNegative = true,
-                    longTile = false;
-
-                ///////////////////////////
-                // Take out the tiles that are too low (cause they might not be reachable anyway)
-                yPosTotal = Math.ceil(yPosTotal/ft.length);
-                for( var i=ft.length-1 ; i>=0 ; i-- ) {
-                    if( ft[i].yPos >= 0 ) allNegative = false;
-                    if( ft[i].tile === 0 ) longTile = true;
-                    if( ft[i].yPos < 0 && ft[i].yPos < yPosTotal ) ft.splice(i,1);
-                }
-
-                ///////////////////////////
-                // Clear selection if tile 0 is not possible and all tiles are negative
-                if( sw && allNegative && !longTile && !sw.selectedByUser && brc.col>=8 && level.type===$42.LEVEL_TYPE_GIVEN ) { 
-                    ml.unselectWord(true);
-                    return null;
-                }
-
-                //cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",JSON.stringify(fittingTiles));
-                var tile = Math.floor(Math.random()*ft.length);
-                //cc.log("Fitting tiles: "+JSON.stringify(fittingTiles[tile]));
-                if( ft.length ) return ft[tile];
-                else return null;
-            };
-
-            var findPossibleWord = function(words,brc) {
-                var boxesChecked = 0,
-                    rets = [],
-                    maxIndices = [],
-                    row = brc? brc.row : $42.BOXES_PER_COL-1,
-                    untilRow = brc? brc.row : 0,
-                    col = brc? brc.col : $42.BOXES_PER_ROW-1,
-                    untilCol = brc? brc.col : 0;
-
-                checkBoxes:
-                for( var i=row ; i>= untilRow ; i-- ) {
-                    for( var j=col ; j>= untilCol ; j-- ) {
-                        if( ml.boxes[i][j] ) {
-                            if( ++boxesChecked > $42.MAX_BOXES_CHECKED ) break checkBoxes;
-
-                            for( var w=0 ; w<words.length ; w++ ) {
-                                
-                                var word = words[w];
-                                if( ml.boxes[i][j].userData === word[0] ) {
-                                    var index = 1,
-                                        k = 0;
-                                    while( j+index<$42.BOXES_PER_ROW && ml.boxes[i][j+index] && ml.boxes[i][j+index].userData === word[index] && index<word.length ) index++; 
-                                    while( j+index+k<$42.BOXES_PER_ROW && !ml.boxes[i][j+index+k] && index+k<word.length ) k++;
-
-                                    if( index+k === word.length && (!maxIndices[w] || index > maxIndices[w]) ) {
-                                        rets[w] = {          // collect possible positions for each word
-                                            index: index,
-                                            wordIndex: w,
-                                            brc: {
-                                                row: i,
-                                                col: j
-                                            }
-                                        };
-                                        maxIndices[w] = index;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-   
-                var w = Math.floor(Math.random()*words.length);
-                //cc.log("Possible Words: "+JSON.stringify(rets)+". Took #"+w);
-                return rets[w] || { index: 0, wordIndex: w };
-            };
-
-            var fittingTile = getFittingTile(wft.words, wft.brc);
+            var fittingTile = getFittingTile(wft, easy);
 
 //            fittingTile = {
 //                tile: 0,
@@ -2017,14 +2089,12 @@ var _42_MODULE = function(_42Layer) {
                     rand2 = Math.random() * (level.weirdness || 0);
 
                 if( rand1 > 0.40 && sw || rand1 > 0.70 ) {
-                    cc.log("WEIRDNESS! rand1 = "+rand1+". Setting wft.indx from "+wft.index+" to ...");
+                    //cc.log("WEIRDNESS! rand1 = "+rand1+". Setting wft.indx from "+wft.index+" to ...");
                     wft.index = Math.floor(Math.random() * word.length);
-                    cc.log("... "+wft.index);
                 }
                 if( rand2 > 0.25 && sw || rand2 > 0.40 ) {
-                    cc.log("WEIRDNESS! rand2 = "+rand2+". Setting boxIndex from "+boxIndex+" to ...");
+                    //cc.log("WEIRDNESS! rand2 = "+rand2+". Setting boxIndex from "+boxIndex+" to ...");
                     boxIndex  = Math.floor(Math.random() * tileBoxes.length);
-                    cc.log("... "+boxIndex);
                 }
             } 
             

@@ -617,7 +617,7 @@ var _42GameLayer = cc.Layer.extend({
                         self._currentTile.isDragged = true;
 	            		self.isSwipeDown = true;
 	            		break;
-                    case 8:
+                    case 6:
                     case 65:
                         var sl = $42._settingsLayer;
 
