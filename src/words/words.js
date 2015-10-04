@@ -38,7 +38,7 @@ $42.WORDFOUND_COLOR = cc.color(0,0,50);
 $42.WORDFOUND_MOSTAFA_SPACE = 70;  
 $42.WORDS_FLYING_IN_COLOR1 = cc.color(255,255,255);
 $42.WORDS_FLYING_IN_COLOR2 = cc.color(233,255,233);
-$42.MAX_BOXES_CHECKED = 15;
+$42.MAX_BOXES_CHECKED = 150;
 $42.MAX_ROW_FOR_WEIRD_TILES = 9;
 
 // Order of multipliers
@@ -59,18 +59,6 @@ var _42_MODULE = function(_42Layer) {
 		var s = [],
 			sw = ml.selectedWord,
 			nsw = null;
-
-        /*
-        //////////////////////////////////
-        // First clear all "..." sprites
-        for( var i=0 ; i<ml.selections.length ; i++ ) {
-            var sl = ml.selections[i];
-            if( sl.sprite ) {
-                var row = sl.brc.row 
-                ml.boxes[sl.brc.row][sl.brc.col].sprite.removeChild(sl.sprite);
-                _42_release(sl.sprite);
-            }
-        }*/
 
         //////////////////////////////////
         // Look through all rows ...
@@ -193,7 +181,8 @@ var _42_MODULE = function(_42Layer) {
 		var sw = ml.selectedWord,
             level = $42.LEVEL_DEVS[ml._gameMode][$42.currentLevel-1];
 		
-		if( ml.wordIsBeingSelected ) return false;
+		if( ml.wordIsBeingSelected || ml.unselectedWord ) return false;
+
         if( !sw ) {
             return false;
         }
@@ -1782,6 +1771,8 @@ var _42_MODULE = function(_42Layer) {
         wft.index = ret.index;
         wft.wordIndex = ret.wordIndex;
 
+        ml.unselectedWord = false; // special case: word is deselected cause of no possible word
+
         // start a new word
         if( !ret.brc ) return { 
             tile:       ml.getRandomValue(easy? $42.TILE_OCCURANCES_EASY : $42.TILE_OCCURANCES),
@@ -1804,13 +1795,11 @@ var _42_MODULE = function(_42Layer) {
                     var clear = true,
                         grounded = false,
                         groundedAt = [],
-                        letters = 0,
-                        yPos = 0;
+                        letters = 0;
+
                     for( var k=0 ; k<rb.length ; k++ ) {
                         var rowOff = (rb[k].y - rb[j].y) / $42.BS,
                             colOff = (rb[k].x - rb[j].x) / $42.BS;
-
-                        yPos += rowOff;  
 
                         if( brc.row + rowOff < 0 || brc.row + rowOff >= $42.BOXES_PER_COL ||
                             brc.col + colOff < 0 || brc.col + colOff >= $42.BOXES_PER_ROW ) {
@@ -1847,31 +1836,17 @@ var _42_MODULE = function(_42Layer) {
                             boxIndex:   j,
                             dir:        r/90,
                             groundedAt: groundedAt,
-                            yPos:       yPos,
                             brc:        {
                                 row: ret.brc.row,
                                 col: ret.brc.col + ret.index
                             }
                         });
-
-                        yPosTotal += yPos;
                     } 
                 }
             }
         }
 
-        var ft = fittingTiles,
-            allNegative = true,
-            longTile = false;
-
-        ///////////////////////////
-        // Take out the tiles that are too low (cause they might not be reachable anyway)
-        yPosTotal = Math.ceil(yPosTotal/ft.length);
-        for( var i=ft.length-1 ; i>=0 ; i-- ) {
-            if( ft[i].yPos >= 0 ) allNegative = false;
-            if( ft[i].tile === 0 ) longTile = true;
-            if( ft[i].yPos < 0 && ft[i].yPos < yPosTotal ) ft.splice(i,1);
-        }
+        var ft = fittingTiles;
 
         //////////////////////////
         // Check path of tile
@@ -1881,18 +1856,14 @@ var _42_MODULE = function(_42Layer) {
             }
         }
 
-        ///////////////////////////
-        // Clear selection if tile 0 is not possible and all tiles are negative
-        if( sw && allNegative && !longTile && !sw.selectedByUser && brc.col>=8 && level.type===$42.LEVEL_TYPE_GIVEN ) { 
-            ml.unselectWord(true);
-            return null;
-        }
-
-        //cc.log("ml.hookGetProgrammedTile (3b): fittingTiles: ",JSON.stringify(fittingTiles));
         var tile = Math.floor(Math.random()*ft.length);
-        //cc.log("Fitting tiles: "+JSON.stringify(fittingTiles[tile]));
+        
         if( ft.length ) return ft[tile];
         else {
+            if( sw ) {
+                ml.unselectWord(true);
+                ml.unselectedWord = true;
+            }
             wft.index = 0;
             return null;
         }
@@ -1941,7 +1912,7 @@ var _42_MODULE = function(_42Layer) {
 
         for( var i=startBrc.col-1 ; i>=targetBrc.col ; i-- ) {
             for( var j=0 ; j<rb.length ; j++ ) {
-                var row = startBrc.row + Math.round((rb[j].y - brcOffset.y)/$42.BS),
+                var row = targetBrc.row + Math.round((rb[j].y - brcOffset.y)/$42.BS),
                     col = i + Math.round((rb[j].x - brcOffset.x)/$42.BS),
                     box = ml.boxes[row][col];
 
@@ -1994,7 +1965,6 @@ var _42_MODULE = function(_42Layer) {
         }
 
         var w = Math.floor(Math.random()*words.length);
-        //cc.log("Possible Words: "+JSON.stringify(rets)+". Took #"+w);
         return rets[w] || { index: 0, wordIndex: w };
     };
 
