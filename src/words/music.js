@@ -122,15 +122,16 @@ $42.MUSIC_RED_NOSES = {
         delayTime:       6000,
         fadeOutTime:     50,
         fadeOutDelay:    50,
+        nextSetOn:       true,
         //fadeOutTimeEnd:  1000
     },
     levelWords:     { 
         audio: res.red_noses_words_mp3, 
-        delayTime: 4500,
+        delayTime: 4500
     },
     levelNr:        { 
         audio: res.red_noses_level_nr_mp3, 
-        delayTime: 1500 
+        delayTime: 1500
     },
     setTile:         { 
         audio: [res.red_noses_set_tile_1a_mp3, res.red_noses_set_tile_1b_mp3],
@@ -147,7 +148,7 @@ $42.MUSIC_RED_NOSES = {
                    //[res.test_rotate_1_mp3]],
         //nextSetOn: "time",
         minInterval: 280,
-        playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16] ,
+        playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
         stayWithSound:  true,
         dontStop:       true
     },
@@ -239,12 +240,12 @@ $42.MUSIC_FLAMES = {
 // Music for level 3
 $42.MUSIC_YELLOW_STEPS = {
     background: {
-        audio:           [res.yellow_steps_background_loop_1_mp3, res.yellow_steps_background_loop_2_mp3],
+        audio:           [res.empty_mp3],
         audioLoopStart:  0,
-        audioLength:     [12.857000,117.142000],
+        audioLength:     [1000,],
         audioBars:       [4,4],
         audioBeat:       [8,8],
-        nextSetOn:      [4626,4626,4626,4626],
+        nextSetOn:      [1000],
         delay:          7000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  1000
@@ -271,7 +272,10 @@ $42.MUSIC_YELLOW_STEPS = {
         dontStop:       true
     },
     fixTile: { 
-        audio:          [res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_3_mp3, res.yellow_steps_fix_tile_4_mp3],
+        audioSet:         [[res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_3_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3],
+                           [res.yellow_steps_fix_tile_4_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3],
+                           [res.yellow_steps_fix_tile_3_mp3, res.yellow_steps_fix_tile_4_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3]],
+        nextSetOn:         "fullWord", 
     }, 
     selection:          { 
         audio:          [res.yellow_steps_selection_1_mp3, res.yellow_steps_selection_2_mp3, res.yellow_steps_selection_3_mp3], 
