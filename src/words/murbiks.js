@@ -637,7 +637,8 @@ var _MURBIKS_MODULE = function(parentLayer) {
                 }, 2000);
                 setTimeout(function() {
                     showSpeechBubble(8, $42.t.mostafa.advanced4b, mostafa.getPosition(), 350);
-                }, 5000);
+                    if( options.cb_boxes ) options.cb_boxes();
+                }, 5010);
                 setTimeout(function() {
                     if( typeof options.cb === "function" ) options.cb();
                     mostafaFliesTo(-100,200); 

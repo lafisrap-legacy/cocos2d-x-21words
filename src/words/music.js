@@ -514,8 +514,6 @@ var _MUSIC_MODULE = function(layer) {
 
         if( !effect || !effect.audio && !effect.audioSet ) return;
 
-        //cc.log("Now ("+time+") playing effect "+(repeat?" with":" without")+" repeat");
-        
         if( typeof effect.audio === "string" ) effect.audio = [effect.audio];
         if( effect.audioSet ) {
             if( !effect.currentSet ) effect.currentSet = 0;
@@ -531,17 +529,15 @@ var _MUSIC_MODULE = function(layer) {
                     effect.id = cc.audioEngine.playEffect(effect.audio[cs]);
                 }
                 //effect.id.setVolume($42.EFFECTS_VOLUME);
-                if( $42.msg2 ) $42.msg2.setString("Starting interval: "+effect.audio[cs]);
+                //if( $42.msg2 ) $42.msg2.setString("Starting interval: "+effect.audio[cs]);
                 effect.interval = setInterval(function() {
                     if( effect.intervalIsEnding ) {
-                        //cc.log("Ending interval of "+effect.audio[cs]);
-                        if( $42.msg2 ) $42.msg2.setString("Ending interval: "+effect.audio[cs]);
+                        //if( $42.msg2 ) $42.msg2.setString("Ending interval: "+effect.audio[cs]);
                         clearInterval(effect.interval);
                         effect.interval = null;
                         effect.intervalIsEnding = false;
                     } else {
-                        //cc.log("Playing in interval: "+effect.audio[cs]);
-                        if( $42.msg2 ) $42.msg2.setString("Playing in interval: "+effect.audio[cs]);
+                        //if( $42.msg2 ) $42.msg2.setString("Playing in interval: "+effect.audio[cs]);
                         playEffect(effect, true);
                     }
                 }, effect.intervalTime);
@@ -550,7 +546,7 @@ var _MUSIC_MODULE = function(layer) {
                     effect.id = cc.audioEngine.playEffect(effect.audio[cs]);
                 }
                 //effect.id.setVolume($42.EFFECTS_VOLUME);
-                if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[cs]);
+                //if( $42.msg2 ) $42.msg2.setString("Now playing: "+effect.audio[cs]);
             }
 
             effect.lastPlay = time;
@@ -568,8 +564,7 @@ var _MUSIC_MODULE = function(layer) {
                 if( effect.end ) {
                     var span = new Date().getTime() - effect.lastPlay;
                     setTimeout(function() {
-                        //cc.log("Playing end of interval: "+effect.end);
-    	                if( $42.msg2 ) $42.msg2.setString("Playing effect end: "+effect.end);
+    	                //if( $42.msg2 ) $42.msg2.setString("Playing effect end: "+effect.end);
                         layer.playEffect({audio: effect.end});
                         //effect.id.setVolume($42.EFFECTS_VOLUME);
                     }, effect.endDelay-span || 0 );
@@ -579,12 +574,14 @@ var _MUSIC_MODULE = function(layer) {
             if (!cc.sys.isNative) {
                 cc.audioEngine.stopEffect(effect.id);
             }
-    	    if( $42.msg2 ) $42.msg2.setString("Stopping effect:"+effect.audio[0]);
+    	    //if( $42.msg2 ) $42.msg2.setString("Stopping effect:"+effect.audio[0]);
             effect.id = null;
         }
     };
 
     layer.changeAudioSet = function(event) {
+
+        if( !$42.SCENE.mainLayer || !$42.SCENE.mainLayer._gameMode ) return;
 
         var music = $42.LEVEL_DEVS[$42.SCENE.mainLayer._gameMode][$42.currentLevel-1].music;
         if( !music ) return;
@@ -622,13 +619,13 @@ var _MUSIC_MODULE = function(layer) {
                     timeToNextFrame += ((pob[i%pob.length]-nextFrame-1) + Math.floor(i/pob.length) * mp.audioBeat[mp.audioSlot]) * frame;
                 }
 
-                cc.log("SOUNDTIMING 2: Time is "+time+". Distance to next frame : "+timeToNextFrame+", frames played: "+frames);
+                //cc.log("SOUNDTIMING 2: Time is "+time+". Distance to next frame : "+timeToNextFrame+", frames played: "+frames);
 
                 setTimeout(function(shouldbe) {
                     var now = new Date().getTime();
-                    cc.log("SOUNDTIMING 2: Supposed to by playing sound at "+shouldbe);
-                    cc.log("SOUNDTIMING 2:         Really playing sound at "+now);
-                    cc.log("SOUNDTIMING 2: Difference:  "+(shouldbe-now));
+                    //cc.log("SOUNDTIMING 2: Supposed to by playing sound at "+shouldbe);
+                    //cc.log("SOUNDTIMING 2:         Really playing sound at "+now);
+                    //cc.log("SOUNDTIMING 2: Difference:  "+(shouldbe-now));
                     cb();
                 }, timeToNextFrame, time+timeToNextFrame);
             } else {
@@ -660,7 +657,7 @@ var _MUSIC_MODULE = function(layer) {
                 }
                 mp.startTime   = new Date().getTime();
                 
-                if( $42.msg1 ) $42.msg1.setString("Now playing background audio '"+mp.audio[0]+"'");
+                //if( $42.msg1 ) $42.msg1.setString("Now playing background audio '"+mp.audio[0]+"'");
                 if( mp.audio.length === 1 && !mp.audioLoopStart ) {
                     cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
                     cc.audioEngine.playMusic(mp.audio[0], true);
@@ -700,6 +697,8 @@ var _MUSIC_MODULE = function(layer) {
 
         if( effect && !effect.playNextSlot ) return;
 
+        layer.changeAudioSet("slot");
+
         var playSlot = function() {
             if( ++mp.audioSlot >= mp.audio.length ) mp.audioSlot = mp.audioLoopStart || 0;
             
@@ -708,17 +707,17 @@ var _MUSIC_MODULE = function(layer) {
             diff = mp.endTime || mp.endTime === 0? mp.endTime - mp.startTime : 0;
             mp.endTime = mp.startTime + mp.audioLength[mp.audioSlot]*1000 + diff;
 
-            cc.log("SOUNDTIMING 1: Starting new slot ("+mp.audioSlot+"). Time: "+mp.startTime+", ending at "+mp.endTime+", diff was "+diff);
+            //cc.log("SOUNDTIMING 1: Starting new slot ("+mp.audioSlot+"). Time: "+mp.startTime+", ending at "+mp.endTime+", diff was "+diff);
             if( mp.timeout ) clearTimeout( mp.timeout );
             cc.audioEngine.setMusicVolume($42.MUSIC_VOLUME);
-            if( $42.msg1 ) $42.msg1.setString("Now playing audio '"+mp.audio[mp.audioSlot]+"'");
+            //if( $42.msg1 ) $42.msg1.setString("Now playing audio '"+mp.audio[mp.audioSlot]+"'");
             
             if( mp.audioSlot === mp.audioLoopStart && mp.audio.length - (mp.audioLoopStart || 0) === 1 ) {
                 cc.audioEngine.playMusic(mp.audio[mp.audioSlot], true);
             } else {
                 cc.audioEngine.playMusic(mp.audio[mp.audioSlot]);
                 mp.timeout = setTimeout(function() {
-                    cc.log("SOUNDTIMING 1:                                                               ended at "+mp.endTime);
+                    //cc.log("SOUNDTIMING 1:                                                               ended at "+mp.endTime);
                     mp.timeout = null;
                     nextSlot(null, !!mp.fadeOutTime);
                 }, mp.audioLength[mp.audioSlot] * 1000 + diff - (mp.fadeOutTime || 0));
@@ -746,7 +745,7 @@ var _MUSIC_MODULE = function(layer) {
             mp.startTime = null;
             mp.audioSlot = null;
             musicPlaying = null;
-    	    if( $42.msg1 ) $42.msg1.setString("Background music stopped!");
+    	    //if( $42.msg1 ) $42.msg1.setString("Background music stopped!");
         }
     };
 
@@ -762,12 +761,12 @@ var _MUSIC_MODULE = function(layer) {
             volume += step;
             if( direction === -1 && volume < 0 || direction === 1 && volume > $42.MUSIC_VOLUME ) {
                 if( !dontStop ) cc.audioEngine.stopMusic();
-    	        if( $42.msg1 ) $42.msg1.setString("Background music stopped");
+    	        //if( $42.msg1 ) $42.msg1.setString("Background music stopped");
                 clearInterval(interval);
                 if( typeof cb === "function" ) cb();
             } else {
                 cc.audioEngine.setMusicVolume(volume);
-    	        if( $42.msg1 ) $42.msg1.setString("Background music is fading out ... volume "+Math.floor(volume*100)/100);
+    	        //if( $42.msg1 ) $42.msg1.setString("Background music is fading out ... volume "+Math.floor(volume*100)/100);
             }
         }, $42.MUSIC_VOLUME_GRANULARITY);
     };

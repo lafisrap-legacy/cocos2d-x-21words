@@ -94,7 +94,10 @@ var _42_GLOBALS = {
     EFFECTS_VOLUME: 0.8,
     SETTINGS_HIDDEN: 0,
     SETTINGS_MOVING: 1,
-    SETTINGS_SHOWN: 2
+    SETTINGS_SHOWN: 2,
+    ENDLEVEL_HIDDEN: 3,
+    ENDLEVEL_MOVING: 4,
+    ENDLEVEL_SHOWN: 5
 };
 var $42 = _42_GLOBALS;
 $42.webCallbacks = [];
@@ -614,7 +617,53 @@ var _42GameLayer = cc.Layer.extend({
                         self._currentTile.isDragged = true;
 	            		self.isSwipeDown = true;
 	            		break;
+                    case 6:
+                    case 65:
+                        var sl = $42._settingsLayer;
+
+                        if( sl._settingsShown === $42.SETTING_HIDDEN || sl._settingsShown === $42.ENDLEVEL_HIDDEN ) {
+                            sl._settingsShown = $42.ENDLEVEL_MOVING;
+                            self.stopListeners();
+                            self.unscheduleUpdate();
+
+                            var menuItems = [];
+                            
+                            menuItems.push(
+                                new cc.MenuItemFont($42.t.want_to_end_game, function(sender) {
+                                    if( self.hookStopBackgroundMusic ) self.hookStopBackgroundMusic();                       
+                                    self.hideAndEndGame();
+                                    $42._settingsLayer.hideSettings(function() {});
+                                    $42._titleLayer.show();
+                                    sl._settingsShown = $42.ENDLEVEL_HIDDEN;
+                                }, self)
+                            );
+
+                            menuItems.push(
+                                new cc.MenuItemFont($42.t.want_to_continue, function(sender) {
+                                    $42._settingsLayer.hideSettings(function() {
+                                        self.resume();
+                                        self.scheduleUpdate();
+                                        self.initListeners();
+                                        sl._settingsShown = $42.ENDLEVEL_HIDDEN;
+                                    });
+                                }, self)
+                            );
+
+                            menuItems[0].setFontSize(48);        	
+                            menuItems[1].setFontSize(48);  
+
+                            $42._settingsLayer.showEndLevel(menuItems, function() {
+                                sl._settingsShown = $42.ENDLEVEL_SHOWN;
+                            });
+                        } else if( self._settingsShown === $42.ENDLEVEL_SHOWN ) {
+                            self._settingsShown = $42.ENDLEVEL_MOVING;
+                            $42._settingsLayer.hideSettings(function() {
+                                self._settingsShown = $42.ENDLEVEL_HIDDEN;
+                            });
+                        }
+                        break;
                     default:
+                        cc.log("key: "+key);
                         if( self.hookKeyPressed ) self.hookKeyPressed(key);
 	            	}
 	            },
@@ -1785,8 +1834,8 @@ var _42SettingsLayer = cc.Layer.extend({
                 // check for BACK key (ESC on web)
                 switch( key ) {
                 case 27:
-                case 8: // or 6
-                    if( !self._settingsShown ) {
+                case 18: // or 6
+                    if( self._settingsShown === $42.SETTING_HIDDEN || self._settingsShown === $42.ENDLEVEL_HIDDEN ) {
                         self._settingsShown = $42.SETTINGS_MOVING;
                         self.showSettings(function() {
                             self._settingsShown = $42.SETTINGS_SHOWN;
@@ -1798,7 +1847,7 @@ var _42SettingsLayer = cc.Layer.extend({
                         });
                     }
                     break; 
-                case 18:
+                case 8:
                     break;
                 default:
                     cc.log(key);
@@ -1834,6 +1883,7 @@ var _42SettingsLayer = cc.Layer.extend({
         sb.setPosition(cc.p(cc.width,cc.height));
         sb.setOpacity($42.STORY_BACKGROUND_OPACITY);
         sb.setScale(0);
+        sb.removeAllChildren();
         sb.runAction(
             cc.sequence(
                 cc.EaseQuinticActionOut.create(
@@ -1848,39 +1898,37 @@ var _42SettingsLayer = cc.Layer.extend({
             )
         );
 
-        if( sb.children.length < 4 ) {
-            var s = sb.getContentSize();
+        var s = sb.getContentSize();
 
-            var label = new cc.LabelTTF( $42.t.music_slider , _42_getFontName(res.exo_regular_ttf), 72);
-            label.setPosition(cc.p(s.width/2,480));
-            sb.addChild(label);
-            
-            var sl = new ccui.Slider();
-            sl.setPercent($42.MUSIC_VOLUME*100);
-            sl.setTouchEnabled(true);
-            sl.loadBarTexture("res/images/ui/slider_pressbar.png");
-            sl.loadSlidBallTextures("res/images/ui/slider_node_normal.png", "res/images/ui/slider_node_pressed.png", "");
-            sl.loadProgressBarTexture("res/images/ui/slider_background.png");
-            sl.setPosition(cc.p(s.width/2, 380));
-            sl.addEventListener(this.initMenuListeners, this);
-            sl.isMusicSlider = true;
-            sb.addChild(sl);
-            
-            var label = new cc.LabelTTF( $42.t.effects_slider , _42_getFontName(res.exo_regular_ttf), 72);
-            label.setPosition(cc.p(s.width/2,250));
-            sb.addChild(label);
-            
-            var sl = this.effectsSlider = new ccui.Slider();
-            sl.setPercent($42.EFFECTS_VOLUME*100);
-            sl.setTouchEnabled(true);
-            sl.loadBarTexture("res/images/ui/slider_pressbar.png");
-            sl.loadSlidBallTextures("res/images/ui/slider_node_normal.png", "res/images/ui/slider_node_pressed.png", "");
-            sl.loadProgressBarTexture("res/images/ui/slider_background.png");
-            sl.setPosition(cc.p(s.width/2, 150));
-            sl.addEventListener(this.initMenuListeners, this);
-            sl.isMusicSlider = false;
-            sb.addChild(sl);
-        }
+        var label = new cc.LabelTTF( $42.t.music_slider , _42_getFontName(res.exo_regular_ttf), 72);
+        label.setPosition(cc.p(s.width/2,480));
+        sb.addChild(label);
+        
+        var sl = new ccui.Slider();
+        sl.setPercent($42.MUSIC_VOLUME*100);
+        sl.setTouchEnabled(true);
+        sl.loadBarTexture("res/images/ui/slider_pressbar.png");
+        sl.loadSlidBallTextures("res/images/ui/slider_node_normal.png", "res/images/ui/slider_node_pressed.png", "");
+        sl.loadProgressBarTexture("res/images/ui/slider_background.png");
+        sl.setPosition(cc.p(s.width/2, 380));
+        sl.addEventListener(this.initMenuListeners, this);
+        sl.isMusicSlider = true;
+        sb.addChild(sl);
+        
+        var label = new cc.LabelTTF( $42.t.effects_slider , _42_getFontName(res.exo_regular_ttf), 72);
+        label.setPosition(cc.p(s.width/2,250));
+        sb.addChild(label);
+        
+        var sl = this.effectsSlider = new ccui.Slider();
+        sl.setPercent($42.EFFECTS_VOLUME*100);
+        sl.setTouchEnabled(true);
+        sl.loadBarTexture("res/images/ui/slider_pressbar.png");
+        sl.loadSlidBallTextures("res/images/ui/slider_node_normal.png", "res/images/ui/slider_node_pressed.png", "");
+        sl.loadProgressBarTexture("res/images/ui/slider_background.png");
+        sl.setPosition(cc.p(s.width/2, 150));
+        sl.addEventListener(this.initMenuListeners, this);
+        sl.isMusicSlider = false;
+        sb.addChild(sl);
     },
  
     hideSettings: function(cb) {
@@ -1902,6 +1950,39 @@ var _42SettingsLayer = cc.Layer.extend({
                 )
             )
         );
+    },
+
+    showEndLevel: function(menuItems, cb) {
+        var sb = this.storyBackground,
+            width  = sb.getContentSize().width,
+            height = sb.getContentSize().height;
+
+        this.addChild(sb);
+        sb.setPosition(cc.p(cc.width,cc.height));
+        sb.setOpacity($42.STORY_BACKGROUND_OPACITY);
+        sb.setScale(0);
+        sb.removeAllChildren();
+        sb.runAction(
+            cc.sequence(
+                cc.EaseQuinticActionOut.create(
+                    cc.spawn(
+                        cc.scaleTo($42.STORY_BACKGROUND_SPEED/3, 1),
+                        cc.moveTo($42.STORY_BACKGROUND_SPEED/3, $42.STORY_BACKGROUND_POS)
+                    )
+                ),
+                cc.callFunc(function() {
+                    cb();
+                })
+            )
+        );
+
+        /////////////////////
+        // Create menu
+        var menu = this._menu = cc.Menu.create.apply(this, menuItems);
+        menu.x = width/2;
+        menu.y = height/2;
+        menu.alignItemsVerticallyWithPadding(40);
+        sb.addChild(menu);       
     }
 });
 
