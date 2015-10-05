@@ -135,7 +135,7 @@ var res = {
 
     // level 4                                               
     green_trollworld_loop_mp3:                     "res/sounds/levelsounds/green_trollworld_background_1,1,4.mp3",
-    green_trollworld_level_words_mp3:              "res/sounds/levelsounds/green_trollworld_level_words_1,1,2.mp3",
+    green_trollworld_level_words_mp3:              "res/sounds/levelsounds/green_trollworld_level_words_1,1,5.mp3",
     green_trollworld_level_nr_mp3:                 "res/sounds/levelsounds/green_trollworld_level_nr_1,1,2.mp3",
     green_trollworld_set_tile_1_mp3:               "res/sounds/levelsounds/green_trollworld_set_tile_a_1,1,2.mp3",
     green_trollworld_set_tile_2_mp3:               "res/sounds/levelsounds/green_trollworld_set_tile_b_1,1,2.mp3",
