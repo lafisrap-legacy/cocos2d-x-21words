@@ -267,7 +267,7 @@ $42.MUSIC_YELLOW_STEPS = {
         dontStop:       true
     },
     rotate: { 
-        audio:          [res.yellow_steps_rotate_1_mp3, res.yellow_steps_rotate_2_mp3, res.yellow_steps_rotate_3_mp3, res.yellow_steps_rotate_swipe_4_mp3, res.yellow_steps_rotate_swipe_5_mp3, res.yellow_steps_rotate_6_mp3, res.yellow_steps_rotate_7_mp3, res.yellow_steps_rotate_8_mp3, res.yellow_steps_rotate_9_mp3, res.yellow_steps_rotate_10_mp3, res.yellow_steps_rotate_11_mp3, res.yellow_steps_rotate_12_mp3],
+        audio:          [res.yellow_steps_rotate_1_mp3, res.yellow_steps_rotate_2_mp3, res.yellow_steps_rotate_3_mp3, res.yellow_steps_rotate_rotate_4_mp3, res.yellow_steps_rotate_swipe_5_mp3, res.yellow_steps_rotate_6_mp3, res.yellow_steps_rotate_7_mp3, res.yellow_steps_rotate_8_mp3, res.yellow_steps_rotate_9_mp3, res.yellow_steps_rotate_10_mp3, res.yellow_steps_rotate_11_mp3, res.yellow_steps_rotate_12_mp3],
         stayWithSound:  true,
         dontStop:       true
     },
