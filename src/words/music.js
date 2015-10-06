@@ -122,15 +122,16 @@ $42.MUSIC_RED_NOSES = {
         delayTime:       6000,
         fadeOutTime:     50,
         fadeOutDelay:    50,
+        nextSetOn:       true,
         //fadeOutTimeEnd:  1000
     },
     levelWords:     { 
         audio: res.red_noses_words_mp3, 
-        delayTime: 4500,
+        delayTime: 4500
     },
     levelNr:        { 
         audio: res.red_noses_level_nr_mp3, 
-        delayTime: 1500 
+        delayTime: 1500
     },
     setTile:         { 
         audio: [res.red_noses_set_tile_1a_mp3, res.red_noses_set_tile_1b_mp3],
@@ -147,7 +148,7 @@ $42.MUSIC_RED_NOSES = {
                    //[res.test_rotate_1_mp3]],
         //nextSetOn: "time",
         minInterval: 280,
-        playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16] ,
+        playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
         stayWithSound:  true,
         dontStop:       true
     },
@@ -215,7 +216,7 @@ $42.MUSIC_FLAMES = {
     },
     rotate: { 
         audio:          [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
-        minInterval:    280,
+        minInterval:    150,
         stayWithSound:  true,
         dontStop:       true
     },
@@ -239,12 +240,12 @@ $42.MUSIC_FLAMES = {
 // Music for level 3
 $42.MUSIC_YELLOW_STEPS = {
     background: {
-        audio:           [res.yellow_steps_background_loop_1_mp3, res.yellow_steps_background_loop_2_mp3],
+        audio:           [res.empty_mp3],
         audioLoopStart:  0,
-        audioLength:     [12.857000,117.142000],
+        audioLength:     [1000,],
         audioBars:       [4,4],
         audioBeat:       [8,8],
-        nextSetOn:      [4626,4626,4626,4626],
+        nextSetOn:      [1000],
         delay:          7000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  1000
@@ -271,7 +272,10 @@ $42.MUSIC_YELLOW_STEPS = {
         dontStop:       true
     },
     fixTile: { 
-        audio:          [res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_3_mp3, res.yellow_steps_fix_tile_4_mp3],
+        audioSet:         [[res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_3_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3],
+                           [res.yellow_steps_fix_tile_4_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3],
+                           [res.yellow_steps_fix_tile_3_mp3, res.yellow_steps_fix_tile_4_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3]],
+        nextSetOn:         "fullWord", 
     }, 
     selection:          { 
         audio:          [res.yellow_steps_selection_1_mp3, res.yellow_steps_selection_2_mp3, res.yellow_steps_selection_3_mp3], 
@@ -292,46 +296,57 @@ $42.MUSIC_YELLOW_STEPS = {
 // Music for level 4
 $42.MUSIC_GREEN_FOREST = {
     background: {
-        audio:          [res.green_forest_loop_a_mp3, res.green_forest_loop_b_mp3],
+        audio:          res.green_trollworld_loop_mp3,
         //playNextSlot:   "fullWord",
         audioLoopStart: 0,
-        audioLength:    [29.999000, 34.685000],
-        audioBars:      [23, 24],
-        audioBeat:      [4, 4],
-        delay:          7000,
+        audioLength:    60.048000,
+        nextSetOn:      [14.012, 3.753, 7.506, 3.753, 11.259, 3.753, 11.259, 4.753],
+        //audioBars:      [23, 24],
+        //audioBeat:      [4, 4],
+        delay:           4000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  500
     },
     levelWords: { 
-        audio:          res.green_forest_level_words_mp3,
+        audio:          res.green_trollworld_level_words_mp3,
         delayTime:      4500
     },
     levelNr: { 
-        audio:          res.green_forest_level_nr_mp3, 
+        audio:          res.green_trollworld_level_nr_mp3, 
         delayTime:      1500
     },
     setTile: { 
-        audio:          res.green_forest_set_tile_mp3,
+        audio:          [res.green_trollworld_set_tile_1_mp3, res.green_trollworld_set_tile_2_mp3, res.green_trollworld_set_tile_3_mp3, res.green_trollworld_set_tile_2_mp3],
         stayWithSound:  true,
         playAfterBeats: 1 
     },
     swipe: { 
-        audio:          [res.green_forest_swipe_1_mp3, res.green_forest_swipe_2_mp3, res.green_forest_swipe_3_mp3, res.green_forest_swipe_4_mp3, res.green_forest_swipe_5_mp3, res.green_forest_swipe_6_mp3],
+        audio:          [res.green_trollworld_swipe_1_mp3, res.green_trollworld_swipe_2_mp3, res.green_trollworld_swipe_3_mp3, res.green_trollworld_swipe_4_mp3, res.green_trollworld_swipe_5_mp3, res.green_trollworld_swipe_6_mp3],
         //intervalTime:   450,
-        minInterval:    600,
-        stayWithSound:  true,
+        minInterval:    150,
         dontStop:       true
     },
     rotate: { 
-        audio:          [res.green_forest_rotate_1_mp3, res.green_forest_rotate_2_mp3, res.green_forest_rotate_3_mp3, res.green_forest_rotate_4_mp3, res.green_forest_rotate_5_mp3, res.green_forest_rotate_6_mp3],
-        minInterval:    600,
-        stayWithSound:  true,
+        audio:          [res.green_trollworld_rotate_1_mp3, res.green_trollworld_rotate_2_mp3, res.green_trollworld_rotate_3_mp3, res.green_trollworld_rotate_4_mp3],
+        minInterval:    150,
         dontStop:       true
     },
-    fixTile:            { audio: res.green_forest_fix_tile_1_mp3 }, 
-    selection:          { audio: res.green_forest_selection_mp3 },
+    fixTile:            { 
+        audio:          [res.green_trollworld_fix_tile_1_mp3, res.green_trollworld_fix_tile_2_mp3], 
+    }, 
+    selection:          { 
+        audio: 
+                        [res.green_trollworld_selection_1_mp3, res.green_trollworld_selection_2_mp3], 
+    },
     fullWord:           {
-        audio:          [res.green_forest_full_word_a_mp3, res.green_forest_full_word_b_mp3],
+        audioSet:      [[res.green_trollworld_full_word_a_mp3],
+                        [res.green_trollworld_full_word_b_mp3],
+                        [res.green_trollworld_full_word_a_mp3],
+                        [res.green_trollworld_full_word_b_mp3],
+                        [res.green_trollworld_full_word_a_mp3],
+                        [res.green_trollworld_full_word_b_mp3],
+                        [res.green_trollworld_full_word_a_mp3],
+                        [res.green_trollworld_full_word_b_mp3]],
     },
     presentWord: { 
         audio:          null,
@@ -339,10 +354,10 @@ $42.MUSIC_GREEN_FOREST = {
         //intervalTime:   3000,
         //delayTime:      500 
     },
-    lastWord:           { audio: res.green_forest_last_word_mp3 },
-    deleteRow:          { audio: res.green_forest_delete_row_mp3 },
-    final:              { audio: res.green_forest_final_mp3 },
-    deleteLastRows:     { audio: res.green_forest_delete_last_rows_mp3 },
+    lastWord:           { audio: res.green_trollworld_last_word_mp3 },
+    deleteRow:          { audio: res.green_trollworld_delete_row_mp3 },
+    final:              { audio: res.green_trollworld_final_mp3 },
+    deleteLastRows:     { audio: res.green_trollworld_delete_last_rows_mp3 },
 };
 
 
@@ -384,11 +399,11 @@ $42.MUSIC_BLUE_QUADRAT = { // Hier gehts weiter ... Musik stopped
     }, 
     selection:      { audio: [res.blue_quadrat_selection_1_mp3, res.blue_quadrat_selection_2_mp3, res.blue_quadrat_selection_3_mp3], },
     fullWord:       { audio: [res.blue_quadrat_full_word_1_mp3, res.blue_quadrat_full_word_2_mp3], },
-    presentWord: { 
-        audio: res.blue_mountains_present_word_mp3,
-        intervalTime: 3000, 
-        delayTime: 500 
-    },
+    //presentWord: { 
+        //audio: res.blue_mountains_present_word_mp3,
+        //intervalTime: 3000, 
+        //delayTime: 500 
+    //},
     lastWord:       { audio: res.blue_quadrat_last_word_mp3 },
     deleteRow:      { audio: res.blue_quadrat_delete_row_mp3 },
     final:          { audio: res.blue_quadrat_final_mp3 },
