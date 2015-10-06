@@ -321,7 +321,7 @@ $42.MUSIC_GREEN_FOREST = {
         playAfterBeats: 1 
     },
     swipe: { 
-        audio:          [res.green_trollworld_swipe_1_mp3, res.green_trollworld_swipe_2_mp3, res.green_trollworld_swipe_3_mp3, res.green_trollworld_swipe_4_mp3, res.green_trollworld_swipe_5_mp3, res.green_trollworld_swipe_6_mp3],
+        audio:          [res.green_trollworld_swipe_1_mp3, res.green_trollworld_swipe_2_mp3, res.green_trollworld_swipe_3_mp3],
         //intervalTime:   450,
         minInterval:    150,
         dontStop:       true
