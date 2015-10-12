@@ -521,23 +521,15 @@ var _42GameLayer = cc.Layer.extend({
 	                	if( new Date().getTime() - self.touchStartTime > $42.LONG_TAP_TIME ) {
 	    	                if( self.hookOnLongTap ) self.hookOnLongTap(loc);
 	                	} else {
-                            var t = self._currentTile,
-                                boxes = t && t.sprite.getChildren() || [];
-                            
-                            var col = Math.floor((loc.x - $42.BOXES_X_OFFSET) / $42.BS),
-                                row = Math.floor((loc.y - $42.BOXES_Y_OFFSET) / $42.BS),
-                                box = self.boxes[row][col];
-
-                            if( !box && row >=0 ) { 
-                                self.isSwipeUp = true;
-                            }
-
 		                	self.isTap = true;
-		                	if( self.hookOnTap ) self.hookOnTap(loc);
+		                	if( self.hookOnTap(loc) ) {
 
-		                    if( loc.y < $42.BOXES_Y_OFFSET ) {
-			                    self.moveRollingLayer(undefined,3);
-                            }
+								if( loc.y < $42.BOXES_Y_OFFSET ) {
+									self.moveRollingLayer(undefined,3);
+								} else {
+									self.isSwipeUp = true;
+								}
+							}
 	                	}
 	                } else {
 		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
@@ -873,7 +865,7 @@ var _42GameLayer = cc.Layer.extend({
                         if( self.hookFuncOnNextBeat ) {
                             self.hookFuncOnNextBeat(function() {
                                 var time = new Date().getTime();
-                                cc.log("---Fixing tile music--- Fixing tile at "+time);
+                                //cc.log("---Fixing tile music--- Fixing tile at "+time);
                                 cb(fixTile(t, lp));
                                 self.tileIsFixing = false;
                             },"fixTile");
@@ -1122,7 +1114,7 @@ var _42GameLayer = cc.Layer.extend({
                             }: null;
                         }
                     }
-                    cc.log("fixTile: Problem fixing tile at pos "+JSON.stringify(lp)+" at brc "+JSON.stringify(brc)+" with "+JSON.stringify(boxesMod));
+                    //cc.log("fixTile: Problem fixing tile at pos "+JSON.stringify(lp)+" at brc "+JSON.stringify(brc)+" with "+JSON.stringify(boxesMod));
                 }
             }
 
