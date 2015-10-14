@@ -613,7 +613,7 @@ var _42GameLayer = cc.Layer.extend({
                     case 65:
                         var sl = $42._settingsLayer;
 
-                        if( sl._settingsShown === $42.SETTING_HIDDEN || sl._settingsShown === $42.ENDLEVEL_HIDDEN ) {
+                        if( !self._settingsShown || sl._settingsShown === $42.SETTINGS_HIDDEN || sl._settingsShown === $42.ENDLEVEL_HIDDEN ) {
                             sl._settingsShown = $42.ENDLEVEL_MOVING;
                             self.stopListeners();
                             self.unscheduleUpdate();
@@ -1825,9 +1825,9 @@ var _42SettingsLayer = cc.Layer.extend({
             onKeyPressed:function(key, event) {
                 // check for BACK key (ESC on web)
                 switch( key ) {
-                case 27:
+                case 32:
                 case 18: // or 6
-                    if( self._settingsShown === $42.SETTING_HIDDEN || self._settingsShown === $42.ENDLEVEL_HIDDEN ) {
+                    if( !self._settingsShown || self._settingsShown === $42.SETTINGS_HIDDEN || self._settingsShown === $42.ENDLEVEL_HIDDEN ) {
                         self._settingsShown = $42.SETTINGS_MOVING;
                         self.showSettings(function() {
                             self._settingsShown = $42.SETTINGS_SHOWN;
@@ -1839,7 +1839,7 @@ var _42SettingsLayer = cc.Layer.extend({
                         });
                     }
                     break; 
-                case 8:
+                case 6:
                     break;
                 default:
                     cc.log(key);
