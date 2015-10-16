@@ -155,8 +155,8 @@ var res = {
     green_trollworld_full_word_b_mp3:              "res/sounds/levelsounds/green_trollworld_full_word_b_1,1,2.mp3",
     green_trollworld_last_word_mp3:                "res/sounds/levelsounds/green_trollworld_last_word_1,1,2.mp3",
     green_trollworld_delete_row_mp3:               "res/sounds/levelsounds/green_trollworld_delete_row_1,1,2.mp3",
-    green_trollworld_delete_last_rows_mp3:         "res/sounds/levelsounds/green_trollworld_delete_last_rows_1,1,2.mp3",
-    green_trollworld_final_mp3:                    "res/sounds/levelsounds/green_trollworld_final_1,1,5.mp3",
+    green_trollworld_delete_last_rows_mp3:         "res/sounds/levelsounds/green_trollworld_delete_last_rows_1,1,7.mp3",
+    green_trollworld_final_mp3:                    "res/sounds/levelsounds/green_trollworld_final_1,1,9.mp3",
 
     // level 5
     //blue_quadrat_intro_mp3:                  "res/sounds/none.mp3",
