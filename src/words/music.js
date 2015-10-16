@@ -240,9 +240,9 @@ $42.MUSIC_FLAMES = {
 // Music for level 3
 $42.MUSIC_YELLOW_STEPS = {
     background: {
-        audio:           [res.empty_mp3],
+        audio:           [res.yellow_steps_background_loop_mp3],
         audioLoopStart:  0,
-        audioLength:     [1000,],
+        audioLength:     [82.834286,],
         audioBars:       [4,4],
         audioBeat:       [8,8],
         nextSetOn:      [1000],

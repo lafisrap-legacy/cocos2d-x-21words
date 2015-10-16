@@ -923,15 +923,15 @@ var _TWEET_MODULE = function(layer) {
             prevTime = time;
             ack = false;
 
-            cc.log("Testing connection. Web is "+($42.webConnected?"":"not ")+"connected.");
+            //cc.log("Testing connection. Web is "+($42.webConnected?"":"not ")+"connected.");
 
             if( $42.webConnected === true ) {
                 _42_sendMessage("testConnection", {}, function(data) {
-                    cc.log("Connection is good.");
+                    //cc.log("Connection is good.");
                     ack = true;
                     if( menuNames.length === 0 ) {
                         _42_sendMessage("checkNames", {Names:getNames()}, function(data) {
-                            cc.log("Got names!")
+                            //cc.log("Got names!")
                             menuNames = data.Names;
                             menuNames.sort();
                         });
@@ -941,7 +941,7 @@ var _TWEET_MODULE = function(layer) {
                 });
                 setTimeout(function() {
                     if( ack === false ) {
-                        cc.log("Connection lost.");
+                        //cc.log("Connection lost.");
                         changeMenu(false);     
                         $42.webConnected = false;
                     }

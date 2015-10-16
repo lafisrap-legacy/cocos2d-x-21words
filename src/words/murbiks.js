@@ -396,7 +396,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
 
             if( markersInit[i] === -1 ) return;
 
-            cc.log( "resetMarker: "+(type || "marker"+markersInit[i]+".png"))
+            //cc.log( "resetMarker: "+(type || "marker"+markersInit[i]+".png"))
 
             //////////////////////
             // Make new ones
@@ -1069,7 +1069,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
     	
 		// speech bubble load cloud and text object
         var frame = cc.spriteFrameCache.getSpriteFrame("wordcloud.png");
-        cc.log("Frame: "+frame);
+        //cc.log("Frame: "+frame);
 		speechBubbleCloud = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("wordcloud.png"));
 		_42_retain(speechBubbleCloud, "speechBubbleCloud");
 		speechBubble = cc.LabelTTF.create("", _42_getFontName(res.exo_regular_ttf), $42.SPEECH_BUBBLE_FONTSIZE, cc.size($42.SPEECH_BUBBLE_WIDTH,0),cc.TEXT_ALIGNMENT_CENTER, cc.VERTICAL_TEXT_ALIGNMENT_CENTER);

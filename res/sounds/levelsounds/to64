@@ -1,0 +1,4 @@
+for MP3 in levelsounds/*.mp3 *.mp3
+do
+	grep $MP3 ../../../src/*.js 
+done

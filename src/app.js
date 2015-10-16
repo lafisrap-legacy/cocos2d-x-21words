@@ -521,23 +521,15 @@ var _42GameLayer = cc.Layer.extend({
 	                	if( new Date().getTime() - self.touchStartTime > $42.LONG_TAP_TIME ) {
 	    	                if( self.hookOnLongTap ) self.hookOnLongTap(loc);
 	                	} else {
-                            var t = self._currentTile,
-                                boxes = t && t.sprite.getChildren() || [];
-                            
-                            var col = Math.floor((loc.x - $42.BOXES_X_OFFSET) / $42.BS),
-                                row = Math.floor((loc.y - $42.BOXES_Y_OFFSET) / $42.BS),
-                                box = self.boxes[row][col];
-
-                            if( !box && row >=0 ) { 
-                                self.isSwipeUp = true;
-                            }
-
 		                	self.isTap = true;
-		                	if( self.hookOnTap ) self.hookOnTap(loc);
+		                	if( self.hookOnTap(loc) ) {
 
-		                    if( loc.y < $42.BOXES_Y_OFFSET ) {
-			                    self.moveRollingLayer(undefined,3);
-                            }
+								if( loc.y < $42.BOXES_Y_OFFSET ) {
+									self.moveRollingLayer(undefined,3);
+								} else {
+									self.isSwipeUp = true;
+								}
+							}
 	                	}
 	                } else {
 		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
@@ -621,7 +613,7 @@ var _42GameLayer = cc.Layer.extend({
                     case 65:
                         var sl = $42._settingsLayer;
 
-                        if( sl._settingsShown === $42.SETTING_HIDDEN || sl._settingsShown === $42.ENDLEVEL_HIDDEN ) {
+                        if( !self._settingsShown || sl._settingsShown === $42.SETTINGS_HIDDEN || sl._settingsShown === $42.ENDLEVEL_HIDDEN ) {
                             sl._settingsShown = $42.ENDLEVEL_MOVING;
                             self.stopListeners();
                             self.unscheduleUpdate();
@@ -873,7 +865,7 @@ var _42GameLayer = cc.Layer.extend({
                         if( self.hookFuncOnNextBeat ) {
                             self.hookFuncOnNextBeat(function() {
                                 var time = new Date().getTime();
-                                cc.log("---Fixing tile music--- Fixing tile at "+time);
+                                //cc.log("---Fixing tile music--- Fixing tile at "+time);
                                 cb(fixTile(t, lp));
                                 self.tileIsFixing = false;
                             },"fixTile");
@@ -1122,7 +1114,7 @@ var _42GameLayer = cc.Layer.extend({
                             }: null;
                         }
                     }
-                    cc.log("fixTile: Problem fixing tile at pos "+JSON.stringify(lp)+" at brc "+JSON.stringify(brc)+" with "+JSON.stringify(boxesMod));
+                    //cc.log("fixTile: Problem fixing tile at pos "+JSON.stringify(lp)+" at brc "+JSON.stringify(brc)+" with "+JSON.stringify(boxesMod));
                 }
             }
 
@@ -1833,9 +1825,9 @@ var _42SettingsLayer = cc.Layer.extend({
             onKeyPressed:function(key, event) {
                 // check for BACK key (ESC on web)
                 switch( key ) {
-                case 27:
+                case 32:
                 case 18: // or 6
-                    if( self._settingsShown === $42.SETTING_HIDDEN || self._settingsShown === $42.ENDLEVEL_HIDDEN ) {
+                    if( !self._settingsShown || self._settingsShown === $42.SETTINGS_HIDDEN || self._settingsShown === $42.ENDLEVEL_HIDDEN ) {
                         self._settingsShown = $42.SETTINGS_MOVING;
                         self.showSettings(function() {
                             self._settingsShown = $42.SETTINGS_SHOWN;
@@ -1847,7 +1839,7 @@ var _42SettingsLayer = cc.Layer.extend({
                         });
                     }
                     break; 
-                case 8:
+                case 6:
                     break;
                 default:
                     cc.log(key);
