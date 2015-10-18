@@ -111,7 +111,7 @@ $42.LEVEL_DEVS = {
         neededLettersProb: 0.25
     },{                             // Level 3
         type: $42.LEVEL_TYPE_PREFIX,
-        music: $42.TEST,
+        music: $42.MUSIC_YELLOW_STEPS,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -201,7 +201,7 @@ $42.LEVEL_DEVS = {
         newLetters: 3,
     },{                             // Level 3
         type: $42.LEVEL_TYPE_FREE,
-        music: $42.TEST,
+        music: $42.MUSIC_YELLOW_STEPS,
         words: 3,
         minValue:   0,
         minDemand:  0,

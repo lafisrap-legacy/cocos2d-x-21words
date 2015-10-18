@@ -276,11 +276,11 @@ $42.MUSIC_YELLOW_STEPS = {
         audioSet:         [[res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3],
                            [res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3],
                            [res.yellow_steps_fix_tile_1_e_mp3, res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3],
-                           [res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3]
+                           [res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3],
                            [res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3, res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3],
-                           [res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3]
+                           [res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3],
                            [res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3, res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3],
-                           [res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3]
+                           [res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3],
                            [res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3],
                            [res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3]],
         playOnBeat: [1,4,7],
@@ -556,6 +556,7 @@ var _MUSIC_MODULE = function(layer) {
         if( effect.audioSet ) {
             if( !effect.currentSet ) effect.currentSet = 0;
             effect.audio = effect.audioSet[effect.currentSet];
+			if( !effect.audio ) cc.error("Cannot find audioSet "+effect.currentSet+". Check the definition data.");
         }
         if( effect.currentSlot === undefined ) effect.currentSlot = 0;
         else if( !repeat || !effect.stayWithSound ) effect.currentSlot = ++effect.currentSlot%effect.audio.length;
