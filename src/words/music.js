@@ -240,13 +240,13 @@ $42.MUSIC_FLAMES = {
 // Music for level 3
 $42.MUSIC_YELLOW_STEPS = {
     background: {
-        audio:           [res.empty_mp3],
+        audio:           [res.yellow_steps_background_loop_1_mp3, res.yellow_steps_background_loop_2_mp3],
         audioLoopStart:  0,
-        audioLength:     [1000,],
-        audioBars:       [4,4],
-        audioBeat:       [8,8],
-        nextSetOn:      [1000],
-        delay:          7000,
+        audioLength:     [82.834286,],
+        audioBars:       [46,46],
+        audioBeat:       [9,9],
+        nextSetOn:      [3.601490, 3.601490, 2.400993, 1.200496, 6.602732, 0.600248, 1.200496, 1.200496, 3.601490, 2.400993, 6.002484, 10.804472, 3.601490, 3.601490, 3.001242, 0.600248, 1.800745, 0.600248, 3.601490, 2.400993, 2.400993, 1.200496, 1.200496, 4.801987, 6.002484, 2.400993, 1.200496, 1.200496],
+        delay:          4000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  1000
     },
@@ -259,33 +259,56 @@ $42.MUSIC_YELLOW_STEPS = {
         delayTime:      1500
     },
     setTile: { 
-        audio:          [res.yellow_steps_set_tile_1_mp3, res.yellow_steps_set_tile_2_mp3, res.yellow_steps_set_tile_3_mp3, res.yellow_steps_set_tile_4_mp3, res.yellow_steps_set_tile_5_mp3],
+        audio:          [res.yellow_steps_set_tile_1_mp3, res.yellow_steps_set_tile_2_mp3, res.yellow_steps_set_tile_3_mp3, res.yellow_steps_set_tile_4_mp3],
+        playOnBeat: [1,4,7],
     }, 
     swipe: { 
-        audio:          [res.yellow_steps_swipe_1_mp3, res.yellow_steps_swipe_2_mp3, res.yellow_steps_swipe_3_mp3, res.yellow_steps_swipe_4_mp3, res.yellow_steps_swipe_5_mp3, res.yellow_steps_swipe_6_mp3, res.yellow_steps_swipe_7_mp3, res.yellow_steps_swipe_8_mp3, res.yellow_steps_swipe_9_mp3, res.yellow_steps_swipe_10_mp3, res.yellow_steps_swipe_11_mp3],
-        stayWithSound:  true,
+        audio:          [res.yellow_steps_swipe_1_mp3, res.yellow_steps_swipe_2_mp3],
+        playOnBeat: [1,4,7],
         dontStop:       true
     },
     rotate: { 
-        audio:          [res.yellow_steps_rotate_1_mp3, res.yellow_steps_rotate_2_mp3, res.yellow_steps_rotate_3_mp3, res.yellow_steps_rotate_rotate_4_mp3, res.yellow_steps_rotate_swipe_5_mp3, res.yellow_steps_rotate_6_mp3, res.yellow_steps_rotate_7_mp3, res.yellow_steps_rotate_8_mp3, res.yellow_steps_rotate_9_mp3, res.yellow_steps_rotate_10_mp3, res.yellow_steps_rotate_11_mp3, res.yellow_steps_rotate_12_mp3],
-        stayWithSound:  true,
+        audio:          [res.yellow_steps_rotate_1_mp3, res.yellow_steps_rotate_2_mp3, res.yellow_steps_rotate_3_mp3, res.yellow_steps_rotate_4_mp3],
+        playOnBeat: [1,4,7],
         dontStop:       true
     },
     fixTile: { 
-        audioSet:         [[res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_3_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3],
-                           [res.yellow_steps_fix_tile_4_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3],
-                           [res.yellow_steps_fix_tile_3_mp3, res.yellow_steps_fix_tile_4_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_2_mp3, res.yellow_steps_fix_tile_1_mp3, res.yellow_steps_fix_tile_1_mp3]],
-        nextSetOn:         "fullWord", 
+        audioSet:         [[res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3],
+                           [res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3],
+                           [res.yellow_steps_fix_tile_1_e_mp3, res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3],
+                           [res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3]
+                           [res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3, res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3],
+                           [res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3]
+                           [res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3, res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3],
+                           [res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3]
+                           [res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3],
+                           [res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3]],
+        playOnBeat: [1,4,7],
+        nextSetOn:         "time", 
     }, 
     selection:          { 
-        audio:          [res.yellow_steps_selection_1_mp3, res.yellow_steps_selection_2_mp3, res.yellow_steps_selection_3_mp3], 
+        audioSet:       [[res.yellow_steps_selection_1_mp3],
+                         [res.yellow_steps_selection_2_mp3]], 
+        //playOnBeat: [1,4,7],
+        nextSetOn:         "time", 
     },
     fullWord:           { 
-        audio:          [res.yellow_steps_full_word_1_mp3, res.yellow_steps_full_word_2_mp3], 
+        audioSet:       [[res.yellow_steps_full_word_1_a_mp3, res.yellow_steps_full_word_1_b_mp3],
+                         [res.yellow_steps_full_word_2_a_mp3, res.yellow_steps_full_word_2_b_mp3]], 
+        playOnBeat: [1,2,3,4,5,6,7,8,9],
+        nextSetOn:         "time", 
     },
-    lastWord:           { audio: res.yellow_steps_last_word_mp3 },
+    lastWord:           {  
+        audioSet:       [[res.yellow_steps_last_word_1_mp3],
+                         [res.yellow_steps_last_word_2_mp3]], 
+        playOnBeat: [1,4,7],
+        nextSetOn:         "time", 
+    },
     deleteRow:          { 
-        audio:          [res.yellow_steps_delete_row_1_mp3, res.yellow_steps_delete_row_2_mp3],
+        audioSet:       [[res.yellow_steps_delete_row_1_mp3],
+                         [res.yellow_steps_delete_row_2_mp3]], 
+        playOnBeat: [1,2,3,4,5,6,7,8,9],
+        nextSetOn:         "time", 
     },
     final:              { audio: res.yellow_steps_final_mp3 }, 
     deleteLastRows:     { audio: res.yellow_steps_delete_last_rows_mp3 },
@@ -485,7 +508,7 @@ $42.MUSIC_BLUE_MOUNTAINS = {
     },
     setTile: { 
         audio: res.blue_mountains_set_tile_mp3, 
-        playOnBeat: [1,4],
+        playOnBeat: [1,3,5,7],
         playAfterBeats: 1
     },
     swipe: { 
