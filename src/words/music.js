@@ -295,7 +295,7 @@ $42.MUSIC_YELLOW_STEPS = {
     fullWord:           { 
         audioSet:       [[res.yellow_steps_full_word_1_a_mp3, res.yellow_steps_full_word_1_b_mp3],
                          [res.yellow_steps_full_word_2_a_mp3, res.yellow_steps_full_word_2_b_mp3]], 
-        playOnBeat: [1,4,7],
+        playOnBeat: [1,2,3,4,5,6,7,8,9],
         nextSetOn:         "time", 
     },
     lastWord:           {  
