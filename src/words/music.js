@@ -245,7 +245,7 @@ $42.MUSIC_YELLOW_STEPS = {
         audioLength:     [82.834286,],
         audioBars:       [46,46],
         audioBeat:       [9,9],
-        nextSetOn:      [3.601490, 3.601490, 2.400993, 1.200496, 6.602732, 0.600248, 1.200496, 1.200496, 3.601490, 2.400993, 6.002484, 10.804472, 3.601490, 3.601490, 3.001242, 0.600248, 1.800745, 0.600248, 3.601490, 2.400993, 2.400993, 1.200496, 1.200496, 4.801987, 6.002484, 2.400993, 1.200496, 1.200496],
+        nextSetOn:      [3601.490, 3601.490, 2400.993, 1200.496, 6602.732, 600.248, 1200.496, 1200.496, 3601.490, 2400.993, 600.2484, 10804.472, 3601.490, 3601.490, 3001.242, 600.248, 1800.745, 600.248, 3601.490, 2400.993, 2400.993, 1200.496, 1200.496, 4801.987, 6002.484, 2400.993, 1200.496, 1200.496],
         delay:          4000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  1000
@@ -276,11 +276,11 @@ $42.MUSIC_YELLOW_STEPS = {
         audioSet:         [[res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3],
                            [res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3],
                            [res.yellow_steps_fix_tile_1_e_mp3, res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3],
-                           [res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3]
+                           [res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3],
                            [res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3, res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3],
-                           [res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3]
+                           [res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3],
                            [res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3, res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3],
-                           [res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3]
+                           [res.yellow_steps_fix_tile_2_a_mp3, res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3],
                            [res.yellow_steps_fix_tile_1_a_mp3, res.yellow_steps_fix_tile_1_b_mp3, res.yellow_steps_fix_tile_1_c_mp3, res.yellow_steps_fix_tile_1_d_mp3, res.yellow_steps_fix_tile_1_e_mp3],
                            [res.yellow_steps_fix_tile_2_b_mp3, res.yellow_steps_fix_tile_2_c_mp3, res.yellow_steps_fix_tile_2_a_mp3]],
         playOnBeat: [1,4,7],
@@ -553,6 +553,7 @@ var _MUSIC_MODULE = function(layer) {
             if( !effect.currentSet ) effect.currentSet = 0;
             effect.audio = effect.audioSet[effect.currentSet];
         }
+		if( effect.nextSetOn === "time" ) cc.log(JSON.stringify(effect.currentSlot)+"///"+effect.currentSet+"///"+effect.audio);
         if( effect.currentSlot === undefined ) effect.currentSlot = 0;
         else if( !repeat || !effect.stayWithSound ) effect.currentSlot = ++effect.currentSlot%effect.audio.length;
 
