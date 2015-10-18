@@ -552,8 +552,8 @@ var _MUSIC_MODULE = function(layer) {
         if( effect.audioSet ) {
             if( !effect.currentSet ) effect.currentSet = 0;
             effect.audio = effect.audioSet[effect.currentSet];
+			if( !effect.audio ) cc.error("Cannot find audioSet "+effect.currentSet+". Check the definition data.");
         }
-		if( effect.nextSetOn === "time" ) cc.log(JSON.stringify(effect.currentSlot)+"///"+effect.currentSet+"///"+effect.audio);
         if( effect.currentSlot === undefined ) effect.currentSlot = 0;
         else if( !repeat || !effect.stayWithSound ) effect.currentSlot = ++effect.currentSlot%effect.audio.length;
 
