@@ -100,12 +100,11 @@ $42.MUSIC_TITLE_EXPERT = {
 ////////////////////////////////////////////////
 // Music for tweeting
 $42.MUSIC_TWEET = {
-    audio:  [res.flames_intro_mp3, res.flames_loop_mp3],
-    audioLoopStart: 1,
-    audioLength:    [85.140000,89.136000],
-    audioBars:      [23, 24],
-    audioBeat:      [4, 4],
-    audioLoopStart:  1,
+    audio:  [res.flames_loop_mp3],
+    audioLoopStart: 0,
+    audioLength:    [89.103673],
+    audioBars:      [24],
+    audioBeat:      [4],
     fadeOutTimeEnd:  2000
 }
 
@@ -190,8 +189,8 @@ $42.MUSIC_FLAMES = {
         audio:           [res.flames_loop_mp3],
         audioLoopStart:  0,
         audioLength:     [89.103673],
-        audioBars:       [24,24],
-        audioBeat:       [4,4],
+        audioBars:       [24],
+        audioBeat:       [4],
         delayTime:       5000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  800
@@ -245,7 +244,7 @@ $42.MUSIC_YELLOW_STEPS = {
         audioLength:     [70.243265, 12.643265],
         audioBars:       [39,7],
         audioBeat:       [9,9],
-        nextSetOn:      [19.207945, 1.200496, 7.202979, 10.804472, 3.601490, 3.601490, 9.603973, 2.400993, 4.801985, 4.801987,  6.002484, 4.801985],
+        nextSetOn:       [19207.945, 1200.496, 7202.979, 10804.472, 3601.490, 3601.490, 9603.973, 2400.993, 4801.985, 4801.987,  6002.484, 4801.985],
         delay:          4000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  1000
