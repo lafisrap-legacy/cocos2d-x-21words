@@ -187,10 +187,10 @@ $42.MUSIC_RED_NOSES = {
 // Music for level 2
 $42.MUSIC_FLAMES = {
     background: {
-        audio:           [res.flames_intro_mp3, res.flames_loop_mp3],
-        audioLoopStart:  1,
-        audioLength:     [85.140000,89.136000],
-        audioBars:       [23,24],
+        audio:           [res.flames_loop_mp3],
+        audioLoopStart:  0,
+        audioLength:     [89.103673],
+        audioBars:       [24,24],
         audioBeat:       [4,4],
         delayTime:       5000,
         fadeOutTime:     50,
@@ -242,10 +242,10 @@ $42.MUSIC_YELLOW_STEPS = {
     background: {
         audio:           [res.yellow_steps_background_loop_1_mp3, res.yellow_steps_background_loop_2_mp3],
         audioLoopStart:  0,
-        audioLength:     [82.834286,],
-        audioBars:       [46,46],
+        audioLength:     [70.243265, 12.643265],
+        audioBars:       [39,7],
         audioBeat:       [9,9],
-        nextSetOn:      [3.601490, 3.601490, 2.400993, 1.200496, 6.602732, 0.600248, 1.200496, 1.200496, 3.601490, 2.400993, 6.002484, 10.804472, 3.601490, 3.601490, 3.001242, 0.600248, 1.800745, 0.600248, 3.601490, 2.400993, 2.400993, 1.200496, 1.200496, 4.801987, 6.002484, 2.400993, 1.200496, 1.200496],
+        nextSetOn:      [19.207945, 1.200496, 7.202979, 10.804472, 3.601490, 3.601490, 9.603973, 2.400993, 4.801985, 4.801987,  6.002484, 4.801985],
         delay:          4000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  1000
@@ -310,7 +310,11 @@ $42.MUSIC_YELLOW_STEPS = {
         playOnBeat: [1,2,3,4,5,6,7,8,9],
         nextSetOn:         "time", 
     },
-    final:              { audio: res.yellow_steps_final_mp3 }, 
+    final:          { 
+        audioSet:       [[res.yellow_steps_final_1_mp3],
+                         [res.yellow_steps_final_2_mp3]],  
+        nextSetOn:         "time", 
+    }, 
     deleteLastRows:     { audio: res.yellow_steps_delete_last_rows_mp3 },
 };
 
