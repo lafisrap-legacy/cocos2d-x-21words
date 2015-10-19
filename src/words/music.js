@@ -115,7 +115,7 @@ $42.MUSIC_RED_NOSES = {
     background: {
         audio:           [res.red_noses_background_loop_C_1_mp3, res.red_noses_background_loop_C_2_mp3],
         audioLoopStart:  0,
-        audioLength:     [37.142000, 5.714000],
+        audioLength:     [37.188000, 5.760000],
         audioBars:       [13,2],
         audioBeat:       [16,16],
         delayTime:       6000,
