@@ -113,11 +113,11 @@ $42.MUSIC_TWEET = {
 // Music for level 1
 $42.MUSIC_RED_NOSES = {
     background: {
-        audio:           [res.red_noses_background_loop_C_1_mp3, res.red_noses_background_loop_C_2_mp3],
-        audioLoopStart:  0,
-        audioLength:     [37.188000, 5.760000],
-        audioBars:       [13,2],
-        audioBeat:       [16,16],
+        audio:           [res.red_noses_background_intro_mp3, res.red_noses_background_loop_C_1_mp3, res.red_noses_background_loop_C_2_mp3],
+        audioLoopStart:  1,
+        audioLength:     [37.200000, 2.928000, 40.056],
+        audioBars:       [13,1,14],
+        audioBeat:       [16,16,16],
         delayTime:       6000,
         fadeOutTime:     50,
         fadeOutDelay:    50,
@@ -294,7 +294,7 @@ $42.MUSIC_YELLOW_STEPS = {
     fullWord:           { 
         audioSet:       [[res.yellow_steps_full_word_1_a_mp3, res.yellow_steps_full_word_1_b_mp3],
                          [res.yellow_steps_full_word_2_a_mp3, res.yellow_steps_full_word_2_b_mp3]], 
-        playOnBeat: [1,2,3,4,5,6,7,8,9],
+        playOnBeat: [1,3,4,6,7,9],
         nextSetOn:         "time", 
     },
     lastWord:           {  
@@ -310,9 +310,10 @@ $42.MUSIC_YELLOW_STEPS = {
         nextSetOn:         "time", 
     },
     final:          { 
-        audioSet:       [[res.yellow_steps_final_1_mp3],
-                         [res.yellow_steps_final_2_mp3]],  
-        nextSetOn:         "time", 
+        audio: 
+                        [res.yellow_steps_final_mp3],
+                         //[res.yellow_steps_final_mp3]],  
+        //nextSetOn:         "time", 
     }, 
     deleteLastRows:     { audio: res.yellow_steps_delete_last_rows_mp3 },
 };
