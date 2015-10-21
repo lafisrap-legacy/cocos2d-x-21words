@@ -812,8 +812,7 @@ var _MURBIKS_MODULE = function(parentLayer) {
             )
 		}
 
-        
-        $42.SCENE.playEffect({ audio: res.speech_bubble_mp3 });
+        $42.SCENE.playEffect( $42.SOUNDEFFECT_SPEECHBUBBLE );
 	};
 
     var showConcepts = function(pages,cb) {

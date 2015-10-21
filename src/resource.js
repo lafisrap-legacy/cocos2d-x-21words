@@ -30,9 +30,9 @@ var res = {
     title_easy_loop_2_mp3:                      "res/sounds/blue_title_easy_loop_b_1,1,8.mp3",
     mostafa_out_mp3 :                           "res/sounds/mostafa_geht0,1,5.mp3",
     mostafa_in_mp3 :                            "res/sounds/mostafa_kommt0,1,5.mp3",
-    speech_bubble_mp3 :                       "res/sounds/sprechblase_a_1,1,9.mp3",
-    //speech_bubble_1_mp3 :                       "res/sounds/sprechblase_a_1,1,9.mp3",
-    //speech_bubble_2_mp3 :                       "res/sounds/sprechblase_b_1,1,9.mp3",
+    //speech_bubble_mp3 :                       "res/sounds/sprechblase_a_1,1,9.mp3",
+    speech_bubble_1_mp3 :                       "res/sounds/sprechblase_a_1,1,9.mp3",
+    speech_bubble_2_mp3 :                       "res/sounds/sprechblase_b_1,1,9.mp3",
     tutorial_again_mp3 :                        "res/sounds/tutorial_nochmal1,1,4.mp3",
 
     // level 1
