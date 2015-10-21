@@ -13,6 +13,8 @@
         "level_min_length":     "(min. %d Buchstaben lang)",
         "reached_top_continue": "WEITER SPIELEN",
         "reached_top_end_game": "SPIEL BEENDEN",
+        "want_to_end_game":    "SPIEL ABBRECHEN",
+        "want_to_continue":     "WEITER",
         "won_continue": 		"WEITER SPIELEN",
         "won_end_game": 		"SPIEL BEENDEN",
         "won_congrats":			"DU HAST GEWONNEN!",
@@ -46,14 +48,18 @@
         "tweet_tweet_confirm":  {"label":"Senden!"     ,"size":"big"},
         "tweet_no_internet":    {"label":"Kein\nInternet","size":"small"},
         "tweet_no_server":      {"label":"Server\nweg","size":"small"},
+        "music_slider":         "Musik",
+        "effects_slider":       "Effekte",
         "mostafa": {
             "greeting": ["Hallo!\nIch bin Mostafa.", "Wenn du spielen willst,\ndrücke START!" ],
             "basic1":   "Du kannst die Bausteine nach links, rechts und nach unten bewegen.",
-            "basic2":   "Wenn du nach oben wischt, dreht sich der Baustein.",
+            "basic2":   "Wenn du nach oben wischt, dreht sich der Baustein (oder auch irgendwo hin tippst)",
             "basic3":   "Versuche die Worte zu bilden, die auf dem Spielfeld stehen.",
             "advanced1": "Manchmal passen die Buchstaben nicht sofort ...",
             "advanced2": "Dann kann man die Buchstaben markieren, die man behalten möchte ...",
-            "advanced3": "... und dann die Reihe löschen."
+            "advanced3": "... und dann die Reihe löschen.",
+            "advanced4a": "Eins noch!\nEins noch!",
+            "advanced4b": "Hier unten findest du ab jetzt die Buchstaben, die du verwenden kannst."
         },
         "story_again":          "Nochmal",
         "story_continue":       "Weiter" 

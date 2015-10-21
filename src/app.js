@@ -1,4 +1,4 @@
-
+//////////////////////////////////////////////////////////////////////////////////
 // Main app holding a plain vanilla tetris game
 //
 //  LAYERS
@@ -44,6 +44,7 @@ var _42_GLOBALS = {
 	TAG_SPRITE_MANAGER : 1,                 // Sprite Ids
 	TAG_GAME_LAYER : 3,                     //
 	TAG_TITLE_LAYER : 4,                    //
+	TAG_SETTINGS_LAYER : 5,                 //
 	TAG_NONE : 100,                         // 
 	TAG_BACKGROUND_SPRITE : 101,            //
 	TAG_MENU_QUESTION : 102,                //
@@ -70,7 +71,7 @@ var _42_GLOBALS = {
 	LONG_TAP_TIME : 300,                    // minimum time for tap
 	FALLING_SPEED : 0.40,                   // pixel per 1/60
 	MOVE_SPEED : 0.09,                      // animation speed of sprites in seconds
-	TOUCH_THRESHOLD : 6,                    // pixel
+	TOUCH_THRESHOLD : 3,                    // pixel
 	KEY_LEFT_CODE : 37,                     // keys for browser usage
 	KEY_UP_CODE : 38,                       //
 	KEY_RIGHT_CODE : 39,                    //
@@ -80,14 +81,23 @@ var _42_GLOBALS = {
 	TILE_BOXES : [                          // Tetris forms
 	    [{x:-1.5*64,y: 0.0*64},{x:-0.5*64,y: 0.0*64},{x: 0.5*64,y: 0.0*64},{x: 1.5*64,y: 0.0*64}],
 		[{x:-0.5*64,y:-0.5*64},{x:-0.5*64,y: 0.5*64},{x: 0.5*64,y:-0.5*64},{x: 0.5*64,y: 0.5*64}],
-		[{x:-1.0*64,y:-0.5*64},{x:-1.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
-		[{x:-1.0*64,y:-0.5*64},{x: 1.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
+		[{x:-1.0*64,y: 0.5*64},{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
+		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64},{x: 1.0*64,y: 0.5*64}],
+        [{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64}],
 		[{x:-1.0*64,y: 0.5*64},{x: 0.0*64,y: 0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64}],
 		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64},{x: 1.0*64,y: 0.5*64}],
-		[{x:-1.0*64,y:-0.5*64},{x: 0.0*64,y:-0.5*64},{x: 1.0*64,y:-0.5*64},{x: 0.0*64,y: 0.5*64}],
 	],
-	TILE_OCCURANCES : [10,5,7,7,3,2,2,0,0], // How often the tiles appear, when selected randomly
+	TILE_OCCURANCES : [10,5,7,7,4,2,2], // How often the tiles appear, when selected randomly
+	TILE_OCCURANCES_EASY : [10,5,7,7,1,0,0], 
     TILE_5_6_MAX_ROW : 11,
+    MUSIC_VOLUME: 0.4,
+    EFFECTS_VOLUME: 0.8,
+    SETTINGS_HIDDEN: 0,
+    SETTINGS_MOVING: 1,
+    SETTINGS_SHOWN: 2,
+    ENDLEVEL_HIDDEN: 3,
+    ENDLEVEL_MOVING: 4,
+    ENDLEVEL_SHOWN: 5
 };
 var $42 = _42_GLOBALS;
 $42.webCallbacks = [];
@@ -118,10 +128,10 @@ var _42GameLayer = cc.Layer.extend({
     ctor:function (mode) {
         this._super();
 
-        var size = this.size = cc.director.getWinSize(),
-        	res = cc.director.getOpenGLView().getFrameSize();
+        var res = cc.director.getOpenGLView().getFrameSize();
         
-        $42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD * size.height / res.height;
+        //$42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD * cc.height / res.height;
+        $42.TOUCH_SWIPE_THRESHOLD = $42.TOUCH_THRESHOLD;
         
         /////////////////////////
         // Look if there is a plugin module
@@ -214,8 +224,6 @@ var _42GameLayer = cc.Layer.extend({
     // 
 	showLogOnScreen: function() {
 		
-        var size = this.size;
-
         // tmp Errormessage layer
         var logMsg = cc.Node.create();
         
@@ -224,10 +232,13 @@ var _42GameLayer = cc.Layer.extend({
         
         $42.msg1.setPosition(0,0);
         $42.msg2.setPosition(0,-20);
-		logMsg.setPosition(size.width/2,size.height-50);
+		logMsg.setPosition(cc.width/2,cc.height-50);
 
-		//logMsg.addChild($42.msg1, 1);        	
-		//logMsg.addChild($42.msg2, 1);        	
+		logMsg.addChild($42.msg1, 1);        	
+		logMsg.addChild($42.msg2, 1);        	
+        
+        _42_retain($42.msg1, "msg1");
+        _42_retain($42.msg2, "msg2");
         this.addChild(logMsg, 100);
         
 	},
@@ -247,7 +258,6 @@ var _42GameLayer = cc.Layer.extend({
     ////////////////////////////////////////////////////////////////////////////
     // initBoxSpace initializes the box array and draws the score bar
 	initBoxSpace: function() {
-        var size = this.size;
         
 	    // initialize boxes arrays
 	    for( var i=0 ; i<$42.BOXES_PER_COL ; i++ ) {
@@ -329,7 +339,8 @@ var _42GameLayer = cc.Layer.extend({
 	
     drawScorebarText: function(text,pos,size,color) {
 		
-		var label = new cc.LabelBMFont( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT ),
+		//var label = new cc.LabelBMFont( text , "res/fonts/amtype"+size+".fnt" , cc.LabelAutomaticWidth, cc.TEXT_ALIGNMENT_LEFT ),
+    	var label = new cc.LabelTTF   ( text , _42_getFontName(res.exo_regular_ttf), size),
             rl = $42._rollingLayer;
 
 		label.setPosition(pos);
@@ -345,7 +356,7 @@ var _42GameLayer = cc.Layer.extend({
 
 		if( !wordSprite ) {
 			var wordFrameFrame  = cc.spriteFrameCache.getSpriteFrame("wordframe.png"),
-				wordFrameSprite = cc.Sprite.create(wordFrameFrame),
+				wordFrameSprite = new cc.Sprite(wordFrameFrame),
 				rect = wordFrameSprite.getTextureRect();
             _42_retain(wordFrameSprite,"wordFrameSprite "+word);	
 			rect.width = word.length? word.length * $42.BS + $42.WORD_FRAME_WIDTH * 2 : 80;
@@ -369,8 +380,8 @@ var _42GameLayer = cc.Layer.extend({
 			
 			var file = $42.LETTER_NAMES[$42.LETTERS.indexOf(word[i])],
 				spriteFrame = cc.spriteFrameCache.getSpriteFrame(file+".png"),
-				sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
-			if( !sprite ) cc.log("File '"+file+".png' couldn't be opened. Letter: "+word[i]);
+				sprite = new cc.Sprite(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
+			//if( !sprite ) cc.log("File '"+file+".png' couldn't be opened. Letter: "+word[i]);
             sprite.setPosition($42.BS/2+i*$42.BS+$42.WORD_FRAME_WIDTH,$42.BS/2+$42.WORD_FRAME_WIDTH);
             //  ERROR: JS: assets/src/app.js:370:TypeError: sprite is null
 			wordFrameSprite.addChild( sprite );
@@ -438,8 +449,8 @@ var _42GameLayer = cc.Layer.extend({
 	                };
 	                
 	                self.touchLastPoint = {
-	                    	x: loc.x,
-	                    	y: loc.y
+                        x: loc.x,
+                        y: loc.y
 	                };	
 	                
 	                self.touchStartTime = new Date().getTime();
@@ -454,58 +465,34 @@ var _42GameLayer = cc.Layer.extend({
 	            		var loc = pos;
 	            	}
 	                
-	            	var start = self.touchStartPoint;
+	            	var start = self.touchStartPoint,
+                        last = self.touchLastPoint;
 	
 	                if( !loc || !start ) {
+                        cc.assert(false, "There should always be a location and a start point while moving.");
 		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
 	                	return;
 	                }
 	                
-	                self.touchDistance = {
-	            			x: Math.abs(loc.x - start.x),
-	            			y: Math.abs(loc.y - start.y)
+	                self.touchCurrentMove = {
+                        x: (self.touchCurrentMove && self.touchCurrentMove.x || 0) + loc.x - last.x,
+                        y: (self.touchCurrentMove && self.touchCurrentMove.y || 0) + loc.y - last.y
 	            	};
+                    //cc.log("self.touchCurrentMove: "+JSON.stringify(self.touchCurrentMove)+", loc: "+JSON.stringify(loc)+", last: "+JSON.stringify(last));
 	                
 	                // check for left
 	                if( loc.x < start.x - $42.TOUCH_SWIPE_THRESHOLD) {
-	                	// if direction changed while swiping left, set new base point
-	                	if( loc.x > self.touchLastPoint.x ) {
-	                		start = self.touchStartPoint = {
-	                        		x: loc.x,
-	                        		y: loc.y
-	                        };
-	                		self.isSwipeLeft = false;
-	                	} else {
-	                    	self.isSwipeLeft = true;                		
-	                	}
+                        self.isSwipeLeft = true;                		
 	                }
 	                
 	                // check for right
 	                if( loc.x > start.x + $42.TOUCH_SWIPE_THRESHOLD ) {
-	                	// if direction changed while swiping right, set new base point
-	                	if( loc.x < self.touchLastPoint.x ) {
-	                		self.touchStartPoint = {
-	                        		x: loc.x,
-	                        		y: loc.y
-	                        };
-	                		self.isSwipeRight = false;
-	                	} else {
 	                    	self.isSwipeRight = true;                		
-	                	}
 	                }
 	
 	                // check for down
 	                if( loc.y < start.y - $42.TOUCH_SWIPE_THRESHOLD * 3 ) {
-	                	// if direction changed while swiping down, set new base point
-	                	if( loc.y > self.touchLastPoint.y ) {
-	                		self.touchStartPoint = {
-	                        		x: loc.x,
-	                        		y: loc.y
-	                        };
-	                		self.isSwipeDown = false;
-	                	} else {
-	                    	self.isSwipeDown = true;                		
-	                	}
+                        self.isSwipeDown = true;                		
 	                }
 	
 	                // check for up
@@ -514,8 +501,8 @@ var _42GameLayer = cc.Layer.extend({
 	                }
 	                
 	                self.touchLastPoint = {
-	                		x: loc.x,
-	                		y: loc.y
+                        x: loc.x,
+                        y: loc.y
 	                };
 	            },
 	            	
@@ -535,15 +522,20 @@ var _42GameLayer = cc.Layer.extend({
 	    	                if( self.hookOnLongTap ) self.hookOnLongTap(loc);
 	                	} else {
 		                	self.isTap = true;
-		                	if( self.hookOnTap ) self.hookOnTap(loc);
+		                	if( self.hookOnTap(loc) ) {
 
-		                    if( loc.y < $42.BOXES_Y_OFFSET ) {
-			                    self.moveRollingLayer(undefined,3);
-                            }
+								if( loc.y < $42.BOXES_Y_OFFSET ) {
+									self.moveRollingLayer(undefined,3);
+								} else {
+									self.isSwipeUp = true;
+								}
+							}
 	                	}
 	                } else {
 		                self.isSwipeUp = self.isSwipeLeft = self.isSwipeRight = self.isSwipeDown = false;	                			                
 	                }
+                    
+                    self.touchCurrentMove = {x:0, y:0};
 	            }
 	        });
 		    	
@@ -565,52 +557,123 @@ var _42GameLayer = cc.Layer.extend({
 	            	switch(key) {
 	            	case 'a':
 	            	case $42.KEY_LEFT_CODE:
-	            		self.touchStartPoint = { 
-	            			x: pos.x,
-	            			y: pos.y
+	            		self.touchCurrentMove = { 
+	            			x: -$42.BS,
+	            			y: 0,
+                            on: true
 	            		};
-	        			self.touchLastPoint = {
-	            			x: pos.x - $42.BS,
-	            			y: pos.y
-	            		};
+                        if( !self.isSwipeLeft && self.hookPlayLevelSound ) {
+                            if( self.hookFuncOnNextBeat ) {
+                                self.hookFuncOnNextBeat(function() {
+                                    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                                },"swipe");
+                            }
+                        }
+                        self._currentTile.isDragged = true;
 	            		self.isSwipeLeft = true;
 	            		break;
 	            	case 's':
 	            	case $42.KEY_RIGHT_CODE:
-	            		self.touchStartPoint = { 
-	            			x: pos.x,
-	            			y: pos.y
+	            		self.touchCurrentMove = { 
+	            			x: $42.BS,
+	            			y: 0,
+                            on: true
 	            		};
-	        			self.touchLastPoint = {
-	            			x: pos.x + $42.BS,
-	            			y: pos.y
-	            		};
+                        if( !self.isSwipeRight && self.hookPlayLevelSound )  {
+                            if( self.hookFuncOnNextBeat ) {
+                                self.hookFuncOnNextBeat(function() {
+                                    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                                },"swipe");
+                            }
+                        }
+                        self._currentTile.isDragged = true;
 	            		self.isSwipeRight = true;
 	            		break;
 	            	case $42.KEY_UP_CODE:
 	            		self.isSwipeUp = true;
 	            		break;
 	            	case $42.KEY_DOWN_CODE:
+	            		self.touchCurrentMove = { 
+	            			x: 0,
+	            			y: -$42.BS,
+                            on: true
+	            		};
+                        //cc.log("DOWN: self._currentTile.isDragged = "+self._currentTile.isDragged+", self.isSwipeDown = "+self.isSwipeDown);
+                        if( !self.isSwipeDown && self.hookPlayLevelSound ) {
+                            if( self.hookFuncOnNextBeat ) {
+                                self.hookFuncOnNextBeat(function() {
+                                    if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                                },"swipe");
+                            }
+                        }
+                        self._currentTile.isDragged = true;
 	            		self.isSwipeDown = true;
 	            		break;
+                    case 6:
+                    case 65:
+                        var sl = $42._settingsLayer;
+
+                        if( !self._settingsShown || sl._settingsShown === $42.SETTINGS_HIDDEN || sl._settingsShown === $42.ENDLEVEL_HIDDEN ) {
+                            sl._settingsShown = $42.ENDLEVEL_MOVING;
+                            self.stopListeners();
+                            self.unscheduleUpdate();
+
+                            var menuItems = [];
+                            
+                            menuItems.push(
+                                new cc.MenuItemFont($42.t.want_to_end_game, function(sender) {
+                                    if( self.hookStopBackgroundMusic ) self.hookStopBackgroundMusic();                       
+                                    self.hideAndEndGame();
+                                    $42._settingsLayer.hideSettings(function() {});
+                                    $42._titleLayer.show();
+                                    sl._settingsShown = $42.ENDLEVEL_HIDDEN;
+                                }, self)
+                            );
+
+                            menuItems.push(
+                                new cc.MenuItemFont($42.t.want_to_continue, function(sender) {
+                                    $42._settingsLayer.hideSettings(function() {
+                                        self.resume();
+                                        self.scheduleUpdate();
+                                        self.initListeners();
+                                        sl._settingsShown = $42.ENDLEVEL_HIDDEN;
+                                    });
+                                }, self)
+                            );
+
+                            menuItems[0].setFontSize(48);        	
+                            menuItems[1].setFontSize(48);  
+
+                            $42._settingsLayer.showEndLevel(menuItems, function() {
+                                sl._settingsShown = $42.ENDLEVEL_SHOWN;
+                            });
+                        } else if( self._settingsShown === $42.ENDLEVEL_SHOWN ) {
+                            self._settingsShown = $42.ENDLEVEL_MOVING;
+                            $42._settingsLayer.hideSettings(function() {
+                                self._settingsShown = $42.ENDLEVEL_HIDDEN;
+                            });
+                        }
+                        break;
                     default:
+                        cc.log("key: "+key);
                         if( self.hookKeyPressed ) self.hookKeyPressed(key);
 	            	}
 	            },
 	            onKeyReleased:function(key, event) {
 	            	switch(key) {
 	            	case $42.KEY_LEFT_CODE:
-		                self.touchStartPoint = null;
+	            		self.touchCurrentMove.on = false; 
 	            		self.isSwipeLeft = false;
 	            		break;
 	            	case $42.KEY_RIGHT_CODE:
-		                self.touchStartPoint = null;
+	            		self.touchCurrentMove.on = false; 
 	            		self.isSwipeRight = false;
 	            		break;
 	            	case $42.KEY_UP_CODE:
 	            		self.isSwipeUp = false;
 	            		break;
 	            	case $42.KEY_DOWN_CODE:
+	            		self.touchCurrentMove.on = false; 
 	            		self.isSwipeDown = false;
 	            		break;
 	                }
@@ -639,7 +702,7 @@ var _42GameLayer = cc.Layer.extend({
         ////////////////////////////
 		// select a random tile type
 		var self = this,
-			newTile = self.hookSetTile? self.hookSetTile() : this.getRandomValue($42.TILE_OCCURANCES),
+			newTile = this.hookSetTile? this.hookSetTile() : this.getRandomValue($42.TILE_OCCURANCES),
 			tileBoxes = $42.TILE_BOXES[newTile],
 			userData = {};
 		
@@ -657,7 +720,7 @@ var _42GameLayer = cc.Layer.extend({
         // draw plain vanilla tiles
 		else {
 			// create sprite for tile and set is size 0, we only use its position and rotation
-			var tileSprite = cc.Sprite.create(res.tiles_png,cc.rect(0,0,0,0));
+			var tileSprite = new cc.Sprite(res.tiles_png,cc.rect(0,0,0,0));
 			
 			_42_retain(tileSprite, "buildTile: tileSprite");
 	        tileSprite.setPosition(p);
@@ -667,7 +730,7 @@ var _42GameLayer = cc.Layer.extend({
 	        for( var i=0 ; i<tileBoxes.length ; i++) {
 	        	
 	    		spriteFrame = cc.spriteFrameCache.getSpriteFrame(newTile+".png"),
-	    		sprite = cc.Sprite.create(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
+	    		sprite = new cc.Sprite(spriteFrame,cc.rect(0,0,$42.BS,$42.BS));
 
 	    		_42_retain(sprite, "builTile: sprite "+i);
 	        	sprite.setPosition(cc.p(tileBoxes[i].x,tileBoxes[i].y));
@@ -703,9 +766,9 @@ var _42GameLayer = cc.Layer.extend({
     ///////////////////////////////////////////////////////////////////
     // getRandomValue returns a weighted random number
     //
-	getRandomValue: function(occs, sum) {
+	getRandomValue: function(occs, sum, max) {
 		
-		if( !sum ) for( var i=0, sum=0 ; i<occs.length ; i++ ) sum += occs[i];
+		if( !sum ) for( var i=0, sum=0 ; i<(max || occs.length) ; i++ ) sum += occs[i];
 		
 		var rnd = Math.round(Math.random()*sum),
 			r = 0, i = 0;
@@ -764,8 +827,7 @@ var _42GameLayer = cc.Layer.extend({
     //
     update: function(dt) {
     	
-    	var self = this,
-			size = this.size;
+    	var self = this;
 
     	/////////////////////////////////////
     	// Internal function: get current row / col of a box
@@ -778,7 +840,7 @@ var _42GameLayer = cc.Layer.extend({
     	
     	/////////////////////////////////////
     	// Internal function: check if a collision happened
-    	var checkForBottom = function(t, lp) {
+    	var checkForBottom = function(t, lp, cb) {
     		var b = t.rotatedBoxes; // usually four boxes of a tile
     		
             /////////////////////
@@ -798,7 +860,22 @@ var _42GameLayer = cc.Layer.extend({
     				lp.y = Math.round((lp.y - $42.BOXES_Y_OFFSET)/($42.BS/2))*($42.BS/2) + $42.BOXES_Y_OFFSET;
     				
     				// fix tile
-    				if( !t.isDragged && !t.isRotating ) return fixTile(t, lp);
+    				if( !t.isDragged && !t.isRotating ) {
+                        self.tileIsFixing = true;
+                        if( self.hookFuncOnNextBeat ) {
+                            self.hookFuncOnNextBeat(function() {
+                                var time = new Date().getTime();
+                                //cc.log("---Fixing tile music--- Fixing tile at "+time);
+                                cb(fixTile(t, lp));
+                                self.tileIsFixing = false;
+                            },"fixTile");
+                        } else { 
+                            cb(fixTile(t, lp));
+                            self.tileIsFixing = false;
+                        }
+
+                        return true;
+                    }
     			}
     		}
 
@@ -807,19 +884,15 @@ var _42GameLayer = cc.Layer.extend({
     	
         //////////////////////////////////////
         // Internal function: Move tile left or right
-    	var moveHorizontalyAndCheckForBarrier = function(t, lp, tp) {
+    	var moveHorizontalyAndCheckForBarrier = function(t, lp, cm) {
     		var b = t.rotatedBoxes,					// usually four tile boxes
-    			op = t.offsetToStartPoint, 			// distance of user finger to sprite center when grabbing a tile 
     			offset = 32-(Math.abs(t.rotatedBoxes[0].x) % $42.BS),
-    			dir = Math.sign(tp.x-lp.x+op.x);  	// direction, left = -1
+    			dir = Math.sign(cm.x);  	// direction, left = -1
     		
 			// limit horizontal movement to little less than one box per cycle
-			lp.x = (Math.abs(tp.x - lp.x + op.x) < $42.BS)? tp.x + op.x : lp.x + ($42.BS-1) * dir;
+			lp.x += Math.min( Math.abs(cm.x) , $42.BS-1 )*Math.sign(cm.x);
 			
-			// move tile to center of user finger in snap speed
-			if( Math.abs(op.x) > 0 ) op.x = Math.sign(op.x) * Math.max(Math.abs(op.x) - $42.SNAP_SPEED, 0);
-
-			var newX = null;
+            var newX = null;
 			// check all (four) boxes
     		for( var i=0 ; i<t.boxes.length ; i++) {
     			
@@ -856,7 +929,6 @@ var _42GameLayer = cc.Layer.extend({
     		
     		if( newX ) {
     			lp.x = newX;
-                //cc.log("New x: "+lp.x);
     		}
     		
     		return true;
@@ -873,8 +945,6 @@ var _42GameLayer = cc.Layer.extend({
 			
 			if( t.isRotating && !(t.rotation%180) && checkRotation( t , {x:lp.x - offset , y:lp.y} ) === "ok" ) offset = -offset;
 		
-            cc.log("Aligning by "+offset+" from "+JSON.stringify(lp)+". tileOffset: "+tileOffset+", rotation = "+t.rotation);
-
 			var targetX = lp.x + offset;
 			
 			if( offset ) {
@@ -895,7 +965,7 @@ var _42GameLayer = cc.Layer.extend({
     	
         //////////////////////////////////////////
         // Internal function: Rotate tile
-    	var rotateTile = function rotate(t,lp) {
+    	var rotateTile = function rotate(t, lp, recurse) {
 			var oldRotation = t.rotation;
 			t.rotation = (t.rotation + 90)%360;
 			self.rotateBoxes(t);
@@ -929,7 +999,11 @@ var _42GameLayer = cc.Layer.extend({
 				}
 				
 				// play sound
-				//cc.audioEngine.playEffect(res.klack_mp3);
+                if( self.hookFuncOnNextBeat ) {
+                    self.hookFuncOnNextBeat(function() {
+                        if( self.hookPlayLevelSound ) self.hookPlayLevelSound("rotate");
+                    },"rotate");
+                }
 
 				t.sprite.runAction(cc.sequence( 
 						cc.rotateTo($42.MOVE_SPEED*2,t.rotation),
@@ -942,14 +1016,20 @@ var _42GameLayer = cc.Layer.extend({
 					       		
 				
 				return true;
-			} else {
-				t.isRotating = false;
-				t.rotation = oldRotation;
-				self.rotateBoxes(t);  
-				
-				return false;
-			}
-    		
+			} else if( !recurse ) { 
+                t.rotation = oldRotation;
+                self.rotateBoxes(t);  
+                if( rotate(t, {x: lp.x, y: lp.y+$42.BS}, true) ) {
+                    lp.y += $42.BS;
+                    return true;
+                } 
+            }
+
+            t.isRotating = false;
+            t.rotation = oldRotation;
+            self.rotateBoxes(t);  
+            
+            return false;
     	};
     	
         /////////////////////////////
@@ -1015,7 +1095,7 @@ var _42GameLayer = cc.Layer.extend({
     			newBrcs = [],
     			ret = "ok";
     		
-            cc.log("Fixing tile at "+JSON.stringify(lp));
+            //cc.log("Fixing tile at "+JSON.stringify(lp));
     		// check if a tile is too high
     		for( var i=0,minRow ; i<b.length ; i++ ) {
 				var brc = getRowCol(b[i], lp);
@@ -1034,7 +1114,7 @@ var _42GameLayer = cc.Layer.extend({
                             }: null;
                         }
                     }
-                    cc.log("fixTile: Problem fixing tile at pos "+JSON.stringify(lp)+" at brc "+JSON.stringify(brc)+" with "+JSON.stringify(boxesMod));
+                    //cc.log("fixTile: Problem fixing tile at pos "+JSON.stringify(lp)+" at brc "+JSON.stringify(brc)+" with "+JSON.stringify(boxesMod));
                 }
             }
 
@@ -1047,7 +1127,7 @@ var _42GameLayer = cc.Layer.extend({
         		for( var i=0 ; i<b.length ; i++) {
             		// create a new sprite from the old child sprite
         			var sprite = t.sprite.children[i],
-        				newSprite = cc.Sprite.create(sprite.getSpriteFrame(), cc.rect(0,0,$42.BS,$42.BS));
+        				newSprite = new cc.Sprite(sprite.getSpriteFrame(), cc.rect(0,0,$42.BS,$42.BS));
 
         			_42_retain(newSprite, "box sprite"+i);
         			
@@ -1067,7 +1147,7 @@ var _42GameLayer = cc.Layer.extend({
     	        //$42.msg1.setString($42.msg2.getString());
     	        //$42.msg2.setString("userData: "+JSON.stringify(t.userData)+", brcs: "+JSON.stringify(newBrcs));
     		} else {
-                cc.log("GAME OVER! Row = "+minRow);
+                //cc.log("GAME OVER! Row = "+minRow);
             }
     		
     		var tileRet = false;
@@ -1129,9 +1209,6 @@ var _42GameLayer = cc.Layer.extend({
     			
     			colsToCorrect[0] = false;
 
-    			// play sound
-    			//cc.audioEngine.playEffect(res.ritsch_mp3);
-
                 var colsBlocked = [];
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
     				var rd = [];
@@ -1176,8 +1253,8 @@ var _42GameLayer = cc.Layer.extend({
 	    			}
     			}
 
-                cc.log("checkForAndRemoveCompleteRows, colsBlocked: "+JSON.stringify(colsBlocked));
-                cc.log("checkForAndRemoveCompleteRows, colsToCorrect: "+JSON.stringify(colsToCorrect));
+                //cc.log("checkForAndRemoveCompleteRows, colsBlocked: "+JSON.stringify(colsBlocked));
+                //cc.log("checkForAndRemoveCompleteRows, colsToCorrect: "+JSON.stringify(colsToCorrect));
 
     			// move single boxes down 
     			for( var i=0 ; i<$42.BOXES_PER_ROW ; i++ ) {
@@ -1255,7 +1332,7 @@ var _42GameLayer = cc.Layer.extend({
 		    	}
     		}           	
     	
-            cc.log("deleteRow, rows deleted: "+JSON.stringify(tmpBoxes));
+            //cc.log("deleteRow, rows deleted: "+JSON.stringify(tmpBoxes));
         };
 
         /////////////////////////////
@@ -1275,12 +1352,25 @@ var _42GameLayer = cc.Layer.extend({
         /////////////////////////////////////
     	// if there is no tile flying right now, build a new one
         if( !t && !this.pauseBuildingTiles ) {
-            this._currentTile = t = self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, size.height+$42.BS)); 
-        } else if( !t ) return;
+            var buildTile = function() {
+                self._currentTile = t = self.buildTile(cc.p(Math.random()*($42.BOXES_PER_ROW-4)*$42.BS+$42.BOXES_X_OFFSET+2*$42.BS, cc.height+$42.BS)); 
+                this.pauseBuildingTiles = false;
+            };
+
+            this.pauseBuildingTiles = true;
+            if( self.hookFuncOnNextBeat ) {
+                self.hookFuncOnNextBeat(function() {
+                    buildTile();
+                },"setTile");
+            } else buildTile();
+        }
+        
+        if( !t || self.tileIsFixing ) return;
         
         var lp = t.sprite.getPosition(),
             sp = self.touchStartPoint,
-            tp = self.touchLastPoint;
+            tp = self.touchLastPoint,
+            cm = self.touchCurrentMove || {x:0, y:0};
 
         lp.x = Math.round(lp.x); // align x (positions manipulated by MoveBy seem to be not precise)
 
@@ -1293,73 +1383,66 @@ var _42GameLayer = cc.Layer.extend({
                 // swipe up rotates a tile
                 if( self.isSwipeUp ) {
                     
+                    self.isSwipeUp = false;
                     t.isRotating = true;
                     t.fallingSpeed = $42.FALLING_SPEED;
                     
                     rotateTile(t , lp);
-                /////////////////////////////////////
-                // swipe down let a tile fall
-                } else if( self.isSwipeDown && !sp || self.isSwipeDown &&
-                        sp.x < lp.x + $42.BS*2 && sp.x > lp.x - $42.BS*2 &&
-                        sp.y < lp.y + $42.BS*2 && sp.y > lp.y - $42.BS*2) {
-                    t.fallingSpeed = $42.FALLING_SPEED * 36;
                 }			
             }
             
-            if( !t.isRotating && isSwipe() && sp &&
-                /////////////////////////////////
-                // Grab a tile
-                sp.x < lp.x + $42.BS*2 && sp.x > lp.x - $42.BS*2 &&
-                sp.y < lp.y + $42.BS*2 && sp.y > lp.y - $42.BS*2	) { // move the tile if the touch is in range
-  
+            if( !t.isRotating && isSwipe() && sp ) {
                 t.isDragged = true;
-                t.offsetToStartPoint = {
-                    x: lp.x - sp.x,
-                    y: lp.y - sp.y
+                //cc.log("Switch on dragging");
+                if( self.hookFuncOnNextBeat ) {
+                    self.hookFuncOnNextBeat(function() {
+                        if( self.hookPlayLevelSound ) self.hookPlayLevelSound("swipe");
+                    },"swipe");
                 }
             } 
             
             if( !self.isSwipeDown ) {
                 ////////////////////////////////////////
                 // go back to normal falling speed if tile is not dragged
-                if( lp.y < size.height - $42.BS ) {
-                    t.fallingSpeed = $42.FALLING_SPEED;
+                if( lp.y < cc.height + $42.BS ) {
+                    t.fallingSpeed = Math.max( t.fallingSpeed *0.93 , $42.FALLING_SPEED );
                 } else {
+                    // Let tile fall faster at top border
                     t.fallingSpeed = $42.FALLING_SPEED * 36;
                 }
             }
 
         } else {
 
-            if( self.touchStartPoint == null ) {
+            if( !sp && !cm.on ) {
                 /////////////////////
                 // align to column if player does't touch the tile
                 if( !t.isAligning ) {
                     
                     alignToColumn(t,lp,function() {
                         t.isDragged = false;    					
+                        //cc.log("Switch of dragging ...");
+    		            if( self.hookStopLevelSound ) self.hookStopLevelSound("swipe");
                     });	
                 }
             } else {
                 ///////////////////////
                 // Move tile if she touches it
                 if( !t.isAligning ) {
-                    moveHorizontalyAndCheckForBarrier(t,lp,tp);   
+                    moveHorizontalyAndCheckForBarrier(t,lp,cm);   
+                    cm.x = 0;
                 }
                 
-                if(tp.y < lp.y - $42.BS*2 && !t.isRotating) {
-                    t.fallingSpeed = Math.max( Math.min($42.FALLING_SPEED * 36, lp.y - $42.BS*2 - tp.y) , $42.FALLING_SPEED);
+                if(cm.y < 0 && !t.isRotating) {
+                    t.fallingSpeed = Math.min( -cm.y , $42.FALLING_SPEED * 32);
+                    cm.y += t.fallingSpeed;
+                    if( cm.y > 0 ) cm.y = 0;
                 } else {
                     t.fallingSpeed = $42.FALLING_SPEED;
                 }
             }
         }
         
-        if( self.isTap ) {
-            self.isTap = false;
-            t.fallingSpeed = $42.FALLING_SPEED;
-        }
-                    
         //////////////////////////////
         // let tile fall down
         lp.y -= t.fallingSpeed;
@@ -1368,7 +1451,7 @@ var _42GameLayer = cc.Layer.extend({
         // Check for bottom
         var ret;
         self.pauseBuildingTiles = true;
-        if( ret = checkForBottom(t, lp) ) {
+        if( !checkForBottom(t, lp, function(ret) {
             //////////////////////////////////////////
             // tile landed, release and delete it ...
             var t = self._currentTile.sprite,
@@ -1382,9 +1465,9 @@ var _42GameLayer = cc.Layer.extend({
             if( ret == "gameover" ) {
 
                 var menuItems = [];
-                if( !this.lastGameOverTime || this.lastGameOverTime < new Date().getTime() - 1000 ) {
+                if( !self.lastGameOverTime || self.lastGameOverTime < new Date().getTime() - 1000 ) {
                     
-                    ///////////////////////7
+                    ///////////////////////
                     // Ask player if to go on
                     menuItems.push({
                         label: $42.t.reached_top_continue, 
@@ -1405,7 +1488,7 @@ var _42GameLayer = cc.Layer.extend({
                 menuItems.push({
                     label: $42.t.reached_top_end_game, 
                     cb: function(sender) {
-                        
+                        if( self.hookStopBackgroundMusic ) self.hookStopBackgroundMusic();                       
                         self.hideAndEndGame();
                         this.exitMenu();
                         this.getParent().removeChild(this);
@@ -1413,17 +1496,18 @@ var _42GameLayer = cc.Layer.extend({
                     }
                 });
                 
-                this.getParent().addChild(
+                self.getParent().addChild(
                     new _42MenuLayer("",menuItems),
                     2);
-                this.pause();
-                this.unscheduleUpdate();
+                self.pause();
+                self.unscheduleUpdate();
             }
             
-        } else {
-            
+        })) {
             t.sprite.setPosition(lp);    			
-        };
+        } else {
+            if( self._currentTile ) t.sprite.setPosition(lp);
+        }
     }
 });
 
@@ -1435,10 +1519,9 @@ var _42MenuLayer = cc.LayerColor.extend({
     // ctor is the init function
     //
     ctor:function (question, menuItems) {
-        var size = this.size = cc.director.getWinSize(),
-    	self = this;            
+    	var self = this;            
         
-        this._super(new cc.Color(40,0,0,160),size.width,size.height);
+        this._super(new cc.Color(40,0,0,160),cc.width,cc.height);
 
         this.initMenu(question, menuItems);
 		
@@ -1450,8 +1533,7 @@ var _42MenuLayer = cc.LayerColor.extend({
     //
 	initMenu: function(questions, menuItems) {
 		
-        var size = this.size,
-        	self = this,
+        var self = this,
         	items = [];
 
         ////////////////////
@@ -1459,8 +1541,8 @@ var _42MenuLayer = cc.LayerColor.extend({
         if( typeof questions === "string") questions = [questions];
         for( var i=0 ; i<questions.length ; i++ ) {
     		var q = cc.LabelTTF.create(questions[i], _42_getFontName(res.exo_regular_ttf), 36),
-	    	x = size.width/2,
-	    	y = size.height/2 + menuItems.length * 96 + (questions.length-i-1) * 64;
+	    	x = cc.width/2,
+	    	y = cc.height/2 + menuItems.length * 96 + (questions.length-i-1) * 64;
 	
 			q.setPosition(x,y);
 			this.addChild(q, 1);        	
@@ -1476,8 +1558,8 @@ var _42MenuLayer = cc.LayerColor.extend({
         /////////////////////
         // Create menu
         var menu = this._menu = cc.Menu.create.apply(this, items);
-        menu.x = size.width/2;
-        menu.y = size.height/2;
+        menu.x = cc.width/2;
+        menu.y = cc.height/2;
         this.addChild(menu, 1, $42.TAG_MENU_MENU);       
 
         menu.alignItemsVerticallyWithPadding(40);
@@ -1498,13 +1580,15 @@ var _42TitleLayer = cc.Layer.extend({
     ctor:function () {
         this._super();
 
-        var self = this,
-        	size = this.size = cc.director.getWinSize();
+        var self = this;
 
         cc.width  = cc.director.getWinSize().width;
         cc.height = cc.director.getWinSize().height;
 
-		var titleBg = this._titleBg = cc.Sprite.create(res.title_easy_png);
+		cc.spriteFrameCache.addSpriteFrames(res.letters_plist);
+		cc.spriteFrameCache.addSpriteFrames(res.circles_plist);
+		
+        var titleBg = this._titleBg = new cc.Sprite(res.title_easy_png);
         titleBg.setOpacity(0);
         titleBg.setPosition(cc.p(cc.width/2, cc.height/2));
         titleBg.setScale(1.1);
@@ -1522,6 +1606,8 @@ var _42TitleLayer = cc.Layer.extend({
 	
         this._gameStarted = false;
         var ls = cc.sys.localStorage;
+        
+        $42.tutorialsDone = JSON.parse(ls.getItem("tutorialsDone") || "{}");
 
         var item1 = $42.menuItemStart = addMenu("no label", 60 , $42.TITLE_MENU_COLOR_1 ,  function() {
                 self._menu.setEnabled(false);
@@ -1575,7 +1661,7 @@ var _42TitleLayer = cc.Layer.extend({
             });
 
         var menu = this._menu = cc.Menu.create.apply(this, [item1, item2, item3, item4] );
-        menu.setPosition(cc.p(size.width/2, 230));
+        menu.setPosition(cc.p(cc.width/2, 230));
         menu.setOpacity(0);
         menu.alignItemsVerticallyWithPadding(20);
         _42_retain(this._menu,"Title menu");
@@ -1588,7 +1674,7 @@ var _42TitleLayer = cc.Layer.extend({
         _42_retain(item4, "Menu Item Tweet");
 
         this.show();
-       
+
         return true;
     },
 
@@ -1602,6 +1688,7 @@ var _42TitleLayer = cc.Layer.extend({
 
         var self = this,
             ls = cc.sys.localStorage,
+            td = $42.tutorialsDone,
             cDiff = ls.getItem("currentDifficulty") || "easy", 
             //mDiff = ls.getItem("maxDifficulty") || "easy",
             mDiff = "expert",
@@ -1613,7 +1700,12 @@ var _42TitleLayer = cc.Layer.extend({
         this.addChild(this._titleBg);
         this._titleBg.setTexture(res["title_"+cDiff+"_png"]);
         this.addChild(this._menu);
+        if( cDiff === "easy" ) this.backgroundMusic = $42.MUSIC_TITLE_EASY;
+        else if( cDiff === "intermediate" ) this.backgroundMusic = $42.MUSIC_TITLE_INTERMEDIATE;
+        else if( cDiff === "expert" ) this.backgroundMusic = $42.MUSIC_TITLE_EXPERT;
 
+        $42.SCENE.playBackgroundMusic(this.backgroundMusic);
+        
         this._menu.runAction(
             cc.EaseSineIn.create(
                 cc.fadeIn(2.5)
@@ -1634,12 +1726,15 @@ var _42TitleLayer = cc.Layer.extend({
 
         if( tt ) $42.menuItemTweet.setOpacity(255);
         else $42.menuItemTweet.setOpacity(0);
-
+       
         this._menu.setEnabled(true);
         
         this._timeout = setTimeout(function() {
             self._timeout = null;
-            if( self._menu.isEnabled() ) {
+            if( !td.mostafasGreeting && self._menu.isEnabled() ) {
+                td.mostafasGreeting = true;
+                ls.setItem("tutorialsDone", JSON.stringify(td));
+
                 $42.SCENE.hookStartAnimation("Mostafas Greeting", {
                     time: 3,
                     cb: function() {
@@ -1679,6 +1774,13 @@ var _42TitleLayer = cc.Layer.extend({
             }
         });
 
+        if( this.backgroundMusic ) {
+            setTimeout(function() {
+                $42.SCENE.stopBackgroundMusic(self.backgroundMusic.fadeOutTimeEnd);
+                this.backgroundMusic = null; 
+            }, this.backgroundMusic.fadeOutDelay || 0);
+        }
+        
         this._menu.setEnabled(false);
     },
     
@@ -1695,6 +1797,184 @@ var _42TitleLayer = cc.Layer.extend({
 		for( var i=0 ; i<nodes.length ; i++ ) {
 			if( nodes[i] ) _42_release(nodes[i]);
 		}    
+    },
+});
+
+
+//////////////////////////////////////////////////////////////////////////////////
+// The Settings layer of the game
+//
+var _42SettingsLayer = cc.Layer.extend({
+    
+    ctor:function () {
+        this._super();
+
+        var self = this;
+
+        this.storyBackground = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("story_background.png"));
+        _42_retain(this.storyBackground, "Storybackground of title layer");
+        
+        this.initListeners();
+    },
+
+    initListeners: function() {
+        var self = this;
+
+        this._keyboardListener = cc.EventListener.create({
+            event: cc.EventListener.KEYBOARD,
+            onKeyPressed:function(key, event) {
+                // check for BACK key (ESC on web)
+                switch( key ) {
+                case 32:
+                case 18: // or 6
+                    if( !self._settingsShown || self._settingsShown === $42.SETTINGS_HIDDEN || self._settingsShown === $42.ENDLEVEL_HIDDEN ) {
+                        self._settingsShown = $42.SETTINGS_MOVING;
+                        self.showSettings(function() {
+                            self._settingsShown = $42.SETTINGS_SHOWN;
+                        });
+                    } else if( self._settingsShown === $42.SETTINGS_SHOWN ) {
+                        self._settingsShown = $42.SETTINGS_MOVING;
+                        self.hideSettings(function() {
+                            self._settingsShown = $42.SETTINGS_HIDDEN;
+                        });
+                    }
+                    break; 
+                case 6:
+                    break;
+                default:
+                    cc.log(key);
+                } 
+            }
+        });
+
+	    cc.eventManager.addListener(this._keyboardListener, this);
+    },
+
+    initMenuListeners: function(sender, type) {
+        switch (type) {
+            case ccui.Slider.EVENT_PERCENT_CHANGED:
+                var slider = sender,
+                    percent = slider.getPercent();
+                    
+                if( slider.isMusicSlider ) {
+                    cc.audioEngine.setMusicVolume(percent/100);
+                } else {
+                    cc.audioEngine.setEffectsVolume(percent/100);
+                }
+                break;
+            default:
+                break;
+        }
+    },
+
+    showSettings: function(cb) {
+        
+        sb = this.storyBackground;
+
+        this.addChild(sb);
+        sb.setPosition(cc.p(cc.width,cc.height));
+        sb.setOpacity($42.STORY_BACKGROUND_OPACITY);
+        sb.setScale(0);
+        sb.removeAllChildren();
+        sb.runAction(
+            cc.sequence(
+                cc.EaseQuinticActionOut.create(
+                    cc.spawn(
+                        cc.scaleTo($42.STORY_BACKGROUND_SPEED, 1),
+                        cc.moveTo($42.STORY_BACKGROUND_SPEED, $42.STORY_BACKGROUND_POS)
+                    )
+                ),
+                cc.callFunc(function() {
+                    cb();
+                })
+            )
+        );
+
+        var s = sb.getContentSize();
+
+        var label = new cc.LabelTTF( $42.t.music_slider , _42_getFontName(res.exo_regular_ttf), 72);
+        label.setPosition(cc.p(s.width/2,480));
+        sb.addChild(label);
+        
+        var sl = new ccui.Slider();
+        sl.setPercent($42.MUSIC_VOLUME*100);
+        sl.setTouchEnabled(true);
+        sl.loadBarTexture("res/images/ui/slider_pressbar.png");
+        sl.loadSlidBallTextures("res/images/ui/slider_node_normal.png", "res/images/ui/slider_node_pressed.png", "");
+        sl.loadProgressBarTexture("res/images/ui/slider_background.png");
+        sl.setPosition(cc.p(s.width/2, 380));
+        sl.addEventListener(this.initMenuListeners, this);
+        sl.isMusicSlider = true;
+        sb.addChild(sl);
+        
+        var label = new cc.LabelTTF( $42.t.effects_slider , _42_getFontName(res.exo_regular_ttf), 72);
+        label.setPosition(cc.p(s.width/2,250));
+        sb.addChild(label);
+        
+        var sl = this.effectsSlider = new ccui.Slider();
+        sl.setPercent($42.EFFECTS_VOLUME*100);
+        sl.setTouchEnabled(true);
+        sl.loadBarTexture("res/images/ui/slider_pressbar.png");
+        sl.loadSlidBallTextures("res/images/ui/slider_node_normal.png", "res/images/ui/slider_node_pressed.png", "");
+        sl.loadProgressBarTexture("res/images/ui/slider_background.png");
+        sl.setPosition(cc.p(s.width/2, 150));
+        sl.addEventListener(this.initMenuListeners, this);
+        sl.isMusicSlider = false;
+        sb.addChild(sl);
+    },
+ 
+    hideSettings: function(cb) {
+        
+        var self = this;
+        sb = this.storyBackground;
+
+        sb.runAction(
+            cc.EaseQuinticActionOut.create(
+                cc.sequence(
+                    cc.spawn(
+                        cc.scaleTo($42.STORY_BACKGROUND_SPEED/2, 0),
+                        cc.moveTo($42.STORY_BACKGROUND_SPEED/2,cc.p(cc.width,cc.height))
+                    ),
+                    cc.callFunc(function() {
+                        self.removeChild(sb);
+                        cb();
+                    })
+                )
+            )
+        );
+    },
+
+    showEndLevel: function(menuItems, cb) {
+        var sb = this.storyBackground,
+            width  = sb.getContentSize().width,
+            height = sb.getContentSize().height;
+
+        this.addChild(sb);
+        sb.setPosition(cc.p(cc.width,cc.height));
+        sb.setOpacity($42.STORY_BACKGROUND_OPACITY);
+        sb.setScale(0);
+        sb.removeAllChildren();
+        sb.runAction(
+            cc.sequence(
+                cc.EaseQuinticActionOut.create(
+                    cc.spawn(
+                        cc.scaleTo($42.STORY_BACKGROUND_SPEED/3, 1),
+                        cc.moveTo($42.STORY_BACKGROUND_SPEED/3, $42.STORY_BACKGROUND_POS)
+                    )
+                ),
+                cc.callFunc(function() {
+                    cb();
+                })
+            )
+        );
+
+        /////////////////////
+        // Create menu
+        var menu = this._menu = cc.Menu.create.apply(this, menuItems);
+        menu.x = width/2;
+        menu.y = height/2;
+        menu.alignItemsVerticallyWithPadding(40);
+        sb.addChild(menu);       
     }
 });
 
@@ -1711,7 +1991,7 @@ var _42_retain = function(obj,name) {
 
 var _42_release = function(obj) {
     
-    if( !obj ) debugger;
+    if( !obj || !_42_retained[obj.__retainId] ) debugger;
 	cc.assert(obj && _42_retained[obj.__retainId], "_42_release: Object '"+obj.__retainId+"' not valid or not in retained array...");
 	if( obj && _42_retained[obj.__retainId] ) {
         obj.release();
@@ -1754,10 +2034,7 @@ _42_webConnect = function() {
 }
 
 _42_sendMessage = function( command, message, cb ) {
-    if( !$42.webConnected ) {
-       if( typeof cb === "function" ) cb(null);
-       return
-    } 
+    if( !$42.webConnected ) return;
 
     var id = message.Id = _42_getId();
 
@@ -1769,9 +2046,9 @@ _42_sendMessage = function( command, message, cb ) {
 _42_onOpen = function(evt) {
     $42.webConnected = true;
     
-    _42_sendMessage("checkNames", {test:"TEST"}, function(data) {
-        cc.log("$42.webConnected message test ok.");
-    });
+//    _42_sendMessage("testConnection", {}, function(data) {
+//        cc.log("$42.webConnected message test ok.");
+//    });
 }
 
 _42_onMessage = function(evt) {
@@ -1791,6 +2068,7 @@ _42_onMessage = function(evt) {
 }
 
 _42_onError = function(evt) {
+    $42.webConnected = false;
 }
 
 _42_onClose = function(evt) {
@@ -1809,10 +2087,14 @@ var _42Scene = cc.Scene.extend({
         // call tutorial module if available
         if( typeof _TWEET_MODULE === 'function' ) _TWEET_MODULE($42.SCENE);
         if( typeof _MURBIKS_MODULE === 'function' ) _MURBIKS_MODULE($42.SCENE);
+        if( typeof _MUSIC_MODULE === 'function' ) _MUSIC_MODULE($42.SCENE);
 
         this.loadWords(function() {
             $42._titleLayer = new _42TitleLayer();
             self.addChild($42._titleLayer, 2, $42.TAG_TITLE_LAYER);
+            
+            $42._settingsLayer = new _42SettingsLayer();
+            self.addChild($42._settingsLayer,10, $42.TAG_SETTINGS_LAYER);
         });
 
         _42_webConnect();

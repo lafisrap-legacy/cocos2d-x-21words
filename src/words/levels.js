@@ -5,6 +5,7 @@ $42.LEVEL_MIN_PREFIX_CANDIDATES = 5;
 $42.LEVEL_DEVS = {
     easy: [{                        // Easy Level 1
         type: $42.LEVEL_TYPE_GIVEN,
+        music: $42.MUSIC_RED_NOSES,
         words: 3,
         minValue:   0,        // min word value that is shown
         minDemand:  0,        // min word value that is enough for winning
@@ -12,10 +13,11 @@ $42.LEVEL_DEVS = {
         minLength:  4,
         maxLength:  4,
         newLetters: 1,
-        prefGroups: null,
-        wordFreq: 1.0
+        weirdness:  0.0,
+        wordFreq:   1.0
     },{                             // Level 2
         type: $42.LEVEL_TYPE_GIVEN,
+        music: $42.MUSIC_FLAMES,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -23,62 +25,68 @@ $42.LEVEL_DEVS = {
         minLength:  5,
         maxLength:  5,
         newLetters: 1,
-        prefGroups: null,
+        weirdness:  0.1,
         wordFreq: 1.0
     },{                             // Level 3
         type: $42.LEVEL_TYPE_GIVEN,
+        music: $42.MUSIC_YELLOW_STEPS,
         words: 3,
         minValue:   0,
         minDemand:  0,
         minLength:  6,
         maxLength:  6,
         newLetters: 1,
-        prefGroups: null,
+        weirdness:  0.1,
         wordFreq: 1.0
     },{                             // Level 4
         type: $42.LEVEL_TYPE_GIVEN,
+        music: $42.MUSIC_GREEN_FOREST,
         words: 3,
         minValue:   0,
         minDemand:  0,
         minLength:  6,
         maxLength:  6,
         newLetters: 1,
-        prefGroups: null,
+        weirdness:  0.2,
         wordFreq: 1.0
     },{                             // Level 5
         type: $42.LEVEL_TYPE_GIVEN,
+        music: $42.MUSIC_BLUE_QUADRAT,
         words: 3,
         minValue:   0,
         minDemand:  0,
         minLength:  7,
         maxLength:  7,
         newLetters: 1,
-        prefGroups: null,
+        weirdness:  0.3,
         wordFreq: 1.0
     },{                             // Level 6
         type: $42.LEVEL_TYPE_PREFIX,
+        music: $42.MUSIC_INKA_TEMPLE,
         words: 3,
         minValue:   0,
         minDemand:  0,
         minLength:  4,
         maxLength:  0,
         newLetters: 1,
-        prefGroups: null,
+        weirdness:  0.2,
         wordFreq: 1.0
     },{                             // Level 7
         type: $42.LEVEL_TYPE_PREFIX,
+        music: $42.MUSIC_BLUE_MOUNTAINS,
         words: 3,
         minValue:   0,
         minDemand:  0,
         minLength:  5,
         maxLength:  0,
         newLetters: 1,
-        prefGroups: null,
+        weirdness:  0.2,
         wordFreq: 1.0
     }],
 
     intermediate: [{                // Intermediate Level 1
         type: $42.LEVEL_TYPE_GIVEN,
+        music: $42.MUSIC_RED_NOSES,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -86,9 +94,11 @@ $42.LEVEL_DEVS = {
         maxLength:  8,
         newLetters: 2,
         wordFreq: 1.0,
+        weirdness:  0.2,
         neededLettersProb: 0.3
     },{                             // Level 2
         type: $42.LEVEL_TYPE_GIVEN,
+        music: $42.MUSIC_FLAMES,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -97,9 +107,11 @@ $42.LEVEL_DEVS = {
         newLetters: 2,
         wordFreq: 1.3,
         fillInRate: 0.5,
+        weirdness:  0.3,
         neededLettersProb: 0.25
     },{                             // Level 3
         type: $42.LEVEL_TYPE_PREFIX,
+        music: $42.MUSIC_YELLOW_STEPS,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -108,9 +120,11 @@ $42.LEVEL_DEVS = {
         newLetters: 2,
         wordFreq: 1.0,
         fillInRate: 1,
+        weirdness:  0.4,
         neededLettersProb: 0.5
     },{                             // Level 4
         type: $42.LEVEL_TYPE_PREFIX,
+        music: $42.MUSIC_GREEN_FOREST,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -118,9 +132,11 @@ $42.LEVEL_DEVS = {
         maxLength:  0,
         wordFreq: 1.3,
         fillInRate: 1,
+        weirdness:  0.5,
         newLetters: 2,
     },{                             // Level 5
         type: $42.LEVEL_TYPE_PREFIX,
+        music: $42.MUSIC_BLUE_QUADRAT,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -128,31 +144,41 @@ $42.LEVEL_DEVS = {
         maxLength:  0,
         wordFreq: 1.6,
         fillInRate: 1,
+        weirdness:  0.6,
         newLetters: 2,
     },{                             // Level 6
         type: $42.LEVEL_TYPE_PREFIX,
+        music: $42.MUSIC_INKA_TEMPLE,
         words: 3,
         minValue:   0,
         minDemand:  0,
         minLength:  7,
         maxLength:  0,
-        wordFreq: 2.0,
+        wordFreq: 1.0,
+        //wordFreq: 2.0,
         fillInRate: 1,
+        //weirdness:  0.7,
+        weirdness:  0,
         newLetters: 2,
     },{                             // Level 7
         type: $42.LEVEL_TYPE_PREFIX,
+        music: $42.MUSIC_BLUE_MOUNTAINS,
         words: 3,
         minValue:   0,
         minDemand:  0,
         minLength:  8,
         maxLength:  0,
-        wordFreq: 2.0,
+        wordFreq: 1.0,
+        //wordFreq: 2.0,
         fillInRate: 1,
+        //weirdness:  0.8,
+        weirdness:  0,
         newLetters: 2,
     }],
 
     expert: [{                             // Level 1
         type: $42.LEVEL_TYPE_PREFIX,
+        music: $42.MUSIC_RED_NOSES,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -160,18 +186,22 @@ $42.LEVEL_DEVS = {
         maxLength:  0,
         newLetters: 3,
         fillInRate: 1,
+        weirdness:  0.4,
         newLetters: 3,
     },{                             // Level 2
         type: $42.LEVEL_TYPE_PREFIX,
+        music: $42.MUSIC_FLAMES,
         words: 3,
         minValue:   0,
         minDemand:  0,
         minLength:  9,
         maxLength:  0,
         fillInRate: 1,
+        weirdness:  0.7,
         newLetters: 3,
     },{                             // Level 3
         type: $42.LEVEL_TYPE_FREE,
+        music: $42.MUSIC_YELLOW_STEPS,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -180,6 +210,7 @@ $42.LEVEL_DEVS = {
         newLetters: 3,
     },{                             // Level 4
         type: $42.LEVEL_TYPE_FREE,
+        music: $42.MUSIC_GREEN_FOREST,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -188,6 +219,7 @@ $42.LEVEL_DEVS = {
         newLetters: 3,
     },{                             // Level 5
         type: $42.LEVEL_TYPE_FREE,
+        music: $42.MUSIC_BLUE_QUADRAT,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -196,6 +228,7 @@ $42.LEVEL_DEVS = {
         newLetters: 3,
     },{                             // Level 6
         type: $42.LEVEL_TYPE_FREE,
+        music: $42.MUSIC_INKA_TEMPLE,
         words: 3,
         minValue:   0,
         minDemand:  0,
@@ -204,6 +237,7 @@ $42.LEVEL_DEVS = {
         newLetters: 3,
     },{                             // Level 7
         type: $42.LEVEL_TYPE_FREE,
+        music: $42.MUSIC_BLUE_MOUNTAINS,
         words: 3,
         minValue:   0,
         minDemand:  0,
