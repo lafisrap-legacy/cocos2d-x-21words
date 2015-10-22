@@ -1552,7 +1552,7 @@ var _42MenuLayer = cc.LayerColor.extend({
         // Show menu items
         for( var i=0 ; i<menuItems.length ; i++ ) {
             items[i] = new cc.MenuItemFont(menuItems[i].label, menuItems[i].cb, this);
-            items[i].setFontSize(48);        	
+            items[i].setFontSize(72);        	
         }
 
         /////////////////////

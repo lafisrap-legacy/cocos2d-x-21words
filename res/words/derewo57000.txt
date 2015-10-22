@@ -35844,7 +35844,6 @@ Resistance 0
 resistent 0
 resistente 0
 Resistenz 0
-Resnais 0
 resolut 0
 resolute 0
 resoluten 0

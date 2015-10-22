@@ -108,6 +108,11 @@ $42.MUSIC_TWEET = {
     fadeOutTimeEnd:  2000
 }
 
+////////////////////////////////////////////////
+// Music for tweeting
+$42.SOUNDEFFECT_SPEECHBUBBLE = {
+	audio: [res.speech_bubble_1_mp3, res.speech_bubble_2_mp3]
+}
 
 ////////////////////////////////////////////////
 // Music for level 1
