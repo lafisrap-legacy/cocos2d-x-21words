@@ -330,7 +330,7 @@ $42.MUSIC_GREEN_FOREST = {
         nextSetOn:      [14.012, 3.753, 7.506, 3.753, 11.259, 3.753, 11.259, 4.753],
         //audioBars:      [23, 24],
         //audioBeat:      [4, 4],
-        delay:           4000,
+        delay:           3000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  500
     },
@@ -348,13 +348,13 @@ $42.MUSIC_GREEN_FOREST = {
         playAfterBeats: 1 
     },
     swipe: { 
-        audio:          [res.green_trollworld_swipe_1_mp3, res.green_trollworld_swipe_2_mp3, res.green_trollworld_swipe_3_mp3],
+        audio:          [res.green_trollworld_swipe_1_mp3, res.green_trollworld_swipe_2_mp3, res.green_trollworld_swipe_3_mp3, res.green_trollworld_swipe_4_mp3, res.green_trollworld_swipe_5_mp3],
         //intervalTime:   450,
         minInterval:    150,
         dontStop:       true
     },
     rotate: { 
-        audio:          [res.green_trollworld_rotate_1_mp3, res.green_trollworld_rotate_2_mp3, res.green_trollworld_rotate_3_mp3, res.green_trollworld_rotate_4_mp3],
+        audio:          [res.green_trollworld_rotate_1_mp3, res.green_trollworld_rotate_2_mp3, res.green_trollworld_rotate_3_mp3, res.green_trollworld_rotate_4_mp3, res.green_trollworld_rotate_5_mp3],
         minInterval:    150,
         dontStop:       true
     },
