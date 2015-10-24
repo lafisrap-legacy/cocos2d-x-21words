@@ -219,7 +219,7 @@ $42.MUSIC_FLAMES = {
         dontStop:       true
     },
     rotate: { 
-        audio:          [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3],
+        audio:          [res.flames_rotate_1_mp3, res.flames_rotate_2_mp3, res.flames_rotate_3_mp3, res.flames_rotate_4_mp3, res.flames_rotate_5_mp3],
         minInterval:    150,
         stayWithSound:  true,
         dontStop:       true
@@ -335,7 +335,7 @@ $42.MUSIC_GREEN_FOREST = {
         nextSetOn:      [14.012, 3.753, 7.506, 3.753, 11.259, 3.753, 11.259, 4.753],
         //audioBars:      [23, 24],
         //audioBeat:      [4, 4],
-        delay:           3000,
+        delayTime:       6650,
         fadeOutTime:     50,
         fadeOutTimeEnd:  500
     },
@@ -359,26 +359,19 @@ $42.MUSIC_GREEN_FOREST = {
         dontStop:       true
     },
     rotate: { 
-        audio:          [res.green_trollworld_rotate_1_mp3, res.green_trollworld_rotate_2_mp3, res.green_trollworld_rotate_3_mp3, res.green_trollworld_rotate_4_mp3, res.green_trollworld_rotate_5_mp3],
+        audio:          [res.green_trollworld_rotate_1_mp3, res.green_trollworld_rotate_2_mp3, res.green_trollworld_rotate_3_mp3, res.green_trollworld_rotate_4_mp3, res.green_trollworld_rotate_5_mp3, res.green_trollworld_rotate_6_mp3],
         minInterval:    150,
         dontStop:       true
     },
     fixTile:            { 
-        audio:          [res.green_trollworld_fix_tile_1_mp3, res.green_trollworld_fix_tile_2_mp3], 
+        audio:          [res.green_trollworld_fix_tile_mp3], 
     }, 
     selection:          { 
         audio: 
-                        [res.green_trollworld_selection_1_mp3, res.green_trollworld_selection_2_mp3], 
+                        [res.green_trollworld_selection_mp3], 
     },
     fullWord:           {
-        audioSet:      [[res.green_trollworld_full_word_a_mp3],
-                        [res.green_trollworld_full_word_b_mp3],
-                        [res.green_trollworld_full_word_a_mp3],
-                        [res.green_trollworld_full_word_b_mp3],
-                        [res.green_trollworld_full_word_a_mp3],
-                        [res.green_trollworld_full_word_b_mp3],
-                        [res.green_trollworld_full_word_a_mp3],
-                        [res.green_trollworld_full_word_b_mp3]],
+        audio:      [res.green_trollworld_full_word_a_mp3, res.green_trollworld_full_word_b_mp3],
     },
     presentWord: { 
         audio:          null,
