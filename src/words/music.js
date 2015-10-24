@@ -346,7 +346,7 @@ $42.MUSIC_GREEN_FOREST = {
         nextSetOn:      [14.012, 3.753, 7.506, 3.753, 11.259, 3.753, 11.259, 4.753],
         delayTime:       6650,
         fadeOutTime:     50,
-        fadeOutTimeEnd:  500
+        fadeOutTimeEnd:  200
     },
     levelWords: { 
         audio:          res.green_trollworld_level_words_mp3,

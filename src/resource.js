@@ -40,7 +40,7 @@ var res = {
     red_noses_background_loop_C_1_mp3:          "res/sounds/levelsounds/red_noses_background_loop_a_1,5,2.mp3",
     red_noses_background_loop_C_2_mp3:          "res/sounds/levelsounds/red_noses_background_loop_b_1,5,2.mp3",
     red_noses_words_mp3:                        "res/sounds/levelsounds/red_noses_level_words_1,1,13.mp3",
-    red_noses_level_nr_mp3:                     "res/sounds/levelsounds/red_noses_level_nr_1,1,13.mp3",
+    red_noses_level_nr_mp3:                     "res/sounds/levelsounds/red_noses_level_nr_2,1,2.mp3",
     red_noses_set_tile_1a_mp3:                  "res/sounds/levelsounds/red_noses_C_set_tile_a_1,1,5.mp3",
     red_noses_set_tile_1b_mp3:                  "res/sounds/levelsounds/red_noses_C_set_tile_b_1,1,5.mp3",
     red_noses_set_tile_2a_mp3:                  "res/sounds/levelsounds/red_noses_set_tile_F_2,1,2.mp3",
@@ -101,7 +101,7 @@ var res = {
     flames_full_word_mp3:              "res/sounds/levelsounds/flames_full_word_1,3,1.mp3",
     flames_last_word_mp3:              "res/sounds/levelsounds/flames_full_word_1,3,1.mp3",
     flames_delete_row_mp3:             "res/sounds/levelsounds/flames_delete_row_1,3,1.mp3",
-    flames_delete_last_rows_mp3:       "res/sounds/levelsounds/flames_delete_last_rows_1,3,9.mp3",
+    flames_delete_last_rows_mp3:       "res/sounds/levelsounds/flames_delete_last_rows_1,3,11.mp3",
     flames_final_mp3:                  "res/sounds/levelsounds/flames_final_1,3,2.mp3",
 
     // level 3
@@ -167,8 +167,8 @@ var res = {
     green_trollworld_full_word_b_mp3:              "res/sounds/levelsounds/green_trollworld_full_word_1,2,9.mp3",
     green_trollworld_last_word_mp3:                "res/sounds/levelsounds/green_trollworld_last_word_1,2,9.mp3",
     green_trollworld_delete_row_mp3:               "res/sounds/levelsounds/green_trollworld_delete_row_1,1,4.mp3",
-    green_trollworld_delete_last_rows_mp3:         "res/sounds/levelsounds/green_trollworld_delete_last_rows_1,2,20.mp3",
-    green_trollworld_final_mp3:                    "res/sounds/levelsounds/green_trollworld_final_1,2,2.mp3",
+    green_trollworld_delete_last_rows_mp3:         "res/sounds/levelsounds/green_trollworld_delete_last_rows_1,2,26.mp3",
+    green_trollworld_final_mp3:                    "res/sounds/levelsounds/green_trollworld_final_1,2,6.mp3",
 
     // level 5
     //blue_quadrat_intro_mp3:                  "res/sounds/none.mp3",
