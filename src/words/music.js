@@ -138,7 +138,6 @@ $42.MUSIC_RED_NOSES = {
         delayTime: 1500
     },
     setTile:         { 
-        //audio: [[res.red_noses_set_tile_1a_mp3, res.red_noses_set_tile_1b_mp3],
         audioSet: [[res.red_noses_set_tile_1a_mp3, res.red_noses_set_tile_1b_mp3],
                    [res.red_noses_set_tile_2a_mp3]],
         playOnBeat: [1,5,9,13],
@@ -146,12 +145,8 @@ $42.MUSIC_RED_NOSES = {
         playNextSlot: false
     },
     swipe:          { 
-        //audio: [res.red_noses_swipe_1a_mp3, res.red_noses_swipe_1b_mp3, res.red_noses_swipe_1c_mp3, res.red_noses_swipe_1d_mp3],
-         audioSet: [[res.red_noses_swipe_1a_mp3, res.red_noses_swipe_1b_mp3, res.red_noses_swipe_1c_mp3, res.red_noses_swipe_1d_mp3],
+        audioSet: [[res.red_noses_swipe_1a_mp3, res.red_noses_swipe_1b_mp3, res.red_noses_swipe_1c_mp3, res.red_noses_swipe_1d_mp3],
                    [res.red_noses_swipe_2a_mp3, res.red_noses_swipe_2b_mp3, res.red_noses_swipe_2c_mp3, res.red_noses_swipe_2d_mp3]],
-                   //[res.test_rotate_1_mp3],
-                   //[res.test_rotate_1_mp3]],
-        //nextSetOn: "time",
         minInterval: 280,
         playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
         nextSetOn:    "time", 
@@ -171,7 +166,6 @@ $42.MUSIC_RED_NOSES = {
     fixTile:        { 
         audioSet: [[res.red_noses_fix_tile_1_mp3],
                    [res.red_noses_fix_tile_2_mp3]],
-        //nextSetOn: "fullWord",
         playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
         nextSetOn:    "time", 
     }, 
@@ -186,11 +180,12 @@ $42.MUSIC_RED_NOSES = {
                    [res.red_noses_full_word_2_a_mp3]],
         playOnBeat: [1,3,5,7,9,11,13,15],
         nextSetOn:    "time", 
+               },
     //presentWord:    { 
         //audio: res.blue_mountains_present_word_mp3,
         //intervalTime: 3000, 
         //delayTime: 500 
-    },
+    //},
     lastWord:       { audio: res.red_noses_last_word_mp3 },
         playOnBeat: [1,3,5,7,9,11,13,15],
     deleteRow:      { 
@@ -234,7 +229,6 @@ $42.MUSIC_FLAMES = {
     },
     swipe: { 
         audio:          [res.flames_swipe_1_mp3, res.flames_swipe_2_mp3, res.flames_swipe_3_mp3, res.flames_swipe_4_mp3, res.flames_swipe_5_mp3, res.flames_swipe_6_mp3],
-        //intervalTime:   2000,
         minInterval:    280,
         dontStop:       true
     },
@@ -247,12 +241,12 @@ $42.MUSIC_FLAMES = {
     fixTile:            { audio: res.flames_fix_tile_1_mp3 }, 
     selection:          { audio: res.flames_selection_mp3 },
     fullWord:           { audio: res.flames_full_word_mp3 },
-    presentWord: { 
-        audio:          null
+    //presentWord: { 
+        //audio:          null
         //audio:          res.blue_mountains_present_word_mp3,
         //intervalTime:   3000, 
         //delayTime:      500 
-    },
+    //},
     lastWord:           { audio: res.flames_last_word_mp3 },
     deleteRow:          { audio: res.flames_delete_row_mp3 },
     final:              { audio: res.flames_final_mp3 },
@@ -337,8 +331,6 @@ $42.MUSIC_YELLOW_STEPS = {
     final:          { 
         audio: 
                         [res.yellow_steps_final_mp3],
-                         //[res.yellow_steps_final_mp3]],  
-        //nextSetOn:         "time", 
     }, 
     deleteLastRows:     { audio: res.yellow_steps_delete_last_rows_mp3 },
 };
@@ -349,12 +341,9 @@ $42.MUSIC_YELLOW_STEPS = {
 $42.MUSIC_GREEN_FOREST = {
     background: {
         audio:          res.green_trollworld_loop_mp3,
-        //playNextSlot:   "fullWord",
         audioLoopStart: 0,
         audioLength:    60.048000,
         nextSetOn:      [14.012, 3.753, 7.506, 3.753, 11.259, 3.753, 11.259, 4.753],
-        //audioBars:      [23, 24],
-        //audioBeat:      [4, 4],
         delayTime:       6650,
         fadeOutTime:     50,
         fadeOutTimeEnd:  500
@@ -374,7 +363,6 @@ $42.MUSIC_GREEN_FOREST = {
     },
     swipe: { 
         audio:          [res.green_trollworld_swipe_1_mp3, res.green_trollworld_swipe_2_mp3, res.green_trollworld_swipe_3_mp3, res.green_trollworld_swipe_4_mp3, res.green_trollworld_swipe_5_mp3],
-        //intervalTime:   450,
         minInterval:    150,
         dontStop:       true
     },
@@ -393,12 +381,12 @@ $42.MUSIC_GREEN_FOREST = {
     fullWord:           {
         audio:      [res.green_trollworld_full_word_a_mp3, res.green_trollworld_full_word_b_mp3],
     },
-    presentWord: { 
-        audio:          null,
+    //presentWord: { 
+        //audio:          null,
         //audio:          res.blue_mountains_present_word_mp3,
         //intervalTime:   3000,
         //delayTime:      500 
-    },
+    //},
     lastWord:           { audio: res.green_trollworld_last_word_mp3 },
     deleteRow:          { audio: res.green_trollworld_delete_row_mp3 },
     final:              { audio: res.green_trollworld_final_mp3 },

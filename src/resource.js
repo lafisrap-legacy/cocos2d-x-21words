@@ -75,7 +75,7 @@ var res = {
     red_noses_full_word_2_a_mp3:                "res/sounds/levelsounds/red_noses_full_word_F_2,1,2.mp3",
     red_noses_last_word_mp3:                    "res/sounds/levelsounds/red_noses_C_last_word_1,1,10.mp3",
     red_noses_selection_1_mp3:                  "res/sounds/levelsounds/red_noses_C_selection_1,1,4.mp3",
-    red_noses_selection_2_mp3:                  "res/sounds/levelsounds/red_noses_selection_F_2,1,2.mp3",
+    red_noses_selection_2_mp3:                  "res/sounds/levelsounds/red_noses_selection_F_2,1,3.mp3",
     red_noses_delete_row_1_mp3:                 "res/sounds/levelsounds/red_noses_C_delete_row_1,1,4.mp3",
     red_noses_delete_row_2_mp3:                 "res/sounds/levelsounds/red_noses_delete_row_F_2,1,2.mp3",
     red_noses_delete_last_row_1_mp3:            "res/sounds/levelsounds/red_noses_C_delete_last_row_1,1,6.mp3",
