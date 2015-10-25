@@ -120,13 +120,13 @@ $42.MUSIC_RED_NOSES = {
     background: {
         audio:           [res.red_noses_background_intro_mp3, res.red_noses_background_loop_C_1_mp3, res.red_noses_background_loop_C_2_mp3],
         audioLoopStart:  1,
-        audioLength:     [37.200000, 2.928000, 40.056],
-        audioBars:       [13,1,14],
+        audioLength:     [37.172245, 45.740408, 45.740408],
+        audioBars:       [13,16,16],
         audioBeat:       [16,16,16],
         delayTime:       6000,
-        fadeOutTime:     50,
+        fadeOutTime:     30,
         fadeOutDelay:    50,
-        nextSetOn:       true,
+        nextSetOn:       [45740.408, 45740.408],
         //fadeOutTimeEnd:  1000
     },
     levelWords:     { 
@@ -138,52 +138,67 @@ $42.MUSIC_RED_NOSES = {
         delayTime: 1500
     },
     setTile:         { 
-        audio: [res.red_noses_set_tile_1a_mp3, res.red_noses_set_tile_1b_mp3],
-        //audioSet: [[res.red_noses_set_tile_1_mp3],
-                   //[res.red_noses_set_tile_2_mp3]],
+        audioSet: [[res.red_noses_set_tile_1a_mp3, res.red_noses_set_tile_1b_mp3],
+                   [res.red_noses_set_tile_2a_mp3]],
         playOnBeat: [1,5,9,13],
+        nextSetOn:    "time", 
         playNextSlot: false
     },
     swipe:          { 
-        audio: [res.red_noses_swipe_1a_mp3, res.red_noses_swipe_1b_mp3, res.red_noses_swipe_1c_mp3, res.red_noses_swipe_1d_mp3],
-         //audioSet: [[res.test_rotate_1_mp3],
-                   //[res.test_rotate_1_mp3],
-                   //[res.test_rotate_1_mp3],
-                   //[res.test_rotate_1_mp3]],
-        //nextSetOn: "time",
+        audioSet: [[res.red_noses_swipe_1a_mp3, res.red_noses_swipe_1b_mp3, res.red_noses_swipe_1c_mp3, res.red_noses_swipe_1d_mp3],
+                   [res.red_noses_swipe_2a_mp3, res.red_noses_swipe_2b_mp3, res.red_noses_swipe_2c_mp3, res.red_noses_swipe_2d_mp3]],
         minInterval: 280,
         playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
+        nextSetOn:    "time", 
         stayWithSound:  true,
         dontStop:       true
     },
     rotate:         { 
-        audio: [res.red_noses_rotate_1a_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1c_mp3, res.red_noses_rotate_1d_mp3, res.red_noses_rotate_1e_mp3, res.red_noses_rotate_1f_mp3, res.red_noses_rotate_1g_mp3, res.red_noses_rotate_1h_mp3
+        audioSet: [[res.red_noses_rotate_1a_mp3, res.red_noses_rotate_1b_mp3, res.red_noses_rotate_1c_mp3, res.red_noses_rotate_1d_mp3, res.red_noses_rotate_1e_mp3, res.red_noses_rotate_1f_mp3, res.red_noses_rotate_1g_mp3, res.red_noses_rotate_1h_mp3
         ],
+        [res.red_noses_rotate_2a_mp3, res.red_noses_rotate_2b_mp3, res.red_noses_rotate_2c_mp3, res.red_noses_rotate_2d_mp3, res.red_noses_rotate_2e_mp3, res.red_noses_rotate_2f_mp3, res.red_noses_rotate_2g_mp3, res.red_noses_rotate_2h_mp3]],
         minInterval: 360,
         playOnBeat: [2,4,6,8,10,12,14,16],
+        nextSetOn:    "time", 
         stayWithSound:  true,
         dontStop:       true
     },
     fixTile:        { 
         audioSet: [[res.red_noses_fix_tile_1_mp3],
                    [res.red_noses_fix_tile_2_mp3]],
-        //nextSetOn: "fullWord",
-        playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+        playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
+        nextSetOn:    "time", 
     }, 
-    selection:      { audio: res.red_noses_selection_1_mp3 },
+    selection:        { 
+        audioSet: [[res.red_noses_selection_1_mp3]
+                   [res.red_noses_selection_2_mp3]],
+        playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
+        nextSetOn:    "time", 
+    }, 
     fullWord:       { 
-        audio: [res.red_noses_full_word_1_mp3, res.red_noses_full_word_2_mp3],
+        audioSet: [[res.red_noses_full_word_1_a_mp3, res.red_noses_full_word_1_b_mp3],
+                   [res.red_noses_full_word_2_a_mp3]],
         playOnBeat: [1,3,5,7,9,11,13,15],
+        nextSetOn:    "time", 
+               },
     //presentWord:    { 
         //audio: res.blue_mountains_present_word_mp3,
         //intervalTime: 3000, 
         //delayTime: 500 
-    },
+    //},
     lastWord:       { audio: res.red_noses_last_word_mp3 },
         playOnBeat: [1,3,5,7,9,11,13,15],
-    deleteRow:      { audio: res.red_noses_delete_row_1_mp3 },
-    final:          { audio: res.red_noses_delete_row_1_mp3 },
-    deleteLastRows: { audio: res.red_noses_delete_last_row_1_mp3 },
+    deleteRow:      { 
+        audioSet: [[res.red_noses_delete_row_1_mp3],
+                   [res.red_noses_delete_row_2_mp3]], 
+        nextSetOn:    "time", 
+               },
+    final:          { 
+        audioSet: [[res.red_noses_delete_row_1_mp3],
+                   [res.red_noses_delete_row_2_mp3]], 
+               },
+        nextSetOn:    "time", 
+    deleteLastRows: { audio: res.red_noses_delete_last_row_1_mp3, },
 }; 
 
 
@@ -214,7 +229,6 @@ $42.MUSIC_FLAMES = {
     },
     swipe: { 
         audio:          [res.flames_swipe_1_mp3, res.flames_swipe_2_mp3, res.flames_swipe_3_mp3, res.flames_swipe_4_mp3, res.flames_swipe_5_mp3, res.flames_swipe_6_mp3],
-        //intervalTime:   2000,
         minInterval:    280,
         dontStop:       true
     },
@@ -227,12 +241,12 @@ $42.MUSIC_FLAMES = {
     fixTile:            { audio: res.flames_fix_tile_1_mp3 }, 
     selection:          { audio: res.flames_selection_mp3 },
     fullWord:           { audio: res.flames_full_word_mp3 },
-    presentWord: { 
-        audio:          null
+    //presentWord: { 
+        //audio:          null
         //audio:          res.blue_mountains_present_word_mp3,
         //intervalTime:   3000, 
         //delayTime:      500 
-    },
+    //},
     lastWord:           { audio: res.flames_last_word_mp3 },
     deleteRow:          { audio: res.flames_delete_row_mp3 },
     final:              { audio: res.flames_final_mp3 },
@@ -317,8 +331,6 @@ $42.MUSIC_YELLOW_STEPS = {
     final:          { 
         audio: 
                         [res.yellow_steps_final_mp3],
-                         //[res.yellow_steps_final_mp3]],  
-        //nextSetOn:         "time", 
     }, 
     deleteLastRows:     { audio: res.yellow_steps_delete_last_rows_mp3 },
 };
@@ -329,15 +341,12 @@ $42.MUSIC_YELLOW_STEPS = {
 $42.MUSIC_GREEN_FOREST = {
     background: {
         audio:          res.green_trollworld_loop_mp3,
-        //playNextSlot:   "fullWord",
         audioLoopStart: 0,
         audioLength:    60.048000,
         nextSetOn:      [14.012, 3.753, 7.506, 3.753, 11.259, 3.753, 11.259, 4.753],
-        //audioBars:      [23, 24],
-        //audioBeat:      [4, 4],
         delayTime:       6650,
         fadeOutTime:     50,
-        fadeOutTimeEnd:  500
+        fadeOutTimeEnd:  200
     },
     levelWords: { 
         audio:          res.green_trollworld_level_words_mp3,
@@ -354,7 +363,6 @@ $42.MUSIC_GREEN_FOREST = {
     },
     swipe: { 
         audio:          [res.green_trollworld_swipe_1_mp3, res.green_trollworld_swipe_2_mp3, res.green_trollworld_swipe_3_mp3, res.green_trollworld_swipe_4_mp3, res.green_trollworld_swipe_5_mp3],
-        //intervalTime:   450,
         minInterval:    150,
         dontStop:       true
     },
@@ -373,12 +381,12 @@ $42.MUSIC_GREEN_FOREST = {
     fullWord:           {
         audio:      [res.green_trollworld_full_word_a_mp3, res.green_trollworld_full_word_b_mp3],
     },
-    presentWord: { 
-        audio:          null,
+    //presentWord: { 
+        //audio:          null,
         //audio:          res.blue_mountains_present_word_mp3,
         //intervalTime:   3000,
         //delayTime:      500 
-    },
+    //},
     lastWord:           { audio: res.green_trollworld_last_word_mp3 },
     deleteRow:          { audio: res.green_trollworld_delete_row_mp3 },
     final:              { audio: res.green_trollworld_final_mp3 },
