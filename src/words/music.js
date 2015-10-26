@@ -78,23 +78,23 @@ $42.MUSIC_TITLE_EASY = {
 ////////////////////////////////////////////////
 // Music for intemediate title
 $42.MUSIC_TITLE_INTERMEDIATE = {
-    audio:  [res.title_easy_intro_mp3, res.title_easy_loop_1_mp3, res.title_easy_loop_2_mp3],
+    audio:  [res.title_intermediate_intro_mp3, res.title_intermediate_loop_1_mp3],
     audioLoopStart:  1,
-    audioLength:     [29.520000, 4.824000, 32.652000],
+    audioLength:     [32.182857, 35.395918],
     fadeOutDelay:    0,
     fadeOutTime:     50,      
-    fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
+    //fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
 }
 
 ////////////////////////////////////////////////
 // Music for expert title
 $42.MUSIC_TITLE_EXPERT = {
-    audio:  [res.title_easy_intro_mp3, res.title_easy_loop_1_mp3, res.title_easy_loop_2_mp3],
+    audio:  [res.title_expert_intro_mp3, res.title_expert_loop_mp3],
     audioLoopStart:  1,
-    audioLength:     [29.520000, 4.824000, 32.652000],
+    audioLength:     [32.182857, 35.395918],
     fadeOutDelay:    0,
     fadeOutTime:     50,      
-    fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
+    //fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
 }
 
 ////////////////////////////////////////////////
@@ -453,7 +453,7 @@ $42.MUSIC_INKA_TEMPLE = {
         audioBeatLength:    550,
         delayTime:          6000,
         fadeOutTime:     50,
-        fadeOutTimeEnd:  1000
+        fadeOutTimeEnd:  700
     },
     levelWords: { 
         audio: res.inka_temple_level_words_mp3,
