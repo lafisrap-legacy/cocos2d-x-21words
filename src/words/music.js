@@ -170,7 +170,7 @@ $42.MUSIC_RED_NOSES = {
         nextSetOn:    "time", 
     }, 
     selection:        { 
-        audioSet: [[res.red_noses_selection_1_mp3]
+        audioSet: [[res.red_noses_selection_1_mp3],
                    [res.red_noses_selection_2_mp3]],
         playOnBeat: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
         nextSetOn:    "time", 
@@ -639,6 +639,7 @@ var _MUSIC_MODULE = function(layer) {
                     if( !effect.currentSet ) effect.currentSet = 0;
                     effect.currentSet = ++effect.currentSet%effect.audioSet.length;
                     effect.currentSlot = 0;
+					cc.log("Change audio set of "+event+" to "+effect.currentSet);
                 }
             }
         }
