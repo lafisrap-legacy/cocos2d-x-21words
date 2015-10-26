@@ -78,12 +78,12 @@ $42.MUSIC_TITLE_EASY = {
 ////////////////////////////////////////////////
 // Music for intemediate title
 $42.MUSIC_TITLE_INTERMEDIATE = {
-    audio:  [res.title_easy_intro_mp3, res.title_easy_loop_1_mp3, res.title_easy_loop_2_mp3],
+    audio:  [res.title_intermediate_intro_mp3, res.title_intermediate_loop_1_mp3],
     audioLoopStart:  1,
-    audioLength:     [29.520000, 4.824000, 32.652000],
+    audioLength:     [32.182857, 35.395918],
     fadeOutDelay:    0,
     fadeOutTime:     50,      
-    fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
+    //fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
 }
 
 ////////////////////////////////////////////////
@@ -94,7 +94,7 @@ $42.MUSIC_TITLE_EXPERT = {
     audioLength:     [32.182857, 35.395918],
     fadeOutDelay:    0,
     fadeOutTime:     50,      
-    fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
+    //fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
 }
 
 ////////////////////////////////////////////////

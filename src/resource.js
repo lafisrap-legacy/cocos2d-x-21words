@@ -28,6 +28,8 @@ var res = {
     title_easy_intro_mp3:                       "res/sounds/blue_title_easy_intro_1,1,8.mp3",
     title_easy_loop_1_mp3:                      "res/sounds/blue_title_easy_loop_a_1,1,8.mp3",
     title_easy_loop_2_mp3:                      "res/sounds/blue_title_easy_loop_b_1,1,8.mp3",
+    title_intermediate_intro_mp3:               "res/sounds/green_title_intro_1,1,8.mp3",
+    title_intermediate_loop_1_mp3:              "res/sounds/green_title_loop_1,1,9.mp3",
     title_expert_intro_mp3:                     "res/sounds/orange_title_intro_1,1,8.mp3",
     title_expert_loop_1_mp3:                    "res/sounds/orange_title_loop_1,1,7.mp3",
     mostafa_out_mp3 :                           "res/sounds/mostafa_geht0,1,5.mp3",
