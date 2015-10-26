@@ -91,7 +91,7 @@ $42.MUSIC_TITLE_INTERMEDIATE = {
 $42.MUSIC_TITLE_EXPERT = {
     audio:  [res.title_expert_intro_mp3, res.title_expert_loop_mp3],
     audioLoopStart:  1,
-    audioLength:     [32.182857, 35.395918],
+    audioLength:     [32.182857, 38.608980],
     fadeOutDelay:    0,
     fadeOutTime:     50,      
     //fadeOutTimeEnd:  4000    // must not be more than any delayTime of backgrounds
