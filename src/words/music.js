@@ -469,13 +469,13 @@ $42.MUSIC_INKA_TEMPLE = {
         playNextSlot: true
     },
     swipe: { 
-        audio: [res.inka_temple_swipe_a_mp3, res.inka_temple_swipe_b_mp3],
+        audio: [res.inka_temple_swipe_1_mp3, res.inka_temple_swipe_2_mp3, res.inka_temple_swipe_1_mp3, res.inka_temple_swipe_2_mp3,res.inka_temple_swipe_1_mp3, res.inka_temple_swipe_3_mp3, res.inka_temple_swipe_2_mp3, res.inka_temple_swipe_1_mp3, res.inka_temple_swipe_2_mp3, res.inka_temple_swipe_4_mp3, res.inka_temple_swipe_2_mp3, res.inka_temple_swipe_1_mp3, res.inka_temple_swipe_2_mp3, res.inka_temple_swipe_4_mp3, res.inka_temple_swipe_1_mp3, res.inka_temple_swipe_3_mp3, res.inka_temple_swipe_2_mp3],
         intervalTime: 4500,
         stayWithSound:  true,
         dontStop:       true
     },
     rotate: { 
-        audio: [res.inka_temple_rotate_1_mp3, res.inka_temple_rotate_2_mp3, res.inka_temple_rotate_3_mp3],
+        audio: [res.inka_temple_rotate_1_mp3, res.inka_temple_rotate_2_mp3, res.inka_temple_rotate_3_mp3, res.inka_temple_rotate_4_mp3, res.inka_temple_rotate_5_mp3, res.inka_temple_rotate_3_mp3, res.inka_temple_rotate_2_mp3, res.inka_temple_rotate_1_mp3, res.inka_temple_rotate_3_mp3, res.inka_temple_rotate_4_mp3, res.inka_temple_rotate_2_mp3, res.inka_temple_rotate_5_mp3, res.inka_temple_rotate_1_mp3, res.inka_temple_rotate_5_mp3, res.inka_temple_rotate_2_mp3, res.inka_temple_rotate_1_mp3, res.inka_temple_rotate_3_mp3, res.inka_temple_rotate_4_mp3, res.inka_temple_rotate_2_mp3, res.inka_temple_rotate_5_mp3],
         minInterval: 0,
         stayWithSound:  true,
         dontStop:       true
