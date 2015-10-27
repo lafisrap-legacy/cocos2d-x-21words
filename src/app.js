@@ -97,7 +97,10 @@ var _42_GLOBALS = {
     SETTINGS_SHOWN: 2,
     ENDLEVEL_HIDDEN: 3,
     ENDLEVEL_MOVING: 4,
-    ENDLEVEL_SHOWN: 5
+    ENDLEVEL_SHOWN: 5,
+    ENDGAME_HIDDEN: 6,
+    ENDGAME_MOVING: 7,
+    ENDGAME_SHOWN: 8
 };
 var $42 = _42_GLOBALS;
 $42.webCallbacks = [];
@@ -175,6 +178,7 @@ var _42GameLayer = cc.Layer.extend({
 		this._super();
 
         if( this.hookExit ) this.hookExit();        
+        $42.SCENE.mainLayer = null;
     },
     
     ////////////////////////////////////////////////////////////////////////////
@@ -610,10 +614,10 @@ var _42GameLayer = cc.Layer.extend({
 	            		self.isSwipeDown = true;
 	            		break;
                     case 6:
-                    case 65:
+                    case 27:
                         var sl = $42._settingsLayer;
 
-                        if( !self._settingsShown || sl._settingsShown === $42.SETTINGS_HIDDEN || sl._settingsShown === $42.ENDLEVEL_HIDDEN ) {
+                        if( !sl._settingsShown || sl._settingsShown === $42.SETTINGS_HIDDEN || sl._settingsShown === $42.ENDLEVEL_HIDDEN || sl._settingsShown === $42.ENDGAME_HIDDEN || sl._settingsShown === $42.ENDTWEET_HIDDEN ) {
                             sl._settingsShown = $42.ENDLEVEL_MOVING;
                             self.stopListeners();
                             self.unscheduleUpdate();
@@ -1826,8 +1830,8 @@ var _42SettingsLayer = cc.Layer.extend({
                 // check for BACK key (ESC on web)
                 switch( key ) {
                 case 32:
-                case 18: // or 6
-                    if( !self._settingsShown || self._settingsShown === $42.SETTINGS_HIDDEN || self._settingsShown === $42.ENDLEVEL_HIDDEN ) {
+                case 18:
+                    if( !self._settingsShown || self._settingsShown === $42.SETTINGS_HIDDEN || self._settingsShown === $42.ENDLEVEL_HIDDEN || self._settingsShown === $42.ENDGAME_HIDDEN || self._settingsShown === $42.ENDTWEET_HIDDEN  ) {
                         self._settingsShown = $42.SETTINGS_MOVING;
                         self.showSettings(function() {
                             self._settingsShown = $42.SETTINGS_SHOWN;
@@ -1839,7 +1843,39 @@ var _42SettingsLayer = cc.Layer.extend({
                         });
                     }
                     break; 
-                case 6:
+				case 6:
+				case 27:
+					if (cc.sys.isNative && !$42.SCENE.mainLayer && (!self._settingsShown || self._settingsShown === $42.SETTINGS_HIDDEN || self._settingsShown === $42.ENDLEVEL_HIDDEN || self._settingsShown === $42.ENDGAME_HIDDEN || self._settingsShown === $42.ENDTWEET_HIDDEN)  ) {
+                        self._settingsShown = $42.ENDGAME_MOVING;
+						var menuItems = [];
+						
+						menuItems.push(
+							new cc.MenuItemFont($42.t.want_to_end_game, function(sender) {
+								cc.director.end();
+								return;
+							}, self)
+						);
+
+						menuItems.push(
+							new cc.MenuItemFont($42.t.want_to_continue, function(sender) {
+								$42._settingsLayer.hideSettings(function() {
+									self._settingsShown = $42.ENDGAME_HIDDEN;
+								});
+							}, self)
+						);
+
+						menuItems[0].setFontSize(48);        	
+						menuItems[1].setFontSize(48);  
+
+						$42._settingsLayer.showEndLevel(menuItems, function() {
+							self._settingsShown = $42.ENDGAME_SHOWN;
+						});
+					} else if( self._settingsShown === $42.ENDGAME_SHOWN ) {
+						self._settingsShown = $42.ENDGAME_MOVING;
+						$42._settingsLayer.hideSettings(function() {
+							self._settingsShown = $42.ENDGAME_HIDDEN;
+						});
+					}
                     break;
                 default:
                     cc.log(key);
