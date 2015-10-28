@@ -626,11 +626,13 @@ var _42GameLayer = cc.Layer.extend({
                             
                             menuItems.push(
                                 new cc.MenuItemFont($42.t.want_to_end_game, function(sender) {
-                                    if( self.hookStopBackgroundMusic ) self.hookStopBackgroundMusic();                       
+									$42.SCENE.stopBackgroundMusic(100);
                                     self.hideAndEndGame();
                                     $42._settingsLayer.hideSettings(function() {});
-                                    $42._titleLayer.show();
                                     sl._settingsShown = $42.ENDLEVEL_HIDDEN;
+									setTimeout(function() {
+										$42._titleLayer.show()
+									},500);
                                 }, self)
                             );
 
@@ -1492,11 +1494,13 @@ var _42GameLayer = cc.Layer.extend({
                 menuItems.push({
                     label: $42.t.reached_top_end_game, 
                     cb: function(sender) {
-                        if( self.hookStopBackgroundMusic ) self.hookStopBackgroundMusic();                       
+						$42.SCENE.stopBackgroundMusic(100);
                         self.hideAndEndGame();
                         this.exitMenu();
                         this.getParent().removeChild(this);
-                        $42._titleLayer.show();
+						setTimeout(function() {
+							$42._titleLayer.show()
+						},500);
                     }
                 });
                 

@@ -396,7 +396,7 @@ $42.MUSIC_GREEN_FOREST = {
 
 ////////////////////////////////////////////////
 // Music for level 5
-$42.MUSIC_BLUE_QUADRAT = { // Hier gehts weiter ... Musik stopped
+$42.MUSIC_BLUE_QUADRAT = { 
     background: {
         audio:           [res.blue_quadrat_loop_mp3],
         audioLoopStart:  0,
