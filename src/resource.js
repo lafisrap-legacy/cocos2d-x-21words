@@ -156,7 +156,7 @@ var res = {
     green_trollworld_swipe_2_mp3:                  "res/sounds/levelsounds/green_trollworld_swipe_b_1,3,4.mp3",
     green_trollworld_swipe_3_mp3:                  "res/sounds/levelsounds/green_trollworld_swipe_c_1,3,10.mp3",
     green_trollworld_swipe_4_mp3:                  "res/sounds/levelsounds/green_trollworld_swipe_d_1,3,4.mp3",
-    green_trollworld_swipe_5_mp3:                  "res/sounds/levelsounds/green_trollworld_swipe_e_1,3,5.mp3",
+    green_trollworld_swipe_5_mp3:                  "res/sounds/levelsounds/green_trollworld_swipe_e_1,3,6.mp3",
     //green_trollworld_swipe_6_mp3:                  "res/sounds/levelsounds/green_trollworld_swipe_f_1,2,6.mp3",
     green_trollworld_rotate_1_mp3:                 "res/sounds/levelsounds/green_trollworld_rotate_a_1,2,11.mp3",
     green_trollworld_rotate_2_mp3:                 "res/sounds/levelsounds/green_trollworld_rotate_b_1,2,11.mp3",
@@ -174,8 +174,8 @@ var res = {
     green_trollworld_final_mp3:                    "res/sounds/levelsounds/green_trollworld_final_1,2,8.mp3",
 
     // level 5
-    //blue_quadrat_intro_mp3:                  "res/sounds/none.mp3",
-    blue_quadrat_loop_mp3:                   "res/sounds/levelsounds/L5_blaues_quadrat_hintergrund_loop1,1,2.mp3",
+    blue_quadrat_intro_mp3:                  "res/sounds/levelsounds/blue_quadrat_background_intro_1,1,2.mp3",
+    blue_quadrat_loop_mp3:                   "res/sounds/levelsounds/blue_quadrat_background_loop_1,1,2.mp3",
     blue_quadrat_level_words_mp3:            "res/sounds/levelsounds/L5_blaues_quadrat_wort_fertig_b_1,1,2.mp3",
     blue_quadrat_level_nr_mp3:               "res/sounds/levelsounds/L5_blaues_quadrat_letztes_wort_1,1,2.mp3",
     blue_quadrat_set_tile_1_mp3:             "res/sounds/levelsounds/L5_blaues_quadrat_buchstaben_oben_a_1,1,2.mp3",

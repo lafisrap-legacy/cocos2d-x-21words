@@ -398,9 +398,9 @@ $42.MUSIC_GREEN_FOREST = {
 // Music for level 5
 $42.MUSIC_BLUE_QUADRAT = { 
     background: {
-        audio:           [res.blue_quadrat_loop_mp3],
-        audioLoopStart:  0,
-        audioLength:     [38.064000],
+        audio:           [res.blue_quadrat_intro_mp3, res.blue_quadrat_loop_mp3],
+        audioLoopStart:  1,
+        audioLength:     [39.732245, 38.112653],
         delayTime:       7000,
         fadeOutTime:     50,
         fadeOutTimeEnd:  1000
