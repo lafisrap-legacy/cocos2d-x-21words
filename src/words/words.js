@@ -2179,7 +2179,7 @@ var _42_MODULE = function(_42Layer) {
         var ls = cc.sys.localStorage,
             wtJSON = ls.getItem("wordTreasure"),
         	wt = $42.wordTreasure = wtJSON? JSON.parse(wtJSON) : [],
-            lv = $42.currentLevel = ls.getItem("currentLevel") || 5,
+            lv = $42.currentLevel = ls.getItem("currentLevel") || 3,
 		    wp = $42.wordProfile = parseInt(ls.getItem("wordProfile")) || 0x7f, // 127 == first 7 letters in the letter order
             lo = $42.letterOrder;
 

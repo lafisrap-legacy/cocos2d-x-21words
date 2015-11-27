@@ -108,8 +108,8 @@ var res = {
     flames_final_mp3:                  "res/sounds/levelsounds/flames_final_1,3,2.mp3",
 
     // level 3
-    yellow_steps_background_loop_1_mp3:             "res/sounds/levelsounds/yellow_steps_background_loop_a_1,2,8.mp3",
-    yellow_steps_background_loop_2_mp3:             "res/sounds/levelsounds/yellow_steps_background_loop_b_1,2,8.mp3",
+    yellow_steps_background_loop_1_mp3:             "res/sounds/levelsounds/yellow_steps_background_loop_a_1,3,1.mp3",
+    yellow_steps_background_loop_2_mp3:             "res/sounds/levelsounds/yellow_steps_background_loop_b_1,3,1.mp3",
     yellow_steps_level_words_mp3:                   "res/sounds/levelsounds/yellow_steps_level_words_1,3,2.mp3",
     yellow_steps_level_nr_mp3:                      "res/sounds/levelsounds/yellow_steps_level_nr_1,3,2.mp3",
     yellow_steps_set_tile_1_mp3:                    "res/sounds/levelsounds/yellow_steps_set_tile_a_1,3,2.mp3",
