@@ -104,8 +104,8 @@ var res = {
     flames_full_word_mp3:              "res/sounds/levelsounds/flames_full_word_1,3,1.mp3",
     flames_last_word_mp3:              "res/sounds/levelsounds/flames_full_word_1,3,1.mp3",
     flames_delete_row_mp3:             "res/sounds/levelsounds/flames_delete_row_1,3,1.mp3",
-    flames_delete_last_rows_mp3:       "res/sounds/levelsounds/flames_delete_last_rows_1,3,11.mp3",
-    flames_final_mp3:                  "res/sounds/levelsounds/flames_final_1,3,2.mp3",
+    flames_delete_last_rows_mp3:       "res/sounds/levelsounds/flames_delete_last_rows_1,3,20.mp3",
+    flames_final_mp3:                  "res/sounds/levelsounds/flames_final_1,3,6.mp3",
 
     // level 3
     yellow_steps_background_loop_1_mp3:             "res/sounds/levelsounds/yellow_steps_background_loop_a_1,3,1.mp3",

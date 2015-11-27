@@ -213,7 +213,7 @@ $42.MUSIC_FLAMES = {
         audioBeat:       [4],
         delayTime:       5000,
         fadeOutTime:     50,
-        fadeOutTimeEnd:  800
+        fadeOutTimeEnd:  1000
     },
     levelWords: { 
         audio:          res.flames_level_words_mp3,
