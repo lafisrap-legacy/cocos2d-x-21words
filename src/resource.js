@@ -205,11 +205,13 @@ var res = {
     blue_quadrat_full_word_1_mp3:            "res/sounds/levelsounds/blue_quadrat_full_word_a_1,1,1.mp3",
     blue_quadrat_full_word_2_mp3:            "res/sounds/levelsounds/blue_quadrat_full_word_d_1,1,1.mp3",
     blue_quadrat_full_word_3_mp3:            "res/sounds/levelsounds/blue_quadrat_full_word_e_1,1,3.mp3",
-    //blue_quadrat_last_word_mp3:              "res/sounds/levelsounds/blue_quadrat_full_word_e_1,1,3.mp3",
+    blue_quadrat_last_word_1_mp3:            "res/sounds/levelsounds/blue_quadrat_last_word_a_1,1,2.mp3",
+    blue_quadrat_last_word_2_mp3:            "res/sounds/levelsounds/blue_quadrat_last_word_d_1,1,2.mp3",
+    blue_quadrat_last_word_3_mp3:            "res/sounds/levelsounds/blue_quadrat_last_word_e_1,1,8.mp3",
     blue_quadrat_delete_row_1_mp3:           "res/sounds/levelsounds/blue_quadrat_delete_row_a_1,1,1.mp3",
     blue_quadrat_delete_row_2_mp3:           "res/sounds/levelsounds/blue_quadrat_delete_row_d_1,1,1.mp3",
     blue_quadrat_delete_row_3_mp3:           "res/sounds/levelsounds/blue_quadrat_delete_row_e_1,1,1.mp3",
-    blue_quadrat_delete_last_rows_mp3:       "res/sounds/levelsounds/blue_quadrat_delete_last_rows_1,1,4.mp3",
+    blue_quadrat_delete_last_rows_mp3:       "res/sounds/levelsounds/blue_quadrat_delete_last_rows_1,1,8.mp3",
     blue_quadrat_final_mp3:                  "res/sounds/levelsounds/blue_quadrat_full_word_e_1,1,3.mp3",
 
     // level 6
