@@ -108,8 +108,8 @@ var res = {
     flames_final_mp3:                  "res/sounds/levelsounds/flames_final_1,3,6.mp3",
 
     // level 3
-    yellow_steps_background_loop_1_mp3:             "res/sounds/levelsounds/yellow_steps_background_loop_a_1,4,3.mp3",
-    yellow_steps_background_loop_2_mp3:             "res/sounds/levelsounds/yellow_steps_background_loop_b_1,4,3.mp3",
+    yellow_steps_background_loop_1_mp3:             "res/sounds/levelsounds/yellow_steps_background_loop_a_1,4,4.mp3",
+    yellow_steps_background_loop_2_mp3:             "res/sounds/levelsounds/yellow_steps_background_loop_b_1,4,4.mp3",
     yellow_steps_level_words_mp3:                   "res/sounds/levelsounds/yellow_steps_level_words_1,4,2.mp3",
     yellow_steps_level_nr_mp3:                      "res/sounds/levelsounds/yellow_steps_level_nr_1,4,2.mp3",
     yellow_steps_set_tile_1_mp3:                    "res/sounds/levelsounds/yellow_steps_set_tile_a_1,4,2.mp3",
@@ -141,9 +141,9 @@ var res = {
     yellow_steps_delete_row_1_mp3:                  "res/sounds/levelsounds/yellow_steps_delete_row_1_1,4,2.mp3",
     yellow_steps_delete_row_2_mp3:                  "res/sounds/levelsounds/yellow_steps_delete_row_1_1,4,2.mp3",
     yellow_steps_delete_last_rows_mp3:              "res/sounds/levelsounds/yellow_steps_delete_last_rows_1,4,2.mp3",
-    yellow_steps_final_mp3:                         "res/sounds/levelsounds/yellow_steps_final_1,4,2.mp3",
-    //yellow_steps_final_1_mp3:                       "res/sounds/levelsounds/yellow_steps_final_1_1,2,18.mp3",
-    //yellow_steps_final_2_mp3:                       "res/sounds/levelsounds/yellow_steps_final_2_1,2,18.mp3",
+    //yellow_steps_final_mp3:                         "res/sounds/levelsounds/yellow_steps_final_1,4,2.mp3",
+    yellow_steps_final_1_mp3:                       "res/sounds/levelsounds/yellow_steps_final_1_1,4,2.mp3",
+    yellow_steps_final_2_mp3:                       "res/sounds/levelsounds/yellow_steps_final_2_1,4,2.mp3",
 
     // level 4                                               
     green_trollworld_loop_mp3:                     "res/sounds/levelsounds/green_trollworld_background_1,1,16.mp3",
