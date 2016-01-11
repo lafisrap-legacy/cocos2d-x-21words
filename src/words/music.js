@@ -329,8 +329,8 @@ $42.MUSIC_YELLOW_STEPS = {
         nextSetOn:         "time", 
     },
     final:          { 
-        audio: 
-                        [res.yellow_steps_final_mp3],
+        audioSet:       [[res.yellow_steps_final_1_mp3],
+                         [res.yellow_steps_final_2_mp3]], 
     }, 
     deleteLastRows:     { audio: res.yellow_steps_delete_last_rows_mp3 },
 };
